@@ -1,0 +1,29 @@
+{
+    "name": "maketok/site",
+    "description": "Skeleton Application for ZF2",
+    "license": "GPL-3.0",
+    "keywords": [
+        "site",
+        "maketok"
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.zendframework.com/"
+        }
+    ],
+    "homepage": "http://maketok.com/",
+    "require": {
+        "php": ">=5.4.0",
+        "zendframework/zend-db": "2.1.*",
+        "monolog/monolog": "~1.0"
+    },
+    "require-dev": {
+        "phpunit/PHPUnit": "3.7.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Maketok\\": "lib/"
+        }
+    }
+}
