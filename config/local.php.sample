@@ -13,5 +13,8 @@ $_local_php_properties = array(
     'max_execution_time' => 60,
 );
 $_local_db_properties = array(
-
+    'username' => 'user',
+    'password' => 'pass',
+    'host' => 'host',
+    'db_name' => 'database',
 );
