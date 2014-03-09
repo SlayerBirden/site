@@ -16,5 +16,5 @@ $_local_db_properties = array(
     'username' => 'user',
     'password' => 'pass',
     'host' => 'host',
-    'db_name' => 'database',
+    'database' => 'database',
 );

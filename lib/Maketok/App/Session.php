@@ -26,6 +26,6 @@ class Session
 
     public function registerSaveHandler(\SessionHandlerInterface $handler)
     {
-
+        session_set_save_handler($handler, true);
     }
 }

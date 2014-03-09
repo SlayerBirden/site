@@ -8,30 +8,31 @@
 namespace Maketok\App;
 
 use Maketok\Loader\Autoload;
+use Zend\Db\Adapter\Adapter;
 
-class Site
+final class Site
 {
     const DEFAULT_TIMEZONE = 'UTC';
 
-    public function __construct()
+    private function __construct()
     {
-        // do some construction stuff
+        // we can't create an object of Site
     }
 
-    public function run()
+    static public function run()
     {
         // register modules loader
         $loader = new Autoload();
         $loader->register();
 
-        $this->_loadConfigs();
-        $this->_initEnvironment();
+        self::_loadConfigs();
+        self::_initEnvironment();
 
         // run routers
 
     }
 
-    private function _loadConfigs()
+    static private function _loadConfigs()
     {
         $basedir = dirname(dirname(dirname(__DIR__)));
         require_once $basedir . DIRECTORY_SEPARATOR .  'config' . DIRECTORY_SEPARATOR . 'global.php';
@@ -48,10 +49,34 @@ class Site
                 ini_set($property, $value);
             }
         }
+        if (isset($_local_db_properties)) {
+            self::_initAdapter($_local_db_properties);
+        }
     }
 
-    private function _initEnvironment()
+    static private function _initEnvironment()
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
     }
+
+    static private function _initAdapter($data)
+    {
+        self::registry()->adapter = new Adapter(array(
+            'driver'   => 'pdo_mysql',
+            'database' => $data['database'],
+            'username' => $data['username'],
+            'password' => $data['password'],
+        ));
+    }
+
+    static public function getAdapter()
+    {
+        return self::registry()->adapter;
+    }
+
+    static public function registry()
+    {
+        return Registry::getInstance();
+    }
+
 }
