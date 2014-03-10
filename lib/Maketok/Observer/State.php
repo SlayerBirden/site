@@ -16,6 +16,15 @@ class State
      */
     private $_subject;
 
+    public function __construct($data = null)
+    {
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $this->$key = $value;
+            }
+        }
+    }
+
     public function __set($key, $value)
     {
         $this->_data[$key] = $value;

@@ -11,18 +11,18 @@ interface SubjectManagerInterface
 {
     /**
      * @param string $subject
-     * @param SubscriberInterface $subscriber
+     * @param callable $subscriber
      * @param int $priority
      * @return mixed
      */
-    public function attach($subject, SubscriberInterface $subscriber, $priority);
+    public function attach($subject, $subscriber, $priority);
 
     /**
      * @param string $subject
-     * @param SubscriberInterface $subscriber
+     * @param callable $subscriber
      * @return mixed
      */
-    public function detach($subject, SubscriberInterface $subscriber);
+    public function detach($subject, $subscriber);
 
     /**
      * @param string $subject

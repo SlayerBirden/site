@@ -15,36 +15,41 @@ class SubjectManager implements SubjectManagerInterface
      * array of PriorityQueue objects
      * @var array
      */
-    private $_mapper = array();
+    private $_subscribers = array();
 
     private $_subjects = array();
 
     /**
+     * @var SubjectManager
+     */
+    static private $_instance;
+
+    /**
      * @param string $subject
-     * @param SubscriberInterface $subscriber
+     * @param callable $subscriber
      * @param int $priority
      * @return mixed
      */
-    public function attach($subject, SubscriberInterface $subscriber, $priority)
+    public function attach($subject, $subscriber, $priority)
     {
         if (!$this->getSubject($subject)) {
             $this->addSubject($subject);
         }
-        if (!isset($this->_mapper[$subject])) {
-            $this->_mapper[$subject] = new PriorityQueue();
+        if (!isset($this->_subscribers[$subject])) {
+            $this->_subscribers[$subject] = new PriorityQueue();
         }
-        $this->_mapper[$subject]->insert($subscriber, $priority);
+        $this->_subscribers[$subject]->insert($subscriber, $priority);
     }
 
     /**
      * @param string $subject
-     * @param SubscriberInterface $subscriber
+     * @param mixed $subscriber
      * @return mixed
      */
-    public function detach($subject, SubscriberInterface $subscriber)
+    public function detach($subject, $subscriber)
     {
-        if (isset($this->_mapper[$subject])) {
-            $this->_mapper[$subject]->remove($subscriber);
+        if (isset($this->_subscribers[$subject])) {
+            $this->_subscribers[$subject]->remove($subscriber);
         }
     }
 
@@ -55,9 +60,16 @@ class SubjectManager implements SubjectManagerInterface
      */
     public function notify($subject, State $state)
     {
-        if (isset($this->_mapper[$subject])) {
-            foreach ($this->_mapper[$subject] as $subscriber) {
-                $subscriber->update($state->setSubject($this->getSubject($subject)));
+        if (isset($this->_subscribers[$subject])) {
+            $_subject = $this->getSubject($subject);
+            /** @var PriorityQueue $_subQueue */
+            $_subQueue = $this->_subscribers[$subject];
+            $_subQueue->getQueue()->top();
+            while ($_subQueue->getQueue()->valid()) {
+                if ($_subject->getShouldStopPropagation()) {
+                    break;
+                }
+                call_user_func($_subQueue->getQueue()->extract(), $state->setSubject($_subject));
             }
         }
     }
@@ -82,5 +94,21 @@ class SubjectManager implements SubjectManagerInterface
     {
         $this->_subjects[$subject] = new Subject($subject);
         return $this;
+    }
+
+    /**
+     * @return SubjectManager
+     */
+    static public function getInstance()
+    {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new SubjectManager();
+        }
+        return self::$_instance;
+    }
+
+    protected function __construct()
+    {
+        // singleton
     }
 }

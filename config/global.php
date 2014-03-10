@@ -5,10 +5,20 @@
  * @project site
  * @developer Slayer
  */
-$_php_properties = array(
-    'display_errors' => 0,
-    'error_reporting' => E_ALL & ~E_DEPRECATED,
-    'date_timezone' => 'GMT',
-    'max_memory_limit' => '512M',
-    'max_execution_time' => 60,
+return array(
+    'php_config' => array(
+        'display_errors' => 0,
+        'error_reporting' => E_ALL & ~E_DEPRECATED,
+        'date_timezone' => 'GMT',
+        'max_memory_limit' => '512M',
+        'max_execution_time' => 60,
+    ),
+    'subject_config' => array(
+        'dispatch' => array(
+            array(
+                'subscriber' => 'Maketok\Mvc\Router\Standard::dispatch',
+                'priority' => 1,
+            ),
+        ),
+    ),
 );
