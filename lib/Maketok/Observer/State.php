@@ -11,6 +11,11 @@ class State
 {
     private $_data = array();
 
+    /**
+     * @var SubjectInterface
+     */
+    private $_subject;
+
     public function __set($key, $value)
     {
         $this->_data[$key] = $value;
@@ -19,5 +24,23 @@ class State
     public function __get($key)
     {
         return $this->_data[$key];
+    }
+
+    /**
+     * @param SubjectInterface $subject
+     * @return $this
+     */
+    public function setSubject(SubjectInterface $subject)
+    {
+        $this->_subject = $subject;
+        return $this;
+    }
+
+    /**
+     * @return SubjectInterface
+     */
+    public function getSubject()
+    {
+        return $this->_subject;
     }
 }

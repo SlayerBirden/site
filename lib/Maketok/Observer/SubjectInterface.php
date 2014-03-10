@@ -7,11 +7,16 @@
  */
 namespace Maketok\Observer;
 
-interface SubscriberInterface
+interface SubjectInterface
 {
     /**
-     * @param State $state
+     * @return bool
+     */
+    public function getShouldStopPropagation();
+
+    /**
+     * @param bool | int $flag
      * @return mixed
      */
-    public function update(State $state);
+    public function setShouldStopPropagation($flag);
 }

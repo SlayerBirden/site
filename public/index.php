@@ -6,5 +6,4 @@
  * @developer Slayer
  */
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' .  DIRECTORY_SEPARATOR . 'autoload.php';
-$site = new Maketok\App\Site();
-$site->run();
+Maketok\App\Site::run();
