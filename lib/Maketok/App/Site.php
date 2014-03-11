@@ -27,8 +27,8 @@ final class Site
         $loader->register();
 
         self::_loadConfigs();
-        self::getSubjectManager()->notify('dispatch', new Observer\State());
         self::_initEnvironment();
+        self::getSubjectManager()->notify('dispatch', new Observer\State());
 
         // run routers
 
@@ -44,6 +44,7 @@ final class Site
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         self::_initAdapter(Config::getConfig('db_config'));
+        // session
     }
 
     static private function _initAdapter($data)
