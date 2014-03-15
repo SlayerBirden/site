@@ -23,6 +23,7 @@ final class Site
 
     static public function run()
     {
+        define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
         // register modules loader
         $loader = new Autoload();
         $loader->register();

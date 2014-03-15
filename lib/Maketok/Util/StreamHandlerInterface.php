@@ -1,0 +1,54 @@
+<?php
+/**
+ * This is a part of Maketok Site. Licensed under GPL 3.0
+ * Please do not use for your own profit.
+ * @project store
+ * @developer Slayer slayer.birden@gmail.com maketok.com
+ */
+namespace Maketok\Util;
+
+interface StreamHandlerInterface
+{
+    /**
+     * @param null|string $path
+     * @param string $data
+     * @return bool
+     */
+    public function write($data, $path = null);
+
+    /**
+     * @param int $length
+     * @param null|string $path
+     * @return string
+     */
+    public function read($length = null, $path = null);
+
+    /**
+     * @param null|string $path
+     * @return bool
+     */
+    public function delete($path = null);
+
+    /**
+     * @param null|string $path
+     * @return bool
+     */
+    public function lock($path = null);
+
+    /**
+     * @param null|string $path
+     * @return bool
+     */
+    public function unLock($path = null);
+
+    /**
+     * @param null|string $path
+     * @return mixed
+     */
+    public function setPath($path);
+
+    /**
+     * @return bool
+     */
+    public function eof();
+}

@@ -7,12 +7,16 @@
  */
 namespace Maketok\App\Ddl;
 
+use Maketok\Util\StreamHandler;
 use Zend\Db\Sql\Ddl\Column;
 use Zend\Db\Sql\Ddl\Constraint;
 use Zend\Db\Sql\Ddl\CreateTable;
 
 class Installer
 {
+
+    private static $_installerLockSheetPath = 'var/locks/ddl_installer.lock';
+    private static $_lockStreamHandler;
 
     /**
      * @param array $tableConfig
@@ -51,5 +55,30 @@ class Installer
     {
         $config = $client::getDdlConfig();
         $version = $client::getDdlConfigVersion();
+    }
+
+    /**
+     * @return array
+     */
+    public static function getDdlInstallerMap()
+    {
+        $data = self::_getLockStreamHandler()->read();
+        if (empty($data)) {
+            return array();
+        }
+        return json_decode($data, true);
+    }
+
+    /**
+     * @return StreamHandler
+     */
+    private static function _getLockStreamHandler()
+    {
+        if (is_null(self::$_lockStreamHandler)) {
+            $fullPath = APPLICATION_ROOT . DIRECTORY_SEPARATOR . self::$_installerLockSheetPath;
+            self::$_lockStreamHandler = new StreamHandler();
+            self::$_lockStreamHandler->setPath($fullPath);
+        }
+        return self::$_lockStreamHandler;
     }
 }

@@ -47,7 +47,7 @@ class Config
     static public function loadConfig($paths = null)
     {
         if (is_null($paths)) {
-            $_configDir = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .  'config';
+            $_configDir = APPLICATION_ROOT . DIRECTORY_SEPARATOR .  'config';
             $paths = array($_configDir . DIRECTORY_SEPARATOR . 'global.php',
                 $_configDir . DIRECTORY_SEPARATOR . 'local.php');
         }
