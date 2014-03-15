@@ -7,9 +7,11 @@
  */
 namespace Maketok\Mvc\Router;
 
+use Maketok\Observer;
+
 class Standard
 {
-    public function dispatch(\Maketok\Observer\State $state)
+    public function dispatch(Observer\State $state)
     {
         var_dump($state); die;
     }

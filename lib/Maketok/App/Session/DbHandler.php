@@ -7,10 +7,18 @@
  */
 namespace Maketok\App\Session;
 
+use Maketok\App\Site;
+use Zend\Db\Sql\Predicate\Predicate;
 use Zend\Db\Sql\Sql;
 
 class DbHandler implements \SessionHandlerInterface
 {
+
+    protected $_table = 'session_storage';
+    /**
+     * @var Sql
+     */
+    protected $_sql;
 
     /**
      * PHP >= 5.4.0<br/>
@@ -23,7 +31,7 @@ class DbHandler implements \SessionHandlerInterface
      */
     public function close()
     {
-        // TODO: Implement close() method.
+        $this->gc(ini_get('session.gc_maxlifetime'));
     }
 
     /**
@@ -38,7 +46,13 @@ class DbHandler implements \SessionHandlerInterface
      */
     public function destroy($session_id)
     {
-        // TODO: Implement destroy() method.
+        $delete = $this->_sql->delete()->where(array('session_id' => $session_id));
+        $statement = $this->_sql->prepareStatementForSqlObject($delete);
+        $result = $statement->execute();
+        if ($result->getAffectedRows() > 0) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -56,7 +70,15 @@ class DbHandler implements \SessionHandlerInterface
      */
     public function gc($maxlifetime)
     {
-        // TODO: Implement gc() method.
+        $stamp = time() - $maxlifetime;
+        $expirationDate = new \DateTime($stamp);
+
+        $where = new Predicate();
+        $where->lessThan('updated_at', $expirationDate->format('Y-m-d H:i:s'));
+        $delete = $this->_sql->delete()->where($where);
+        $statement = $this->_sql->prepareStatementForSqlObject($delete);
+        $statement->execute();
+        return true;
     }
 
     /**
@@ -72,7 +94,8 @@ class DbHandler implements \SessionHandlerInterface
      */
     public function open($save_path, $session_id)
     {
-        // TODO: Implement open() method.
+        $this->_sql = new Sql(Site::getAdapter(), $this->_table);
+        return true;
     }
 
     /**
@@ -88,7 +111,13 @@ class DbHandler implements \SessionHandlerInterface
      */
     public function read($session_id)
     {
-        // TODO: Implement read() method.
+        $select = $this->_sql->select()->columns(array('data'))->where(array('session_id' => $session_id));
+        $statement = $this->_sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        foreach ($result as $row) {
+            return $row['data'];
+        }
+        return '';
     }
 
     /**
@@ -110,6 +139,28 @@ class DbHandler implements \SessionHandlerInterface
      */
     public function write($session_id, $session_data)
     {
-        // TODO: Implement write() method.
+
+        $data = $this->read($session_id);
+        $now = new \DateTime();
+        if (empty($data)) {
+            $insert = $this->_sql->insert()
+                ->columns('session_id', 'data', 'updated_at')
+                ->values($session_id, $session_data, $now->format('Y-m-d H:i:s'));
+        } else {
+            $insert = $this->_sql->update()
+                ->set(array('data' => $session_data, 'updated_at' => $now->format('Y-m-d H:i:s')))
+                ->where(array('session_id' => $session_id));
+        }
+        $statement = $this->_sql->prepareStatementForSqlObject($insert);
+        $result = $statement->execute();
+        if ($result->getAffectedRows() > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public function __destruct()
+    {
+        session_write_close();
     }
 }
