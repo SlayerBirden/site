@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -40,7 +40,7 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
     /**
      * In transaction
      *
-     * @var boolean
+     * @var bool
      */
     protected $inTransaction = false;
 
@@ -57,7 +57,7 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
         } elseif ($connectionInfo instanceof \oci8) {
             $this->setResource($connectionInfo);
         } elseif (null !== $connectionInfo) {
-            throw new Exception\InvalidArgumentException('$connection must be an array of parameters, a oci8 resource or null');
+            throw new Exception\InvalidArgumentException('$connection must be an array of parameters, an oci8 resource or null');
         }
     }
 
@@ -170,7 +170,7 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
         $p = $this->connectionParameters;
 
         // given a list of key names, test for existence in $p
-        $findParameterValue = function(array $names) use ($p) {
+        $findParameterValue = function (array $names) use ($p) {
             foreach ($names as $name) {
                 if (isset($p[$name])) {
                     return $p[$name];
@@ -184,17 +184,18 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
         $password = $findParameterValue(array('password'));
         $connectionString = $findParameterValue(array('connection_string', 'connectionstring', 'connection', 'hostname', 'instance'));
         $characterSet = $findParameterValue(array('character_set', 'charset', 'encoding'));
+        $sessionMode = $findParameterValue(array('session_mode'));
 
         // connection modifiers
         $isUnique = $findParameterValue(array('unique'));
         $isPersistent = $findParameterValue(array('persistent'));
 
         if ($isUnique == true) {
-            $this->resource = oci_new_connect($username, $password, $connectionString, $characterSet);
+            $this->resource = oci_new_connect($username, $password, $connectionString, $characterSet, $sessionMode);
         } elseif ($isPersistent == true) {
-            $this->resource = oci_pconnect($username, $password, $connectionString, $characterSet);
+            $this->resource = oci_pconnect($username, $password, $connectionString, $characterSet, $sessionMode);
         } else {
-            $this->resource = oci_connect($username, $password, $connectionString, $characterSet);
+            $this->resource = oci_connect($username, $password, $connectionString, $characterSet, $sessionMode);
         }
 
         if (!$this->resource) {
@@ -212,7 +213,7 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
     /**
      * Is connected
      *
-     * @return boolean
+     * @return bool
      */
     public function isConnected()
     {
@@ -245,7 +246,7 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
     /**
      * In transaction
      *
-     * @return boolean
+     * @return bool
      */
     public function inTransaction()
     {
@@ -335,7 +336,7 @@ class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
      * Get last generated id
      *
      * @param  null $name Ignored
-     * @return integer
+     * @return int
      */
     public function getLastGeneratedValue($name = null)
     {

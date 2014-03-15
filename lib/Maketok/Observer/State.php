@@ -7,7 +7,7 @@
  */
 namespace Maketok\Observer;
 
-class State
+class State implements StateInterface
 {
     private $_data = array();
 

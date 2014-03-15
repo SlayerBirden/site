@@ -10,6 +10,7 @@ namespace Maketok\App;
 use Maketok\Loader\Autoload;
 use Maketok\Observer;
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 
 final class Site
 {
@@ -44,22 +45,22 @@ final class Site
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         self::_initAdapter(Config::getConfig('db_config'));
-        // session
     }
 
     static private function _initAdapter($data)
     {
-        self::registry()->adapter = new Adapter(array(
+        $adapter = new Adapter(array(
             'driver'   => 'pdo_mysql',
             'database' => $data['database'],
             'username' => $data['username'],
             'password' => $data['password'],
         ));
+        GlobalAdapterFeature::setStaticAdapter($adapter);
     }
 
     static public function getAdapter()
     {
-        return self::registry()->adapter;
+        return GlobalAdapterFeature::getStaticAdapter();
     }
 
     static public function registry()

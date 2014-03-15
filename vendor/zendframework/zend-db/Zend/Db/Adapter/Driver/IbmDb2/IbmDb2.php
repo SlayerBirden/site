@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -33,9 +33,8 @@ class IbmDb2 implements DriverInterface, Profiler\ProfilerAwareInterface
 
     /**
      * @param array|Connection|resource $connection
-     * @param null|Statement $statementPrototype
-     * @param null|Result $resultPrototype
-     * @param string $features
+     * @param null|Statement            $statementPrototype
+     * @param null|Result               $resultPrototype
      */
     public function __construct($connection, Statement $statementPrototype = null, Result $resultPrototype = null)
     {
@@ -157,7 +156,7 @@ class IbmDb2 implements DriverInterface, Profiler\ProfilerAwareInterface
                 $statement->setSql($sqlOrResource);
             } elseif ($sqlOrResource !== null) {
                 throw new Exception\InvalidArgumentException(
-                    __FUNCTION__ . ' only accepts an SQL string or a ibm_db2 resource'
+                    __FUNCTION__ . ' only accepts an SQL string or an ibm_db2 resource'
                 );
             }
             if (!$this->connection->isConnected()) {

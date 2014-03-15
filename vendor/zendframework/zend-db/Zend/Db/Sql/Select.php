@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -47,12 +47,17 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
     const SQL_STAR = '*';
     const ORDER_ASCENDING = 'ASC';
     const ORDER_DESCENDING = 'DESC';
+    const COMBINE = 'combine';
+    const COMBINE_UNION = 'union';
+    const COMBINE_EXCEPT = 'except';
+    const COMBINE_INTERSECT = 'intersect';
     /**#@-*/
 
     /**
      * @var array Specifications
      */
     protected $specifications = array(
+        'statementStart' => '%1$s',
         self::SELECT => array(
             'SELECT %1$s FROM %2$s' => array(
                 array(1 => '%1$s', 2 => '%1$s AS %2$s', 'combinedby' => ', '),
@@ -62,6 +67,9 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 null,
                 array(1 => '%1$s', 2 => '%1$s AS %2$s', 'combinedby' => ', '),
                 null
+            ),
+            'SELECT %1$s' => array(
+                array(1 => '%1$s', 2 => '%1$s AS %2$s', 'combinedby' => ', '),
             ),
         ),
         self::JOINS  => array(
@@ -82,7 +90,9 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
             )
         ),
         self::LIMIT  => 'LIMIT %1$s',
-        self::OFFSET => 'OFFSET %1$s'
+        self::OFFSET => 'OFFSET %1$s',
+        'statementEnd' => '%1$s',
+        self::COMBINE => '%1$s ( %2$s )',
     );
 
     /**
@@ -96,7 +106,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
     protected $prefixColumnsWithTable = true;
 
     /**
-     * @var string|TableIdentifier
+     * @var string|array|TableIdentifier
      */
     protected $table = null;
 
@@ -121,7 +131,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
     protected $where = null;
 
     /**
-     * @var null|string
+     * @var array
      */
     protected $order = array();
 
@@ -146,9 +156,14 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
     protected $offset = null;
 
     /**
+     * @var array
+     */
+    protected $combine = array();
+
+    /**
      * Constructor
      *
-     * @param  null|string $table
+     * @param  null|string|array|TableIdentifier $table
      */
     public function __construct($table = null)
     {
@@ -267,55 +282,8 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
     {
         if ($predicate instanceof Where) {
             $this->where = $predicate;
-        } elseif ($predicate instanceof Predicate\PredicateInterface) {
-            $this->where->addPredicate($predicate, $combination);
-        } elseif ($predicate instanceof \Closure) {
-            $predicate($this->where);
         } else {
-            if (is_string($predicate)) {
-                // String $predicate should be passed as an expression
-                $predicate = (strpos($predicate, Expression::PLACEHOLDER) !== false)
-                    ? new Predicate\Expression($predicate) : new Predicate\Literal($predicate);
-                $this->where->addPredicate($predicate, $combination);
-            } elseif (is_array($predicate)) {
-
-                foreach ($predicate as $pkey => $pvalue) {
-                    // loop through predicates
-
-                    if (is_string($pkey) && strpos($pkey, '?') !== false) {
-                        // First, process strings that the abstraction replacement character ?
-                        // as an Expression predicate
-                        $predicate = new Predicate\Expression($pkey, $pvalue);
-
-                    } elseif (is_string($pkey)) {
-                        // Otherwise, if still a string, do something intelligent with the PHP type provided
-
-                        if ($pvalue === null) {
-                            // map PHP null to SQL IS NULL expression
-                            $predicate = new Predicate\IsNull($pkey, $pvalue);
-                        } elseif (is_array($pvalue)) {
-                            // if the value is an array, assume IN() is desired
-                            $predicate = new Predicate\In($pkey, $pvalue);
-                        } elseif ($pvalue instanceof Predicate\PredicateInterface) {
-                            //
-                            throw new Exception\InvalidArgumentException(
-                                'Using Predicate must not use string keys'
-                            );
-                        } else {
-                            // otherwise assume that array('foo' => 'bar') means "foo" = 'bar'
-                            $predicate = new Predicate\Operator($pkey, Predicate\Operator::OP_EQ, $pvalue);
-                        }
-                    } elseif ($pvalue instanceof Predicate\PredicateInterface) {
-                        // Predicate type is ok
-                        $predicate = $pvalue;
-                    } else {
-                        // must be an array of expressions (with int-indexed array)
-                        $predicate = (strpos($pvalue, Expression::PLACEHOLDER) !== false)
-                            ? new Predicate\Expression($pvalue) : new Predicate\Literal($pvalue);
-                    }
-                    $this->where->addPredicate($predicate, $combination);
-                }
-            }
+            $this->where->addPredicates($predicate, $combination);
         }
         return $this;
     }
@@ -343,24 +311,8 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
     {
         if ($predicate instanceof Having) {
             $this->having = $predicate;
-        } elseif ($predicate instanceof \Closure) {
-            $predicate($this->having);
         } else {
-            if (is_string($predicate)) {
-                $predicate = new Predicate\Expression($predicate);
-                $this->having->addPredicate($predicate, $combination);
-            } elseif (is_array($predicate)) {
-                foreach ($predicate as $pkey => $pvalue) {
-                    if (is_string($pkey) && strpos($pkey, '?') !== false) {
-                        $predicate = new Predicate\Expression($pkey, $pvalue);
-                    } elseif (is_string($pkey)) {
-                        $predicate = new Predicate\Operator($pkey, Predicate\Operator::OP_EQ, $pvalue);
-                    } else {
-                        $predicate = new Predicate\Expression($pvalue);
-                    }
-                    $this->having->addPredicate($predicate, $combination);
-                }
-            }
+            $this->having->addPredicates($predicate, $combination);
         }
         return $this;
     }
@@ -396,6 +348,14 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
      */
     public function limit($limit)
     {
+        if (!is_numeric($limit)) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                '%s expects parameter to be numeric, "%s" given',
+                __METHOD__,
+                (is_object($limit) ? get_class($limit) : gettype($limit))
+            ));
+        }
+
         $this->limit = $limit;
         return $this;
     }
@@ -406,7 +366,35 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
      */
     public function offset($offset)
     {
+        if (!is_numeric($offset)) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                '%s expects parameter to be numeric, "%s" given',
+                __METHOD__,
+                (is_object($offset) ? get_class($offset) : gettype($offset))
+            ));
+        }
+
         $this->offset = $offset;
+        return $this;
+    }
+
+    /**
+     * @param Select $select
+     * @param string $type
+     * @param string $modifier
+     * @return Select
+     * @throws Exception\InvalidArgumentException
+     */
+    public function combine(Select $select, $type = self::COMBINE_UNION, $modifier = '')
+    {
+        if ($this->combine !== array()) {
+            throw new Exception\InvalidArgumentException('This Select object is already combined and cannot be combined with multiple Selects objects');
+        }
+        $this->combine = array(
+            'select' => $select,
+            'type' => $type,
+            'modifier' => $modifier
+        );
         return $this;
     }
 
@@ -451,7 +439,10 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 $this->offset = null;
                 break;
             case self::ORDER:
-                $this->order = null;
+                $this->order = array();
+                break;
+            case self::COMBINE:
+                $this->combine = array();
                 break;
         }
         return $this;
@@ -478,7 +469,8 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
             self::GROUP      => $this->group,
             self::HAVING     => $this->having,
             self::LIMIT      => $this->limit,
-            self::OFFSET     => $this->offset
+            self::OFFSET     => $this->offset,
+            self::COMBINE    => $this->combine
         );
         return (isset($key) && array_key_exists($key, $rawState)) ? $rawState[$key] : $rawState;
     }
@@ -545,7 +537,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
     /**
      * Returns whether the table is read only or not.
      *
-     * @return boolean
+     * @return bool
      */
     public function isTableReadOnly()
     {
@@ -569,6 +561,20 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         return $sql;
     }
 
+    protected function processStatementStart(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    {
+        if ($this->combine !== array()) {
+            return array('(');
+        }
+    }
+
+    protected function processStatementEnd(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    {
+        if ($this->combine !== array()) {
+            return array(')');
+        }
+    }
+
     /**
      * Process the select part
      *
@@ -581,38 +587,38 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
     {
         $expr = 1;
 
-        if (!$this->table) {
-            return null;
-        }
+        if ($this->table) {
+            $table = $this->table;
+            $schema = $alias = null;
 
-        $table = $this->table;
-        $schema = $alias = null;
+            if (is_array($table)) {
+                $alias = key($this->table);
+                $table = current($this->table);
+            }
 
-        if (is_array($table)) {
-            $alias = key($this->table);
-            $table = current($this->table);
-        }
+            // create quoted table name to use in columns processing
+            if ($table instanceof TableIdentifier) {
+                list($table, $schema) = $table->getTableAndSchema();
+            }
 
-        // create quoted table name to use in columns processing
-        if ($table instanceof TableIdentifier) {
-            list($table, $schema) = $table->getTableAndSchema();
-        }
+            if ($table instanceof Select) {
+                $table = '(' . $this->processSubselect($table, $platform, $driver, $parameterContainer) . ')';
+            } else {
+                $table = $platform->quoteIdentifier($table);
+            }
 
-        if ($table instanceof Select) {
-            $table = '(' . $this->processSubselect($table, $platform, $driver, $parameterContainer) . ')';
+            if ($schema) {
+                $table = $platform->quoteIdentifier($schema) . $platform->getIdentifierSeparator() . $table;
+            }
+
+            if ($alias) {
+                $fromTable = $platform->quoteIdentifier($alias);
+                $table = $this->renderTable($table, $fromTable);
+            } else {
+                $fromTable = $table;
+            }
         } else {
-            $table = $platform->quoteIdentifier($table);
-        }
-
-        if ($schema) {
-            $table = $platform->quoteIdentifier($schema) . $platform->getIdentifierSeparator() . $table;
-        }
-
-        if ($alias) {
-            $fromTable = $platform->quoteIdentifier($alias);
-            $table = $this->renderTable($table, $fromTable);
-        } else {
-            $fromTable = $table;
+            $fromTable = '';
         }
 
         if ($this->prefixColumnsWithTable) {
@@ -631,7 +637,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 continue;
             }
 
-            if ($column instanceof Expression) {
+            if ($column instanceof ExpressionInterface) {
                 $columnParts = $this->processExpression(
                     $column,
                     $platform,
@@ -675,7 +681,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 } else {
                     $name = (is_array($join['name'])) ? key($join['name']) : $name = $join['name'];
                     if ($name instanceof TableIdentifier) {
-                        $name = $platform->quoteIdentifier($name->getSchema()) . $separator . $platform->quoteIdentifier($name->getTable());
+                        $name = ($name->hasSchema() ? $platform->quoteIdentifier($name->getSchema()) . $separator : '') . $platform->quoteIdentifier($name->getTable());
                     } else {
                         $name = $platform->quoteIdentifier($name);
                     }
@@ -691,7 +697,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         }
 
         if ($this->quantifier) {
-            if ($this->quantifier instanceof Expression) {
+            if ($this->quantifier instanceof ExpressionInterface) {
                 $quantifierParts = $this->processExpression($this->quantifier, $platform, $driver, 'quantifier');
                 if ($parameterContainer) {
                     $parameterContainer->merge($quantifierParts->getParameterContainer());
@@ -702,7 +708,9 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
             }
         }
 
-        if (isset($quantifier)) {
+        if (!isset($table)) {
+            return array($columns);
+        } elseif (isset($quantifier)) {
             return array($quantifier, $columns, $table);
         } else {
             return array($columns, $table);
@@ -734,7 +742,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
             }
             if ($joinName instanceof TableIdentifier) {
                 $joinName = $joinName->getTableAndSchema();
-                $joinName = $platform->quoteIdentifier($joinName[1]) . $platform->getIdentifierSeparator() . $platform->quoteIdentifier($joinName[0]);
+                $joinName = ($joinName[1] ? $platform->quoteIdentifier($joinName[1]) . $platform->getIdentifierSeparator() : '') . $platform->quoteIdentifier($joinName[0]);
             } else {
                 if ($joinName instanceof Select) {
                     $joinName = '(' . $joinName->processSubSelect($joinName, $platform, $driver, $parameterContainer) . ')';
@@ -845,11 +853,14 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if ($this->limit === null) {
             return null;
         }
+
+        $limit = $this->limit;
+
         if ($driver) {
             $sql = $driver->formatParameterName('limit');
-            $parameterContainer->offsetSet('limit', $this->limit, ParameterContainer::TYPE_INTEGER);
+            $parameterContainer->offsetSet('limit', $limit, ParameterContainer::TYPE_INTEGER);
         } else {
-            $sql = $platform->quoteValue($this->limit);
+            $sql = $platform->quoteValue($limit);
         }
 
         return array($sql);
@@ -860,12 +871,37 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if ($this->offset === null) {
             return null;
         }
+
+        $offset = $this->offset;
+
         if ($driver) {
-            $parameterContainer->offsetSet('offset', $this->offset, ParameterContainer::TYPE_INTEGER);
+            $parameterContainer->offsetSet('offset', $offset, ParameterContainer::TYPE_INTEGER);
             return array($driver->formatParameterName('offset'));
         }
 
-        return array($platform->quoteValue($this->offset));
+        return array($platform->quoteValue($offset));
+    }
+
+    protected function processCombine(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    {
+        if ($this->combine == array()) {
+            return null;
+        }
+
+        $type = $this->combine['type'];
+        if ($this->combine['modifier']) {
+            $type .= ' ' . $this->combine['modifier'];
+        }
+        $type = strtoupper($type);
+
+        if ($driver) {
+            $sql = $this->processSubSelect($this->combine['select'], $platform, $driver, $parameterContainer);
+            return array($type, $sql);
+        }
+        return array(
+            $type,
+            $this->processSubSelect($this->combine['select'], $platform)
+        );
     }
 
     /**

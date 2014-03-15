@@ -8,10 +8,11 @@
 namespace Maketok\App\Session;
 
 use Maketok\App\Site;
-use Zend\Db\Sql\Predicate\Predicate;
 use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Where;
+use Maketok\App\Ddl\InstallerApplicableInterface;
 
-class DbHandler implements \SessionHandlerInterface
+class DbHandler implements \SessionHandlerInterface, InstallerApplicableInterface
 {
 
     protected $_table = 'session_storage';
@@ -73,7 +74,7 @@ class DbHandler implements \SessionHandlerInterface
         $stamp = time() - $maxlifetime;
         $expirationDate = new \DateTime($stamp);
 
-        $where = new Predicate();
+        $where = new Where();
         $where->lessThan('updated_at', $expirationDate->format('Y-m-d H:i:s'));
         $delete = $this->_sql->delete()->where($where);
         $statement = $this->_sql->prepareStatementForSqlObject($delete);
@@ -162,5 +163,39 @@ class DbHandler implements \SessionHandlerInterface
     public function __destruct()
     {
         session_write_close();
+    }
+
+    /**
+     * @return array
+     */
+    public static function getDdlConfig()
+    {
+        return array(
+            'session_storage' => array(
+                'columns' => array(
+                    'session_id' => array(
+                        'type' => 'varchar',
+                        'length' => 32,
+                    ),
+                    'data' => array(
+                        'type' => 'text',
+                    ),
+                    'updated_at' => array(
+                        'type' => 'time',
+                    ),
+                ),
+                'constraints' => array(
+                    'primaryKey' => array('session_id'),
+                ),
+            )
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public static function getDdlConfigVersion()
+    {
+        return '0.1.0';
     }
 }

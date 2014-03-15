@@ -5,7 +5,8 @@
  * @project site
  * @developer Slayer
  */
-namespace modules\core\controller;
+namespace modules\cover\controller;
+
 class IndexController
 {
 

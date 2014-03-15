@@ -26,8 +26,8 @@ interface SubjectManagerInterface
 
     /**
      * @param string $subject
-     * @param State $state
+     * @param StateInterface $state
      * @return mixed
      */
-    public function notify($subject, State $state);
+    public function notify($subject, StateInterface $state);
 }

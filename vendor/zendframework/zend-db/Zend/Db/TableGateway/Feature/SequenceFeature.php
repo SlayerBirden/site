@@ -3,15 +3,15 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\Db\TableGateway\Feature;
 
 use Zend\Db\Sql\Insert;
-use Zend\Db\Adapter\Driver\StatementInterface;
 use Zend\Db\Adapter\Driver\ResultInterface;
+use Zend\Db\Adapter\Driver\StatementInterface;
 
 class SequenceFeature extends AbstractFeature
 {
@@ -81,7 +81,7 @@ class SequenceFeature extends AbstractFeature
 
         switch ($platformName) {
             case 'Oracle':
-                $sql = 'SELECT ' . $platform->quoteIdentifier($this->sequenceName) . '.NEXTVAL FROM dual';
+                $sql = 'SELECT ' . $platform->quoteIdentifier($this->sequenceName) . '.NEXTVAL as "nextval" FROM dual';
                 break;
             case 'PostgreSQL':
                 $sql = 'SELECT NEXTVAL(\'' . $this->sequenceName . '\')';
@@ -109,7 +109,7 @@ class SequenceFeature extends AbstractFeature
 
         switch ($platformName) {
             case 'Oracle':
-                $sql = 'SELECT ' . $platform->quoteIdentifier($this->sequenceName) . '.CURRVAL FROM dual';
+                $sql = 'SELECT ' . $platform->quoteIdentifier($this->sequenceName) . '.CURRVAL as "currval" FROM dual';
                 break;
             case 'PostgreSQL':
                 $sql = 'SELECT CURRVAL(\'' . $this->sequenceName . '\')';

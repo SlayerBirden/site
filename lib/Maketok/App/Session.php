@@ -28,4 +28,11 @@ class Session
     {
         session_set_save_handler($handler, true);
     }
+
+    public function init()
+    {
+        ini_set('session.save_handler', 'user');
+        $this->registerSaveHandler(Site::registry()->session_save_handler);
+        $this->start();
+    }
 }

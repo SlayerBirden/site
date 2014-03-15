@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -18,7 +18,7 @@ class Sql
     /** @var AdapterInterface */
     protected $adapter = null;
 
-    /** @var string */
+    /** @var string|array|TableIdentifier */
     protected $table = null;
 
     /** @var Platform\Platform */
@@ -48,10 +48,10 @@ class Sql
 
     public function setTable($table)
     {
-        if (is_string($table) || $table instanceof TableIdentifier) {
+        if (is_string($table) || is_array($table) || $table instanceof TableIdentifier) {
             $this->table = $table;
         } else {
-            throw new Exception\InvalidArgumentException('Table must be a string or instance of TableIdentifier.');
+            throw new Exception\InvalidArgumentException('Table must be a string, array or instance of TableIdentifier.');
         }
         return $this;
     }

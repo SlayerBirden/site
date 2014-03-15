@@ -7,10 +7,18 @@
  */
 namespace Maketok\App;
 
+use Maketok\App\Ddl\Installer;
+use Maketok\App\Session\DbHandler;
+
 class Config
 {
     static protected $_config = array();
 
+    /**
+     * @param array $config1
+     * @param array $config2
+     * @return array
+     */
     static public function merge(array $config1, array $config2)
     {
         // recursive merge distinct implementation
@@ -25,6 +33,9 @@ class Config
         return $_merged;
     }
 
+    /**
+     * @param array $config
+     */
     static public function add(array $config)
     {
         self::$_config = self::merge(self::$_config, $config);
@@ -51,6 +62,9 @@ class Config
         }
     }
 
+    /**
+     * basic Service Manager
+     */
     static public function applyConfig()
     {
         // php
@@ -66,8 +80,24 @@ class Config
                 Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
             }
         }
+        // session storage
+        switch (self::getConfig('session_storage')) {
+            case 'db':
+                Site::registry()->session_save_handler = new DbHandler();
+                break;
+        }
+        // ddl installer
+        $installer = new Installer();
+        foreach (self::getConfig('db_ddl') as $client) {
+            $installer->addClient($client);
+        }
     }
 
+    /**
+     * Factory Method
+     * @param $className
+     * @return mixed
+     */
     static public function classFactory($className)
     {
         return new $className;

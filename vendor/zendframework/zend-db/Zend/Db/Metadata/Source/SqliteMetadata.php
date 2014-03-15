@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -267,7 +267,7 @@ class SqliteMetadata extends AbstractSource
                 'CREATE',
                 array('TEMP|TEMPORARY'),
                 'VIEW',
-                array('IF','NOT','EXISTS'),
+                array('IF', 'NOT', 'EXISTS'),
                 $identifierChain,
                 'AS',
                 '(?<view_definition>.+)',
@@ -294,15 +294,15 @@ class SqliteMetadata extends AbstractSource
                 'CREATE',
                 array('TEMP|TEMPORARY'),
                 'TRIGGER',
-                array('IF','NOT','EXISTS'),
+                array('IF', 'NOT', 'EXISTS'),
                 $identifierChain,
                 array('(?<action_timing>BEFORE|AFTER|INSTEAD\\s+OF)',),
                 '(?<event_manipulation>DELETE|INSERT|UPDATE)',
-                array('OF','(?<column_usage>' . $identifierList . ')'),
+                array('OF', '(?<column_usage>' . $identifierList . ')'),
                 'ON',
                 '(?<event_object_table>' . $identifier . ')',
-                array('FOR','EACH','ROW'),
-                array('WHEN','(?<action_condition>.+)'),
+                array('FOR', 'EACH', 'ROW'),
+                array('WHEN', '(?<action_condition>.+)'),
                 '(?<action_statement>BEGIN',
                 '.+',
                 'END)',

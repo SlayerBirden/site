@@ -3,16 +3,17 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\Db\Adapter\Driver\Oci8;
 
+use Iterator;
 use Zend\Db\Adapter\Driver\ResultInterface;
 use Zend\Db\Adapter\Exception;
 
-class Result implements \Iterator, ResultInterface
+class Result implements Iterator, ResultInterface
 {
 
     /**
@@ -107,7 +108,7 @@ class Result implements \Iterator, ResultInterface
     /**
      * Is query result?
      *
-     * @return boolean
+     * @return bool
      */
     public function isQueryResult()
     {
@@ -116,7 +117,7 @@ class Result implements \Iterator, ResultInterface
 
     /**
      * Get affected rows
-     * @return integer
+     * @return int
      */
     public function getAffectedRows()
     {
@@ -141,18 +142,15 @@ class Result implements \Iterator, ResultInterface
     /**
      * Load from oci8 result
      *
-     * @return boolean
+     * @return bool
      */
     protected function loadData()
     {
-        $this->currentComplete = false;
-        $this->currentData = null;
-
+        $this->currentComplete = true;
         $this->currentData = oci_fetch_assoc($this->resource);
 
         if ($this->currentData !== false) {
             $this->position++;
-            $this->currentComplete = true;
             return true;
         }
         return false;
@@ -187,12 +185,12 @@ class Result implements \Iterator, ResultInterface
 
     /**
      * Valid
-     * @return boolean
+     * @return bool
      */
     public function valid()
     {
         if ($this->currentComplete) {
-            return true;
+            return ($this->currentData !== false);
         }
 
         return $this->loadData();
@@ -200,7 +198,7 @@ class Result implements \Iterator, ResultInterface
 
     /**
      * Count
-     * @return integer
+     * @return int
      */
     public function count()
     {

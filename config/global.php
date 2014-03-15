@@ -21,4 +21,8 @@ return array(
             ),
         ),
     ),
+    'db_ddl' => array(
+        '\Maketok\App\Session\DbHandler',
+    ),
+    'session_storage' => 'db',
 );
