@@ -28,7 +28,6 @@ class StreamHandler implements StreamHandlerInterface
             ftruncate($this->_handler, 0);
             $result = fwrite($this->_handler, $data);
             $result = $result !== false;
-            fflush($this->_handler);
             $result = $result && $this->unLock($path);
         }
         return $result;
@@ -45,8 +44,6 @@ class StreamHandler implements StreamHandlerInterface
         ftruncate($this->_handler, 0);
         $result = fwrite($this->_handler, $data);
         // rewind pointer if we need to read later
-        // flush buffers for the same reason
-        fflush($this->_handler);
         rewind($this->_handler);
         return $result !== false;
     }
