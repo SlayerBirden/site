@@ -9,5 +9,5 @@
  * file that was distributed with this source code.
  */
 
-$loader = require __DIR__ . "/../vendor/autoload.php";
+$loader = require dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 $loader->add('Monolog\\', __DIR__);
