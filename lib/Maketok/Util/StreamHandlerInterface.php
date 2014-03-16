@@ -17,6 +17,13 @@ interface StreamHandlerInterface
     public function write($data, $path = null);
 
     /**
+     * @param null|string $path
+     * @param string $data
+     * @return bool
+     */
+    public function writeWithLock($data, $path = null);
+
+    /**
      * @param int $length
      * @param null|string $path
      * @return string
@@ -25,9 +32,10 @@ interface StreamHandlerInterface
 
     /**
      * @param null|string $path
+     * @param bool|int $includeDirectories
      * @return bool
      */
-    public function delete($path = null);
+    public function delete($path = null, $includeDirectories = false);
 
     /**
      * @param null|string $path

@@ -20,14 +20,26 @@ class StreamHandler implements StreamHandlerInterface
      * @param string $data
      * @return bool
      */
-    public function write($data, $path = null)
+    public function writeWithLock($data, $path = null)
     {
         $this->_initHandler($path);
         $result = false;
         if ($this->lock($path)) {
             $result = fwrite($this->_handler, $data);
         }
-        $this->unLock($path);
+        $result = $result !== false;
+        $result = $result && $this->unLock($path);
+        return $result;
+    }
+    /**
+     * @param null|string $path
+     * @param string $data
+     * @return bool
+     */
+    public function write($data, $path = null)
+    {
+        $this->_initHandler($path);
+        $result = fwrite($this->_handler, $data);
         return $result !== false;
     }
 
@@ -72,9 +84,10 @@ class StreamHandler implements StreamHandlerInterface
 
     /**
      * @param null|string $path
+     * @param bool|int $includeDirectories
      * @return bool
      */
-    public function delete($path = null)
+    public function delete($path = null, $includeDirectories = false)
     {
         if (is_null($path)) {
             $path = $this->_path;
@@ -83,6 +96,10 @@ class StreamHandler implements StreamHandlerInterface
             $res = rmdir($path);
         } else {
             $res = unlink($path);
+        }
+        if (is_int($includeDirectories) && $includeDirectories > 0) {
+            $path = dirname($path);
+            $res = $res && $this->delete($path, $includeDirectories - 1);
         }
         return $res;
     }
