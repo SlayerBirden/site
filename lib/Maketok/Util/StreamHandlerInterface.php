@@ -59,4 +59,9 @@ interface StreamHandlerInterface
      * @return bool
      */
     public function eof();
+
+    /**
+     * @return void
+     */
+    public function close();
 }

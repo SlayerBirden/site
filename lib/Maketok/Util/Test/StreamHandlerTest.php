@@ -19,6 +19,11 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         self::$_streamHandler = new StreamHandler();
     }
 
+    public function tearDown()
+    {
+        self::$_streamHandler->close();
+    }
+
     /**
      * @test
      */
@@ -33,8 +38,8 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testWriteDirFile()
     {
-        self::$_streamHandler->write('test2', 'test/test.txt');
-        $this->assertFileExists('test/test.txt', 'File does not exist!');
+        self::$_streamHandler->write('test2', 'trash/test.txt');
+        $this->assertFileExists('trash/test.txt', 'File does not exist!');
         $this->assertTrue(is_dir('test'));
     }
 
@@ -48,7 +53,8 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $actual = self::$_streamHandler->read(null, 'test.txt');
         $expected = 'test1';
         $this->assertEquals($expected, $actual);
-        $actual2 = self::$_streamHandler->read(5, 'test/test.txt');
+        self::$_streamHandler->close();
+        $actual2 = self::$_streamHandler->read(5, 'trash/test.txt');
         $expected2 = 'test2';
         $this->assertEquals($expected2, $actual2);
     }
@@ -81,9 +87,9 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteDir()
     {
-        self::$_streamHandler->delete('test/test.txt', 1);
-        $this->assertFileNotExists('test/text.txt');
-        $this->assertFalse(is_dir('test'));
+        self::$_streamHandler->delete('trash/test.txt', 1);
+        $this->assertFileNotExists('trash/text.txt');
+        $this->assertFalse(is_dir('trash'));
     }
 
     /**
@@ -96,14 +102,9 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(self::$_streamHandler->lock());
         $expected = 'stream1';
         self::$_streamHandler->write($expected);
-        $actual = self::$_streamHandler->read(null, 'testLock/test.txt');
-        $this->assertEquals($expected, $actual);
         $stream2 = new StreamHandler();
         $stream2->setPath('testLock/test.txt');
         $this->assertFalse($stream2->lock());
-        $this->assertFalse($stream2->write('stream2'));
-        $actual2 = $stream2->read('testLock/test.txt');
-        $this->assertEquals($expected, $actual2);
     }
 
     /**
@@ -112,12 +113,22 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testUnlock()
     {
+        self::$_streamHandler->lock('test_lock.txt');
+        self::$_streamHandler->write('test');
         $this->assertTrue(self::$_streamHandler->unLock());
         $stream2 = new StreamHandler();
-        $stream2->setPath('testLock/test.txt');
+        $stream2->setPath('test_lock.txt');
         $this->assertTrue($stream2->lock());
-        $this->assertTrue($stream2->write('123'));
-        $this->assertTrue($stream2->unLock());
-        $this->assertTrue($stream2->delete(null, 1));
+    }
+
+    /**
+     * @test
+     * @depends testLock
+     * @depends testUnlock
+     */
+    public function testDelete()
+    {
+        $this->assertTrue(self::$_streamHandler->delete('test_lock.txt'));
+        $this->assertTrue(self::$_streamHandler->delete('testLock/test.txt', 1));
     }
 }
