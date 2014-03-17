@@ -11,7 +11,7 @@ class StreamHandler implements StreamHandlerInterface
 {
 
     protected $_path;
-    protected $_handler;
+    protected $_handle;
 
     const PERMISSIONS = 0755;
 
@@ -25,8 +25,8 @@ class StreamHandler implements StreamHandlerInterface
         $this->_initHandler($path, 'c+');
         $result = false;
         if ($this->lock($path)) {
-            ftruncate($this->_handler, 0);
-            $result = fwrite($this->_handler, $data);
+            ftruncate($this->_handle, 0);
+            $result = fwrite($this->_handle, $data);
             $result = $result !== false;
             $result = $result && $this->unLock($path);
         }
@@ -41,10 +41,10 @@ class StreamHandler implements StreamHandlerInterface
     {
         $this->_initHandler($path, 'w');
         // truncate all file in case it was opened with c+
-        ftruncate($this->_handler, 0);
-        $result = fwrite($this->_handler, $data);
+        ftruncate($this->_handle, 0);
+        $result = fwrite($this->_handle, $data);
         // rewind pointer if we need to read later
-        rewind($this->_handler);
+        rewind($this->_handle);
         return $result !== false;
     }
 
@@ -55,7 +55,7 @@ class StreamHandler implements StreamHandlerInterface
      */
     protected function _initHandler($path = null, $mode = 'w')
     {
-        if (is_resource($this->_handler)) {
+        if (is_resource($this->_handle)) {
             return;
         }
         if (is_null($path)) {
@@ -68,7 +68,7 @@ class StreamHandler implements StreamHandlerInterface
         if (!is_dir($dirName)) {
             mkdir($dirName, self::PERMISSIONS, true);
         }
-        $this->_handler = fopen($path, $mode);
+        $this->_handle = fopen($path, $mode);
     }
 
     /**
@@ -85,7 +85,7 @@ class StreamHandler implements StreamHandlerInterface
             }
             $length = filesize($path);
         }
-        return fread($this->_handler, $length);
+        return fread($this->_handle, $length);
     }
 
     /**
@@ -117,7 +117,7 @@ class StreamHandler implements StreamHandlerInterface
     public function lock($path = null)
     {
         $this->_initHandler($path, 'c');
-        return flock($this->_handler, LOCK_EX | LOCK_NB);
+        return flock($this->_handle, LOCK_EX | LOCK_NB);
     }
 
     /**
@@ -127,7 +127,7 @@ class StreamHandler implements StreamHandlerInterface
     public function unLock($path = null)
     {
         $this->_initHandler($path, 'c+');
-        return flock($this->_handler, LOCK_UN);
+        return flock($this->_handle, LOCK_UN);
     }
 
     /**
@@ -138,7 +138,7 @@ class StreamHandler implements StreamHandlerInterface
     public function setPath($path)
     {
         $this->_path = $path;
-        $this->_handler = null;
+        $this->_handle = null;
     }
 
     public function __destruct()
@@ -151,8 +151,8 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function eof()
     {
-        if (is_resource($this->_handler)) {
-            return feof($this->_handler);
+        if (is_resource($this->_handle)) {
+            return feof($this->_handle);
         }
         return true;
     }
@@ -162,9 +162,9 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function close()
     {
-        if (is_resource($this->_handler)) {
-            fclose($this->_handler);
-            $this->_handler = null;
+        if (is_resource($this->_handle)) {
+            fclose($this->_handle);
+            $this->_handle = null;
         }
     }
 }

@@ -91,6 +91,9 @@ class Config
         foreach (self::getConfig('db_ddl') as $client) {
             $installer->addClient($client);
         }
+        if ($installer->hasClients()) {
+            $installer->processClients();
+        }
     }
 
     /**

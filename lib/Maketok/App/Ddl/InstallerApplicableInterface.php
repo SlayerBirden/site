@@ -18,4 +18,9 @@ interface InstallerApplicableInterface
      * @return string
      */
     public static function getDdlConfigVersion();
+
+    /**
+     * @return string
+     */
+    public static function getDdlConfigName();
 }

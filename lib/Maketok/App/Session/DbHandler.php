@@ -198,4 +198,12 @@ class DbHandler implements \SessionHandlerInterface, InstallerApplicableInterfac
     {
         return '0.1.0';
     }
+
+    /**
+     * @return string
+     */
+    public static function getDdlConfigName()
+    {
+        return 'session_storage';
+    }
 }

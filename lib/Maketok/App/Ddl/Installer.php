@@ -17,6 +17,8 @@ class Installer
 
     private static $_installerLockSheetPath = 'var/locks/ddl_installer.lock';
     private static $_lockStreamHandler;
+    private $_clients = array();
+    private static $_map;
 
     /**
      * @param array $tableConfig
@@ -53,8 +55,11 @@ class Installer
      */
     public function addClient($client)
     {
-        $config = $client::getDdlConfig();
-        $version = $client::getDdlConfigVersion();
+        $this->_clients[] = array(
+            'name' => $client::getDdlConfigName(),
+            'version' => $client::getDdlConfigVersion(),
+            'config' => $client::getDdlConfig(),
+        );
     }
 
     /**
@@ -62,11 +67,14 @@ class Installer
      */
     public static function getDdlInstallerMap()
     {
-        $data = self::_getLockStreamHandler()->read();
-        if (empty($data)) {
-            return array();
+        if (!isset(self::$_map)) {
+            $data = self::_getLockStreamHandler()->read();
+            if (empty($data)) {
+                self::$_map = array();
+            }
+            self::$_map = json_decode($data, true);
         }
-        return json_decode($data, true);
+        return self::$_map;
     }
 
     /**
@@ -78,7 +86,37 @@ class Installer
             $fullPath = APPLICATION_ROOT . DIRECTORY_SEPARATOR . self::$_installerLockSheetPath;
             self::$_lockStreamHandler = new StreamHandler();
             self::$_lockStreamHandler->setPath($fullPath);
+            if (!file_exists($fullPath)) {
+                // if file does not exist - create empty file
+                self::$_lockStreamHandler->write('');
+            }
         }
         return self::$_lockStreamHandler;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasClients()
+    {
+        return (bool) count($this->_clients);
+    }
+
+    /**
+     * @return void
+     */
+    public function processClients()
+    {
+        foreach ($this->_clients as $_client) {
+            $this->_processClient($_client);
+        }
+    }
+
+    protected function _processClient(array $client)
+    {
+        $_map = self::getDdlInstallerMap();
+        if (isset($_map[$client['name']])) {
+
+        }
     }
 }
