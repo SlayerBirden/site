@@ -185,7 +185,10 @@ class DbHandler implements \SessionHandlerInterface, InstallerApplicableInterfac
                     ),
                 ),
                 'constraints' => array(
-                    'primaryKey' => array('session_id'),
+                    'primary' => array(
+                        'type' => 'primaryKey',
+                        'def' => 'session_id',
+                    )
                 ),
             )
         );
