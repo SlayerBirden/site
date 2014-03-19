@@ -243,7 +243,7 @@ class Installer
      */
     protected function _examineSchema(array $a, array $b)
     {
-        if ($a == $b) {
+        if ($a === $b) {
             // if arrays are identical - do nothing
             return;
         }
@@ -266,10 +266,10 @@ class Installer
                 }
                 $_newColumns = $tableDefinition['columns'];
                 $_oldColumns = $a[$tableName]['columns'];
-                list($_dropColumns[], $_addColumns[], $_changeColumns[]) = $this->_intCompareColumns($_oldColumns, $_newColumns);
+                $this->_intCompareColumns($_oldColumns, $_newColumns, $_dropColumns, $_addColumns, $_changeColumns, $tableName);
                 $_oldConstraints = isset($a[$tableName]['constraints']) ? $a[$tableName]['constraints'] : array();
                 $_newConstraints = isset($tableDefinition['constraints']) ? $tableDefinition['constraints'] : array();
-                list($_dropConstraints[], $_addConstraints[]) = $this->_intCompareConstraints($_oldConstraints, $_newConstraints);
+                $this->_intCompareConstraints($_oldConstraints, $_newConstraints, $_dropConstraints, $_addConstraints, $tableName);
             }
         }
         foreach ($a as $tableName => $tableDefinition) {
@@ -288,7 +288,7 @@ class Installer
             self::_dropColumn($_definition[0], $_definition[1]);
         }
         foreach ($_addColumns as $_definition) {
-            self::_addColumn($_definition[0], $_definition[1], $_definition[2], $_definition[3]);
+            self::_addColumn($_definition[0], $_definition[1], $_definition[2]);
         }
         foreach ($_changeColumns as $_definition) {
             self::_changeColumn($_definition[0], $_definition[1], $_definition[2], $_definition[3]);
@@ -297,28 +297,59 @@ class Installer
             self::_dropConstraint($_definition[0], $_definition[1]);
         }
         foreach ($_addConstraints as $_definition) {
-            self::_addConstraint($_definition[0], $_definition[1], $_definition[2], $_definition[3]);
+            self::_addConstraint($_definition[0], $_definition[1], $_definition[2]);
         }
     }
 
     /**
      * @param array $a
      * @param array $b
+     * @param array $_dropColumns
+     * @param array $_addColumns
+     * @param array $_changeColumns
+     * @param string $tableName
      * @return array
      */
-    protected function _intCompareColumns(array $a, array $b)
+    protected function _intCompareColumns(array $a, array $b, &$_dropColumns, &$_addColumns, &$_changeColumns, $tableName)
     {
-
+        foreach ($b as $columnName => $columnDefinition) {
+            if (!array_key_exists($columnName, $a) && !isset($columnDefinition['old_name'])) {
+                $_addColumns[] = [$tableName, $columnName, $columnDefinition];
+            } elseif (isset($columnDefinition['old_name']) && is_string($columnDefinition['old_name'])) {
+                $_changeColumns[] = [$tableName, $columnDefinition['old_name'],  $columnName, $columnDefinition];
+            } elseif ($columnDefinition === $a[$columnName]) {
+                continue;
+            } else {
+                $_changeColumns[] = [$tableName, $columnName,  $columnName, $columnDefinition];
+            }
+        }
+        foreach ($a as $columnName => $columnDefinition) {
+            if (!array_key_exists($columnName, $b)) {
+                $_dropColumns[] = [$tableName, $columnName];
+            }
+        }
     }
 
     /**
      * @param array $a
      * @param array $b
+     * @param array $_dropConstraints
+     * @param array $_addConstraints
+     * @param string $tableName
      * @return array
      */
-    protected function _intCompareConstraints(array $a, array $b)
+    protected function _intCompareConstraints(array $a, array $b, &$_dropConstraints, &$_addConstraints, $tableName)
     {
-
+        foreach ($b as $constraintName => $constraintDefinition) {
+            if (!array_key_exists($constraintName, $a)) {
+                $_addConstraints[] = [$tableName, $constraintName, $constraintDefinition];
+            }
+        }
+        foreach ($a as $constraintName => $constraintDefinition) {
+            if (!array_key_exists($constraintName, $b)) {
+                $_dropConstraints[] = [$tableName, $constraintName];
+            }
+        }
     }
 
     /**
