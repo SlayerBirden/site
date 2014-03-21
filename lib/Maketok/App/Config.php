@@ -14,6 +14,12 @@ class Config
 {
     static protected $_config = array();
 
+    const ALL = 0b111111;
+    const PHP = 0b1;
+    const EVENTS = 0b10;
+    const SESSION = 0b100;
+    const DDL = 0b1000;
+
     /**
      * @param array $config1
      * @param array $config2
@@ -65,34 +71,38 @@ class Config
     /**
      * basic Service Manager
      */
-    static public function applyConfig()
+    static public function applyConfig($mode = self::ALL)
     {
-        // php
-        foreach (self::getConfig('php_config') as $key => $value) {
-            @ini_set($key, $value);
-        }
-        // events
-        foreach (self::getConfig('subject_config') as $subjectName => $subjectData) {
-            foreach ($subjectData as $data) {
-                list($subClass, $subMethod) = explode('::', $data['subscriber']);
-                $subcriber = self::classFactory($subClass);
-                $priority = (isset($data['priority']) ? $data['priority'] : null);
-                Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
+        if  ($mode & self::PHP) {
+            foreach (self::getConfig('php_config') as $key => $value) {
+                @ini_set($key, $value);
             }
         }
-        // session storage
-        switch (self::getConfig('session_storage')) {
-            case 'db':
-                Site::registry()->session_save_handler = new DbHandler();
-                break;
+        if  ($mode & self::EVENTS) {
+            foreach (self::getConfig('subject_config') as $subjectName => $subjectData) {
+                foreach ($subjectData as $data) {
+                    list($subClass, $subMethod) = explode('::', $data['subscriber']);
+                    $subcriber = self::classFactory($subClass);
+                    $priority = (isset($data['priority']) ? $data['priority'] : null);
+                    Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
+                }
+            }
         }
-        // ddl installer
-        $installer = new Installer();
-        foreach (self::getConfig('db_ddl') as $client) {
-            $installer->addClient($client);
+        if  ($mode & self::SESSION) {
+            switch (self::getConfig('session_storage')) {
+                case 'db':
+                    Site::registry()->session_save_handler = new DbHandler();
+                    break;
+            }
         }
-        if ($installer->hasClients()) {
-            $installer->processClients();
+        if  ($mode & self::DDL) {
+            $installer = new Installer();
+            foreach (self::getConfig('db_ddl') as $client) {
+                $installer->addClient($client);
+            }
+            if ($installer->hasClients()) {
+                $installer->processClients();
+            }
         }
     }
 

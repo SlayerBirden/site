@@ -5,5 +5,4 @@
  * @project store
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
-$loader = require dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'vendor' .  DIRECTORY_SEPARATOR . 'autoload.php';
-$loader->add('Maketok\\App\\Ddl\\', __DIR__);
+\Maketok\App\Site::run(true);

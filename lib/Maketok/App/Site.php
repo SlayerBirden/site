@@ -21,25 +21,42 @@ final class Site
         // we can't create an object of Site
     }
 
-    static public function run()
+    /**
+     * launch app process - can apply safeRun flag which minimizes prepare procedures
+     *
+     * @param bool $safeRun
+     */
+    static public function run($safeRun = false)
     {
         define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
         // register modules loader
         $loader = new Autoload();
         $loader->register();
 
-        self::_loadConfigs();
+        self::_loadConfigs($safeRun);
         self::_initEnvironment();
+        // we've done our job to init system
+        // if safeRun is up, we don't need dispatcher
+        if ($safeRun) {
+            return;
+        }
         self::getSubjectManager()->notify('dispatch', new Observer\State());
 
         // run routers
 
     }
 
-    static private function _loadConfigs()
+    /**
+     * @param bool $safeRun
+     */
+    static private function _loadConfigs($safeRun)
     {
         Config::loadConfig();
-        Config::applyConfig();
+        $mode = Config::ALL;
+        if ($safeRun) {
+            $mode = Config::PHP | Config::EVENTS;
+        }
+        Config::applyConfig($mode);
     }
 
     static private function _initEnvironment()
