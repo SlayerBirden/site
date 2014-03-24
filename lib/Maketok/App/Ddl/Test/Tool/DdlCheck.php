@@ -34,18 +34,19 @@ class DdlCheck
         $lLine = array_pop($data);
         $tableInfo = array();
         $fLine = str_replace('CREATE TABLE `', '', $fLine);
-        preg_match('/[0-9a-z_]+/', $fLine, $matches);
+        preg_match('/\S+/', $fLine, $matches);
         $tableInfo['name'] = $matches[0];
-        preg_match('/ENGINE=([A-Za-z]+)/', $lLine, $matches);
+        preg_match('/ENGINE=([a-zA-Z0-9]+)/', $lLine, $matches);
         $tableInfo['engine'] = $matches[1];
-        preg_match('/DEFAULT CHARSET=([0-9a-z]+)/', $lLine, $matches);
+        preg_match('/DEFAULT CHARSET=([a-z0-9]+)/', $lLine, $matches);
         $tableInfo['default_charset'] = $matches[1];
         foreach ($data as $row) {
             if ((strpos('PRIMARY', $row) !== false) ||
                 (strpos('UNIQUE', $row) !== false) ||
                 (strpos('CONSTRAINT', $row) !== false)) {
                 $tableInfo['constraints'][] = $this->_parseConstraint($row);
-            } elseif ((strpos('  KEY', $row) !== false)) {
+            } elseif ((strpos('  KEY', $row) !== false) ||
+                (strpos('  INDEX', $row) !== false)) {
                 $tableInfo['indexes'][] = $this->_parseIndex($row);
             } else {
                 $tableInfo['columns'][] = $this->_parseColumn($row);
@@ -60,7 +61,7 @@ class DdlCheck
     protected function _parseColumn($row)
     {
         $columnInfo = array();
-        preg_match('/`([a-z0-9_-]+)` ([a-z]+)\(([0-9]+)/) ([A-Z0-9a-z_-]*)/', $row, $matches);
+        preg_match('/`(\S+)` (\w+)\((\d+)\) (.*)/', $row, $matches);
         $columnInfo['name'] = $matches[0];
         $columnInfo['type'] = $matches[1];
         $columnInfo['length'] = $matches[2];
@@ -88,7 +89,16 @@ class DdlCheck
      */
     protected function _parseIndex($row)
     {
-
+        $indexInfo = array();
+        preg_match('/^(?:KEY|INDEX) `(\S+)` \((\S+)/', trim($row), $matches);
+        $indexInfo['name'] = $matches[1];
+        $definition = $matches[2];
+        $definition = explode(',', $definition);
+        array_walk($definition, function(&$row) {
+            $row = str_replace('`', '', $row);
+        });
+        $indexInfo['definition'] = $definition;
+        return $indexInfo;
     }
 
     /**
@@ -97,7 +107,30 @@ class DdlCheck
      */
     protected function _parseConstraint($row)
     {
-
+        $row = trim($row);
+        $constraintInfo = array();
+        if (preg_match('/^(?:PRIMARY KEY|UNIQUE KEY) \((\S+)/', $row, $matches)) {
+            if (strpos($row, 'PRIMARY') !== false) {
+                $constraintInfo['type'] = 'primary';
+            } else {
+                $constraintInfo['type'] = 'unique';
+            }
+            $definition = $matches[2];
+            $definition = explode(',', $definition);
+            array_walk($definition, function(&$row) {
+                $row = str_replace('`', '', $row);
+            });
+            $constraintInfo['definition'] = $definition;
+        } elseif (preg_match('/^CONSTRAINT `(\S+)` FOREIGN KEY \(`(\S+)`\) REFERENCES `(\S+) \(`(\S+)`\) ON DELETE (CASCADE|RESTRICT|SET NULL|NO ACTION) ON UPDATE (CASCADE|RESTRICT|SET NULL|NO ACTION)`/', $row, $matches)) {
+            $constraintInfo['type'] = 'foreign_key';
+            $constraintInfo['name'] = $matches[1];
+            $constraintInfo['column'] = $matches[2];
+            $constraintInfo['reference_table'] = $matches[3];
+            $constraintInfo['reference_column'] = $matches[4];
+            $constraintInfo['on_delete'] = $matches[5];
+            $constraintInfo['on_update'] = $matches[6];
+        }
+        return $constraintInfo;
     }
 
     /**
