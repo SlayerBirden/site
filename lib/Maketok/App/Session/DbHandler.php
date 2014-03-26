@@ -181,7 +181,7 @@ class DbHandler implements \SessionHandlerInterface, InstallerApplicableInterfac
                         'type' => 'text',
                     ),
                     'updated_at' => array(
-                        'type' => 'time',
+                        'type' => 'datetime',
                     ),
                 ),
                 'constraints' => array(

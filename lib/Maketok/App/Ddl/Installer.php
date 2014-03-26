@@ -7,38 +7,46 @@
  */
 namespace Maketok\App\Ddl;
 
+use Maketok\App\Site;
+use Maketok\Util\Sql\Ddl\Column\Blob;
+use Maketok\Util\Sql\Ddl\Column\Datetime;
 use Maketok\Util\StreamHandler;
 use Monolog\Logger;
-use SebastianBergmann\Exporter\Exception;
-use Zend\Db\Sql\Ddl\Column;
-use Zend\Db\Sql\Ddl\Constraint;
 use Zend\Db\Sql\Ddl\CreateTable;
 use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Ddl\DropTable;
+use Zend\Db\Sql\Ddl\SqlInterface;
+use Zend\Db\Sql\Sql;
 
 class Installer
 {
 
     const EXCEPTION_DDL_CODE = 300;
 
-    private static $_installerLockSheetPath = 'var/locks/ddl_installer.lock';
+    /**
+     * @var string
+     */
+    private static $_installerLockSheetName = 'ddl_installer.lock';
     private static $_lockStreamHandler;
     private $_clients = array();
+    /**
+     * @var \ArrayObject
+     */
     private static $_map;
     private $_loggerName = 'ddl_installer';
 
-    static $_availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey'];
+    static $_availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey', 'index'];
 
     /**
      * @param string $tableName
      * @param array $tableDefinition
-     * @throws Exception
+     * @throws InstallerException
      */
     private static function _addTable($tableName, array $tableDefinition)
     {
         $table = new CreateTable($tableName);
         if (!isset($tableDefinition['columns']) || !is_array($tableDefinition['columns'])) {
-            throw new Exception(sprintf('Can not create a table `%s` without columns definition.', $tableName),
+            throw new InstallerException(sprintf('Can not create a table `%s` without columns definition.', $tableName),
                 self::EXCEPTION_DDL_CODE);
         }
         $_columns = $tableDefinition['columns'];
@@ -49,6 +57,7 @@ class Installer
         foreach ($_constraints as $constraintName => $constraintDefinition) {
             self::_addConstraint($tableName, $constraintName, $constraintDefinition, $table);
         }
+        self::_commit($table);
     }
 
     /**
@@ -59,18 +68,16 @@ class Installer
      */
     private static function _addColumn($tableName, $columnName, array $columnDefinition, $table = null)
     {
+        $_commitFlag = false;
         if (is_null($table)) {
             $table = new AlterTable($tableName);
+            $_commitFlag = true;
         }
-        if (!isset($columnDefinition['type']) || is_int($columnName)) {
-            // can't create column without type or name
-            return;
-        }
-        /** @var Column\ColumnInterface $type */
-        $type = 'Column\\' . ucfirst($columnDefinition['type']);
-        $length = isset($columnDefinition['length']) ? $columnDefinition['length'] : null;
-        $column = new $type($columnName, $length);
+        $column = self::_getInitColumn($columnName, $columnDefinition);
         $table->addColumn($column);
+        if ($_commitFlag) {
+            self::_commit($table);
+        }
     }
 
     /**
@@ -78,22 +85,54 @@ class Installer
      * @param string $constraintName
      * @param array $constraintDefinition
      * @param null|CreateTable|AlterTable $table
-     * @throws Exception
+     * @throws InstallerException
      */
     private static function _addConstraint($tableName, $constraintName, array $constraintDefinition, $table = null)
     {
+        $_commitFlag = false;
         if (is_null($table)) {
             $table = new AlterTable($tableName);
+            $_commitFlag = true;
         }
         if (!isset($constraintDefinition['type']) || !in_array($constraintDefinition['type'], self::$_availableConstraintTypes)) {
             // can't create constraint or unavailable constraint type
-            throw new Exception(sprintf('Can not create constraint %s for table %s. Missing or unavailable type.', $constraintName, $tableName));
+            throw new InstallerException(sprintf('Can not create constraint %s for table %s. Missing or unavailable type.', $constraintName, $tableName));
         }
-        /** @var Constraint\ConstraintInterface $type */
-        $type = 'Constraint\\' . ucfirst($constraintDefinition['type']);
+        /** @var \Zend\Db\Sql\Ddl\Constraint\ConstraintInterface $type */
+        $type = '\\Zend\\Db\\Sql\\Ddl\\Constraint\\' . ucfirst($constraintDefinition['type']);
+        if ($constraintDefinition['type'] == 'index') {
+            /** @var \Maketok\Util\Sql\Ddl\Index\Index $type */
+            $type = '\\Maketok\\Util\\Sql\\Ddl\\Index\\Index';
+        }
+        if ($constraintDefinition['type'] == 'foreignKey') {
+            $column = $constraintDefinition['def'];
+            $refTable = $constraintDefinition['referenceTable'];
+            $refColumn = $constraintDefinition['referenceColumn'];
+            $onDelete = (isset($constraintDefinition['onDelete']) ? $constraintDefinition['onDelete'] : 'CASCADE');
+            $onUpdate = (isset($constraintDefinition['onUpdate']) ? $constraintDefinition['onUpdate'] : 'CASCADE');
+            $constraint = new $type($constraintName, $column, $refTable, $refColumn, $onDelete, $onUpdate);
+        } else {
+            $constraint = new $type($constraintDefinition['def'], $constraintName);
+        }
 
-        $constraint = new $type($constraintDefinition['def'], $constraintName);
         $table->addConstraint($constraint);
+        if ($_commitFlag) {
+            self::_commit($table);
+        }
+    }
+
+    /**
+     * @param CreateTable|AlterTable|DropTable|SqlInterface $ddl
+     */
+    private static function _commit(SqlInterface $ddl)
+    {
+        $adapter = Site::getAdapter();
+        $sql = new Sql($adapter);
+
+        $adapter->query(
+            $sql->getSqlStringForSqlObject($ddl),
+            $adapter::QUERY_MODE_EXECUTE
+        );
     }
 
     /**
@@ -101,7 +140,8 @@ class Installer
      */
     private static function _dropTable($tableName)
     {
-        new DropTable($tableName);
+        $table = new DropTable($tableName);
+        self::_commit($table);
     }
 
     /**
@@ -112,6 +152,7 @@ class Installer
     {
         $table = new AlterTable($tableName);
         $table->dropColumn($columnName);
+        self::_commit($table);
     }
 
     /**
@@ -122,6 +163,7 @@ class Installer
     {
         $table = new AlterTable($tableName);
         $table->dropConstraint($constraintName);
+        self::_commit($table);
     }
 
     /**
@@ -133,15 +175,57 @@ class Installer
     private static function _changeColumn($tableName, $oldName, $newName, array $newDefinition)
     {
         $table = new AlterTable($tableName);
-        if (!isset($newDefinition['type']) || is_int($newName)) {
-            // can't create column without type or name
-            return;
-        }
-        /** @var Column\ColumnInterface $type */
-        $type = 'Column\\' . ucfirst($newDefinition['type']);
-        $length = isset($newDefinition['length']) ? $newDefinition['length'] : null;
-        $column = new $type($newName, $length);
+        $column = self::_getInitColumn($newName, $newDefinition);
         $table->changeColumn($oldName, $column);
+        self::_commit($table);
+    }
+
+    /**
+     * @param string $name
+     * @param array $definition
+     * @return bool|\Zend\Db\Sql\Ddl\Column\ColumnInterface
+     */
+    private static function _getInitColumn($name, array $definition) {
+        if (!isset($definition['type']) || is_int($name)) {
+            // can't create column without type or name
+            return false;
+        }
+        /** @var \Zend\Db\Sql\Ddl\Column\ColumnInterface $type */
+        $type = '\\Zend\\Db\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
+        switch ($definition['type']) {
+            case 'char':
+            case 'varchar':
+                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
+                $default = isset($definition['default']) ? $definition['default'] : null;
+                $length = isset($definition['length']) ? $definition['length'] : null;
+                $column = new $type($name, $length, $nullable, $default);
+                break;
+            case 'bigInteger':
+            case 'integer':
+                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
+                $default = isset($definition['default']) ? $definition['default'] : null;
+                $column = new $type($name, $nullable, $default);
+                break;
+            case 'decimal':
+            case 'float':
+                $digits = isset($definition['digits']) ? $definition['digits'] : null;
+                $decimal = isset($definition['decimal']) ? $definition['decimal'] : null;
+                $column = new $type($name, $digits, $decimal);
+                break;
+            case 'blob':
+                /** @var Blob $type */
+                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
+                $column = new Blob($name, $nullable);
+                break;
+            case 'datetime':
+                /** @var Datetime $type */
+                $column = new Datetime($name);
+                break;
+            default:
+                $column = new $type($name);
+                break;
+        }
+        return $column;
     }
 
     /**
@@ -157,16 +241,19 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return \ArrayObject
      */
     public static function getDdlInstallerMap()
     {
         if (!isset(self::$_map)) {
             $data = self::_getLockStreamHandler()->read();
             if (empty($data)) {
-                self::$_map = array();
+                self::$_map = new \ArrayObject();
+            } else {
+                $_data = json_decode($data, true);
+                self::$_map = new \ArrayObject($_data);
             }
-            self::$_map = json_decode($data, true);
+
         }
         return self::$_map;
     }
@@ -177,7 +264,7 @@ class Installer
     private static function _getLockStreamHandler()
     {
         if (is_null(self::$_lockStreamHandler)) {
-            $fullPath = APPLICATION_ROOT . DIRECTORY_SEPARATOR . self::$_installerLockSheetPath;
+            $fullPath = APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'locks' . DIRECTORY_SEPARATOR . self::$_installerLockSheetName;
             self::$_lockStreamHandler = new StreamHandler();
             self::$_lockStreamHandler->setPath($fullPath);
             if (!file_exists($fullPath)) {
@@ -198,11 +285,16 @@ class Installer
 
     /**
      * @return void
+     * @throws InstallerException
      */
     public function processClients()
     {
         foreach ($this->_clients as $_client) {
             $this->_processClient($_client);
+        }
+        $result = self::_getLockStreamHandler()->writeWithLock(json_encode(self::$_map->getArrayCopy()));
+        if ($result === false || $result === 0) {
+            throw new InstallerException('Error writing lock data to installer map.');
         }
     }
 
@@ -216,7 +308,7 @@ class Installer
             $lastKey = key($clientConfig);
             if ($this->_natRecursiveCompare($client['version'], $lastKey) === 1) {
                 // proceed to compare schemas
-
+                $this->_examineSchema($clientConfig, $client['config']);
             } elseif ($this->_natRecursiveCompare($client['version'], $lastKey) === -1) {
                 // something is wrong with versioning
                 // send notification
@@ -231,7 +323,10 @@ class Installer
                 );
             }
             // else config versions are identical - no need to do anything
+        } else {
+            $this->_examineSchema(array(), $client['config']);
         }
+        $_map[$client['name']][$client['version']] = $client['config'];
     }
 
     /**
@@ -239,7 +334,7 @@ class Installer
      *
      * @param array $a oldConfig
      * @param array $b newConfig
-     * @throws Exception
+     * @throws InstallerException
      */
     protected function _examineSchema(array $a, array $b)
     {
@@ -261,7 +356,7 @@ class Installer
                 $_addTables[] = [$tableName, $tableDefinition];
             } else {
                 if (!isset($tableDefinition['columns']) || !is_array($tableDefinition['columns'])) {
-                    throw new Exception(sprintf('Can not have a table `%s` without columns definition.', $tableName),
+                    throw new InstallerException(sprintf('Can not have a table `%s` without columns definition.', $tableName),
                         self::EXCEPTION_DDL_CODE);
                 }
                 $_newColumns = $tableDefinition['columns'];

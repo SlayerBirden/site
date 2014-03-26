@@ -44,9 +44,9 @@ class DdlCheck
         preg_match('/DEFAULT CHARSET=([a-z0-9]+)/', $lLine, $matches);
         $tableInfo['default_charset'] = $matches[1];
         foreach ($data as $row) {
-            if ((strpos($row, 'PRIMARY') !== false) ||
-                (strpos($row, 'UNIQUE') !== false) ||
-                (strpos($row, 'CONSTRAINT') !== false)) {
+            if ((strpos($row, ' PRIMARY ') !== false) ||
+                (strpos($row, ' UNIQUE ') !== false) ||
+                (strpos($row, ' CONSTRAINT ') !== false)) {
                 $tableInfo['constraints'][] = $this->_parseConstraint($row);
             } elseif ((strpos($row, '  KEY') !== false) ||
                 (strpos($row, '  INDEX') !== false)) {
@@ -65,24 +65,43 @@ class DdlCheck
     protected function _parseColumn($row)
     {
         $columnInfo = array();
-        preg_match('/`(\S+)` (\w+)\((\d+)\) (.*)/', $row, $matches);
-        $columnInfo['name'] = $matches[1];
-        $columnInfo['type'] = $matches[2];
-        $columnInfo['length'] = $matches[3];
-        $other = $matches[4];
-        if (strpos($other, 'NOT NULL') !== false) {
-            $columnInfo['nullable'] = false;
-        } else {
-            $columnInfo['nullable'] = true;
-        }
-        if (strpos($other, 'AUTO_INCREMENT') !== false) {
-            $columnInfo['auto_increment'] = true;
-        }
-        if (strpos($other, 'unsigned') !== false) {
-            $columnInfo['unsigned'] = true;
-        }
-        if (($pos = strpos($other, 'DEFAULT')) !== false) {
-            $columnInfo['default'] = substr($other, $pos + 9, -2);
+        if (preg_match('/`(\S+)` (\w+)\((\d+)\) (.*)/', $row, $matches)) {
+            $columnInfo['name'] = $matches[1];
+            $columnInfo['type'] = $matches[2];
+            $columnInfo['length'] = $matches[3];
+            $other = $matches[4];
+            if (strpos($other, 'NOT NULL') !== false) {
+                $columnInfo['nullable'] = false;
+            } else {
+                $columnInfo['nullable'] = true;
+            }
+            if (strpos($other, 'AUTO_INCREMENT') !== false) {
+                $columnInfo['auto_increment'] = true;
+            }
+            if (strpos($other, 'unsigned') !== false) {
+                $columnInfo['unsigned'] = true;
+            }
+            if (($pos = strpos($other, 'DEFAULT')) !== false) {
+                $columnInfo['default'] = substr($other, $pos + 9, -2);
+            }
+        } elseif (preg_match('/`(\S+)` (\w+) (.*)/', $row, $matches)) {
+            $columnInfo['name'] = $matches[1];
+            $columnInfo['type'] = $matches[2];
+            $other = $matches[3];
+            if (strpos($other, 'NOT NULL') !== false) {
+                $columnInfo['nullable'] = false;
+            } else {
+                $columnInfo['nullable'] = true;
+            }
+            if (strpos($other, 'AUTO_INCREMENT') !== false) {
+                $columnInfo['auto_increment'] = true;
+            }
+            if (strpos($other, 'unsigned') !== false) {
+                $columnInfo['unsigned'] = true;
+            }
+            if (($pos = strpos($other, 'DEFAULT')) !== false) {
+                $columnInfo['default'] = substr($other, $pos + 9, -2);
+            }
         }
         return $columnInfo;
     }

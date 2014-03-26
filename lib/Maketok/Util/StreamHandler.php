@@ -18,17 +18,18 @@ class StreamHandler implements StreamHandlerInterface
     /**
      * @param null|string $path
      * @param string $data
-     * @return bool
+     * @return bool|null|int
      */
     public function writeWithLock($data, $path = null)
     {
         $this->_initHandler($path, 'c+');
-        $result = false;
+        $result = null;
         if ($this->lock($path)) {
-            ftruncate($this->_handle, 0);
+            $truncated = ftruncate($this->_handle, 0);
+            // do not write at the middle of no where
+            rewind($this->_handle);
             $result = fwrite($this->_handle, $data);
-            $result = $result !== false;
-            $result = $result && $this->unLock($path);
+            $this->unLock($path);
         }
         return $result;
     }
@@ -41,7 +42,9 @@ class StreamHandler implements StreamHandlerInterface
     {
         $this->_initHandler($path, 'w');
         // truncate all file in case it was opened with c+
-        ftruncate($this->_handle, 0);
+        $truncated = ftruncate($this->_handle, 0);
+        // do not write at the middle of no where
+        rewind($this->_handle);
         $result = fwrite($this->_handle, $data);
         // rewind pointer if we need to read later
         rewind($this->_handle);
@@ -78,12 +81,15 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function read($length = null, $path = null)
     {
-        $this->_initHandler($path, 'r');
+        $this->_initHandler($path, 'r+');
         if (is_null($length)) {
             if (is_null($path)) {
                 $path = $this->_path;
             }
             $length = filesize($path);
+            if ($length <= 0) {
+                $length = 1;
+            }
         }
         return fread($this->_handle, $length);
     }
