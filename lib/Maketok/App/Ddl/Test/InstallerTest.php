@@ -10,6 +10,9 @@ namespace Maketok\App\Ddl\Test;
 use Maketok\App\Ddl\Test\Tool\DdlCheck;
 use Maketok\App\Ddl\Test\Tool\TableIterationOne;
 use Maketok\App\Ddl\Installer;
+use Maketok\App\Site;
+use Maketok\Util\StreamHandler;
+use Zend\Db\Adapter\Adapter;
 
 class InstallerTest extends \PHPUnit_Framework_TestCase
 {
@@ -155,6 +158,22 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('id', $fk['reference_column']);
         $this->assertEquals('CASCADE', $fk['on_delete']);
         $this->assertEquals('CASCADE', $fk['on_update']);
+        // TODO: add change config usecase
+    }
 
+    public static function tearDownAfterClass()
+    {
+        // clean up
+        $fullPath = APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'locks' . DIRECTORY_SEPARATOR . 'ddl_installer.lock';
+        $sh = new StreamHandler();
+        $sh->setPath($fullPath);
+        $sh->writeWithLock('');
+
+        $sql = <<<'SQL'
+DROP table `table_two`;
+DROP table `table_one`;
+SQL;
+        $adapter = Site::getAdapter();
+        $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
     }
 }
