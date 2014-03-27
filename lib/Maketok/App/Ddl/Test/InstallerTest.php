@@ -22,6 +22,8 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
      */
     private static $_installer;
 
+    private static $_installerLockName = 'test_ddl_installer.lock';
+
     /**
      * @var DdlCheck
      */
@@ -35,6 +37,7 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
     public static function setUpBeforeClass()
     {
         self::$_installer = new Installer();
+        self::$_installer->setInstallerLockName(self::$_installerLockName);
         self::$_natRecursiveCompareReflectionMethod = new \ReflectionMethod(get_class(self::$_installer), '_natRecursiveCompare');
         self::$_natRecursiveCompareReflectionMethod->setAccessible(true);
 
@@ -177,6 +180,14 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(!isset($result['indexes']));
         $this->assertCount(2, $result['constraints']);
 
+        $result = self::$_checker->checkColumn('table_one', 'id');
+        $this->assertNotEmpty($result);
+        $this->assertEquals('id', $result['name']);
+        $this->assertEquals('int', $result['type']);
+        $this->assertFalse($result['nullable']);
+        $this->assertTrue($result['unsigned']);
+        $this->assertTrue($result['auto_increment']);
+
         // ==================== table 2
 
         $result = self::$_checker->checkTable('table_two');
@@ -184,21 +195,27 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(5, $result['columns']);
         $this->assertCount(2, $result['indexes']);
-        $this->assertCount(2, $result['constraints']);
+        $this->assertCount(1, $result['constraints']);
+
+        $result = self::$_checker->checkColumn('table_two', 'flag');
+        $this->assertNotEmpty($result);
+        $this->assertFalse(isset($result['unsigned']));
+
+
 
     }
 
     public static function tearDownAfterClass()
     {
         // clean up
-        $fullPath = APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'locks' . DIRECTORY_SEPARATOR . 'ddl_installer.lock';
+        $fullPath = APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'locks' . DIRECTORY_SEPARATOR . self::$_installerLockName;
         $sh = new StreamHandler();
         $sh->setPath($fullPath);
         $sh->writeWithLock('');
 
         $sql = <<<'SQL'
-DROP table `table_two`;
-DROP table `table_one`;
+DROP TABLE IF EXISTS `table_two`;
+DROP TABLE IF EXISTS `table_one`;
 SQL;
         $adapter = Site::getAdapter();
         $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);

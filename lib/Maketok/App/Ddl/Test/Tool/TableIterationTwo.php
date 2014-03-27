@@ -23,6 +23,9 @@ class TableIterationTwo implements InstallerApplicableInterface
                     'id' => array(
                         'type' => 'integer',
                         'nullable' => false,
+                        'increment' => true,
+                        'unsigned' => true,
+                        'length' => 10,
                     ),
                     'title' => array(
                         'type' => 'varchar',
@@ -64,6 +67,8 @@ class TableIterationTwo implements InstallerApplicableInterface
                     'id' => array(
                         'type' => 'integer',
                         'nullable' => false,
+                        'increment' => true,
+                        'unsigned' => true,
                     ),
                     'title' => array(
                         'type' => 'varchar',
@@ -78,18 +83,13 @@ class TableIterationTwo implements InstallerApplicableInterface
                     ),
                     'flag' => array(
                         'type' => 'integer',
+                        'unsigned' => false,
                     ),
                 ),
                 'constraints' => array(
                     'primary' => array(
                         'type' => 'primaryKey',
                         'def' => 'id',
-                    ),
-                    'FK_KEY_UNIQUE_CODE' => array(
-                        'type' => 'foreignKey',
-                        'def' => 'parent_id',
-                        'referenceTable' => 'table_one',
-                        'referenceColumn' => 'id',
                     ),
                     'KEY_FLAG' => array(
                         'type' => 'index',

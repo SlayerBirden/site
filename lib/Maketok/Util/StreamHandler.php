@@ -25,7 +25,7 @@ class StreamHandler implements StreamHandlerInterface
         $this->_initHandler($path, 'c+');
         $result = null;
         if ($this->lock($path)) {
-            $truncated = ftruncate($this->_handle, 0);
+            ftruncate($this->_handle, 0);
             // do not write at the middle of no where
             rewind($this->_handle);
             $result = fwrite($this->_handle, $data);
@@ -42,7 +42,7 @@ class StreamHandler implements StreamHandlerInterface
     {
         $this->_initHandler($path, 'w');
         // truncate all file in case it was opened with c+
-        $truncated = ftruncate($this->_handle, 0);
+        ftruncate($this->_handle, 0);
         // do not write at the middle of no where
         rewind($this->_handle);
         $result = fwrite($this->_handle, $data);

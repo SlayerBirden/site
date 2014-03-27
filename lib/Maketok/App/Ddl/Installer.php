@@ -10,6 +10,8 @@ namespace Maketok\App\Ddl;
 use Maketok\App\Site;
 use Maketok\Util\Sql\Ddl\Column\Blob;
 use Maketok\Util\Sql\Ddl\Column\Datetime;
+use Maketok\Util\Sql\Ddl\Column;
+use Maketok\Util\Sql\Ddl\Column\Float;
 use Maketok\Util\StreamHandler;
 use Monolog\Logger;
 use Zend\Db\Sql\Ddl\CreateTable;
@@ -123,14 +125,17 @@ class Installer
 
     /**
      * @param CreateTable|AlterTable|DropTable|SqlInterface $ddl
+     * @param string $directQuery
      */
-    private static function _commit(SqlInterface $ddl)
+    private static function _commit(SqlInterface $ddl, $directQuery = null)
     {
         $adapter = Site::getAdapter();
         $sql = new Sql($adapter);
 
+        $query = $directQuery ?: $sql->getSqlStringForSqlObject($ddl);
+
         $adapter->query(
-            $sql->getSqlStringForSqlObject($ddl),
+            $query,
             $adapter::QUERY_MODE_EXECUTE
         );
     }
@@ -163,7 +168,13 @@ class Installer
     {
         $table = new AlterTable($tableName);
         $table->dropConstraint($constraintName);
-        self::_commit($table);
+        // big thanks to MySQL for this hack!!
+        $adapter = Site::getAdapter();
+        $sql = new Sql($adapter);
+
+        $query = $sql->getSqlStringForSqlObject($table);
+        $query = str_replace('CONSTRAINT', 'FOREIGN KEY', $query);
+        self::_commit($table, $query);
     }
 
     /**
@@ -202,15 +213,24 @@ class Installer
                 break;
             case 'bigInteger':
             case 'integer':
+                /** @var Column\BigInteger|Column\Integer $type */
+                $type = '\\Maketok\\Util\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
                 $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
                 $default = isset($definition['default']) ? $definition['default'] : null;
-                $column = new $type($name, $nullable, $default);
+                $length = isset($definition['length']) ? $definition['length'] : null;
+                $unsigned = isset($definition['unsigned']) ? $definition['unsigned'] : null;
+                $increment = isset($definition['increment']) ? $definition['increment'] : null;
+                $column = new $type($name, $nullable, $default, array(
+                    'length' => $length,
+                    'unsigned' => $unsigned,
+                    'increment' => $increment,
+                ));
                 break;
             case 'decimal':
             case 'float':
                 $digits = isset($definition['digits']) ? $definition['digits'] : null;
                 $decimal = isset($definition['decimal']) ? $definition['decimal'] : null;
-                $column = new $type($name, $digits, $decimal);
+                $column = new Float($name, $digits, $decimal);
                 break;
             case 'blob':
                 /** @var Blob $type */
@@ -373,26 +393,31 @@ class Installer
             }
         }
         // action
+        // order is important
         foreach ($_dropTables as $_definition) {
             self::_dropTable($_definition[0]);
         }
         foreach ($_addTables as $_definition) {
             self::_addTable($_definition[0], $_definition[1]);
         }
-        foreach ($_dropColumns as $_definition) {
-            self::_dropColumn($_definition[0], $_definition[1]);
+        // drop possible fk
+        foreach ($_dropConstraints as $_definition) {
+            self::_dropConstraint($_definition[0], $_definition[1]);
         }
+        // add and change columns for indexes to process
         foreach ($_addColumns as $_definition) {
             self::_addColumn($_definition[0], $_definition[1], $_definition[2]);
         }
         foreach ($_changeColumns as $_definition) {
             self::_changeColumn($_definition[0], $_definition[1], $_definition[2], $_definition[3]);
         }
-        foreach ($_dropConstraints as $_definition) {
-            self::_dropConstraint($_definition[0], $_definition[1]);
-        }
+        // add constraints and indexes
         foreach ($_addConstraints as $_definition) {
             self::_addConstraint($_definition[0], $_definition[1], $_definition[2]);
+        }
+        // clear columns
+        foreach ($_dropColumns as $_definition) {
+            self::_dropColumn($_definition[0], $_definition[1]);
         }
     }
 
@@ -481,5 +506,15 @@ class Installer
         }
         // versions are identical
         return 0;
+    }
+
+    /**
+     * @param string $name lock file name
+     * @return $this
+     */
+    public function setInstallerLockName($name)
+    {
+        self::$_installerLockSheetName = $name;
+        return $this;
     }
 }
