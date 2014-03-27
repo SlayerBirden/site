@@ -9,6 +9,7 @@ namespace Maketok\App\Ddl\Test;
 
 use Maketok\App\Ddl\Test\Tool\DdlCheck;
 use Maketok\App\Ddl\Test\Tool\TableIterationOne;
+use Maketok\App\Ddl\Test\Tool\TableIterationTwo;
 use Maketok\App\Ddl\Installer;
 use Maketok\App\Site;
 use Maketok\Util\StreamHandler;
@@ -158,7 +159,33 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('id', $fk['reference_column']);
         $this->assertEquals('CASCADE', $fk['on_delete']);
         $this->assertEquals('CASCADE', $fk['on_update']);
-        // TODO: add change config usecase
+    }
+
+    /**
+     * @test
+     * @depends testProcessClients
+     */
+    public function testProcessClientsUpdate()
+    {
+        self::$_installer->addClient(new TableIterationTwo());
+        self::$_installer->processClients();
+
+        $result = self::$_checker->checkTable('table_one');
+        $this->assertNotEmpty($result);
+
+        $this->assertCount(6, $result['columns']);
+        $this->assertTrue(!isset($result['indexes']));
+        $this->assertCount(2, $result['constraints']);
+
+        // ==================== table 2
+
+        $result = self::$_checker->checkTable('table_two');
+        $this->assertNotEmpty($result);
+
+        $this->assertCount(5, $result['columns']);
+        $this->assertCount(2, $result['indexes']);
+        $this->assertCount(2, $result['constraints']);
+
     }
 
     public static function tearDownAfterClass()

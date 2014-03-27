@@ -308,7 +308,7 @@ class Installer
             $lastKey = key($clientConfig);
             if ($this->_natRecursiveCompare($client['version'], $lastKey) === 1) {
                 // proceed to compare schemas
-                $this->_examineSchema($clientConfig, $client['config']);
+                $this->_examineSchema($clientConfig[$lastKey], $client['config']);
             } elseif ($this->_natRecursiveCompare($client['version'], $lastKey) === -1) {
                 // something is wrong with versioning
                 // send notification
