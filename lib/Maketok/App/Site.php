@@ -33,10 +33,11 @@ final class Site
         $loader = new Autoload();
         $loader->register();
 
-        self::_loadConfigs($safeRun);
+        self::_loadConfigs();
         self::_initEnvironment();
         // we've done our job to init system
         // if safeRun is up, we don't need dispatcher
+        self::_applyConfigs($safeRun);
         if ($safeRun) {
             return;
         }
@@ -47,11 +48,19 @@ final class Site
     }
 
     /**
-     * @param bool $safeRun
+     * load configs
      */
-    static private function _loadConfigs($safeRun)
+    static private function _loadConfigs()
     {
         Config::loadConfig();
+    }
+
+    /**
+     * apply
+     * @param bool $safeRun
+     */
+    static private function _applyConfigs($safeRun)
+    {
         $mode = Config::ALL;
         if ($safeRun) {
             $mode = Config::PHP | Config::EVENTS;
