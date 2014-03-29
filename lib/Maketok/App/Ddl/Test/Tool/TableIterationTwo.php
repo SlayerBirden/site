@@ -23,7 +23,7 @@ class TableIterationTwo implements InstallerApplicableInterface
                     'id' => array(
                         'type' => 'integer',
                         'nullable' => false,
-                        'increment' => true,
+                        'auto_increment' => true,
                         'unsigned' => true,
                         'length' => 10,
                     ),
@@ -67,7 +67,7 @@ class TableIterationTwo implements InstallerApplicableInterface
                     'id' => array(
                         'type' => 'integer',
                         'nullable' => false,
-                        'increment' => true,
+                        'auto_increment' => true,
                         'unsigned' => true,
                     ),
                     'title' => array(

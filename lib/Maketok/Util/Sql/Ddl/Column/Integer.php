@@ -51,12 +51,6 @@ class Integer extends Column\Integer
             $params[] = $this->default;
             $types[]  = self::TYPE_VALUE;
         }
-        // auto_increment
-        if (isset($options['increment']) && $options['increment']) {
-            $spec    .= ' %s';
-            $params[] = 'AUTO_INCREMENT';
-            $types[]  = self::TYPE_LITERAL;
-        }
 
         return array(array(
             $spec,

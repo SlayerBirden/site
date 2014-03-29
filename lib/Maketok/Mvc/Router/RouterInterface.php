@@ -7,7 +7,7 @@
  */
 namespace Maketok\Mvc\Router;
 
-interface BaseInterface
+interface RouterInterface
 {
     public function match();
 

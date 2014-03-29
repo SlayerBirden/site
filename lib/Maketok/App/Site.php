@@ -10,6 +10,7 @@ namespace Maketok\App;
 use Maketok\Loader\Autoload;
 use Maketok\Observer;
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Platform\Platform;
 use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 
 final class Site

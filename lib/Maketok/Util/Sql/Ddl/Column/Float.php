@@ -14,17 +14,38 @@ class Float extends Column\Float
 {
 
     /**
+     * @param null|string $name
+     * @param int $digits
+     * @param int $decimal
+     * @param array $options
+     */
+    public function __construct($name, $digits, $decimal, array $options)
+    {
+        $this->name    = $name;
+        $this->digits  = $digits;
+        $this->decimal = $decimal;
+        $this->setOptions($options);
+    }
+
+    /**
      * @return array
      */
     public function getExpressionData()
     {
         $spec   = $this->specification;
         $params = array();
+        $options = $this->getOptions();
 
         $types      = array(self::TYPE_IDENTIFIER, self::TYPE_LITERAL);
         $params[]   = $this->name;
         $params[]   = $this->digits;
         $params[1] .= ', ' . $this->decimal;
+
+        if (isset($options['unsigned']) && $options['unsigned']) {
+            $spec    .= ' %s';
+            $params[] = 'UNSIGNED';
+            $types[]  = self::TYPE_LITERAL;
+        }
 
         $types[]  = self::TYPE_LITERAL;
         $params[] = (!$this->isNullable) ? 'NOT NULL' : '';
@@ -32,17 +53,11 @@ class Float extends Column\Float
         $types[]  = ($this->default !== null) ? self::TYPE_VALUE : self::TYPE_LITERAL;
         $params[] = ($this->default !== null) ? $this->default : '';
 
-        $options = $this->getOptions();
-        if (isset($options['increment']) && $options['increment']) {
-            $spec    .= ' %s';
-            $params[] = 'AUTO INCREMENT';
-            $types[]  = self::TYPE_LITERAL;
-        }
-
         return array(array(
             $spec,
             $params,
             $types,
         ));
     }
+
 }

@@ -12,12 +12,14 @@ use Maketok\Util\Sql\Ddl\Column\Blob;
 use Maketok\Util\Sql\Ddl\Column\Datetime;
 use Maketok\Util\Sql\Ddl\Column;
 use Maketok\Util\Sql\Ddl\Column\Float;
+use Maketok\Util\Sql\Platform\Platform;
 use Maketok\Util\StreamHandler;
 use Monolog\Logger;
 use Zend\Db\Sql\Ddl\CreateTable;
 use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Ddl\DropTable;
 use Zend\Db\Sql\Ddl\SqlInterface;
+use Zend\Db\Sql\Platform\AbstractPlatform;
 use Zend\Db\Sql\Sql;
 
 class Installer
@@ -31,6 +33,16 @@ class Installer
     private static $_installerLockSheetName = 'ddl_installer.lock';
     private static $_lockStreamHandler;
     private $_clients = array();
+
+    /**
+     * @var AbstractPlatform
+     */
+    private static $_platform;
+
+    /**
+     * @var Sql
+     */
+    private static $_sql;
     /**
      * @var \ArrayObject
      */
@@ -130,14 +142,34 @@ class Installer
     private static function _commit(SqlInterface $ddl, $directQuery = null)
     {
         $adapter = Site::getAdapter();
-        $sql = new Sql($adapter);
-
-        $query = $directQuery ?: $sql->getSqlStringForSqlObject($ddl);
+        $query = $directQuery ?: self::_getQuery($ddl);
 
         $adapter->query(
             $query,
             $adapter::QUERY_MODE_EXECUTE
         );
+    }
+
+    /**
+     * @return AbstractPlatform
+     */
+    private static function _getPlatform()
+    {
+        if (!isset(self::$_platform)) {
+            self::$_platform = new Platform(Site::getAdapter());
+        }
+        return self::$_platform;
+    }
+
+    /**
+     * @return Sql
+     */
+    private static function _getSql()
+    {
+        if (!isset(self::$_sql)) {
+            self::$_sql = new Sql(Site::getAdapter(), null, self::_getPlatform());
+        }
+        return self::$_sql;
     }
 
     /**
@@ -169,12 +201,18 @@ class Installer
         $table = new AlterTable($tableName);
         $table->dropConstraint($constraintName);
         // big thanks to MySQL for this hack!!
-        $adapter = Site::getAdapter();
-        $sql = new Sql($adapter);
-
-        $query = $sql->getSqlStringForSqlObject($table);
+        $query = self::_getQuery($table);
         $query = str_replace('CONSTRAINT', 'FOREIGN KEY', $query);
         self::_commit($table, $query);
+    }
+
+    /**
+     * @param SqlInterface $table
+     * @return mixed
+     */
+    private static function _getQuery(SqlInterface $table)
+    {
+        return self::_getSql()->getSqlStringForSqlObject($table);
     }
 
     /**
@@ -217,20 +255,27 @@ class Installer
                 $type = '\\Maketok\\Util\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
                 $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
                 $default = isset($definition['default']) ? $definition['default'] : null;
-                $length = isset($definition['length']) ? $definition['length'] : null;
-                $unsigned = isset($definition['unsigned']) ? $definition['unsigned'] : null;
-                $increment = isset($definition['increment']) ? $definition['increment'] : null;
-                $column = new $type($name, $nullable, $default, array(
-                    'length' => $length,
-                    'unsigned' => $unsigned,
-                    'increment' => $increment,
-                ));
+                $options = array();
+                if (isset($definition['length'])) {
+                    $options['length'] = $definition['length'];
+                }
+                if (isset($definition['unsigned'])) {
+                    $options['unsigned'] = $definition['unsigned'];
+                }
+                if (isset($definition['auto_increment'])) {
+                    $options['auto_increment'] = $definition['auto_increment'];
+                }
+                $column = new $type($name, $nullable, $default, $options);
                 break;
             case 'decimal':
             case 'float':
                 $digits = isset($definition['digits']) ? $definition['digits'] : null;
                 $decimal = isset($definition['decimal']) ? $definition['decimal'] : null;
-                $column = new Float($name, $digits, $decimal);
+                $options = array();
+                if (isset($definition['unsigned'])) {
+                    $options['unsigned'] = $definition['unsigned'];
+                }
+                $column = new Float($name, $digits, $decimal, $options);
                 break;
             case 'blob':
                 /** @var Blob $type */
@@ -323,7 +368,10 @@ class Installer
         $_map = self::getDdlInstallerMap();
         if (isset($_map[$client['name']]) && is_array($_map[$client['name']])) {
             $clientConfig = $_map[$client['name']];
-            //get the latest version
+            // get the latest version
+            // we need to account for the broken config order
+            // get the max one
+            uasort($clientConfig, array($this, '_natRecursiveCompare'));
             end($clientConfig);
             $lastKey = key($clientConfig);
             if ($this->_natRecursiveCompare($client['version'], $lastKey) === 1) {
