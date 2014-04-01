@@ -10,101 +10,68 @@ namespace Maketok\Util;
 class DirectoryHandler
 {
 
-    protected $_path;
-    protected $_handle;
-
     const PERMISSIONS = 0755;
 
 
     /**
-     * @param null $path
-     * @throws \Exception
-     */
-    protected function _initHandle($path = null)
-    {
-        if (is_resource($this->_handle)) {
-            return;
-        }
-        if (is_null($path)) {
-            $path = $this->_path;
-        }
-        if (is_null($path)) {
-            throw new \Exception('The path to write is not specified.');
-        }
-        $this->_handle = opendir($path);
-    }
-
-    /**
-     * @param null|string $path
+     * @param string $path
      * @return bool
      */
-    public function delete($path = null)
+    public function rm($path)
     {
         $res = false;
         if (is_dir($path)) {
+            $files = $this->ls($path, false);
+            foreach ($files as $file) {
+                if ($file->isDir()){
+                    rmdir($file->getRealPath());
+                } else {
+                    unlink($file->getRealPath());
+                }
+            }
             $res = rmdir($path);
         }
         return $res;
     }
 
     /**
-     * @param null|string $path
+     * @param string $path
      * @param int $permissions
      * @param bool $recursive
      * @return bool
+     * @throws \Exception
      */
-    public function make($path = null, $permissions = self::PERMISSIONS, $recursive = true)
+    public function mkdir($path, $permissions = self::PERMISSIONS, $recursive = true)
     {
-        $res = false;
-        if (is_dir($path)) {
-            $res = mkdir($path, $permissions, $recursive);
-        }
+        $res = mkdir($path, $permissions, $recursive);
         return $res;
     }
 
-    /**
-     * destroy handler
-     * @param null|string $path
-     * @return mixed
-     */
-    public function setPath($path)
-    {
-        $this->_path = $path;
-        $this->_handle = null;
-    }
-
-    public function __destruct()
-    {
-        $this->close();
-    }
 
     /**
      * @param null|string $path
+     * @param bool $namesOnly
      * @return array
      * @throws \Exception
      */
-    public function ls($path = null)
+    public function ls($path, $namesOnly = true)
     {
-        if (is_string($path)) {
-            $this->_initHandle($path);
-        } elseif (!is_resource($this->_handle)) {
-            throw new \Exception('Empty handle');
+        if (!is_dir($path)) {
+            throw new \Exception('The path does not exist.');
         }
-        $dirs = array();
-        while (false !== ($entry = readdir($this->_handle))) {
-            $dirs[] = $entry;
+        $it = new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new \RecursiveIteratorIterator($it,
+            \RecursiveIteratorIterator::CHILD_FIRST);
+        $result = [];
+        foreach($files as $file) {
+            /** @var \SplFileInfo $file */
+            if ($namesOnly) {
+                $result[] = $file->getFilename();
+            } else {
+                $result[] = $file;
+            }
         }
-        return $dirs;
+        return $result;
     }
 
-    /**
-     * @return void
-     */
-    public function close()
-    {
-        if (is_resource($this->_handle)) {
-            closedir($this->_handle);
-            $this->_handle = null;
-        }
-    }
 }
