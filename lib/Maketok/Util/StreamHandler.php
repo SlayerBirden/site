@@ -22,7 +22,7 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function writeWithLock($data, $path = null)
     {
-        $this->_initHandler($path, 'c+');
+        $this->_initHandle($path, 'c+');
         $result = null;
         if ($this->lock($path)) {
             ftruncate($this->_handle, 0);
@@ -40,7 +40,7 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function write($data, $path = null)
     {
-        $this->_initHandler($path, 'w');
+        $this->_initHandle($path, 'w');
         // truncate all file in case it was opened with c+
         ftruncate($this->_handle, 0);
         // do not write at the middle of no where
@@ -56,7 +56,7 @@ class StreamHandler implements StreamHandlerInterface
      * @param string $mode
      * @throws \Exception
      */
-    protected function _initHandler($path = null, $mode = 'w')
+    protected function _initHandle($path = null, $mode = 'w')
     {
         if (is_resource($this->_handle)) {
             return;
@@ -81,7 +81,7 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function read($length = null, $path = null)
     {
-        $this->_initHandler($path, 'r+');
+        $this->_initHandle($path, 'r+');
         if (is_null($length)) {
             if (is_null($path)) {
                 $path = $this->_path;
@@ -122,7 +122,7 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function lock($path = null)
     {
-        $this->_initHandler($path, 'c');
+        $this->_initHandle($path, 'c');
         return flock($this->_handle, LOCK_EX | LOCK_NB);
     }
 
@@ -132,7 +132,7 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function unLock($path = null)
     {
-        $this->_initHandler($path, 'c+');
+        $this->_initHandle($path, 'c+');
         return flock($this->_handle, LOCK_UN);
     }
 

@@ -16,13 +16,14 @@ return array(
     'subject_config' => array(
         'dispatch' => array(
             array(
-                'subscriber' => 'Maketok\Mvc\Router\Standard::dispatch',
+                'subscriber' => 'Maketok\Mvc\Controller\Front::dispatch',
                 'priority' => 1,
             ),
         ),
     ),
     'db_ddl' => array(
         '\Maketok\App\Session\DbHandler',
+        '\Maketok\App\ModuleManager',
     ),
     'session_storage' => 'db',
 );

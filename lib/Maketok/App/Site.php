@@ -8,9 +8,9 @@
 namespace Maketok\App;
 
 use Maketok\Loader\Autoload;
-use Maketok\Observer;
+use Maketok\Observer\State;
+use Maketok\Observer\SubjectManager;
 use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Platform\Platform;
 use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 
 final class Site
@@ -42,10 +42,7 @@ final class Site
         if ($safeRun) {
             return;
         }
-        self::getSubjectManager()->notify('dispatch', new Observer\State());
-
-        // run routers
-
+        self::getSubjectManager()->notify('dispatch', new State());
     }
 
     /**
@@ -97,11 +94,11 @@ final class Site
     }
 
     /**
-     * @return Observer\SubjectManager
+     * @return SubjectManager
      */
     static public function getSubjectManager()
     {
-        return Observer\SubjectManager::getInstance();
+        return SubjectManager::getInstance();
     }
 
 }
