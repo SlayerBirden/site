@@ -19,13 +19,22 @@ class Request extends AbstractMessage implements RequestInterface
     protected $_params;
 
     /** @var  array */
-    protected $_postParams;
+    protected $_post;
 
     /** @var  array */
-    protected $_getParams;
+    protected $_query;
 
     /** @var  string */
     protected $_method;
+
+    /** @var  array */
+    protected $_cookies;
+
+    /** @var  array */
+    protected $_files;
+
+    /** @var  string */
+    protected $_uri;
 
     public static $methods = [
         'OPTIONS' => 'OPTIONS',
@@ -50,19 +59,31 @@ class Request extends AbstractMessage implements RequestInterface
     }
 
     /**
+     * @param $params
      * @return array
      */
-    public function getPost()
+    public function setParams($params)
     {
-        return $this->_postParams;
+        $this->_params = $params;
+        return $this;
     }
 
     /**
      * @return array
      */
-    public function getGet()
+    public function getPost()
     {
-        return $this->_getParams;
+        return $this->_post;
+    }
+
+    /**
+     * @param $post
+     * @return $this
+     */
+    public function setPost($post)
+    {
+        $this->_post = $post;
+        return $this;
     }
 
     /**
@@ -70,15 +91,35 @@ class Request extends AbstractMessage implements RequestInterface
      */
     public function getUriString()
     {
-
+        return $this->_uri;
     }
 
     /**
-     * @return string
+     * @param $uri
+     * @return $this
+     */
+    public function setUriString($uri)
+    {
+        $this->_uri = $uri;
+        return $this;
+    }
+
+    /**
+     * @return array
      */
     public function getQuery()
     {
+        return $this->_query;
+    }
 
+    /**
+     * @param array $query
+     * @return $this
+     */
+    public function setQuery($query)
+    {
+        $this->_query = $query;
+        return $this;
     }
 
     /**
@@ -104,9 +145,19 @@ class Request extends AbstractMessage implements RequestInterface
     /**
      * @return string
      */
-    public function getCookie()
+    public function getCookies()
     {
+        return $this->_cookies;
+    }
 
+    /**
+     * @param $cookies
+     * @return $this
+     */
+    public function setCookies($cookies)
+    {
+        $this->_cookies = $cookies;
+        return $this;
     }
 
     /**
@@ -114,7 +165,17 @@ class Request extends AbstractMessage implements RequestInterface
      */
     public function getFiles()
     {
+        return $this->_files;
+    }
 
+    /**
+     * @param $files
+     * @return $this
+     */
+    public function setFiles($files)
+    {
+        $this->_files = $files;
+        return $this;
     }
 
 }
