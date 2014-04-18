@@ -9,9 +9,7 @@
 namespace Maketok\Util;
 
 
-interface ResponseInterface
+interface ResponseInterface extends MessageInterface
 {
-    public function getContent();
 
-    public function setContent($content);
 } 

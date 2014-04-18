@@ -9,7 +9,9 @@
 namespace Maketok\Http;
 
 
-abstract class AbstractMessage
+use Maketok\Util\Message;
+
+abstract class AbstractMessage extends Message
 {
 
 

@@ -14,13 +14,4 @@ use Maketok\Util\ResponseInterface;
 class Response extends AbstractMessage implements ResponseInterface
 {
 
-    public function getContent()
-    {
-        // TODO: Implement getContent() method.
-    }
-
-    public function setContent($content)
-    {
-        // TODO: Implement setContent() method.
-    }
 }

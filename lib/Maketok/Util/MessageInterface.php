@@ -9,7 +9,9 @@
 namespace Maketok\Util;
 
 
-class Request extends Message implements RequestInterface
+interface MessageInterface
 {
+    public function getContent();
 
-}
+    public function setContent($content);
+} 

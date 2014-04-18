@@ -9,16 +9,7 @@
 namespace Maketok\Util;
 
 
-class Response implements ResponseInterface
+class Response extends Message implements ResponseInterface
 {
 
-    public function getContent()
-    {
-        // TODO: Implement getContent() method.
-    }
-
-    public function setContent($content)
-    {
-        // TODO: Implement setContent() method.
-    }
 }

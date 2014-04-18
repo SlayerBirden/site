@@ -41,16 +41,6 @@ class Request extends AbstractMessage implements RequestInterface
 
 
 
-    public function getContent()
-    {
-        // TODO: Implement getContent() method.
-    }
-
-    public function setContent($content)
-    {
-        // TODO: Implement setContent() method.
-    }
-
     /**
      * @return array
      */
