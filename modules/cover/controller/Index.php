@@ -5,11 +5,9 @@
  * @project site
  * @developer Slayer
  */
-namespace Maketok\Mvc\Router;
+namespace modules\cover\controller;
 
-interface RouterInterface
+class Index
 {
-    public function match();
 
-    public function assemble();
 }

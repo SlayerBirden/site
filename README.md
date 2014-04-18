@@ -4,6 +4,7 @@
 This is a simple app which involves a couple of libs from well-known vendors plus some own implementation of the components.
 This site is free to use by anyone.
 Still in developing
+Heavily borrowed from ZF for certain areas.
 
 ### Tech
 --------
