@@ -27,7 +27,7 @@ final class Site
      *
      * @param bool $safeRun
      */
-    static public function run($safeRun = false)
+    public static function run($safeRun = false)
     {
         define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
         // register modules loader
@@ -42,13 +42,15 @@ final class Site
         if ($safeRun) {
             return;
         }
-        self::getSubjectManager()->notify('dispatch', new State());
+        self::getSubjectManager()->notify('dispatch', new State(array(
+            'request' => ''
+        )));
     }
 
     /**
      * load configs
      */
-    static private function _loadConfigs()
+    private static function _loadConfigs()
     {
         Config::loadConfig();
     }
@@ -57,7 +59,7 @@ final class Site
      * apply
      * @param bool $safeRun
      */
-    static private function _applyConfigs($safeRun)
+    private static function _applyConfigs($safeRun)
     {
         $mode = Config::ALL;
         if ($safeRun) {
@@ -66,13 +68,13 @@ final class Site
         Config::applyConfig($mode);
     }
 
-    static private function _initEnvironment()
+    private static function _initEnvironment()
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         self::_initAdapter(Config::getConfig('db_config'));
     }
 
-    static private function _initAdapter($data)
+    private static function _initAdapter($data)
     {
         $adapter = new Adapter(array(
             'driver'   => 'pdo_mysql',
@@ -83,12 +85,12 @@ final class Site
         GlobalAdapterFeature::setStaticAdapter($adapter);
     }
 
-    static public function getAdapter()
+    public static function getAdapter()
     {
         return GlobalAdapterFeature::getStaticAdapter();
     }
 
-    static public function registry()
+    public static function registry()
     {
         return Registry::getInstance();
     }
@@ -96,7 +98,7 @@ final class Site
     /**
      * @return SubjectManager
      */
-    static public function getSubjectManager()
+    public static function getSubjectManager()
     {
         return SubjectManager::getInstance();
     }
