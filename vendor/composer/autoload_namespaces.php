@@ -8,6 +8,11 @@ $baseDir = dirname($vendorDir);
 return array(
     'Zend\\Db\\' => array($vendorDir . '/zendframework/zend-db'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
+    'Symfony\\Component\\EventDispatcher\\' => array($vendorDir . '/symfony/event-dispatcher'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log'),
     'Maketok\\' => array($baseDir . '/lib'),
+    'Guzzle\\Stream' => array($vendorDir . '/guzzle/stream'),
+    'Guzzle\\Parser' => array($vendorDir . '/guzzle/parser'),
+    'Guzzle\\Http' => array($vendorDir . '/guzzle/http'),
+    'Guzzle\\Common' => array($vendorDir . '/guzzle/common'),
 );

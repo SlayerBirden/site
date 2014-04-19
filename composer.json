@@ -24,7 +24,8 @@
     "require": {
         "php": ">=5.4.0",
         "zendframework/zend-db": "2.*",
-        "monolog/monolog": "~1.0"
+        "monolog/monolog": "~1.0",
+        "guzzle/http": "3.7.*@dev"
     },
     "require-dev": {
         "phpunit/PHPUnit": "4.*"

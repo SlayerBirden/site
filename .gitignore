@@ -3,3 +3,4 @@ config/local.php
 mysql-connector-java-5.1.26-bin.jar
 mysql-connector-license.txt
 var/locks/test_ddl_installer.lock
+vendor

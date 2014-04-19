@@ -133,13 +133,15 @@ class Request extends AbstractMessage implements RequestInterface
     /**
      * @param string $method
      * @throws \Exception
-     * @return string
+     * @return $this
      */
     public function setMethod($method)
     {
         if (!in_array($method, self::$methods)) {
-            throw new \Exception(sprintf("Can not set HTTP method %s. Must be one of the valid HTTP methods."));
+            throw new \Exception(sprintf("Can not set HTTP method %s. Must be one of the valid HTTP methods.", $method));
         }
+        $this->_method = $method;
+        return $this;
     }
 
     /**

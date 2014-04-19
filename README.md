@@ -13,6 +13,7 @@ So far includes next components:
 - zend-db (zf 2.*)
 - monolog (~1.0)
 - phpunit (4.*)
+- guzzle/http (3.7.*@dev)
 
 
 # License
