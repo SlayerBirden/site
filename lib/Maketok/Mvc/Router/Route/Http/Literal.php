@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Mvc\Router\Route;
+namespace Maketok\Mvc\Router\Route\Http;
 
 
 use Maketok\Util\RequestInterface;
