@@ -10,17 +10,43 @@ namespace Maketok\Mvc\Router\Route;
 
 
 use Maketok\Util\RequestInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class Literal implements RouteInterface
 {
 
+
+    /** @var  string */
+    protected $_matchPath;
+
+    /**
+     * @param Request $request
+     * @return bool
+     */
     public function match(RequestInterface $request)
     {
-        // TODO: Implement match() method.
+        if ($request->getPathInfo() === $this->_matchPath) {
+            return true;
+        }
+        return false;
     }
 
+    /**
+     * @param array $params
+     * @return string
+     */
     public function assemble(array $params)
     {
-        // TODO: Implement assemble() method.
+        return $this->_matchPath;
+    }
+
+    /**
+     * @param string $path
+     * @return $this
+     */
+    public function setPath($path)
+    {
+        $this->_matchPath = $path;
+        return $this;
     }
 }

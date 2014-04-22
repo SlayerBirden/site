@@ -7,11 +7,11 @@
  */
 namespace Maketok\Mvc\Controller;
 
-use Maketok\Observer\State;
+use Maketok\Observer\StateInterface;
 
 class Front
 {
-    public function dispatch(State $state)
+    public function dispatch(StateInterface $state)
     {
         var_dump($state); die;
     }

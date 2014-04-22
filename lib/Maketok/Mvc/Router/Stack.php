@@ -13,33 +13,62 @@ use Maketok\Util\RequestInterface;
 class Stack implements RouteInterface
 {
 
-    public function addRoute(RouteInterface $route)
-    {
 
+
+    const STACK_MODE_APPEND = 1;
+    const STACK_MODE_PREPEND = 2;
+
+
+    /** @var \SplStack  */
+    protected $_routes;
+
+
+    public function __construct()
+    {
+        $this->_routes = new \SplStack();
+    }
+
+    public function addRoute(RouteInterface $route, $mode = self::STACK_MODE_APPEND)
+    {
+        if (self::STACK_MODE_APPEND === $mode) {
+            $this->_routes->push($route);
+        } elseif (self::STACK_MODE_PREPEND === $mode) {
+            $this->_routes->unshift($route);
+        }
     }
 
     public function addRoutes(array $routes)
     {
-
+        foreach ($routes as $route) {
+            $this->_routes->push($route);
+        }
     }
 
     public function setRoutes(array $routes)
     {
-
-    }
-
-    public function removeRoute(RouteInterface $route)
-    {
-
+        // we need to clear stack first
+        while($this->_routes->count() > 0) {
+            $this->_routes->pop();
+        }
+        foreach ($routes as $route) {
+            $this->_routes->push($route);
+        }
     }
 
     public function match(RequestInterface $request)
     {
-        // TODO: Implement match() method.
+        $matched = false;
+        foreach ($this->_routes as $route) {
+            if ($route->match($request)) {
+                $matched = true;
+                break;
+            }
+        }
+        return $matched;
     }
 
     public function assemble(array $params)
     {
-        // TODO: Implement assemble() method.
+        return;
     }
 }

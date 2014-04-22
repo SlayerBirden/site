@@ -10,6 +10,8 @@ namespace Maketok\App;
 use Maketok\Loader\Autoload;
 use Maketok\Observer\State;
 use Maketok\Observer\SubjectManager;
+use Maketok\Http\Request;
+use Maketok\Util\RequestInterface;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 
@@ -25,9 +27,14 @@ final class Site
     /**
      * launch app process - can apply safeRun flag which minimizes prepare procedures
      *
+     * run accepts 2 params:
+     * safeRun decides what parts of config to apply
+     * evn - should we init our env
+     *
      * @param bool $safeRun
+     * @param bool $env
      */
-    public static function run($safeRun = false)
+    public static function run($safeRun = false, $env = true)
     {
         define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
         // register modules loader
@@ -35,7 +42,9 @@ final class Site
         $loader->register();
 
         self::_loadConfigs();
-        self::_initEnvironment();
+        if ($env) {
+            self::_initEnvironment();
+        }
         // we've done our job to init system
         // if safeRun is up, we don't need dispatcher
         self::_applyConfigs($safeRun);
@@ -43,8 +52,24 @@ final class Site
             return;
         }
         self::getSubjectManager()->notify('dispatch', new State(array(
-            'request' => ''
+            'request' => self::getRequest()
         )));
+    }
+
+    /**
+     * @return Request
+     */
+    public static function getRequest()
+    {
+        return self::registry()->request;
+    }
+
+    /**
+     * @param RequestInterface $request
+     */
+    public static function setRequest(RequestInterface $request)
+    {
+        self::registry()->request = $request;
     }
 
     /**
@@ -72,6 +97,7 @@ final class Site
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         self::_initAdapter(Config::getConfig('db_config'));
+        self::setRequest(Request::createFromGlobals());
     }
 
     private static function _initAdapter($data)
@@ -82,12 +108,23 @@ final class Site
             'username' => $data['username'],
             'password' => $data['password'],
         ));
-        GlobalAdapterFeature::setStaticAdapter($adapter);
+        self::setAdapter($adapter);
     }
 
+    /**
+     * @return Adapter
+     */
     public static function getAdapter()
     {
         return GlobalAdapterFeature::getStaticAdapter();
+    }
+
+    /**
+     * @param Adapter $adapter
+     */
+    public function setAdapter(Adapter $adapter)
+    {
+        GlobalAdapterFeature::setStaticAdapter($adapter);
     }
 
     public static function registry()
