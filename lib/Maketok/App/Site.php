@@ -98,6 +98,7 @@ final class Site
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         self::_initAdapter(Config::getConfig('db_config'));
         self::setRequest(Request::createFromGlobals());
+        // TODO init error handler, exception handler
     }
 
     private static function _initAdapter($data)

@@ -20,9 +20,12 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
 
     public function getModuleDirectories()
     {
-        $path = APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'modules';
-        $handler = new DirectoryHandler();
-        return $handler->ls($path);
+        if (is_null($this->_moduleDirs)) {
+            $path = APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'modules';
+            $handler = new DirectoryHandler();
+            $this->_moduleDirs = $handler->ls($path);
+        }
+        return $this->_moduleDirs;
     }
 
     /**
@@ -30,9 +33,32 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
      */
     public static function getDdlConfig()
     {
-        return array(
-
-        );
+        return [
+            'modules' => [
+                'columns' => [
+                    'module_code' => [
+                        'type' => 'varchar',
+                        'length' => 32,
+                    ],
+                    'version' => [
+                        'type' => 'varchar',
+                        'length' => 15,
+                    ],
+                    'active' => [
+                        'type' => 'tinyint',
+                    ],
+                    'updated_at' => [
+                        'type' => 'datetime',
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'def' => 'module_code',
+                    ]
+                ],
+            ]
+        ];
     }
 
     /**
@@ -40,7 +66,7 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
      */
     public static function getDdlConfigVersion()
     {
-        return '0.1.0';
+        return '0.2.0';
     }
 
     /**
@@ -51,12 +77,12 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         return 'module_manager';
     }
 
-    public function disableModule($name)
+    public function disableModule($code)
     {
 
     }
 
-    public function uninstallModule($name)
+    public function uninstallModule($code)
     {
 
     }

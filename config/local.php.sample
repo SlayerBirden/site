@@ -5,18 +5,18 @@
  * @project site
  * @developer Slayer
  */
-return array(
-    'php_config' => array(
+return [
+    'php_config' => [
         'display_errors' => 1,
         'error_reporting' => E_ALL,
         'date_timezone' => 'GMT',
         'max_memory_limit' => '512M',
         'max_execution_time' => 60,
-    ),
-    'db_config' => array(
+    ],
+    'db_config' => [
         'username' => 'user',
         'password' => 'pass',
         'host' => 'host',
         'database' => 'database',
-    ),
-);
+    ],
+];

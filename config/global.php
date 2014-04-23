@@ -5,25 +5,25 @@
  * @project site
  * @developer Slayer
  */
-return array(
-    'php_config' => array(
+return [
+    'php_config' => [
         'display_errors' => 0,
         'error_reporting' => E_ALL & ~E_DEPRECATED,
         'date_timezone' => 'GMT',
         'max_memory_limit' => '512M',
         'max_execution_time' => 60,
-    ),
-    'subject_config' => array(
-        'dispatch' => array(
-            array(
+    ],
+    'subject_config' => [
+        'dispatch' => [
+            [
                 'subscriber' => 'Maketok\Mvc\Controller\Front::dispatch',
                 'priority' => 1,
-            ),
-        ),
-    ),
-    'db_ddl' => array(
+            ],
+        ],
+    ],
+    'db_ddl' => [
         '\Maketok\App\Session\DbHandler',
         '\Maketok\App\ModuleManager',
-    ),
+    ],
     'session_storage' => 'db',
-);
+];

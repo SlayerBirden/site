@@ -7,12 +7,27 @@
  */
 namespace Maketok\Mvc\Controller;
 
+use Maketok\Mvc\Router\Route\RouteInterface;
+use Maketok\Mvc\Router\Stack;
 use Maketok\Observer\StateInterface;
 
 class Front
 {
+
+
+
     public function dispatch(StateInterface $state)
     {
-        var_dump($state); die;
+        if ($success = $this->_getRouter()->match($state->request)) {
+            // TODO load controller based on success route
+        }
+    }
+
+    /**
+     * @return RouteInterface
+     */
+    protected function _getRouter()
+    {
+        return new Stack();
     }
 }

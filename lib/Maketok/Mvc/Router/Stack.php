@@ -59,8 +59,9 @@ class Stack implements RouteInterface
     {
         $matched = false;
         foreach ($this->_routes as $route) {
-            if ($route->match($request)) {
-                $matched = true;
+            /** @var RouteInterface $route */
+            if ($success = $route->match($request)) {
+                $matched = $success;
                 break;
             }
         }

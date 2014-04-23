@@ -25,7 +25,7 @@ class Config
      * @param array $config2
      * @return array
      */
-    static public function merge(array $config1, array $config2)
+    public static function merge(array $config1, array $config2)
     {
         // recursive merge distinct implementation
         $_merged = $config1;
@@ -42,7 +42,7 @@ class Config
     /**
      * @param array $config
      */
-    static public function add(array $config)
+    public static function add(array $config)
     {
         self::$_config = self::merge(self::$_config, $config);
     }
@@ -50,7 +50,7 @@ class Config
     /**
      * @param array|string $paths
      */
-    static public function loadConfig($paths = null)
+    public static function loadConfig($paths = null)
     {
         if (is_null($paths)) {
             $_configDir = APPLICATION_ROOT . DIRECTORY_SEPARATOR .  'config';
@@ -71,7 +71,7 @@ class Config
     /**
      * basic Service Manager
      */
-    static public function applyConfig($mode = self::ALL)
+    public static function applyConfig($mode = self::ALL)
     {
         if  ($mode & self::PHP) {
             foreach (self::getConfig('php_config') as $key => $value) {
@@ -111,7 +111,7 @@ class Config
      * @param $className
      * @return mixed
      */
-    static public function classFactory($className)
+    public static function classFactory($className)
     {
         return new $className;
     }
@@ -120,7 +120,7 @@ class Config
      * @param null $key
      * @return mixed
      */
-    static public function getConfig($key = null)
+    public static function getConfig($key = null)
     {
         if (is_null($key)) {
             return self::$_config;
