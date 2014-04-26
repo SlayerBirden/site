@@ -9,6 +9,8 @@ namespace Maketok\App;
 
 use Maketok\App\Ddl\Installer;
 use Maketok\App\Session\DbHandler;
+use Maketok\Observer\State;
+use Maketok\Observer\SubjectManager;
 
 class Config
 {
@@ -100,6 +102,7 @@ class Config
             foreach (self::getConfig('db_ddl') as $client) {
                 $installer->addClient($client);
             }
+            Site::getSubjectManager()->notify('installer_before_process', new State(array('installer' => $installer)));
             if ($installer->hasClients()) {
                 $installer->processClients();
             }

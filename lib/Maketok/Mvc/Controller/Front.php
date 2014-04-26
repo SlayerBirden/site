@@ -7,14 +7,16 @@
  */
 namespace Maketok\Mvc\Controller;
 
+use Maketok\App\Site;
 use Maketok\Mvc\Router\Route\RouteInterface;
-use Maketok\Mvc\Router\Stack;
 use Maketok\Observer\StateInterface;
 
 class Front
 {
 
 
+    /** @var  RouteInterface */
+    private $_router;
 
     public function dispatch(StateInterface $state)
     {
@@ -23,11 +25,17 @@ class Front
         }
     }
 
+    public function __construct()
+    {
+        // request for a router
+        $this->_router = Site::getCurrentRouter();
+    }
+
     /**
      * @return RouteInterface
      */
     protected function _getRouter()
     {
-        return new Stack();
+        return $this->_router;
     }
 }

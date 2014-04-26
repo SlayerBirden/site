@@ -21,6 +21,10 @@ class Literal implements RouteInterface
     /** @var  string */
     protected $_matchPath;
 
+    public function __construct($path) {
+        $this->setPath($path);
+    }
+
     /**
      * @param Request $request
      * @return bool

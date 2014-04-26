@@ -113,4 +113,9 @@ class SubjectManager implements SubjectManagerInterface
     {
         // singleton
     }
+
+    protected function __clone()
+    {
+        // singleton
+    }
 }

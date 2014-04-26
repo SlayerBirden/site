@@ -26,7 +26,17 @@ final class Registry
 
     public function __set($key, $value)
     {
+        if (isset($this->_keys[$key])) {
+            throw new \Exception("Can not set existing value to the registry.");
+        }
         $this->_keys[$key] = $value;
+    }
+
+    public function __unset($key)
+    {
+        if (isset($this->_keys[$key])) {
+            unset($this->_keys[$key]);
+        }
     }
 
     /**
@@ -43,5 +53,10 @@ final class Registry
     private function __construct()
     {
         // singleton
+    }
+
+    private function __clone()
+    {
+
     }
 }

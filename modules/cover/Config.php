@@ -10,8 +10,11 @@ namespace modules\cover;
 
 
 use Maketok\App\Ddl\InstallerApplicableInterface;
+use Maketok\App\Site;
+use Maketok\Module\ConfigInterface;
+use Maketok\Mvc\Router\Route\Http\Literal;
 
-class Config implements InstallerApplicableInterface
+class Config implements InstallerApplicableInterface, ConfigInterface
 {
 
     /**
@@ -36,5 +39,15 @@ class Config implements InstallerApplicableInterface
     public static function getDdlConfigName()
     {
         return 'cover';
+    }
+
+    public function initRoutes()
+    {
+        Site::getCurrentRouter()->addRoute(new Literal('/'));
+    }
+
+    public function initListeners()
+    {
+        return;
     }
 }

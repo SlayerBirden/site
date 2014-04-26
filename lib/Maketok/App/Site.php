@@ -8,6 +8,7 @@
 namespace Maketok\App;
 
 use Maketok\Loader\Autoload;
+use Maketok\Mvc\Router\Stack;
 use Maketok\Observer\State;
 use Maketok\Observer\SubjectManager;
 use Maketok\Http\Request;
@@ -139,6 +140,17 @@ final class Site
     public static function getSubjectManager()
     {
         return SubjectManager::getInstance();
+    }
+
+    /**
+     * @return Stack
+     */
+    public static function getCurrentRouter()
+    {
+        if (self::registry()->router === null) {
+            self::registry()->router = new Stack();
+        }
+        return self::registry()->router;
     }
 
 }

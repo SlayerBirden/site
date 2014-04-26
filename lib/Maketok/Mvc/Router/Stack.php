@@ -28,6 +28,8 @@ class Stack implements RouteInterface
         $this->_routes = new \SplStack();
     }
 
+
+
     public function addRoute(RouteInterface $route, $mode = self::STACK_MODE_APPEND)
     {
         if (self::STACK_MODE_APPEND === $mode) {
