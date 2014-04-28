@@ -354,8 +354,10 @@ class Installer
      */
     public function processClients()
     {
-        foreach ($this->_clients as $_client) {
+        foreach ($this->_clients as $_key => $_client) {
             $this->_processClient($_client);
+            // remove client after processing
+            unset($this->_clients[$_key]);
         }
         $result = self::_getLockStreamHandler()->writeWithLock(json_encode(self::$_map->getArrayCopy()));
         if ($result === false || $result === 0) {

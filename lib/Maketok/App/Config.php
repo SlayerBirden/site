@@ -106,6 +106,7 @@ class Config
             if ($installer->hasClients()) {
                 $installer->processClients();
             }
+            Site::getSubjectManager()->notify('installer_after_process', new State(array('installer' => $installer)));
         }
     }
 

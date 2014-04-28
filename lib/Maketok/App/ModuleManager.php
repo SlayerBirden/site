@@ -12,6 +12,8 @@ use Maketok\App\Ddl\InstallerApplicableInterface;
 use Maketok\Module\ConfigInterface;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\DirectoryHandler;
+use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Predicate;
 use Zend\Db\TableGateway\Feature\RowGatewayFeature;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -141,28 +143,53 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
                 $className = "\\modules\\$dir\\Config";
                 /** @var ConfigInterface $config */
                 $config = new $className();
-                if ($config->isActive()) {
-                    array_push($this->_activeModules, $config);
-                } else {
-                    array_push($this->_disabledModules, $config);
-                }
+                array_push($this->_activeModules, $config);
             }
         }
+        // use site registry to store active modules
+        // this is ugly solution; I hate it
+        Site::registry()->activeModuleConfig = $this->_activeModules;
         // insert new modules
         foreach ($this->_activeModules as $config) {
+            // ddl
+            $installer->addClient($config);
+        }
+    }
+
+    public function processModules(StateInterface $state)
+    {
+        // insert new modules
+        $activeModules = Site::registry()->activeModuleConfig;
+        if (empty($activeModules)) {
+            return;
+        }
+        // get existing modules that needed to be updated
+        $toUpdate = array_filter($activeModules, function($var) {
+            $conditionCombination = [];
+            $conditionCombination[0] = new Where();
+            $conditionCombination[0]->equalTo('module_code', $var->getCode());
+            $conditionCombination[1] = new Where();
+            $conditionCombination[1]->equalTo('active', 1);
+            $conditionCombination[2] = new Where();
+            $conditionCombination[2]->notEqualTo('version', $var->getDdlConfigVersion());
+            $set = $this->select(new Where($conditionCombination));
+            return $set->count() > 0;
+        });
+        foreach ($toUpdate as $condifn) {
+            // TODO: update
+        }
+        // get to insert
+        foreach (array_diff($activeModules, $toUpdate) as $config) {
             // insert module
             $this->insertModule($config->getCode(), $config);
-
         }
         // get real active ones
-        array_filter($this->_activeModules, function($var) {
+        $activeModules = array_filter($activeModules, function($var) {
             $set = $this->select(array('module_code' => $var->getCode(), 'active' => 1));
             return $set->count() > 0;
         });
         // process active modules
-        foreach ($this->_activeModules as $config) {
-            // ddl
-            $installer->addClient($config);
+        foreach ($activeModules as $config) {
             // events
             $config->initListeners();
             // routes

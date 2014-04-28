@@ -30,6 +30,12 @@ return [
                 'priority' => 1,
             ],
         ],
+        'installer_after_process' => [
+            [
+                'subscriber' => 'Maketok\App\ModuleManager::processModules',
+                'priority' => 1,
+            ],
+        ],
     ],
     'db_ddl' => [
         '\Maketok\App\Session\DbHandler',
