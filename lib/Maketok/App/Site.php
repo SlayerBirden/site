@@ -124,7 +124,7 @@ final class Site
     /**
      * @param Adapter $adapter
      */
-    public function setAdapter(Adapter $adapter)
+    public static function setAdapter(Adapter $adapter)
     {
         GlobalAdapterFeature::setStaticAdapter($adapter);
     }

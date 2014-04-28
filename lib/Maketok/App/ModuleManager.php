@@ -45,7 +45,7 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
                         'length' => 15,
                     ],
                     'active' => [
-                        'type' => 'tinyint',
+                        'type' => 'integer',
                     ],
                     'updated_at' => [
                         'type' => 'datetime',
