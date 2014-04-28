@@ -1,1 +1,0 @@
-{"session_storage":{"0.1.0":{"session_storage":{"columns":{"session_id":{"type":"varchar","length":32},"data":{"type":"text"},"updated_at":{"type":"datetime"}},"constraints":{"primary":{"type":"primaryKey","def":"session_id"}}}}},"module_manager":{"0.1.0":[]}}

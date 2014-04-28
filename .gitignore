@@ -2,5 +2,6 @@ config/local.php
 .idea
 mysql-connector-java-5.1.26-bin.jar
 mysql-connector-license.txt
-var/locks/test_ddl_installer.lock
+var/locks
 vendor
+composer.phar
