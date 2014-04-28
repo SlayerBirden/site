@@ -71,6 +71,7 @@ class SubjectManager implements SubjectManagerInterface
                 }
                 // TODO figure out how to inject dependencies
                 // maybe we need Service Locator?
+                // this is a huge bummer
                 call_user_func($_subQueue->getQueue()->extract(), $state->setSubject($_subject));
             }
         }

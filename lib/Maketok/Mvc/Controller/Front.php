@@ -22,6 +22,7 @@ class Front
     {
         if ($success = $this->_getRouter()->match($state->request)) {
             // TODO load controller based on success route
+            var_dump($success);
         }
     }
 

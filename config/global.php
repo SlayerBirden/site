@@ -19,6 +19,16 @@ return [
                 'subscriber' => 'Maketok\Mvc\Controller\Front::dispatch',
                 'priority' => 1,
             ],
+            [
+                'subscriber' => 'Maketok\App\Session::init',
+                'priority' => 0,
+            ],
+        ],
+        'installer_before_process' => [
+            [
+                'subscriber' => 'Maketok\App\ModuleManager::processModuleConfig',
+                'priority' => 1,
+            ],
         ],
     ],
     'db_ddl' => [

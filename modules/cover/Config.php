@@ -50,4 +50,20 @@ class Config implements InstallerApplicableInterface, ConfigInterface
     {
         return;
     }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode()
+    {
+        return 'cover';
+    }
 }

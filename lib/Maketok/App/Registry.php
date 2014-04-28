@@ -27,7 +27,7 @@ final class Registry
     public function __set($key, $value)
     {
         if (isset($this->_keys[$key])) {
-            throw new \Exception("Can not set existing value to the registry.");
+            throw new \Exception(sprintf("Can not set existing value to the registry for %s.", $key));
         }
         $this->_keys[$key] = $value;
     }

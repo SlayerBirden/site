@@ -43,6 +43,7 @@ final class Site
         $loader->register();
 
         self::_loadConfigs();
+        self::_initAdapter(Config::getConfig('db_config'));
         if ($env) {
             self::_initEnvironment();
         }
@@ -97,7 +98,6 @@ final class Site
     private static function _initEnvironment()
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
-        self::_initAdapter(Config::getConfig('db_config'));
         self::setRequest(Request::createFromGlobals());
         // TODO init error handler, exception handler
     }

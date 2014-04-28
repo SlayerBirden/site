@@ -59,12 +59,13 @@ class DirectoryHandler
         if (!is_dir($path)) {
             throw new \Exception('The path does not exist.');
         }
-        $it = new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS);
-        $files = new \RecursiveIteratorIterator($it,
-            \RecursiveIteratorIterator::CHILD_FIRST);
+        $files = new \DirectoryIterator($path);
         $result = [];
         foreach($files as $file) {
             /** @var \SplFileInfo $file */
+            if ($file->isDot()) {
+                continue;
+            }
             if ($namesOnly) {
                 $result[] = $file->getFilename();
             } else {

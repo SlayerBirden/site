@@ -72,7 +72,8 @@ class DbHandler implements \SessionHandlerInterface, InstallerApplicableInterfac
     public function gc($maxlifetime)
     {
         $stamp = time() - $maxlifetime;
-        $expirationDate = new \DateTime($stamp);
+        $expirationDate = new \DateTime();
+        $expirationDate->setTimestamp($stamp);
 
         $where = new Where();
         $where->lessThan('updated_at', $expirationDate->format('Y-m-d H:i:s'));
@@ -118,7 +119,7 @@ class DbHandler implements \SessionHandlerInterface, InstallerApplicableInterfac
         foreach ($result as $row) {
             return $row['data'];
         }
-        return '';
+        return false;
     }
 
     /**
@@ -143,10 +144,14 @@ class DbHandler implements \SessionHandlerInterface, InstallerApplicableInterfac
 
         $data = $this->read($session_id);
         $now = new \DateTime();
-        if (empty($data)) {
+        if ($data === false) {
             $insert = $this->_sql->insert()
-                ->columns('session_id', 'data', 'updated_at')
-                ->values($session_id, $session_data, $now->format('Y-m-d H:i:s'));
+                ->columns(array('session_id', 'data', 'updated_at'))
+                ->values(array(
+                    'session_id' => $session_id,
+                    'data' => $session_data,
+                    'updated_at' => $now->format('Y-m-d H:i:s'),
+                ));
         } else {
             $insert = $this->_sql->update()
                 ->set(array('data' => $session_data, 'updated_at' => $now->format('Y-m-d H:i:s')))

@@ -15,4 +15,14 @@ interface ConfigInterface
     public function initRoutes();
 
     public function initListeners();
+
+    /**
+     * @return bool
+     */
+    public function isActive();
+
+    /**
+     * @return string
+     */
+    public function getCode();
 } 
