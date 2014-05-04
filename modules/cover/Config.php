@@ -43,7 +43,10 @@ class Config implements InstallerApplicableInterface, ConfigInterface
 
     public function initRoutes()
     {
-        Site::getCurrentRouter()->addRoute(new Literal('/'));
+        Site::getCurrentRouter()->addRoute(new Literal('/', array(
+            'controller' => 'modules\\cover\\controller\\Index',
+            'action' => 'index'
+        )));
     }
 
     public function initListeners()

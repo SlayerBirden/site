@@ -12,4 +12,5 @@ namespace Maketok\Util;
 interface ResponseInterface extends MessageInterface
 {
 
+    public function send();
 } 

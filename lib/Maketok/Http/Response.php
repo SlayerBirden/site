@@ -12,7 +12,7 @@ namespace Maketok\Http;
 use Maketok\Util\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
-class Responses extends HttpResponse implements ResponseInterface
+class Response extends HttpResponse implements ResponseInterface
 {
 
 } 

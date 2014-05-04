@@ -7,7 +7,15 @@
  */
 namespace modules\cover\controller;
 
+use Maketok\Http\Response;
+use Maketok\Util\RequestInterface;
+
 class Index
 {
 
+
+    public function indexAction(RequestInterface $request)
+    {
+        return Response::create("Hello World");
+    }
 }

@@ -37,4 +37,12 @@ class Success
         $this->_route = $route;
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getParameters()
+    {
+        return $this->getMatchedRoute()->getParameters();
+    }
 } 

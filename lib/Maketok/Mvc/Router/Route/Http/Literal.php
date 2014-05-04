@@ -12,7 +12,6 @@ namespace Maketok\Mvc\Router\Route\Http;
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Mvc\Router\Route\Success;
 use Maketok\Util\RequestInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class Literal implements RouteInterface
 {
@@ -21,16 +20,28 @@ class Literal implements RouteInterface
     /** @var  string */
     protected $_matchPath;
 
-    public function __construct($path) {
+    /** @var  array */
+    protected $_parameters;
+
+    /** @var  RequestInterface */
+    protected $_request;
+
+    /**
+     * @param $path
+     * @param array $parameters
+     */
+    public function __construct($path, array $parameters) {
         $this->setPath($path);
+        $this->_parameters = $parameters;
     }
 
     /**
-     * @param Request $request
-     * @return bool
+     * @param RequestInterface $request
+     * @return bool|Success
      */
     public function match(RequestInterface $request)
     {
+        $this->_request = $request;
         if ($request->getPathInfo() === $this->_matchPath) {
             return new Success($this);
         }
@@ -54,5 +65,21 @@ class Literal implements RouteInterface
     {
         $this->_matchPath = $path;
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParameters()
+    {
+        return $this->_parameters;
+    }
+
+    /**
+     * @return RequestInterface
+     */
+    public function getRequest()
+    {
+        return $this->_request;
     }
 }

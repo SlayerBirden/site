@@ -23,4 +23,9 @@ interface RouteInterface
      * @return string
      */
     public function assemble(array $params);
+
+    /**
+     * @return RequestInterface
+     */
+    public function getRequest();
 }

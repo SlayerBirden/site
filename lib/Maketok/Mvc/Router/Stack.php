@@ -74,4 +74,12 @@ class Stack implements RouteInterface
     {
         return;
     }
+
+    /**
+     * @return RequestInterface
+     */
+    public function getRequest()
+    {
+        return;
+    }
 }
