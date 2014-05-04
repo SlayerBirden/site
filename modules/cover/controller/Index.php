@@ -16,6 +16,7 @@ class Index
 
     public function indexAction(RequestInterface $request)
     {
-        return Response::create("Hello World");
+        $response = Response::create("Hello World");
+        return $response->prepare($request);
     }
 }

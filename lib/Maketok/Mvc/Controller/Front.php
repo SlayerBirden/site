@@ -32,7 +32,6 @@ class Front
             $content = ob_get_contents();
             // TODO figure out what to do with buffered content
             ob_end_clean();
-            $response->prepare($state->request);
             $response->send();
             exit;
         }
