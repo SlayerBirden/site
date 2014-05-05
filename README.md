@@ -14,6 +14,7 @@ So far includes next components:
 - monolog (~1.0)
 - phpunit (4.*)
 - symfony/http-foundation (2.5.*@dev)
+- phptal (1.3)
 
 
 # License
