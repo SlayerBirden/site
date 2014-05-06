@@ -16,7 +16,10 @@ class Index
 
     public function indexAction(RequestInterface $request)
     {
-        $response = Response::create("Hello World");
+        $path = APPLICATION_ROOT . '/modules/cover/view/cover.xhtml';
+        $template = new \PHPTAL($path);
+        $template->title = 'Sample Site';
+        $response = Response::create($template->execute());
         return $response->prepare($request);
     }
 }
