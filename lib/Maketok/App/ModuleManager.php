@@ -95,6 +95,9 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         return 'module_manager';
     }
 
+    /**
+     * @param string $code
+     */
     public function disableModule($code)
     {
         $this->update(array(
@@ -102,11 +105,17 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         ), array('module_code' => $code));
     }
 
+    /**
+     * @param string $code
+     */
     public function uninstallModule($code)
     {
         // TODO implement; depends on Installer
     }
 
+    /**
+     * @param string $code
+     */
     public function activateModule($code)
     {
         $resultSet = $this->select(array('module_code' => $code));
@@ -117,6 +126,10 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         }
     }
 
+    /**
+     * @param string $code
+     * @param ConfigInterface $config
+     */
     public function insertModule($code, ConfigInterface $config)
     {
         $resultSet = $this->select(array('module_code' => $code));
@@ -133,6 +146,29 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         ));
     }
 
+    /**
+     * @param string $code
+     * @param ConfigInterface $config
+     */
+    public function updateModule($code, ConfigInterface $config)
+    {
+        $resultSet = $this->select(array('module_code' => $code));
+        $row = $resultSet->current();
+        if (!is_object($row)) {
+            return;
+        }
+
+        $now = new \DateTime();
+        $this->update(array(
+            'version' => $config->getDdlConfigVersion(),
+            'active' => $config->isActive(),
+            'updated_at' => $now->format('Y-m-d H:i:s'),
+        ), array('module_code' => $code));
+    }
+
+    /**
+     * @param StateInterface $state
+     */
     public function processModuleConfig(StateInterface $state)
     {
         /** @var Installer $installer */
@@ -156,6 +192,9 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         }
     }
 
+    /**
+     * @param StateInterface $state
+     */
     public function processModules(StateInterface $state)
     {
         // insert new modules
@@ -175,8 +214,9 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
             $set = $this->select(new Where($conditionCombination));
             return $set->count() > 0;
         });
-        foreach ($toUpdate as $condifn) {
-            // TODO: update
+        /** @var ConfigInterface $config */
+        foreach ($toUpdate as $config) {
+            $this->updateModule($config->getCode(), $config);
         }
         // get to insert
         foreach (array_diff($activeModules, $toUpdate) as $config) {

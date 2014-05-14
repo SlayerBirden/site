@@ -7,19 +7,17 @@
  */
 namespace modules\cover\controller;
 
-use Maketok\Http\Response;
+use Maketok\Mvc\Controller\AbstractController;
 use Maketok\Util\RequestInterface;
 
-class Index
+class Index extends AbstractController
 {
 
 
     public function indexAction(RequestInterface $request)
     {
-        $path = APPLICATION_ROOT . '/modules/cover/view/cover.xhtml';
-        $template = new \PHPTAL($path);
-        $template->title = 'Sample Site';
-        $response = Response::create($template->execute());
-        return $response->prepare($request);
+
+        $this->setTemplate('cover');
+        return $this->prepareResponse($request, array('title' => 'Sample Site'));
     }
 }

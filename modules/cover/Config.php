@@ -14,7 +14,7 @@ use Maketok\App\Site;
 use Maketok\Module\ConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 
-class Config implements InstallerApplicableInterface, ConfigInterface
+class Config implements ConfigInterface
 {
 
     /**
@@ -44,8 +44,9 @@ class Config implements InstallerApplicableInterface, ConfigInterface
     public function initRoutes()
     {
         Site::getCurrentRouter()->addRoute(new Literal('/', array(
+            'module' => $this->getCode(),
             'controller' => 'modules\\cover\\controller\\Index',
-            'action' => 'index'
+            'action' => 'index',
         )));
     }
 

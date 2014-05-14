@@ -9,11 +9,19 @@
 namespace Maketok\Module;
 
 
-interface ConfigInterface
+use Maketok\App\Ddl\InstallerApplicableInterface;
+
+interface ConfigInterface extends InstallerApplicableInterface
 {
 
+    /**
+     * @return void
+     */
     public function initRoutes();
 
+    /**
+     * @return void
+     */
     public function initListeners();
 
     /**
