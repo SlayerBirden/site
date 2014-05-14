@@ -111,7 +111,7 @@ class AbstractController {
         if (is_null($this->_template)) {
             throw new \Exception("Can't find template path, no template set.");
         }
-        return APPLICATION_ROOT . "/modules/{$this->_module}/view/{$this->_template}.xhtml";
+        return APPLICATION_ROOT . "/modules/{$this->_module}/view/{$this->_template}";
     }
 
     /**

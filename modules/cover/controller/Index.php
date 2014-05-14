@@ -17,7 +17,7 @@ class Index extends AbstractController
     public function indexAction(RequestInterface $request)
     {
 
-        $this->setTemplate('cover');
+        $this->setTemplate('cover.xhtml');
         return $this->prepareResponse($request, array('title' => 'Sample Site'));
     }
 }
