@@ -16,7 +16,7 @@ Includes next components from vendors:
 - zend-db (zf 2.*)
 - monolog (~1.0)
 - phpunit (4.*)
-- symfony/http-foundation (2.5.*@dev)
+- symfony/http-foundation (2.*)
 - phptal (dev-master)
 
 
