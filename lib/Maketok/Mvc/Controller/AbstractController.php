@@ -8,8 +8,10 @@
 
 namespace Maketok\Mvc\Controller;
 
+use Maketok\App\Site;
 use Maketok\Http\Response;
 use Maketok\Util\RequestInterface;
+use Maketok\Template;
 
 class AbstractController {
 
@@ -95,11 +97,18 @@ class AbstractController {
     public function prepareContent(array $templateVars, array $params = null)
     {
         $path = $this->_getTemplatePath();
-        $template = new \PHPTAL($path);
-        foreach ($templateVars as $key => $value) {
-            $template->$key = $value;
+        // get template Engine
+        $templateEngine = Site::registry()->templateEngine;
+        $_className = 'Maketok\\Template\\' . ucfirst(strtolower($templateEngine));
+        if (class_exists($_className)) {
+            /** @var Template\AbstractEngine $engine */
+            $engine = new $_className();
+        } else {
+            throw new \Exception("Could not assign template engine.");
         }
-        $this->_body = $template->execute();
+        $engine->loadTemplate($path);
+        $engine->setVariables($templateVars);
+        $this->_body = $engine->render();
     }
 
     /**

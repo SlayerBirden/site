@@ -42,4 +42,5 @@ return [
         '\Maketok\App\ModuleManager',
     ],
     'session_storage' => 'db',
+    'template_engine' => 'phptal'
 ];

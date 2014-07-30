@@ -99,6 +99,8 @@ final class Site
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         self::setRequest(Request::createFromGlobals());
+        // set template engine
+        self::registry()->templateEngine = Config::getConfig('template_engine');
         // TODO init error handler, exception handler
     }
 
