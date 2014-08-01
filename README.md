@@ -17,7 +17,7 @@ Includes next components from vendors:
 - monolog (~1.0)
 - phpunit (4.*)
 - symfony/http-foundation (2.*)
-- phptal (dev-master)
+- twig (~1)
 
 
 ### License

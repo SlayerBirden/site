@@ -219,7 +219,11 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
             $this->updateModule($config->getCode(), $config);
         }
         // get to insert
-        foreach (array_diff($activeModules, $toUpdate) as $config) {
+        // the thing with array_diff is - it tries to cast anything in array to a string
+        // to compare if those are identical
+        // so config interface should include toString method
+        $_diff = array_diff($activeModules, $toUpdate);
+        foreach ($_diff as $config) {
             // insert module
             $this->insertModule($config->getCode(), $config);
         }

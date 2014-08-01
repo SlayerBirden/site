@@ -1,0 +1,18 @@
+{# note: this is blog index #}
+{% extends "base.html" %}
+{% block head %}
+{{ parent() }}
+<style type="text/css">
+    .important { color: #336699; }
+</style>
+{% endblock %}
+{% block content %}
+<div id="info" class="info">
+    <span class="important">{% trans description %}</span>
+</div>
+{% endblock %}
+{% block footer %}
+<div class="footer-content info">
+    <span class="important">{% trans "Hello World!" %}</span>
+</div>
+{% endblock %}

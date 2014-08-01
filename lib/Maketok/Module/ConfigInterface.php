@@ -33,4 +33,10 @@ interface ConfigInterface extends InstallerApplicableInterface
      * @return string
      */
     public function getCode();
+
+    /**
+     * magic method for returning string representation of the the config class
+     * @return string
+     */
+    public function __toString();
 } 

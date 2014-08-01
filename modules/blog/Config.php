@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace modules\cover;
+namespace modules\blog;
 
 
 use Maketok\App\Site;
@@ -37,14 +37,14 @@ class Config implements ConfigInterface
      */
     public static function getDdlConfigName()
     {
-        return 'cover';
+        return 'blog';
     }
 
     public function initRoutes()
     {
-        Site::getCurrentRouter()->addRoute(new Literal('/', array(
+        Site::getCurrentRouter()->addRoute(new Literal('blog', array(
             'module' => $this->getCode(),
-            'controller' => 'modules\\cover\\controller\\Index',
+            'controller' => 'modules\\blog\\controller\\Index',
             'action' => 'index',
         )));
     }
@@ -67,7 +67,7 @@ class Config implements ConfigInterface
      */
     public function getCode()
     {
-        return 'cover';
+        return 'blog';
     }
 
     /**

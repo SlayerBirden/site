@@ -3,5 +3,6 @@ config/local.php
 mysql-connector-java-5.1.26-bin.jar
 mysql-connector-license.txt
 var/locks
+var/cache
 vendor
 composer.phar

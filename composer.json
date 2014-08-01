@@ -26,7 +26,8 @@
         "zendframework/zend-db": "2.*",
         "monolog/monolog": "~1.0",
         "symfony/http-foundation": "2.*",
-        "phptal/phptal": "dev-master"
+        "twig/twig": "~1",
+        "twig/extensions": "1.*"
     },
     "require-dev": {
         "phpunit/PHPUnit": "4.*"
