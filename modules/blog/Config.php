@@ -42,7 +42,7 @@ class Config implements ConfigInterface
 
     public function initRoutes()
     {
-        Site::getCurrentRouter()->addRoute(new Literal('blog', array(
+        Site::getCurrentRouter()->addRoute(new Literal('/blog', array(
             'module' => $this->getCode(),
             'controller' => 'modules\\blog\\controller\\Index',
             'action' => 'index',

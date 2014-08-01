@@ -32,6 +32,13 @@ interface EngineInterface
     public function setVariables(array $variables);
 
     /**
+     * include required paths into loader
+     * @param array $paths
+     * @return mixed
+     */
+    public function loadDependencies(array $paths);
+
+    /**
      * return template's content
      * @return string
      */

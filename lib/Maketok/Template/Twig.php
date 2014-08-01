@@ -63,4 +63,18 @@ class Twig extends AbstractEngine
     {
         return $this->_template->render($this->_variables);
     }
+
+    /**
+     * include required paths into loader
+     * @param array $paths
+     * @return mixed
+     */
+    public function loadDependencies(array $paths)
+    {
+        if (isset($this->_engine)) {
+            foreach ($paths as $path) {
+                $this->_engine->getLoader()->addPath($path);
+            }
+        }
+    }
 }

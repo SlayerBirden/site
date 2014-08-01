@@ -40,4 +40,14 @@ class Phptal extends AbstractEngine
     {
         return $this->_engine->execute();
     }
+
+    /**
+     * include required paths into loader
+     * @param array $paths
+     * @return mixed
+     */
+    public function loadDependencies(array $paths)
+    {
+        return;
+    }
 }

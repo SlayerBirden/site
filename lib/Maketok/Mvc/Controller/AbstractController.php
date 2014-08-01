@@ -27,6 +27,9 @@ class AbstractController {
     /** @var  string */
     protected $_template;
 
+    /** @var  array - dependencies for configs */
+    protected $_dependency;
+
     /**
      * so some magic
      */
@@ -106,21 +109,34 @@ class AbstractController {
         } else {
             throw new \Exception("Could not assign template engine.");
         }
+        $dependencyPaths = array();
+        foreach ($this->_dependency as $_dependencyModule) {
+            $dependencyPaths[] = $this->_getTemplatePath('', $_dependencyModule);
+        }
+        $engine->loadDependencies($dependencyPaths);
         $engine->loadTemplate($path);
         $engine->setVariables($templateVars);
         $this->_body = $engine->render();
     }
 
     /**
+     * @param null $template
+     * @param string|null $module
      * @throws \Exception
      * @return string
      */
-    protected function _getTemplatePath()
+    protected function _getTemplatePath($template = null, $module = null)
     {
+        if (is_null($module)) {
+            $module = $this->_module;
+        }
+        if (is_null($template)) {
+            $template = $this->_template;
+        }
         if (is_null($this->_template)) {
             throw new \Exception("Can't find template path, no template set.");
         }
-        return APPLICATION_ROOT . "/modules/{$this->_module}/view/{$this->_template}";
+        return APPLICATION_ROOT . "/modules/{$module}/view/{$template}";
     }
 
     /**
@@ -142,10 +158,28 @@ class AbstractController {
     }
 
     /**
+     * @param array $moduleNames
+     * @return $this
+     */
+    public function setDependency(array $moduleNames)
+    {
+        $this->_dependency = $moduleNames;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getTemplate()
     {
         return $this->_template;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDependency()
+    {
+        return $this->_dependency;
     }
 } 
