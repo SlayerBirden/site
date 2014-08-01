@@ -70,6 +70,8 @@ class TableIterationOne implements InstallerApplicableInterface
                     'title' => array(
                         'type' => 'varchar',
                         'length' => '255',
+                        'nullable' => false,
+                        'default' => '123',
                     ),
                     'created_at' => array(
                         'type' => 'datetime',

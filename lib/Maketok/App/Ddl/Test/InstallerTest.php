@@ -153,6 +153,16 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $result['indexes']);
         $this->assertCount(2, $result['constraints']);
 
+        $result = self::$_checker->checkColumn('table_one', 'title');
+        $this->assertNotEmpty($result);
+
+        print_r($result);
+
+        $this->assertEquals('title', $result['name']);
+        $this->assertEquals('varchar', $result['type']);
+        $this->assertFalse($result['nullable']);
+        $this->assertEquals('123', $result['default']);
+
         $fk = $result['constraints'][1];
         $this->assertNotEmpty($fk);
         $this->assertEquals('foreign_key', $fk['type']);

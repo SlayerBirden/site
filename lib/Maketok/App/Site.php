@@ -13,12 +13,15 @@ use Maketok\Observer\State;
 use Maketok\Observer\SubjectManager;
 use Maketok\Http\Request;
 use Maketok\Util\RequestInterface;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 
 final class Site
 {
     const DEFAULT_TIMEZONE = 'UTC';
+    const ERROR_LOG = 'error.log';
 
     private function __construct()
     {
@@ -102,6 +105,39 @@ final class Site
         // set template engine
         self::registry()->templateEngine = Config::getConfig('template_engine');
         // TODO init error handler, exception handler
+    }
+
+    /**
+     * @param $name
+     * @param int $minLevel
+     * @param StreamHandler $streamHandler
+     * @param [StreamHandler $streamHandler] - up to 10 more
+     * @return \Monolog\Logger
+     */
+    public static function getLogger($name, $minLevel = Logger::DEBUG, StreamHandler $streamHandler = null)
+    {
+        $logger = new Logger($name);
+        $logPath = APPLICATION_ROOT .
+            DIRECTORY_SEPARATOR .
+            'var' .
+            DIRECTORY_SEPARATOR .
+            'log' .
+            DIRECTORY_SEPARATOR .
+            $name .
+            '.log';
+        $logger->pushHandler(new StreamHandler($logPath, $minLevel));
+        if (!is_null($streamHandler)) {
+            $logger->pushHandler($streamHandler);
+        }
+        // now there is a support for a 10 more streamHandlers :)
+        // only 10, no more!
+        // that's kid of a joke, but it's not funny
+        for ($i = 3; $i < 13; ++$i) {
+            if (($arg = func_get_arg($i)) && $arg instanceof StreamHandler) {
+                $logger->pushHandler($arg);
+            }
+        }
+        return $logger;
     }
 
     private static function _initAdapter($data)

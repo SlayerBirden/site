@@ -244,6 +244,8 @@ class Installer
         switch ($definition['type']) {
             case 'char':
             case 'varchar':
+                /** @var Column\Varchar|Column\Char $type */
+                $type = '\\Maketok\\Util\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
                 $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
                 $default = isset($definition['default']) ? $definition['default'] : null;
                 $length = isset($definition['length']) ? $definition['length'] : null;
@@ -365,6 +367,9 @@ class Installer
         }
     }
 
+    /**
+     * @param array $client
+     */
     protected function _processClient(array $client)
     {
         $_map = self::getDdlInstallerMap();
@@ -382,10 +387,8 @@ class Installer
             } elseif ($this->_natRecursiveCompare($client['version'], $lastKey) === -1) {
                 // something is wrong with versioning
                 // send notification
-                $logger = new Logger($this->_loggerName);
-                $logPath = APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'log' . DIRECTORY_SEPARATOR . $this->_loggerName . '.log';
-                $logger->pushHandler(new \Monolog\Handler\StreamHandler($logPath), Logger::WARNING);
-                $logger->addWarning(
+                $logger = Site::getLogger($this->_loggerName);
+                $logger->warning(
                     sprintf('The new version %s of DdlConfig %s is lower than the latest installed version %s',
                         $client['version'],
                         $client['name'],

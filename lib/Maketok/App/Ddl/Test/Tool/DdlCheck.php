@@ -164,6 +164,9 @@ class DdlCheck
     public function checkColumn($table, $column)
     {
         $data = $this->_getPrepare($table);
+        if ($column == 'title') {
+            print_r($data);
+        }
         foreach ($data as $row) {
             if (strpos($row, $column) !== false) {
                 return $this->_parseColumn($row);

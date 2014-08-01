@@ -17,7 +17,7 @@ class Article extends AbstractController
     public function indexAction(RequestInterface $request)
     {
         $article = $this->_initArticle();
-        $this->setTemplate('article.html');
+        $this->setTemplate('article.html.twig');
         return $this->prepareResponse($request, array(
             'title' => $article->name,
         ));

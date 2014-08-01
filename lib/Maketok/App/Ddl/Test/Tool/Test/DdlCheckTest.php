@@ -23,7 +23,7 @@ class DdlCheckTest extends \PHPUnit_Framework_TestCase
 CREATE TABLE `test_website` (
   `website_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(32) NOT NULL DEFAULT '',
-  `name` varchar(64) NOT NULL DEFAULT '',
+  `name` varchar(64) NOT NULL DEFAULT 'oleg',
   `sort_order` smallint(5) unsigned NOT NULL DEFAULT '0',
   `default_group_id` smallint(5) unsigned NOT NULL DEFAULT '0',
   `is_default` tinyint(1) unsigned DEFAULT '0',
@@ -97,6 +97,17 @@ SQL;
         $this->assertFalse(isset($result['auto_increment']));
         $this->assertFalse(isset($result['unsigned']));
         $this->assertEquals('', $result['default']);
+
+        $result = $ddlCheck->checkColumn('test_website', 'name');
+        $this->assertNotEmpty($result);
+
+        $this->assertEquals('name', $result['name']);
+        $this->assertEquals('varchar', $result['type']);
+        $this->assertEquals('64', $result['length']);
+        $this->assertFalse($result['nullable']);
+        $this->assertFalse(isset($result['auto_increment']));
+        $this->assertFalse(isset($result['unsigned']));
+        $this->assertEquals('oleg', $result['default']);
 
     }
 

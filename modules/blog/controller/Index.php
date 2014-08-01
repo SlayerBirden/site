@@ -17,7 +17,7 @@ class Index extends AbstractController
     public function indexAction(RequestInterface $request)
     {
         $this->setDependency(array('cover'));
-        $this->setTemplate('blog.html');
+        $this->setTemplate('blog.html.twig');
         return $this->prepareResponse($request, array(
             'title' => 'Blog',
             'description' => 'Below is the Blog!'
