@@ -28,7 +28,7 @@ class AbstractController {
     protected $_template;
 
     /** @var  array - dependencies for configs */
-    protected $_dependency;
+    protected $_dependency = array();
 
     /**
      * so some magic
