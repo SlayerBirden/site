@@ -19,17 +19,18 @@ class DirectoryHandler
      */
     public function rm($path)
     {
-        $res = false;
         if (is_dir($path)) {
             $files = $this->ls($path, false);
-            foreach ($files as $file) {
-                if ($file->isDir()){
-                    rmdir($file->getRealPath());
-                } else {
-                    unlink($file->getRealPath());
+            if (count($files)) {
+                foreach ($files as $file) {
+                    $this->rm($file['path']);
                 }
+                $res = rmdir($path);
+            } else {
+                $res = rmdir($path);
             }
-            $res = rmdir($path);
+        } else {
+            $res = unlink($path);
         }
         return $res;
     }
@@ -69,7 +70,10 @@ class DirectoryHandler
             if ($namesOnly) {
                 $result[] = $file->getFilename();
             } else {
-                $result[] = $file;
+                $result[] = [
+                    'name' => $file->getFilename(),
+                    'path' => $file->getRealPath(),
+                ];
             }
         }
         return $result;

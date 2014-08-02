@@ -378,7 +378,7 @@ class Installer
             // get the latest version
             // we need to account for the broken config order
             // get the max one
-            uasort($clientConfig, array($this, '_natRecursiveCompare'));
+            uksort($clientConfig, array($this, '_natRecursiveCompare'));
             end($clientConfig);
             $lastKey = key($clientConfig);
             if ($this->_natRecursiveCompare($client['version'], $lastKey) === 1) {

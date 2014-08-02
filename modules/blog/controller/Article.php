@@ -16,14 +16,18 @@ class Article extends AbstractController
 
     public function indexAction(RequestInterface $request)
     {
-        $article = $this->_initArticle();
+        $article = $this->_initArticle($request);
         $this->setTemplate('article.html.twig');
         return $this->prepareResponse($request, array(
-            'title' => $article->name,
+            'title' => $article->title,
+            'content' => $article->content,
+            'author' => $article->author,
+            'date' => $article->created_at,
+            'date_updated' => $article->updated_at,
         ));
     }
 
-    protected function _initArticle()
+    protected function _initArticle(RequestInterface $request)
     {
 
     }
