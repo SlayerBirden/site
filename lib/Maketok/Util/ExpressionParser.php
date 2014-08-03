@@ -77,11 +77,70 @@ class ExpressionParser
      * If it does, set the parameters
      *
      * @param string $newString
+     * @param null|array $restrictions
+     * @throws \Exception
      * @return bool|array
      */
-    public function parse($newString)
+    public function parse($newString, $restrictions = null)
     {
-
+        $restrictions = (is_null($restrictions)) ? $this->_restrictions : $restrictions;
+        $returnVar = array();
+        // first of all compare strings
+        // if no variables exist
+        if (strcmp($this->_expression, $newString) === 0) {
+            return $returnVar;
+        }
+        $tokenized = $this->tokenize();
+        // parse new string against tokenized
+        $lastVar = '';
+        foreach ($tokenized as $part) {
+            if ($part['type'] == 'const' && (strpos($newString, $part['val']) === false)) {
+                return false;
+            } elseif ($part['type'] == 'const') {
+                $pos = strpos($newString, $part['val']);
+                if ($pos === 0) {
+                    $newString = substr($newString, strlen($part['val']));
+                } else {
+                    if (strlen($lastVar) == 0) {
+                        throw new \Exception("Wrong logic of parsing.");
+                    }
+                    $varString = substr($newString, 0, $pos);
+                    if (isset($restrictions[$lastVar])) {
+                        $res = preg_match('#' . $restrictions[$lastVar] . '#', $varString);
+                        if (!$res) {
+                            return $res;
+                        }
+                    }
+                    $returnVar[$lastVar] = $varString;
+                    // now clean up string
+                    $newString = substr($newString, strlen($varString));
+                    $newString = substr($newString, strlen($part['val']));
+                    // if string ended
+                    if ($newString === false) {
+                        $newString = '';
+                    }
+                    $lastVar = '';
+                }
+            } elseif ($part['type'] == 'var') {
+                $lastVar = $part['val'];
+            }
+        }
+        // we need to account for last var
+        if (strlen($lastVar) != 0 && strlen($newString) != 0) {
+            if (isset($restrictions[$lastVar])) {
+                $res = preg_match('#' . $restrictions[$lastVar] . '#', $newString);
+                if ($res === 0) {
+                    return false;
+                } elseif ($res === false) {
+                    throw new \Exception(sprintf("Error in Restriction regexp for '%s'.", $lastVar));
+                }
+            }
+            $returnVar[$lastVar] = $newString;
+        } elseif (strlen($lastVar) != 0) {
+            // empty variable placeholder
+            return false;
+        }
+        return $returnVar;
     }
 
     /**

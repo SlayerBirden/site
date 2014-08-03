@@ -59,4 +59,34 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
         $expr = new ExpressionParser('/blog/article/{article_id');
         $expr->tokenize();
     }
+
+    public function testParse()
+    {
+        $expr = new ExpressionParser('/blog/article/{article_id}');
+        $return = $expr->parse('/blog/article/123');
+        $this->assertEquals(array('article_id' => '123'), $return);
+
+        $expr = new ExpressionParser('/blog/article/{article_id}/cat');
+        $return = $expr->parse('/blog/article/123/cat');
+        $this->assertEquals(array('article_id' => '123'), $return);
+
+        $expr = new ExpressionParser('/blog/article');
+        $return = $expr->parse('/blog/article');
+        $this->assertEquals([], $return);
+
+        $expr = new ExpressionParser('/blog/article/{article_id}');
+        $return = $expr->parse('/blog/article/');
+        $this->assertFalse($return);
+
+        $expr = new ExpressionParser('/blog/article/{article_id}');
+        $return = $expr->parse('/blog/article/gem', array('article_id' => '\d+'));
+        $this->assertFalse($return);
+
+        $expr = new ExpressionParser('/{blog}/article/{article_id}');
+        $return = $expr->parse('/blog/article/123', array('article_id' => '\d+'));
+        $this->assertEquals(array(
+            'blog' => 'blog',
+            'article_id' => '123'
+        ), $return);
+    }
 } 
