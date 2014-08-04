@@ -33,8 +33,7 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
     public function getModuleDirectories()
     {
         if (is_null($this->_moduleDirs)) {
-            // change to sc
-            $handler = new DirectoryHandler();
+            $handler = Site::getServiceContainer()->get('directory_handler');
             $this->_moduleDirs = $handler->ls($this->_getDir());
         }
         return $this->_moduleDirs;

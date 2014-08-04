@@ -13,10 +13,4 @@ return [
         'max_memory_limit' => '512M',
         'max_execution_time' => 60,
     ],
-    'db_config' => [
-        'username' => 'user',
-        'password' => 'pass',
-        'host' => 'host',
-        'database' => 'database',
-    ],
 ];
