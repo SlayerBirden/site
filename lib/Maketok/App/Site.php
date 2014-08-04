@@ -14,8 +14,6 @@ use Maketok\Observer\StateInterface;
 use Maketok\Observer\SubjectManager;
 use Maketok\Http\Request;
 use Maketok\Util\RequestInterface;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
@@ -117,39 +115,6 @@ final class Site
     }
 
     /**
-     * @param $name
-     * @param int $minLevel
-     * @param StreamHandler $streamHandler
-     * @param [StreamHandler $streamHandler] - up to 10 more
-     * @return \Monolog\Logger
-     */
-    public static function getLogger($name, $minLevel = Logger::DEBUG, StreamHandler $streamHandler = null)
-    {
-        $logger = new Logger($name);
-        $logPath = APPLICATION_ROOT .
-            DIRECTORY_SEPARATOR .
-            'var' .
-            DIRECTORY_SEPARATOR .
-            'log' .
-            DIRECTORY_SEPARATOR .
-            $name .
-            '.log';
-        $logger->pushHandler(new StreamHandler($logPath, $minLevel));
-        if (!is_null($streamHandler)) {
-            $logger->pushHandler($streamHandler);
-        }
-        // now there is a support for a 10 more streamHandlers :)
-        // only 10, no more!
-        // that's kid of a joke, but it's not funny
-        for ($i = 3; $i < 13; ++$i) {
-            if (($arg = func_get_arg($i)) && $arg instanceof StreamHandler) {
-                $logger->pushHandler($arg);
-            }
-        }
-        return $logger;
-    }
-
-    /**
      * @return MaketokServiceContainer|ContainerBuilder
      */
     public static function getServiceContainer()
@@ -162,6 +127,9 @@ final class Site
                 self::$_sc = new \MaketokServiceContainer();
             } else {
                 $container = new ContainerBuilder();
+                $container->setParameter('application_root', APPLICATION_ROOT);
+                $container->setParameter('log_dir', APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR);
+                $container->setParameter('cache_dir', APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR);
                 $loader = new YamlFileLoader($container, new FileLocator(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'config'));
                 $loader->load('services.yml');
                 self::$_sc = $container;

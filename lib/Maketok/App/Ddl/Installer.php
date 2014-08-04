@@ -14,7 +14,6 @@ use Maketok\Util\Sql\Ddl\Column;
 use Maketok\Util\Sql\Ddl\Column\Float;
 use Maketok\Util\Sql\Platform\Platform;
 use Maketok\Util\StreamHandler;
-use Monolog\Logger;
 use Zend\Db\Sql\Ddl\CreateTable;
 use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Ddl\DropTable;
@@ -47,7 +46,6 @@ class Installer
      * @var \ArrayObject
      */
     private static $_map;
-    private $_loggerName = 'ddl_installer';
 
     static $_availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey', 'index'];
 
@@ -387,7 +385,7 @@ class Installer
             } elseif ($this->_natRecursiveCompare($client['version'], $lastKey) === -1) {
                 // something is wrong with versioning
                 // send notification
-                $logger = Site::getLogger($this->_loggerName);
+                $logger = Site::getServiceContainer()->get('logger');
                 $logger->warning(
                     sprintf('The new version %s of DdlConfig %s is lower than the latest installed version %s',
                         $client['version'],

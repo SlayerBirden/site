@@ -13,6 +13,8 @@ parameters:
   db_database: site
   db_driver: pdo_mysql
   object_prop_hydrator.class: Zend\Stdlib\Hydrator\ObjectProperty
+  logger.class: Monolog\Logger
+  default_logger_handler.class: Monolog\Handler\StreamHandler
 
 services:
   adapter:
@@ -38,3 +40,9 @@ services:
     factory_method: getInstance
   object_prop_hydrator:
     class: "%object_prop_hydrator.class%"
+  default_logger_handler:
+    class: "%default_logger_handler.class%"
+    arguments: ["%log_dir%site.log", 100]
+  logger:
+    class: "%logger.class%"
+    arguments: ["application_logger", ["@default_logger_handler"]]

@@ -49,10 +49,6 @@ class Article extends AbstractController
             throw new \Exception("Can not process article without id.");
         }
         $articleTable = $this->getSC()->get('article_table');
-//        $articlePrototype = new \modules\blog\model\Article();
-//        $resultSet = new HydratingResultSet(new ObjectProperty(), $articlePrototype);
-//        $tableGateway = new TableGateway('blog_article', Site::getAdapter(), null, $resultSet);
-//        $articleTable = new ArticleTable($tableGateway);
         return $articleTable->getArticle($id);
     }
 }
