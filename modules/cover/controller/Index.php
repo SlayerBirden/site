@@ -13,7 +13,10 @@ use Maketok\Util\RequestInterface;
 class Index extends AbstractController
 {
 
-
+    /**
+     * @param RequestInterface $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function indexAction(RequestInterface $request)
     {
 

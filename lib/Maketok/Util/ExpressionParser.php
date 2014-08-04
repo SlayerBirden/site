@@ -8,7 +8,7 @@
 namespace Maketok\Util;
 
 
-class ExpressionParser
+class ExpressionParser implements ExpressionParserInterface
 {
 
     /**

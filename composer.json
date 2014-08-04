@@ -24,8 +24,11 @@
     "require": {
         "php": ">=5.4.0",
         "zendframework/zend-db": "2.*",
+        "zendframework/zend-stdlib": "2.*",
         "monolog/monolog": "~1.0",
         "symfony/http-foundation": "2.*",
+        "symfony/dependency-injection": "2.*",
+        "symfony/config": "2.*",
         "twig/twig": "~1",
         "twig/extensions": "1.*"
     },

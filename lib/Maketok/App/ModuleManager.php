@@ -10,6 +10,7 @@ namespace Maketok\App;
 use Maketok\App\Ddl\Installer;
 use Maketok\App\Ddl\InstallerApplicableInterface;
 use Maketok\Module\ConfigInterface;
+use Maketok\Observer\State;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\DirectoryHandler;
 use Zend\Db\Sql\Where;
@@ -24,14 +25,15 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
     private $_activeModules = [];
     private $_disabledModules = [];
 
-    public function __construct()
+    public function __construct($adapter)
     {
-        parent::__construct('modules', Site::getAdapter(), new RowGatewayFeature('module_code'));
+        parent::__construct('modules', $adapter, new RowGatewayFeature('module_code'));
     }
 
     public function getModuleDirectories()
     {
         if (is_null($this->_moduleDirs)) {
+            // change to sc
             $handler = new DirectoryHandler();
             $this->_moduleDirs = $handler->ls($this->_getDir());
         }
@@ -185,6 +187,9 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         // use site registry to store active modules
         // this is ugly solution; I hate it
         Site::registry()->activeModuleConfig = $this->_activeModules;
+        Site::getSubjectManager()->notify('module_list_exists', new State(array(
+            'modules' => $this->_activeModules
+        )));
         // insert new modules
         foreach ($this->_activeModules as $config) {
             // ddl

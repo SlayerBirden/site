@@ -1,3 +1,25 @@
-<article>
-
-</article>
+{# note: this is blog index #}
+{% extends "base.html.twig" %}
+{% block head %}
+    {{ parent() }}
+    <style type="text/css">
+        .important { color: #336699; }
+        .newline {display: block;}
+    </style>
+{% endblock %}
+{% block content %}
+    <article>
+        <span class="important">{% trans title %}</span>
+        <div class="article-content">{% trans content %}</div>
+        <div class="article-meta">
+            <span class="newline">{{ author }}</span>
+            <span class="newline">{{ created_at|date("F jS \\a\\t g:ia") }}</span>
+            <span class="newline">{% trans %}id: {{ id }}{% endtrans %}</span>
+        </div>
+    </article>
+{% endblock %}
+{% block footer %}
+    <div class="footer-content info">
+        <span class="important">{% trans "footer" %}</span>
+    </div>
+{% endblock %}

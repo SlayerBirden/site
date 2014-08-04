@@ -17,23 +17,39 @@ return [
         'dispatch' => [
             [
                 'subscriber' => 'Maketok\Mvc\Controller\Front::dispatch',
-                'priority' => 1,
+                'type' => 'class',
+                'priority' => 10,
             ],
             [
                 'subscriber' => 'Maketok\App\Session::init',
+                'type' => 'class',
                 'priority' => 0,
             ],
         ],
         'installer_before_process' => [
             [
-                'subscriber' => 'Maketok\App\ModuleManager::processModuleConfig',
-                'priority' => 1,
+                'subscriber' => 'module_manager::processModuleConfig',
+                'type' => 'service',
+                'priority' => 10,
             ],
         ],
         'installer_after_process' => [
             [
-                'subscriber' => 'Maketok\App\ModuleManager::processModules',
-                'priority' => 1,
+                'subscriber' => 'module_manager::processModules',
+                'type' => 'service',
+                'priority' => 10,
+            ],
+            [
+                'subscriber' => 'Maketok\App\Site::scCompileAndDump',
+                'type' => 'static',
+                'priority' => 0,
+            ],
+        ],
+        'module_list_exists' => [
+            [
+                'subscriber' => 'Maketok\App\Site::serviceContainerProcessModules',
+                'type' => 'static',
+                'priority' => 0,
             ],
         ],
     ],
@@ -41,6 +57,4 @@ return [
         '\Maketok\App\Session\DbHandler',
         '\Maketok\App\ModuleManager',
     ],
-    'session_storage' => 'db',
-    'template_engine' => 'twig'
 ];

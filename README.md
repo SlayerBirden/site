@@ -14,9 +14,12 @@ Heavily borrowed from ZF for certain areas.
 
 Includes next components from vendors:
 - zend-db (zf 2.*)
+- zend-stdlib (zf 2.*)
 - monolog (~1.0)
 - phpunit (4.*)
 - symfony/http-foundation (2.*)
+- symfony/dependency-injection (2.*)
+- symfony/config (2.*)
 - twig (~1)
 
 

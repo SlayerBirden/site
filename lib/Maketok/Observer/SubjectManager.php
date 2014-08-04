@@ -69,9 +69,6 @@ class SubjectManager implements SubjectManagerInterface
                 if ($_subject->getShouldStopPropagation()) {
                     break;
                 }
-                // TODO figure out how to inject dependencies
-                // maybe we need Service Locator?
-                // this is a huge bummer
                 call_user_func($_subQueue->getQueue()->extract(), $state->setSubject($_subject));
             }
         }

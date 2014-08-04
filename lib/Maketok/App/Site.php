@@ -10,18 +10,30 @@ namespace Maketok\App;
 use Maketok\Loader\Autoload;
 use Maketok\Mvc\Router\Stack;
 use Maketok\Observer\State;
+use Maketok\Observer\StateInterface;
 use Maketok\Observer\SubjectManager;
 use Maketok\Http\Request;
 use Maketok\Util\RequestInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Zend\Db\Adapter\Adapter;
-use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 
 final class Site
 {
     const DEFAULT_TIMEZONE = 'UTC';
     const ERROR_LOG = 'error.log';
+    const SERVICE_CONTAINER_CLASS = 'MaketokServiceContainer';
+
+    /** @var  bool */
+    private static $_debug = false;
+
+    /** @var  ContainerBuilder */
+    private static $_sc;
 
     private function __construct()
     {
@@ -46,7 +58,6 @@ final class Site
         $loader->register();
 
         self::_loadConfigs();
-        self::_initAdapter(Config::getConfig('db_config'));
         if ($env) {
             self::_initEnvironment();
         }
@@ -102,8 +113,6 @@ final class Site
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         self::setRequest(Request::createFromGlobals());
-        // set template engine
-        self::registry()->templateEngine = Config::getConfig('template_engine');
         // TODO init error handler, exception handler
     }
 
@@ -140,15 +149,74 @@ final class Site
         return $logger;
     }
 
-    private static function _initAdapter($data)
+    /**
+     * @return MaketokServiceContainer|ContainerBuilder
+     */
+    public static function getServiceContainer()
     {
-        $adapter = new Adapter(array(
-            'driver'   => 'pdo_mysql',
-            'database' => $data['database'],
-            'username' => $data['username'],
-            'password' => $data['password'],
-        ));
-        self::setAdapter($adapter);
+        if (is_null(self::$_sc)) {
+            // get cached file
+            $file = self::getContainerFileName();
+            if (file_exists($file) && !self::$_debug) {
+                require_once $file;
+                self::$_sc = new \MaketokServiceContainer();
+            } else {
+                $container = new ContainerBuilder();
+                $loader = new YamlFileLoader($container, new FileLocator(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'config'));
+                $loader->load('services.yml');
+                self::$_sc = $container;
+            }
+        }
+        return self::$_sc;
+    }
+
+    /**
+     * @param StateInterface $state
+     */
+    public static function serviceContainerProcessModules(StateInterface $state)
+    {
+        // we may not need to
+        $container = self::getServiceContainer();
+        if ($container instanceof \MaketokServiceContainer) {
+            return;
+        }
+        $activeModules = $state->modules;
+        foreach ($activeModules as $moduleConfig) {
+            // include each module into sc
+            // only the ones that work :)
+            if ($moduleConfig instanceof ExtensionInterface) {
+                $container->registerExtension($moduleConfig);
+                $container->loadFromExtension($moduleConfig->getAlias());
+            }
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getContainerFileName()
+    {
+        return APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'container.php';
+    }
+
+    /**
+     * @param StateInterface $state
+     */
+    public static function scCompileAndDump(StateInterface $state)
+    {
+        $container = self::getServiceContainer();
+        if ($container instanceof \MaketokServiceContainer) {
+            return;
+        }
+        $container->compile();
+
+        if (!self::$_debug) {
+            $dumper = new PhpDumper($container);
+            file_put_contents(
+                self::getContainerFileName(),
+                $dumper->dump(array('class' => 'MaketokServiceContainer'))
+            );
+        }
     }
 
     /**
@@ -156,20 +224,12 @@ final class Site
      */
     public static function getAdapter()
     {
-        return GlobalAdapterFeature::getStaticAdapter();
-    }
-
-    /**
-     * @param Adapter $adapter
-     */
-    public static function setAdapter(Adapter $adapter)
-    {
-        GlobalAdapterFeature::setStaticAdapter($adapter);
+        return self::getServiceContainer()->get('adapter');
     }
 
     public static function registry()
     {
-        return Registry::getInstance();
+        return self::getServiceContainer()->get('registry');
     }
 
     /**
@@ -177,7 +237,7 @@ final class Site
      */
     public static function getSubjectManager()
     {
-        return SubjectManager::getInstance();
+        return self::getServiceContainer()->get('subject_manager');
     }
 
     /**

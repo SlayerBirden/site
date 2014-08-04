@@ -12,6 +12,7 @@ namespace Maketok\Mvc\Router\Route\Http;
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Mvc\Router\Route\Success;
 use Maketok\Util\RequestInterface;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 class Literal implements RouteInterface
 {
@@ -23,16 +24,21 @@ class Literal implements RouteInterface
     /** @var  array */
     protected $_parameters;
 
+    /** @var  array */
+    protected $_defaults;
+
     /** @var  RequestInterface */
     protected $_request;
 
     /**
      * @param $path
      * @param array $parameters
+     * @param array $defaults
      */
-    public function __construct($path, array $parameters) {
+    public function __construct($path, array $parameters,  array $defaults = array()) {
         $this->setPath($path);
         $this->_parameters = $parameters;
+        $this->_defaults = $defaults;
     }
 
     /**
@@ -43,6 +49,11 @@ class Literal implements RouteInterface
     {
         $this->_request = $request;
         if ($request->getPathInfo() === $this->_matchPath) {
+            if (is_object($request->attributes) &&
+                ($request->attributes instanceof ParameterBag) &&
+                !empty($this->_defaults)) {
+                    $request->attributes->add($this->_defaults);
+            }
             return new Success($this);
         }
         return false;

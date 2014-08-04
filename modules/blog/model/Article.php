@@ -17,7 +17,7 @@ class Article
     /** @var  string data */
     public $created_at;
     /** @var  string data */
-    public $update_at;
+    public $updated_at;
     /** @var  string */
     public $author;
     /** @var  string text */

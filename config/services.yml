@@ -1,0 +1,40 @@
+parameters:
+  debug: false
+  template_engine.class: Maketok\Template\Twig
+  session_handler.class: Maketok\App\Session\DbHandler
+  directory_handler.class: Maketok\Util\DirectoryHandler
+  subject_manager.class: Maketok\Observer\SubjectManager
+  registry.class: Maketok\App\Registry
+  adapter.class: Zend\Db\Adapter\Adapter
+  module_manager.class: Maketok\App\ModuleManager
+  db_user: root
+  db_passw:
+  db_host: localhost
+  db_database: site
+  db_driver: pdo_mysql
+  object_prop_hydrator.class: Zend\Stdlib\Hydrator\ObjectProperty
+
+services:
+  adapter:
+    class: "%adapter.class%"
+    arguments: [{driver: "%db_driver%", hostname: "%db_host%", database: "%db_database%", username: "%db_user%", password: "%db_passw%"}]
+  template_engine:
+    class: "%template_engine.class%"
+    arguments: ["%debug%"]
+  module_manager:
+    class: "%module_manager.class%"
+    arguments: ["@adapter"]
+  session_handler:
+    class: "%session_handler.class%"
+  directory_handler:
+    class: "%directory_handler.class%"
+  subject_manager:
+    class: "%subject_manager.class%"
+    factory_class: "%subject_manager.class%"
+    factory_method: getInstance
+  registry:
+    class: "%registry.class%"
+    factory_class: "%registry.class%"
+    factory_method: getInstance
+  object_prop_hydrator:
+    class: "%object_prop_hydrator.class%"

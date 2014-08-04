@@ -10,7 +10,6 @@ namespace Maketok\App;
 use Maketok\App\Ddl\Installer;
 use Maketok\App\Session\DbHandler;
 use Maketok\Observer\State;
-use Maketok\Observer\SubjectManager;
 
 class Config
 {
@@ -83,10 +82,26 @@ class Config
         if  ($mode & self::EVENTS) {
             foreach (self::getConfig('subject_config') as $subjectName => $subjectData) {
                 foreach ($subjectData as $data) {
-                    list($subClass, $subMethod) = explode('::', $data['subscriber']);
-                    $subcriber = self::classFactory($subClass);
-                    $priority = (isset($data['priority']) ? $data['priority'] : null);
-                    Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
+                    switch ($data['type']) {
+                        case 'class':
+                            list($subClass, $subMethod) = explode('::', $data['subscriber']);
+                            $subcriber = self::classFactory($subClass);
+                            $priority = (isset($data['priority']) ? $data['priority'] : null);
+                            Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
+                            break;
+                        case 'static':
+                            $priority = (isset($data['priority']) ? $data['priority'] : null);
+                            Site::getSubjectManager()->attach($subjectName, $data['subscriber'], $priority);
+                            break;
+                        case 'service':
+                            list($subService, $subMethod) = explode('::', $data['subscriber']);
+                            $subcriber = self::serviceFactory($subService);
+                            $priority = (isset($data['priority']) ? $data['priority'] : null);
+                            Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
+                            break;
+                        default:
+                            throw new \Exception("Unrecognized subscriber type");
+                    }
                 }
             }
         }
@@ -112,12 +127,22 @@ class Config
 
     /**
      * Factory Method
-     * @param $className
+     * @param string $className
      * @return mixed
      */
     public static function classFactory($className)
     {
         return new $className;
+    }
+
+    /**
+     * Factory Method
+     * @param string $serviceName
+     * @return mixed
+     */
+    public static function serviceFactory($serviceName)
+    {
+        return Site::getServiceContainer()->get($serviceName);
     }
 
     /**

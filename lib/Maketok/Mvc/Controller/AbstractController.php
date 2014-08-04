@@ -101,14 +101,7 @@ class AbstractController {
     {
         $path = $this->_getTemplatePath();
         // get template Engine
-        $templateEngine = Site::registry()->templateEngine;
-        $_className = 'Maketok\\Template\\' . ucfirst(strtolower($templateEngine));
-        if (class_exists($_className)) {
-            /** @var Template\AbstractEngine $engine */
-            $engine = new $_className();
-        } else {
-            throw new \Exception("Could not assign template engine.");
-        }
+        $engine = $this->getSC()->get('template_engine');
         $dependencyPaths = array();
         foreach ($this->_dependency as $_dependencyModule) {
             $dependencyPaths[] = $this->_getTemplatePath('', $_dependencyModule);
@@ -181,5 +174,13 @@ class AbstractController {
     public function getDependency()
     {
         return $this->_dependency;
+    }
+
+    /**
+     * @return \Maketok\App\MaketokServiceContainer|\Symfony\Component\DependencyInjection\ContainerBuilder
+     */
+    public function getSC()
+    {
+        return Site::getServiceContainer();
     }
 } 
