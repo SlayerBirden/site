@@ -132,6 +132,9 @@ final class Site
                 $container->setParameter('cache_dir', APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR);
                 $loader = new YamlFileLoader($container, new FileLocator(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'config'));
                 $loader->load('services.yml');
+                if (file_exists(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'local.services.yml')) {
+                    $loader->load('local.services.yml');
+                }
                 self::$_sc = $container;
             }
         }

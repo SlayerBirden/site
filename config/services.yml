@@ -7,10 +7,6 @@ parameters:
   registry.class: Maketok\App\Registry
   adapter.class: Zend\Db\Adapter\Adapter
   module_manager.class: Maketok\App\ModuleManager
-  db_user: root
-  db_passw:
-  db_host: localhost
-  db_database: site
   db_driver: pdo_mysql
   object_prop_hydrator.class: Zend\Stdlib\Hydrator\ObjectProperty
   logger.class: Monolog\Logger
