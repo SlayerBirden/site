@@ -8,6 +8,7 @@
 namespace Maketok\App;
 
 use Maketok\App\Ddl\Installer;
+use Maketok\App\Exception\ConfigException;
 use Maketok\App\Session\DbHandler;
 use Maketok\Observer\State;
 
@@ -71,6 +72,7 @@ class Config
 
     /**
      * basic Service Manager
+     * @throws ConfigException
      */
     public static function applyConfig($mode = self::ALL)
     {
@@ -100,7 +102,7 @@ class Config
                             Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
                             break;
                         default:
-                            throw new \Exception("Unrecognized subscriber type");
+                            throw new ConfigException("Unrecognized subscriber type");
                     }
                 }
             }
@@ -113,7 +115,7 @@ class Config
             }
         }
         if  ($mode & self::DDL) {
-            $installer = new Installer();
+            $installer = Site::getServiceContainer()->get('ddl_installer');
             foreach (self::getConfig('db_ddl') as $client) {
                 $installer->addClient($client);
             }

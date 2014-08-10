@@ -49,6 +49,6 @@ class Article extends AbstractController
             throw new \Exception("Can not process article without id.");
         }
         $articleTable = $this->getSC()->get('article_table');
-        return $articleTable->getArticle($id);
+        return $articleTable->find($id);
     }
 }

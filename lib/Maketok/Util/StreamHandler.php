@@ -7,6 +7,8 @@
  */
 namespace Maketok\Util;
 
+use Maketok\Util\Exception\StreamException;
+
 class StreamHandler implements StreamHandlerInterface
 {
 
@@ -54,7 +56,7 @@ class StreamHandler implements StreamHandlerInterface
     /**
      * @param null $path
      * @param string $mode
-     * @throws \Exception
+     * @throws StreamException
      */
     protected function _initHandle($path = null, $mode = 'w')
     {
@@ -65,7 +67,7 @@ class StreamHandler implements StreamHandlerInterface
             $path = $this->_path;
         }
         if (is_null($path)) {
-            throw new \Exception('The path to write is not specified.');
+            throw new StreamException('The path to write is not specified.');
         }
         $dirName = dirname($path);
         if (!is_dir($dirName)) {

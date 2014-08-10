@@ -6,9 +6,9 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util\Sql\Platform\Mysql;
+namespace Maketok\Util\Zend\Db\Sql\Platform\Mysql;
 
-use Maketok\Util\Sql\Platform\Mysql\Ddl\AlterTableDecorator;
+use Maketok\Util\Zend\Db\Sql\Platform\Mysql\Ddl\AlterTableDecorator;
 use Zend\Db\Sql\Platform\AbstractPlatform;
 use Zend\Db\Sql\Platform\Mysql\Ddl\CreateTableDecorator;
 use Zend\Db\Sql\Platform\Mysql\SelectDecorator;

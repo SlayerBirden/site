@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util\Sql\Platform\Mysql\Ddl;
+namespace Maketok\Util\Zend\Db\Sql\Platform\Mysql\Ddl;
 
 use Zend\Db\Adapter\Platform\PlatformInterface;
 use Zend\Db\Sql\Ddl\AlterTable;

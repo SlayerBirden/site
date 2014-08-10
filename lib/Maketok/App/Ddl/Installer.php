@@ -8,17 +8,16 @@
 namespace Maketok\App\Ddl;
 
 use Maketok\App\Site;
-use Maketok\Util\Sql\Ddl\Column\Blob;
-use Maketok\Util\Sql\Ddl\Column\Datetime;
-use Maketok\Util\Sql\Ddl\Column;
-use Maketok\Util\Sql\Ddl\Column\Float;
-use Maketok\Util\Sql\Platform\Platform;
+use Maketok\Util\Zend\Db\Sql\Ddl\Column\Blob;
+use Maketok\Util\Zend\Db\Sql\Ddl\Column\Datetime;
+use Maketok\Util\Zend\Db\Sql\Ddl\Column;
+use Maketok\Util\Zend\Db\Sql\Ddl\Column\Float;
 use Maketok\Util\StreamHandler;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Ddl\CreateTable;
 use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Ddl\DropTable;
 use Zend\Db\Sql\Ddl\SqlInterface;
-use Zend\Db\Sql\Platform\AbstractPlatform;
 use Zend\Db\Sql\Sql;
 
 class Installer
@@ -34,11 +33,6 @@ class Installer
     private $_clients = array();
 
     /**
-     * @var AbstractPlatform
-     */
-    private static $_platform;
-
-    /**
      * @var Sql
      */
     private static $_sql;
@@ -47,7 +41,16 @@ class Installer
      */
     private static $_map;
 
+    /** @var  Adapter */
+    protected static $_adapter;
+
     static $_availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey', 'index'];
+
+    public function __construct(Adapter $adapter, Sql $sql)
+    {
+        self::$_adapter = $adapter;
+        self::$_sql = $sql;
+    }
 
     /**
      * @param string $tableName
@@ -113,8 +116,8 @@ class Installer
         /** @var \Zend\Db\Sql\Ddl\Constraint\ConstraintInterface $type */
         $type = '\\Zend\\Db\\Sql\\Ddl\\Constraint\\' . ucfirst($constraintDefinition['type']);
         if ($constraintDefinition['type'] == 'index') {
-            /** @var \Maketok\Util\Sql\Ddl\Index\Index $type */
-            $type = '\\Maketok\\Util\\Sql\\Ddl\\Index\\Index';
+            /** @var \Maketok\Util\Zend\Db\Sql\Ddl\Index\Index $type */
+            $type = '\\Maketok\\Util\\Zend\\Db\\Sql\\Ddl\\Index\\Index';
         }
         if ($constraintDefinition['type'] == 'foreignKey') {
             $column = $constraintDefinition['def'];
@@ -139,35 +142,13 @@ class Installer
      */
     private static function _commit(SqlInterface $ddl, $directQuery = null)
     {
-        $adapter = Site::getAdapter();
+        $adapter = self::$_adapter;
         $query = $directQuery ?: self::_getQuery($ddl);
 
         $adapter->query(
             $query,
             $adapter::QUERY_MODE_EXECUTE
         );
-    }
-
-    /**
-     * @return AbstractPlatform
-     */
-    private static function _getPlatform()
-    {
-        if (!isset(self::$_platform)) {
-            self::$_platform = new Platform(Site::getAdapter());
-        }
-        return self::$_platform;
-    }
-
-    /**
-     * @return Sql
-     */
-    private static function _getSql()
-    {
-        if (!isset(self::$_sql)) {
-            self::$_sql = new Sql(Site::getAdapter(), null, self::_getPlatform());
-        }
-        return self::$_sql;
     }
 
     /**
@@ -210,7 +191,7 @@ class Installer
      */
     private static function _getQuery(SqlInterface $table)
     {
-        return self::_getSql()->getSqlStringForSqlObject($table);
+        return self::$_sql->getSqlStringForSqlObject($table);
     }
 
     /**
@@ -243,7 +224,7 @@ class Installer
             case 'char':
             case 'varchar':
                 /** @var Column\Varchar|Column\Char $type */
-                $type = '\\Maketok\\Util\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
+                $type = '\\Maketok\\Util\\Zend\\Db\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
                 $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
                 $default = isset($definition['default']) ? $definition['default'] : null;
                 $length = isset($definition['length']) ? $definition['length'] : null;
@@ -252,7 +233,7 @@ class Installer
             case 'bigInteger':
             case 'integer':
                 /** @var Column\BigInteger|Column\Integer $type */
-                $type = '\\Maketok\\Util\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
+                $type = '\\Maketok\\Util\\Zend\\Db\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
                 $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
                 $default = isset($definition['default']) ? $definition['default'] : null;
                 $options = array();

@@ -6,11 +6,12 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util\Sql\Ddl\Index;
+namespace Maketok\Util\Zend\Db\Sql\Ddl\Column;
 
-use Zend\Db\Sql\Ddl\Constraint\AbstractConstraint;
-
-abstract class AbstractIndex extends AbstractConstraint
+class BigInteger extends Integer
 {
-
+    /**
+     * @var string
+     */
+    protected $type = 'BIGINT';
 }

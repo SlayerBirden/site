@@ -6,12 +6,10 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util\Sql\Ddl\Column;
+namespace Maketok\Util\Exception;
 
-class BigInteger extends Integer
+
+class DirectoryException extends \Exception
 {
-    /**
-     * @var string
-     */
-    protected $type = 'BIGINT';
+
 }

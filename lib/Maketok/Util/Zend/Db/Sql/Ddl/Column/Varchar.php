@@ -5,7 +5,7 @@
  * @project store
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
-namespace Maketok\Util\Sql\Ddl\Column;
+namespace Maketok\Util\Zend\Db\Sql\Ddl\Column;
 
 use Zend\Db\Sql\Ddl\Column;
 

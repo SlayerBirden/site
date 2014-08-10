@@ -5,11 +5,12 @@
  * @project store
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
-namespace modules\blog\model;
 
-use Maketok\Util\AbstractTableMapper;
+namespace Maketok\Util\Zend\Db\Sql\Ddl\Index;
 
-class ArticleTable extends AbstractTableMapper
+use Zend\Db\Sql\Ddl\Constraint\AbstractConstraint;
+
+abstract class AbstractIndex extends AbstractConstraint
 {
 
 }

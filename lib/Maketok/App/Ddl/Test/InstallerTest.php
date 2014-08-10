@@ -36,7 +36,7 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
 
     public static function setUpBeforeClass()
     {
-        self::$_installer = new Installer();
+        self::$_installer = Site::getServiceContainer()->get('ddl_installer');
         self::$_installer->setInstallerLockName(self::$_installerLockName);
         self::$_natRecursiveCompareReflectionMethod = new \ReflectionMethod(get_class(self::$_installer), '_natRecursiveCompare');
         self::$_natRecursiveCompareReflectionMethod->setAccessible(true);

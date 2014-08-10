@@ -6,13 +6,18 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util\Sql\Platform;
+namespace Maketok\Util\Zend\Db\Sql\Platform;
 
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\Sql\Platform\AbstractPlatform;
 use Zend\Db\Sql\Platform\SqlServer;
 use Zend\Db\Sql\Platform\Oracle;
 
+/**
+ * Class Platform
+ * Create new platform class to extend Mysql platform in order to add AlterTable decorator
+ * @package Maketok\Util\Zend\Db\Sql\Platform
+ */
 class Platform extends AbstractPlatform
 {
 

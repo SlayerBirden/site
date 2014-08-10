@@ -7,6 +7,8 @@
  */
 namespace Maketok\Util;
 
+use Maketok\Util\Exception\DirectoryException;
+
 class DirectoryHandler
 {
 
@@ -40,7 +42,6 @@ class DirectoryHandler
      * @param int $permissions
      * @param bool $recursive
      * @return bool
-     * @throws \Exception
      */
     public function mkdir($path, $permissions = self::PERMISSIONS, $recursive = true)
     {
@@ -53,12 +54,12 @@ class DirectoryHandler
      * @param null|string $path
      * @param bool $namesOnly
      * @return array
-     * @throws \Exception
+     * @throws DirectoryException
      */
     public function ls($path, $namesOnly = true)
     {
         if (!is_dir($path)) {
-            throw new \Exception('The path does not exist.');
+            throw new DirectoryException('The path does not exist.');
         }
         $files = new \DirectoryIterator($path);
         $result = [];

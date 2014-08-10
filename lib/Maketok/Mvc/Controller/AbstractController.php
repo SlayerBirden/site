@@ -10,6 +10,7 @@ namespace Maketok\Mvc\Controller;
 
 use Maketok\App\Site;
 use Maketok\Http\Response;
+use Maketok\Mvc\GenericException;
 use Maketok\Util\RequestInterface;
 use Maketok\Template;
 
@@ -61,14 +62,14 @@ class AbstractController {
      * @param string|null $content
      * @param int $code
      * @param array|null $headers
-     * @throws \Exception
+     * @throws GenericException
      */
     protected function _initResponse($content, $code, $headers)
     {
         if (is_null($content) && !is_null($this->_body)) {
             $content = $this->_body;
         } elseif (is_null($content) && is_null($this->_body)) {
-            throw new \Exception("Can't initiate Response object without any body.");
+            throw new GenericException("Can't initiate Response object without any body.");
         }
         if (is_null($headers)) {
             $headers = array();
@@ -115,7 +116,7 @@ class AbstractController {
     /**
      * @param null $template
      * @param string|null $module
-     * @throws \Exception
+     * @throws GenericException
      * @return string
      */
     protected function _getTemplatePath($template = null, $module = null)
@@ -127,7 +128,7 @@ class AbstractController {
             $template = $this->_template;
         }
         if (is_null($this->_template)) {
-            throw new \Exception("Can't find template path, no template set.");
+            throw new GenericException("Can't find template path, no template set.");
         }
         return APPLICATION_ROOT . "/modules/{$module}/view/{$template}";
     }

@@ -8,6 +8,7 @@
 namespace Maketok\Mvc\Controller;
 
 use Maketok\App\Site;
+use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\ResponseInterface;
@@ -21,7 +22,7 @@ class Front
 
     /**
      * @param StateInterface $state
-     * @throws \Exception
+     * @throws RouteException
      */
     public function dispatch(StateInterface $state)
     {
@@ -35,7 +36,7 @@ class Front
             $response->send();
             exit;
         }
-        throw new \Exception("Could not match any route.");
+        throw new RouteException("Could not match any route.");
     }
 
     public function __construct()
@@ -55,13 +56,13 @@ class Front
     /**
      * @param array $parameters
      * @param \Maketok\Mvc\Router\Route\RouteInterface $route
-     * @throws \Exception
+     * @throws RouteException
      * @return ResponseInterface
      */
     protected function _launchAction(array $parameters, RouteInterface $route)
     {
         if (!isset($parameters['controller']) || !isset($parameters['action'])) {
-            throw new \Exception("Missing controller or action for a matched route.");
+            throw new RouteException("Missing controller or action for a matched route.");
         }
 
         $controller = new $parameters['controller'];

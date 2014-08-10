@@ -7,6 +7,8 @@
  */
 namespace Maketok\App;
 
+use Maketok\App\Exception\AppException;
+
 final class Registry
 {
     private $_keys = array();
@@ -24,10 +26,15 @@ final class Registry
         return null;
     }
 
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @throws Exception\AppException
+     */
     public function __set($key, $value)
     {
         if (isset($this->_keys[$key])) {
-            throw new \Exception(sprintf("Can not set existing value to the registry for %s.", $key));
+            throw new AppException(sprintf("Can not set existing value to the registry for %s.", $key));
         }
         $this->_keys[$key] = $value;
     }

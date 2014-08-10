@@ -1,5 +1,4 @@
 parameters:
-  debug: true
   db_user: user
   db_passw: pass
   db_host: localhost

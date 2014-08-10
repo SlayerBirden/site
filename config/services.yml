@@ -1,5 +1,4 @@
 parameters:
-  debug: false
   template_engine.class: Maketok\Template\Twig
   session_handler.class: Maketok\App\Session\DbHandler
   directory_handler.class: Maketok\Util\DirectoryHandler
@@ -11,6 +10,9 @@ parameters:
   object_prop_hydrator.class: Zend\Stdlib\Hydrator\ObjectProperty
   logger.class: Monolog\Logger
   default_logger_handler.class: Monolog\Handler\StreamHandler
+  ddl_installer.class: Maketok\App\Ddl\Installer
+  zend_db_sql.class: Maketok\Util\Zend\Db\Sql\Sql
+  zend_sql_platform.class: Maketok\Util\Zend\Db\Sql\Platform\Platform
 
 services:
   adapter:
@@ -42,3 +44,12 @@ services:
   logger:
     class: "%logger.class%"
     arguments: ["application_logger", ["@default_logger_handler"]]
+  zend_sql_platform:
+    class: "%zend_sql_platform.class%"
+    arguments: ["@adapter"]
+  zend_db_sql:
+    class: "%zend_db_sql.class%"
+    arguments: ["@adapter", [], "@zend_sql_platform"]
+  ddl_installer:
+    class: "%ddl_installer.class%"
+    arguments: ["@adapter", "@zend_db_sql"]

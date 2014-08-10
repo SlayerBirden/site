@@ -5,11 +5,11 @@
  * @project store
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
-namespace modules\blog\model;
 
-use Maketok\Util\AbstractTableMapper;
+namespace Maketok\Mvc;
 
-class ArticleTable extends AbstractTableMapper
+
+class RouteException extends \Exception
 {
 
-}
+} 

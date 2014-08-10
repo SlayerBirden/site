@@ -19,4 +19,4 @@ services:
       - "@article_result_set"
   article_table:
     class: "%article_table.class%"
-    arguments: ["@article_table_gateway"]
+    arguments: ["@article_table_gateway", id]

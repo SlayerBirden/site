@@ -6,15 +6,10 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util\Sql\Ddl\Column;
+namespace Maketok\Util\Exception;
 
-use Zend\Db\Sql\Ddl\Column\Date;
 
-class Datetime extends Date
+class StreamException extends \Exception
 {
-    /**
-     * @var string
-     */
-    protected $specification = '%s DATETIME %s %s';
 
 }

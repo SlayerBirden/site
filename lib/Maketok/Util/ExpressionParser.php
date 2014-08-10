@@ -8,6 +8,8 @@
 namespace Maketok\Util;
 
 
+use Maketok\Util\Exception\ParserException;
+
 class ExpressionParser implements ExpressionParserInterface
 {
 
@@ -46,12 +48,12 @@ class ExpressionParser implements ExpressionParserInterface
      * @param null|array $parameters
      * @param null|array $restrictions
      * @return mixed|string
-     * @throws \Exception
+     * @throws ParserException
      */
     public function evaluate($parameters = null, $restrictions = null)
     {
         if (is_null($this->_parameters) && is_null($parameters)) {
-            throw new \Exception("No Params to evaluate.");
+            throw new ParserException("No Params to evaluate.");
         }
         $parameters = (is_null($parameters)) ? $this->_parameters : $parameters;
         $restrictions = (is_null($restrictions)) ? $this->_restrictions : $restrictions;
@@ -60,7 +62,7 @@ class ExpressionParser implements ExpressionParserInterface
                 if (isset($restrictions[$key])) {
                     $res = preg_match('#' . $restrictions[$key] . '#', $value);
                     if (!$res) {
-                        throw new \Exception(sprintf("One of the parameters (%s) failed to satisfy requirements.", $key));
+                        throw new ParserException(sprintf("One of the parameters (%s) failed to satisfy requirements.", $key));
                     }
                 }
             }
@@ -78,7 +80,7 @@ class ExpressionParser implements ExpressionParserInterface
      *
      * @param string $newString
      * @param null|array $restrictions
-     * @throws \Exception
+     * @throws ParserException
      * @return bool|array
      */
     public function parse($newString, $restrictions = null)
@@ -102,7 +104,7 @@ class ExpressionParser implements ExpressionParserInterface
                     $newString = substr($newString, strlen($part['val']));
                 } else {
                     if (strlen($lastVar) == 0) {
-                        throw new \Exception("Wrong logic of parsing.");
+                        throw new ParserException("Wrong logic of parsing.");
                     }
                     $varString = substr($newString, 0, $pos);
                     if (isset($restrictions[$lastVar])) {
@@ -132,7 +134,7 @@ class ExpressionParser implements ExpressionParserInterface
                 if ($res === 0) {
                     return false;
                 } elseif ($res === false) {
-                    throw new \Exception(sprintf("Error in Restriction regexp for '%s'.", $lastVar));
+                    throw new ParserException(sprintf("Error in Restriction regexp for '%s'.", $lastVar));
                 }
             }
             $returnVar[$lastVar] = $newString;
@@ -146,7 +148,7 @@ class ExpressionParser implements ExpressionParserInterface
     /**
      * tries to tokenize the expression
      * @param null|string $string
-     * @throws \Exception
+     * @throws ParserException
      * @return array
      */
     public function tokenize($string = null)
@@ -169,7 +171,7 @@ class ExpressionParser implements ExpressionParserInterface
                     $const = '';
                 }
                 if ($isVar) {
-                    throw new \Exception("Does not allow nested variables.");
+                    throw new ParserException("Does not allow nested variables.");
                 } else {
                     $isVar = true;
                     continue;
@@ -185,7 +187,7 @@ class ExpressionParser implements ExpressionParserInterface
                     $var = '';
                 }
                 if (!$isVar) {
-                    throw new \Exception("Error in expression syntax.");
+                    throw new ParserException("Error in expression syntax.");
                 } else {
                     $isVar = false;
                     continue;
@@ -199,7 +201,7 @@ class ExpressionParser implements ExpressionParserInterface
         }
         // dump what's left
         if ($isVar) {
-            throw new \Exception("Can not end up in variable.");
+            throw new ParserException("Can not end up in variable.");
         }
         if (!empty($const)) {
             $res[] = array(

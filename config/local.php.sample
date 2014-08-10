@@ -13,4 +13,5 @@ return [
         'max_memory_limit' => '512M',
         'max_execution_time' => 60,
     ],
+    'debug' => true,
 ];

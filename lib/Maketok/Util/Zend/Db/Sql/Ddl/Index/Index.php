@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util\Sql\Ddl\Index;
+namespace Maketok\Util\Zend\Db\Sql\Ddl\Index;
 
 class Index extends AbstractIndex
 {

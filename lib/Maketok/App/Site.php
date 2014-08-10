@@ -27,9 +27,6 @@ final class Site
     const ERROR_LOG = 'error.log';
     const SERVICE_CONTAINER_CLASS = 'MaketokServiceContainer';
 
-    /** @var  bool */
-    private static $_debug = false;
-
     /** @var  ContainerBuilder */
     private static $_sc;
 
@@ -122,12 +119,13 @@ final class Site
         if (is_null(self::$_sc)) {
             // get cached file
             $file = self::getContainerFileName();
-            if (file_exists($file) && !self::$_debug) {
+            if (file_exists($file) && !Config::getConfig('debug')) {
                 require_once $file;
                 self::$_sc = new \MaketokServiceContainer();
             } else {
                 $container = new ContainerBuilder();
                 $container->setParameter('application_root', APPLICATION_ROOT);
+                $container->setParameter('debug', Config::getConfig('debug'));
                 $container->setParameter('log_dir', APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR);
                 $container->setParameter('cache_dir', APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR);
                 $loader = new YamlFileLoader($container, new FileLocator(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'config'));
@@ -181,7 +179,7 @@ final class Site
         }
         $container->compile();
 
-        if (!self::$_debug) {
+        if (!Config::getConfig('debug')) {
             $dumper = new PhpDumper($container);
             file_put_contents(
                 self::getContainerFileName(),

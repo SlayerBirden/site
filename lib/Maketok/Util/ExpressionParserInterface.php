@@ -15,7 +15,6 @@ interface ExpressionParserInterface
      * @param null|array $parameters
      * @param null|array $restrictions
      * @return mixed|string
-     * @throws \Exception
      */
     public function evaluate($parameters = null, $restrictions = null);
 
@@ -25,7 +24,6 @@ interface ExpressionParserInterface
      *
      * @param string $newString
      * @param null|array $restrictions
-     * @throws \Exception
      * @return bool|array
      */
     public function parse($newString, $restrictions = null);
@@ -33,7 +31,6 @@ interface ExpressionParserInterface
     /**
      * tries to tokenize the expression
      * @param null|string $string
-     * @throws \Exception
      * @return array
      */
     public function tokenize($string = null);

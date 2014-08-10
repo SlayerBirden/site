@@ -57,4 +57,5 @@ return [
         '\Maketok\App\Session\DbHandler',
         '\Maketok\App\ModuleManager',
     ],
+    'debug' => false,
 ];
