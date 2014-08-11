@@ -9,6 +9,11 @@ namespace Maketok\Util\Zend\Db\Sql\Ddl\Column;
 
 use Zend\Db\Sql\Ddl\Column;
 
+/**
+ * Reload Char to add null and default
+ *
+ * @package Maketok\Util\Zend\Db\Sql\Ddl\Column
+ */
 class Char extends Column\Char
 {
 

@@ -263,6 +263,11 @@ class Installer
                 $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
                 $column = new Blob($name, $nullable);
                 break;
+            case 'text':
+                /** @var Column\Text $type */
+                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
+                $column = new Column\Text($name, $nullable);
+                break;
             case 'datetime':
                 /** @var Datetime $type */
                 $column = new Datetime($name);

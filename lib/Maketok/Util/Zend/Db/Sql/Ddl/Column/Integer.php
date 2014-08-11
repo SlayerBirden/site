@@ -33,6 +33,13 @@ class Integer extends Column\Integer
             $params[] = $options['length'];
             $types[]  = self::TYPE_LITERAL;
         }
+
+        if (isset($options['zerofill']) && $options['zerofill']) {
+            $spec    .= ' %s';
+            $params[] = 'ZEROFILL';
+            $types[]  = self::TYPE_LITERAL;
+        }
+
         if (isset($options['unsigned']) && $options['unsigned']) {
             $spec    .= ' %s';
             $params[] = 'UNSIGNED';

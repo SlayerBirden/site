@@ -9,6 +9,11 @@ namespace Maketok\Util\Zend\Db\Sql\Ddl\Column;
 
 use Zend\Db\Sql\Ddl\Column;
 
+/**
+ * Reload Varchar to add null and default
+ *
+ * @package Maketok\Util\Zend\Db\Sql\Ddl\Column
+ */
 class Varchar extends Column\Varchar
 {
 
@@ -44,10 +49,11 @@ class Varchar extends Column\Varchar
         $params[] = $this->length;
 
         $types[]  = self::TYPE_LITERAL;
-        $params[] = (!$this->isNullable) ? 'NOT NULL' : '';
+        $params[] = (!$this->isNullable) ? 'NOT NULL ' : '';
 
         if ($this->default !== null) {
-            $spec    .= ' DEFAULT %s';
+            // have space after not null for backwards test compatibility
+            $spec    .= 'DEFAULT %s';
             $params[] = $this->default;
             $types[]  = self::TYPE_VALUE;
         }

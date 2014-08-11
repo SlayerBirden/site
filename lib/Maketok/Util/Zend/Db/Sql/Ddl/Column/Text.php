@@ -11,18 +11,18 @@ namespace Maketok\Util\Zend\Db\Sql\Ddl\Column;
 use Zend\Db\Sql\Ddl\Column\Column;
 
 /**
- * Fix Blob definitions: (as per http://dev.mysql.com/doc/refman/5.0/en/blob.html)
- * blob can not have length nor default value
+ * Fix Text definitions: (as per http://dev.mysql.com/doc/refman/5.0/en/blob.html)
+ * text can not have length nor default value
  *
  * @package Maketok\Util\Zend\Db\Sql\Ddl\Column
  */
-class Blob extends Column
+class Text extends Column
 {
 
     /**
      * @var string Change type to blob
      */
-    protected $type = 'BLOB';
+    protected $type = 'TEXT';
 
     /**
      * @param null  $name

@@ -15,14 +15,19 @@ class Index extends AbstractIndex
      */
     protected $specification = 'INDEX %s(...)';
 
+    /** @var  array */
+    protected $lengths;
+
     /**
      * @param  string $column
      * @param  null|string $name
+     * @param array $lengths
      */
-    public function __construct($column, $name = null)
+    public function __construct($column, $name = null, array $lengths = array())
     {
         $this->setColumns($column);
         $this->name = $name;
+        $this->lengths = $lengths;
     }
 
     /**
@@ -52,7 +57,11 @@ class Index extends AbstractIndex
         $newSpecParts = array();
 
         for ($i = 0; $i < $colCount; $i++) {
-            $newSpecParts[] = '%s';
+            $specPart = '%s';
+            if (isset($this->lengths[$i])) {
+                $specPart .= "({$this->lengths[$i]})";
+            }
+            $newSpecParts[] = $specPart;
             $newSpecTypes[] = self::TYPE_IDENTIFIER;
         }
 
