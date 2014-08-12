@@ -7,3 +7,4 @@ mysql-connector-license.txt
 var/
 vendor
 composer.phar
+tests/site
