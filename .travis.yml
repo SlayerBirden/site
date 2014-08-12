@@ -1,0 +1,18 @@
+language: php
+
+php:
+  - "5.5"
+  - "5.4"
+  - "5.3"
+
+install: composer install --dev
+
+script:
+  - cd ./lib/Maketok/App/Ddl; ../../../../vendor/bin/phpunit
+  - cd ./lib/Maketok/Util; ../../../vendor/bin/phpunit
+
+notifications:
+  email: true
+
+matrix:
+  fast_finish: true
