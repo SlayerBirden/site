@@ -25,7 +25,13 @@ class DirectoryHandler
             $files = $this->ls($path, false);
             if (count($files)) {
                 foreach ($files as $file) {
-                    $this->rm($file['path']);
+                    if ($file['path']) {
+                        $this->rm($file['path']);
+                    } elseif (file_exists($path . $file['name'])) {
+                        $this->rm($path . $file['name']);
+                    } elseif (file_exists($path . DIRECTORY_SEPARATOR . $file['name'])) {
+                        $this->rm($path . DIRECTORY_SEPARATOR . $file['name']);
+                    }
                 }
                 $res = rmdir($path);
             } else {

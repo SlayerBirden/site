@@ -10,8 +10,8 @@ before_script:
   - cp config/local.php.sample config/local.php
 
 script:
-  - cd tests; ../vendor/bin/phpunit --testsuite Util Test Suite
-  - ../vendor/bin/phpunit --testsuite Installer Test Suite
+  - cd tests; ../vendor/bin/phpunit --testsuite "Util Test Suite"
+  - ../vendor/bin/phpunit --testsuite "Installer Test Suite"
 
 notifications:
   email: true

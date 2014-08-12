@@ -5,7 +5,11 @@
  * @project store
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
-namespace Maketok\Util;
+namespace Maketok\Util\Test;
+
+use Maketok\Util\DirectoryHandler;
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
 
 class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,17 +18,21 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private static $_dirHandler;
 
+    /** @var  vfsStreamDirectory */
+    private static  $root;
+
     public static function setUpBeforeClass()
     {
         self::$_dirHandler = new DirectoryHandler();
+        self::$root = vfsStream::setup('root');
     }
     /**
      * @test
      */
     public function testMakeDir()
     {
-        self::$_dirHandler->mkdir('tst/inner1');
-        $this->assertTrue(is_dir('tst/inner1'));
+        self::$_dirHandler->mkdir(vfsStream::url('root/tst/inner1'));
+        $this->assertTrue(self::$root->hasChild('tst/inner1'));
     }
 
     /**
@@ -33,8 +41,8 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testRmDir()
     {
-        self::$_dirHandler->rm('tst/inner1');
-        $this->assertFalse(is_dir('tst/inner1'));
+        self::$_dirHandler->rm(vfsStream::url('root/tst/inner1'));
+        $this->assertFalse(self::$root->hasChild('tst/inner1'));
     }
 
     /**
@@ -43,13 +51,13 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testLs()
     {
-        self::$_dirHandler->mkdir('tst/inner1');
-        self::$_dirHandler->mkdir('tst/inner2');
-        self::$_dirHandler->mkdir('tst/inner3');
+        self::$_dirHandler->mkdir(vfsStream::url('root/tst/inner1'));
+        self::$_dirHandler->mkdir(vfsStream::url('root/tst/inner2'));
+        self::$_dirHandler->mkdir(vfsStream::url('root/tst/inner3'));
 
-        $this->assertEquals(array('inner1', 'inner2', 'inner3'), self::$_dirHandler->ls('tst'));
+        $this->assertEquals(array('inner1', 'inner2', 'inner3'), self::$_dirHandler->ls(vfsStream::url('root/tst/')));
 
-        self::$_dirHandler->rm('tst');
-        $this->assertFalse(is_dir('tst'));
+        self::$_dirHandler->rm(vfsStream::url('root/tst/'));
+        $this->assertFalse(self::$root->hasChild('tst'));
     }
 }

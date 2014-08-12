@@ -6,8 +6,10 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util;
+namespace Maketok\Util\Test;
 
+
+use Maketok\Util\ExpressionParser;
 
 class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 {

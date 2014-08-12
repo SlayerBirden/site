@@ -33,7 +33,8 @@
         "twig/extensions": "1.*"
     },
     "require-dev": {
-        "phpunit/PHPUnit": "4.*"
+        "phpunit/PHPUnit": "4.*",
+        "mikey179/vfsStream": "~1.0"
     },
     "autoload": {
         "psr-0": {
