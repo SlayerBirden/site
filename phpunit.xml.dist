@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="tests/bootstrap.php" colors="true">
+    <testsuites>
+        <testsuite name="Installer Test Suite">
+            <directory>lib/Maketok/App/Ddl/Test/</directory>
+        </testsuite>
+        <testsuite name="Util Test Suite">
+            <directory>lib/Maketok/Util/Test/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

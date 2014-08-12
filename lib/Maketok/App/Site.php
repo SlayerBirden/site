@@ -30,6 +30,9 @@ final class Site
     /** @var  ContainerBuilder */
     private static $_sc;
 
+    /** @var  bool */
+    private static $safeRun;
+
     private function __construct()
     {
         // we can't create an object of Site
@@ -51,6 +54,8 @@ final class Site
         // register modules loader
         $loader = new Autoload();
         $loader->register();
+
+        self::$safeRun = $safeRun;
 
         self::_loadConfigs();
         if ($env) {
@@ -132,6 +137,9 @@ final class Site
                 $loader->load('services.yml');
                 if (file_exists(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'local.services.yml')) {
                     $loader->load('local.services.yml');
+                }
+                if (self::$safeRun && file_exists(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'dev.services.yml')) {
+                    $loader->load('dev.services.yml');
                 }
                 self::$_sc = $container;
             }

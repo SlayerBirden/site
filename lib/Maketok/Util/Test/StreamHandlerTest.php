@@ -40,7 +40,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     {
         self::$_streamHandler->write('test2', 'trash/test.txt');
         $this->assertFileExists('trash/test.txt', 'File does not exist!');
-        $this->assertTrue(is_dir('test'));
+        $this->assertTrue(is_dir('trash'));
     }
 
     /**

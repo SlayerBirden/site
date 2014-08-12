@@ -63,6 +63,9 @@ class Config
             $paths = array($paths);
         }
         foreach ($paths as $path) {
+            if (!file_exists($path)) {
+                continue;
+            }
             $config = include $path;
             if (is_array($config)) {
                 self::add($config);

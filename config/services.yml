@@ -6,7 +6,6 @@ parameters:
   registry.class: Maketok\App\Registry
   adapter.class: Zend\Db\Adapter\Adapter
   module_manager.class: Maketok\App\ModuleManager
-  db_driver: pdo_mysql
   object_prop_hydrator.class: Zend\Stdlib\Hydrator\ObjectProperty
   logger.class: Monolog\Logger
   default_logger_handler.class: Monolog\Handler\StreamHandler

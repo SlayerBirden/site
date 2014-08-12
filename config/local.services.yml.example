@@ -3,3 +3,4 @@ parameters:
   db_passw: pass
   db_host: localhost
   db_database: site
+  db_driver: pdo_mysql

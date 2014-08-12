@@ -3,13 +3,15 @@ language: php
 php:
   - "5.5"
   - "5.4"
-  - "5.3"
 
 install: composer install --dev
 
+before_script:
+  - cp config/local.php.sample config/local.php
+
 script:
-  - cd ./lib/Maketok/App/Ddl; ../../../../vendor/bin/phpunit
-  - cd ./lib/Maketok/Util; ../../../vendor/bin/phpunit
+  - ./vendor/bin/phpunit --testsuite Util Test Suite
+  - ./vendor/bin/phpunit --testsuite Installer Test Suite
 
 notifications:
   email: true
