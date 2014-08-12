@@ -51,6 +51,8 @@ final class Site
     public static function run($safeRun = false, $env = true)
     {
         define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
+        define('AR', APPLICATION_ROOT);
+        define('DS', DIRECTORY_SEPARATOR);
         // register modules loader
         $loader = new Autoload();
         $loader->register();
@@ -129,16 +131,16 @@ final class Site
                 self::$_sc = new \MaketokServiceContainer();
             } else {
                 $container = new ContainerBuilder();
-                $container->setParameter('application_root', APPLICATION_ROOT);
+                $container->setParameter('application_root', AR);
                 $container->setParameter('debug', Config::getConfig('debug'));
-                $container->setParameter('log_dir', APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR);
-                $container->setParameter('cache_dir', APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR);
-                $loader = new YamlFileLoader($container, new FileLocator(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'config'));
+                $container->setParameter('log_dir', AR . DS . 'var' . DS . 'logs' . DS);
+                $container->setParameter('cache_dir', AR . DS . 'var' . DS . 'cache' . DS);
+                $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
                 $loader->load('services.yml');
-                if (file_exists(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'local.services.yml')) {
+                if (file_exists(AR . DS . 'config' . DS . 'local.services.yml')) {
                     $loader->load('local.services.yml');
                 }
-                if (self::$safeRun && file_exists(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'dev.services.yml')) {
+                if (self::$safeRun && file_exists(AR . DS . 'config' . DS . 'dev.services.yml')) {
                     $loader->load('dev.services.yml');
                 }
                 self::$_sc = $container;
@@ -173,7 +175,7 @@ final class Site
      */
     protected static function getContainerFileName()
     {
-        return APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'container.php';
+        return AR . DS . 'var' . DS . 'cache' . DS . 'container.php';
     }
 
     /**

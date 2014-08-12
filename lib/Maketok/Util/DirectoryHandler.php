@@ -29,8 +29,8 @@ class DirectoryHandler
                         $this->rm($file['path']);
                     } elseif (file_exists($path . $file['name'])) {
                         $this->rm($path . $file['name']);
-                    } elseif (file_exists($path . DIRECTORY_SEPARATOR . $file['name'])) {
-                        $this->rm($path . DIRECTORY_SEPARATOR . $file['name']);
+                    } elseif (file_exists($path . DS . $file['name'])) {
+                        $this->rm($path . DS . $file['name']);
                     }
                 }
                 $res = rmdir($path);

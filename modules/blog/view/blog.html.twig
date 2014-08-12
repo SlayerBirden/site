@@ -18,6 +18,8 @@
             <div class="article-author">{{ article.author }}</div>
             <div class="article-date">{{ article.created_at|date("F jS \\a\\t g:ia") }}</div>
         </article>
+    {% else %}
+        <span>No articles found in the system! You really need to add one.</span>
     {% endfor %}
 </section>
 {% endblock %}

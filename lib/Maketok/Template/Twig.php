@@ -28,7 +28,7 @@ class Twig extends AbstractEngine
     {
         $loader = new \Twig_Loader_Filesystem();
         $this->_engine = new \Twig_Environment($loader, array(
-            'cache' => APPLICATION_ROOT . DIRECTORY_SEPARATOR . self::CACHE_FOLDER,
+            'cache' => AR . DS . self::CACHE_FOLDER,
             'debug' => true,
         ));
         $this->_engine->addExtension(new \Twig_Extensions_Extension_I18n());

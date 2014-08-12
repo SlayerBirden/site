@@ -130,7 +130,7 @@ class AbstractController {
         if (is_null($this->_template)) {
             throw new GenericException("Can't find template path, no template set.");
         }
-        return APPLICATION_ROOT . "/modules/{$module}/view/{$template}";
+        return AR . DS . 'modules' . DS . $module . DS . 'view' . DS . $template;
     }
 
     /**

@@ -217,7 +217,7 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
     public static function tearDownAfterClass()
     {
         // clean up
-        $fullPath = APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'locks' . DIRECTORY_SEPARATOR . self::$_installerLockName;
+        $fullPath = AR . DS . 'var' . DS . 'locks' . DS . self::$_installerLockName;
         $sh = new StreamHandler();
         $sh->setPath($fullPath);
         $sh->writeWithLock('');

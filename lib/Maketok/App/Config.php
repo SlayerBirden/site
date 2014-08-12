@@ -55,9 +55,9 @@ class Config
     public static function loadConfig($paths = null)
     {
         if (is_null($paths)) {
-            $_configDir = APPLICATION_ROOT . DIRECTORY_SEPARATOR .  'config';
-            $paths = array($_configDir . DIRECTORY_SEPARATOR . 'global.php',
-                $_configDir . DIRECTORY_SEPARATOR . 'local.php');
+            $_configDir = AR . DS .  'config';
+            $paths = array($_configDir . DS . 'global.php',
+                $_configDir . DS . 'local.php');
         }
         if (is_string($paths)) {
             $paths = array($paths);

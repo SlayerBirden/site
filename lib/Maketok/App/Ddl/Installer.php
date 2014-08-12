@@ -315,7 +315,7 @@ class Installer
     private static function _getLockStreamHandler()
     {
         if (is_null(self::$_lockStreamHandler)) {
-            $fullPath = APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'locks' . DIRECTORY_SEPARATOR . self::$_installerLockSheetName;
+            $fullPath = AR . DS . 'var' . DS . 'locks' . DS . self::$_installerLockSheetName;
             self::$_lockStreamHandler = new StreamHandler();
             self::$_lockStreamHandler->setPath($fullPath);
             if (!file_exists($fullPath)) {

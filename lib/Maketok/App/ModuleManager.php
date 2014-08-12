@@ -44,7 +44,7 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
      */
     protected function _getDir()
     {
-        return APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'modules';
+        return AR . DS . 'modules';
     }
 
     /**
@@ -175,8 +175,8 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         /** @var Installer $installer */
         $installer = $state->installer;
         foreach ($this->getModuleDirectories() as $dir) {
-            if (file_exists($this->_getDir() . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . 'Config.php')) {
-                require_once $this->_getDir() . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . 'Config.php';
+            if (file_exists($this->_getDir() . DS . $dir . DS . 'Config.php')) {
+                require_once $this->_getDir() . DS . $dir . DS . 'Config.php';
                 $className = "\\modules\\$dir\\Config";
                 /** @var ConfigInterface $config */
                 $config = new $className();
