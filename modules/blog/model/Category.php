@@ -5,3 +5,10 @@
  * @project store
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
+namespace modules\blog\model;
+
+class Category
+{
+
+}

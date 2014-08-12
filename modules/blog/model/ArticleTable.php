@@ -8,8 +8,21 @@
 namespace modules\blog\model;
 
 use Maketok\Util\AbstractTableMapper;
+use Zend\Db\Sql\Select;
 
 class ArticleTable extends AbstractTableMapper
 {
 
+    /**
+     * get ten most recent articles
+     * @return \Zend\Db\ResultSet\ResultSet
+     */
+    public function getTenMostRecent()
+    {
+        return $this->_tableGateway->select(function (Select $select) {
+            $select
+                ->order('created_at DESC')
+                ->limit(10);
+        });
+    }
 }

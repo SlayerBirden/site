@@ -10,6 +10,16 @@
 <div id="info" class="info">
     <span class="important">{% trans description %}</span>
 </div>
+<section id="articles">
+    {% for article in articles %}
+        <article>
+            <h4>{{ article.title }}</h4>
+            <div class="article-content">{{ article.content }}</div>
+            <div class="article-author">{{ article.author }}</div>
+            <div class="article-date">{{ article.created_at|date("F jS \\a\\t g:ia") }}</div>
+        </article>
+    {% endfor %}
+</section>
 {% endblock %}
 {% block footer %}
 <div class="footer-content info">

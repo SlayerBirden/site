@@ -9,6 +9,7 @@ namespace modules\blog\controller;
 
 use Maketok\Mvc\Controller\AbstractController;
 use Maketok\Util\RequestInterface;
+use modules\blog\model\ArticleTable;
 
 class Index extends AbstractController
 {
@@ -21,9 +22,13 @@ class Index extends AbstractController
     {
         $this->setDependency(array('cover'));
         $this->setTemplate('blog.html.twig');
+        /** @var ArticleTable $articleTable */
+        $articleTable = $this->getSC()->get('article_table');
+        $articles = $articleTable->getTenMostRecent();
         return $this->prepareResponse($request, array(
             'title' => 'Blog',
-            'description' => 'Below is the Blog!'
+            'description' => '10 Most Recent Articles:',
+            'articles' => $articles
         ));
     }
 
