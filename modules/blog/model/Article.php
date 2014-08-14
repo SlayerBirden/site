@@ -7,6 +7,8 @@
  */
 namespace modules\blog\model;
 
+use Maketok\App\Site;
+
 class Article
 {
 
@@ -22,4 +24,12 @@ class Article
     public $author;
     /** @var  string text */
     public $content;
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return Site::getBaseUrl() . '/blog/article/' . $this->id;
+    }
 }

@@ -134,6 +134,7 @@ final class Site
                 $container->setParameter('application_root', AR);
                 $container->setParameter('debug', Config::getConfig('debug'));
                 $container->setParameter('log_dir', AR . DS . 'var' . DS . 'logs' . DS);
+                $container->setParameter('base_url', self::getBaseUrl());
                 $container->setParameter('cache_dir', AR . DS . 'var' . DS . 'cache' . DS);
                 $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
                 $loader->load('services.yml');
@@ -228,6 +229,14 @@ final class Site
             self::registry()->router = new Stack();
         }
         return self::registry()->router;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getBaseUrl()
+    {
+        return Config::getConfig('base_url');
     }
 
 }

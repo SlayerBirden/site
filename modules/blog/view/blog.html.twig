@@ -17,6 +17,7 @@
             <div class="article-content">{{ article.content }}</div>
             <div class="article-author">{{ article.author }}</div>
             <div class="article-date">{{ article.created_at|date("F jS \\a\\t g:ia") }}</div>
+            <div><a href="{{ article.url }}" class="general-link">{% trans "Open" %}</a></div>
         </article>
     {% else %}
         <span>No articles found in the system! You really need to add one.</span>
