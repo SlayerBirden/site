@@ -27,6 +27,14 @@ class Config implements ConfigInterface
     /**
      * @return string
      */
+    public function getVersion()
+    {
+        return '0.1.0';
+    }
+
+    /**
+     * @return string
+     */
     public static function getDdlConfigVersion()
     {
         return '0.1.0';
@@ -42,7 +50,7 @@ class Config implements ConfigInterface
 
     public function initRoutes()
     {
-        Site::getCurrentRouter()->addRoute(new Literal('/', array(
+        Site::getServiceContainer()->get('router')->addRoute(new Literal('/', array(
             'module' => $this->getCode(),
             'controller' => 'modules\\cover\\controller\\Index',
             'action' => 'index',

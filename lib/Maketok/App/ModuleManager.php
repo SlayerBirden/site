@@ -141,7 +141,7 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         $now = new \DateTime();
         $this->insert(array(
             'module_code' => $code,
-            'version' => $config->getDdlConfigVersion(),
+            'version' => $config->getVersion(),
             'active' => $config->isActive(),
             'updated_at' => $now->format('Y-m-d H:i:s'),
         ));
@@ -161,7 +161,7 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
 
         $now = new \DateTime();
         $this->update(array(
-            'version' => $config->getDdlConfigVersion(),
+            'version' => $config->getVersion(),
             'active' => $config->isActive(),
             'updated_at' => $now->format('Y-m-d H:i:s'),
         ), array('module_code' => $code));
@@ -192,7 +192,9 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         // insert new modules
         foreach ($this->_activeModules as $config) {
             // ddl
-            $installer->addClient($config);
+            if ($config instanceof InstallerApplicableInterface) {
+                $installer->addClient($config);
+            }
         }
     }
 
@@ -208,13 +210,14 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         }
         // get existing modules that needed to be updated
         $toUpdate = array_filter($activeModules, function($var) {
+            /** @var ConfigInterface $var */
             $conditionCombination = [];
             $conditionCombination[0] = new Where();
             $conditionCombination[0]->equalTo('module_code', $var->getCode());
             $conditionCombination[1] = new Where();
             $conditionCombination[1]->equalTo('active', 1);
             $conditionCombination[2] = new Where();
-            $conditionCombination[2]->notEqualTo('version', $var->getDdlConfigVersion());
+            $conditionCombination[2]->notEqualTo('version', $var->getVersion());
             $set = $this->select(new Where($conditionCombination));
             return $set->count() > 0;
         });
@@ -233,6 +236,7 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         }
         // get real active ones
         $activeModules = array_filter($activeModules, function($var) {
+            /** @var ConfigInterface $var */
             $set = $this->select(array('module_code' => $var->getCode(), 'active' => 1));
             return $set->count() > 0;
         });

@@ -10,6 +10,7 @@ namespace Maketok\Mvc\Controller;
 use Maketok\App\Site;
 use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\RouteInterface;
+use Maketok\Mvc\Router\RouterInterface;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\ResponseInterface;
 
@@ -39,10 +40,9 @@ class Front
         throw new RouteException("Could not match any route.");
     }
 
-    public function __construct()
+    public function __construct(RouterInterface $router)
     {
-        // request for a router
-        $this->_router = Site::getCurrentRouter();
+        $this->_router = $router;
     }
 
     /**

@@ -10,25 +10,17 @@ namespace Maketok\Mvc\Router;
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Util\RequestInterface;
 
-class Stack implements RouteInterface
+class Stack implements RouterInterface
 {
-
-
-
-    const STACK_MODE_APPEND = 1;
-    const STACK_MODE_PREPEND = 2;
 
 
     /** @var \SplStack  */
     protected $_routes;
 
-
     public function __construct()
     {
         $this->_routes = new \SplStack();
     }
-
-
 
     public function addRoute(RouteInterface $route, $mode = self::STACK_MODE_APPEND)
     {

@@ -16,8 +16,8 @@ return [
     'subject_config' => [
         'dispatch' => [
             [
-                'subscriber' => 'Maketok\Mvc\Controller\Front::dispatch',
-                'type' => 'class',
+                'subscriber' => 'front_controller::dispatch',
+                'type' => 'service',
                 'priority' => 10,
             ],
             [

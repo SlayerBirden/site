@@ -221,17 +221,6 @@ final class Site
     }
 
     /**
-     * @return Stack
-     */
-    public static function getCurrentRouter()
-    {
-        if (self::registry()->router === null) {
-            self::registry()->router = new Stack();
-        }
-        return self::registry()->router;
-    }
-
-    /**
      * @return string
      */
     public static function getBaseUrl()

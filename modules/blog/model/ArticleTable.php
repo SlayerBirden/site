@@ -8,6 +8,7 @@
 namespace modules\blog\model;
 
 use Maketok\Util\AbstractTableMapper;
+use Maketok\Util\Exception\ModelException;
 use Zend\Db\Sql\Select;
 
 class ArticleTable extends AbstractTableMapper
@@ -24,5 +25,20 @@ class ArticleTable extends AbstractTableMapper
                 ->order('created_at DESC')
                 ->limit(10);
         });
+    }
+
+    /**
+     * @param string $code
+     * @return array|\ArrayObject|null
+     * @throws \Maketok\Util\Exception\ModelException
+     */
+    public function findByCode($code)
+    {
+        $resultSet = $this->getGateway()->select(array('code' => $code));
+        $row = $resultSet->current();
+        if (!$row) {
+            throw new ModelException(sprintf("Could not find row with identifier %s", $code));
+        }
+        return $row;
     }
 }

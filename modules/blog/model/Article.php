@@ -16,6 +16,8 @@ class Article
     public $id;
     /** @var  string */
     public $title;
+    /** @var  string */
+    public $code;
     /** @var  string data */
     public $created_at;
     /** @var  string data */
@@ -30,6 +32,6 @@ class Article
      */
     public function getUrl()
     {
-        return Site::getBaseUrl() . '/blog/article/' . $this->id;
+        return Site::getBaseUrl() . '/blog/' . $this->code;
     }
 }

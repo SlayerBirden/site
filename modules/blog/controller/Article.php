@@ -45,8 +45,9 @@ class Article extends AbstractController
     protected function _initArticle(RequestInterface $request)
     {
         $id = $request->attributes->get('id');
-        if ($id === null) {
-            throw new \Exception("Can not process article without id.");
+        $code = $request->attributes->get('code');
+        if ($id === null && $code === null) {
+            throw new \Exception("Can not process article without id or code.");
         }
         $articleTable = $this->getSC()->get('article_table');
         return $articleTable->find($id);

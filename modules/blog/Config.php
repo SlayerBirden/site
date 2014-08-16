@@ -9,6 +9,7 @@
 namespace modules\blog;
 
 
+use Maketok\App\Ddl\InstallerApplicableInterface;
 use Maketok\App\Site;
 use Maketok\Module\ConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
@@ -18,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class Config implements ConfigInterface, ExtensionInterface
+class Config implements ConfigInterface, InstallerApplicableInterface, ExtensionInterface
 {
 
     /**
@@ -32,9 +33,17 @@ class Config implements ConfigInterface, ExtensionInterface
     /**
      * @return string
      */
+    public function getVersion()
+    {
+        return '0.1.2';
+    }
+
+    /**
+     * @return string
+     */
     public static function getDdlConfigVersion()
     {
-        return '0.1.1';
+        return '0.1.2';
     }
 
     /**
@@ -47,12 +56,17 @@ class Config implements ConfigInterface, ExtensionInterface
 
     public function initRoutes()
     {
-        Site::getCurrentRouter()->addRoute(new Literal('/blog', array(
+        Site::getServiceContainer()->get('router')->addRoute(new Literal('/blog', array(
             'module' => $this->getCode(),
             'controller' => 'modules\\blog\\controller\\Index',
             'action' => 'index',
         )));
-        Site::getCurrentRouter()->addRoute(new Parameterized('/blog/article/{id}', array(
+        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/{code}', array(
+            'module' => $this->getCode(),
+            'controller' => 'modules\\blog\\controller\\Article',
+            'action' => 'index',
+        ), [], ['code' => '\w+']));
+        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/article/{id}', array(
             'module' => $this->getCode(),
             'controller' => 'modules\\blog\\controller\\Article',
             'action' => 'index',

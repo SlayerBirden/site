@@ -12,6 +12,8 @@ parameters:
   ddl_installer.class: Maketok\App\Ddl\Installer
   zend_db_sql.class: Maketok\Util\Zend\Db\Sql\Sql
   zend_sql_platform.class: Maketok\Util\Zend\Db\Sql\Platform\Platform
+  router.class: Maketok\Mvc\Router\Stack
+  front_controller.class: Maketok\Mvc\Controller\Front
 
 services:
   adapter:
@@ -52,3 +54,8 @@ services:
   ddl_installer:
     class: "%ddl_installer.class%"
     arguments: ["@adapter", "@zend_db_sql"]
+  router:
+    class: "%router.class%"
+  front_controller:
+    class: "%front_controller.class%"
+    arguments: ["@router"]
