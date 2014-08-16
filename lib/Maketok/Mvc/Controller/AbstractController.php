@@ -82,13 +82,14 @@ class AbstractController {
      * @param RequestInterface $request
      * @param array $templateVars
      * @param array $params
+     * @param int $httpCode
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function prepareResponse(RequestInterface $request, array $templateVars, array $params = null)
+    public function prepareResponse(RequestInterface $request, array $templateVars, array $params = null, $httpCode = 200)
     {
         if (is_null($this->_response)) {
             $this->prepareContent($templateVars, $params);
-            $this->_initResponse($this->getContent(), 200, array());
+            $this->_initResponse($this->getContent(), $httpCode, array());
         }
         return $this->_response->prepare($request);
     }

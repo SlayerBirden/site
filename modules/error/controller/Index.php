@@ -21,6 +21,6 @@ class Index extends AbstractController
     {
         $this->setDependency(array('cover'));
         $this->setTemplate('404.html.twig');
-        return $this->prepareResponse($request, array('title' => 'Page Not Found'));
+        return $this->prepareResponse($request, array('title' => 'Page Not Found'), null, 404);
     }
 }
