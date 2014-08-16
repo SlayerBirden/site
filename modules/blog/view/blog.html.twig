@@ -2,9 +2,6 @@
 {% extends "base.html.twig" %}
 {% block head %}
 {{ parent() }}
-<style type="text/css">
-    .important { color: #336699; }
-</style>
 {% endblock %}
 {% block content %}
 <div id="info" class="info">
@@ -12,12 +9,14 @@
 </div>
 <section id="articles">
     {% for article in articles %}
-        <article>
-            <h4>{{ article.title }}</h4>
+        <article class="article">
+            <h4 class="article-title">{{ article.title }}</h4>
             <div class="article-content">{{ article.content }}</div>
             <div class="article-author">{{ article.author }}</div>
             <div class="article-date">{{ article.created_at|date("F jS \\a\\t g:ia") }}</div>
-            <div><a href="{{ article.url }}" class="general-link">{% trans "Open" %}</a></div>
+            <div class="article-link">
+                <a href="{{ article.url }}#disqus_thread" class="general-link">{% trans "Open" %}</a>
+            </div>
         </article>
     {% else %}
         <span>No articles found in the system! You really need to add one.</span>
@@ -25,7 +24,18 @@
 </section>
 {% endblock %}
 {% block footer %}
-<div class="footer-content info">
+<div class="footer-content">
     <span class="important">{% trans "Hello World!" %}</span>
 </div>
+{% endblock %}
+{% block before_body_end %}
+    <script type="text/javascript">
+        var disqus_shortname = 'maketokcom';
+        (function () {
+            var s = document.createElement('script'); s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
 {% endblock %}

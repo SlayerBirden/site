@@ -33,6 +33,7 @@ Includes next components from vendors:
 - symfony/dependency-injection (2.*)
 - symfony/config (2.*)
 - twig (~1)
+- zend-uri (2.*)
 
 
 ### License

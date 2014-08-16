@@ -13,6 +13,7 @@ use Maketok\Http\Response;
 use Maketok\Mvc\GenericException;
 use Maketok\Util\RequestInterface;
 use Maketok\Template;
+use Zend\Uri\UriFactory;
 
 class AbstractController {
 
@@ -95,7 +96,6 @@ class AbstractController {
     /**
      * @param array $templateVars
      * @param array $params
-     * @throws \Exception
      * @return void
      */
     public function prepareContent(array $templateVars, array $params = null)
@@ -107,6 +107,10 @@ class AbstractController {
         foreach ($this->_dependency as $_dependencyModule) {
             $dependencyPaths[] = $this->_getTemplatePath('', $_dependencyModule);
         }
+        // now add general variables
+        $uri = UriFactory::factory(Site::getBaseUrl());
+        $uri->setPath('/css/');
+        $templateVars['css_url'] = $uri->toString();
         $engine->loadDependencies($dependencyPaths);
         $engine->loadTemplate($path);
         $engine->setVariables($templateVars);

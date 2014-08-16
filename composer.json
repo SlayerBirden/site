@@ -30,7 +30,8 @@
         "symfony/dependency-injection": "2.*",
         "symfony/config": "2.*",
         "twig/twig": "~1",
-        "twig/extensions": "1.*"
+        "twig/extensions": "1.*",
+        "zendframework/zend-uri": "2.*"
     },
     "require-dev": {
         "phpunit/PHPUnit": "4.*",
