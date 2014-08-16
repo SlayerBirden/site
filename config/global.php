@@ -23,7 +23,7 @@ return [
             [
                 'subscriber' => 'Maketok\App\Session::init',
                 'type' => 'class',
-                'priority' => 0,
+                'priority' => 100,
             ],
         ],
         'installer_before_process' => [

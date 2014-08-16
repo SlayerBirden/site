@@ -12,7 +12,6 @@ use Maketok\App\Ddl\InstallerApplicableInterface;
 use Maketok\Module\ConfigInterface;
 use Maketok\Observer\State;
 use Maketok\Observer\StateInterface;
-use Maketok\Util\DirectoryHandler;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate;
 use Zend\Db\TableGateway\Feature\RowGatewayFeature;
@@ -241,12 +240,17 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
             return $set->count() > 0;
         });
         // process active modules
+        Site::getSubjectManager()->notify('modulemanager_process_before', new State(array('active_modules' => $activeModules)));
         foreach ($activeModules as $config) {
             // events
             $config->initListeners();
+        }
+        Site::getSubjectManager()->notify('modulemanager_init_listeners_after', new State(array('active_modules' => $activeModules)));
+        foreach ($activeModules as $config) {
             // routes
             $config->initRoutes();
         }
+        Site::getSubjectManager()->notify('modulemanager_process_after', new State(array('active_modules' => $activeModules)));
     }
 
 }

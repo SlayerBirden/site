@@ -6,12 +6,13 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace modules\cover;
+namespace modules\error;
 
 
 use Maketok\App\Site;
 use Maketok\Module\ConfigInterface;
-use Maketok\Mvc\Router\Route\Http\Literal;
+use Maketok\Mvc\Router\Route\Http\Parameterized;
+use Maketok\Observer\StateInterface;
 
 class Config implements ConfigInterface
 {
@@ -26,16 +27,29 @@ class Config implements ConfigInterface
 
     public function initRoutes()
     {
-        Site::getServiceContainer()->get('router')->addRoute(new Literal('/', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\cover\\controller\\Index',
-            'action' => 'index',
-        )));
+        return;
     }
 
     public function initListeners()
     {
-        return;
+        // this is a special case;
+        // attaching routes after all other modules are processes
+        // we need to catch only unmatched ones
+        Site::getSubjectManager()->attach(
+            'modulemanager_init_listeners_after',
+            array($this, 'initNoRoute'), 1);
+    }
+
+    /**
+     * @param StateInterface $state
+     */
+    public function initNoRoute(StateInterface $state)
+    {
+        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/{anything}', array(
+            'module' => $this->getCode(),
+            'controller' => 'modules\\error\\controller\\Index',
+            'action' => 'noroute',
+        ), [], []));
     }
 
     /**
@@ -51,7 +65,7 @@ class Config implements ConfigInterface
      */
     public function getCode()
     {
-        return 'cover';
+        return 'error';
     }
 
     /**

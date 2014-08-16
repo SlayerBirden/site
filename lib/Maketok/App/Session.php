@@ -32,7 +32,7 @@ class Session
     public function init()
     {
         ini_set('session.save_handler', 'user');
-        $this->registerSaveHandler(Site::registry()->session_save_handler);
+        $this->registerSaveHandler(Site::getServiceContainer()->get('session_handler'));
         $this->start();
     }
 }

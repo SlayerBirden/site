@@ -8,7 +8,6 @@
 namespace Maketok\App;
 
 use Maketok\Loader\Autoload;
-use Maketok\Mvc\Router\Stack;
 use Maketok\Observer\State;
 use Maketok\Observer\StateInterface;
 use Maketok\Observer\SubjectManager;

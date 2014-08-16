@@ -69,6 +69,7 @@ class PriorityQueue
         foreach ($this->_items as $key => $data) {
             if ($item === $data['item']) {
                 unset($this->_items[$key]);
+                $this->_queue = null;
                 $shouldRebuildQueue = true;
                 break;
             }
