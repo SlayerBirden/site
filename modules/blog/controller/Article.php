@@ -49,7 +49,11 @@ class Article extends AbstractController
         if ($id === null && $code === null) {
             throw new \Exception("Can not process article without id or code.");
         }
+        /** @var ArticleTable $articleTable */
         $articleTable = $this->getSC()->get('article_table');
+        if (!is_null($code)) {
+            return $articleTable->findByCode($code);
+        }
         return $articleTable->find($id);
     }
 }

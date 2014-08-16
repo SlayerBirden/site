@@ -11,11 +11,12 @@
     {% for article in articles %}
         <article class="article">
             <h4 class="article-title">{{ article.title }}</h4>
-            <div class="article-content">{{ article.content }}</div>
+            <div class="article-content">{{ article.content|nl2br }}</div>
             <div class="article-author">{{ article.author }}</div>
             <div class="article-date">{{ article.created_at|date("F jS \\a\\t g:ia") }}</div>
             <div class="article-link">
-                <a href="{{ article.url }}#disqus_thread" class="general-link">{% trans "Open" %}</a>
+                <a href="{{ article.url }}" class="general-link">{% trans "Open" %}</a>
+                <a href="{{ article.url }}#disqus_thread" class="comment-link">{% trans "Comments" %}</a>
             </div>
         </article>
     {% else %}
