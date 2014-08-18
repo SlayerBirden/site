@@ -14,6 +14,12 @@ parameters:
   zend_sql_platform.class: Maketok\Util\Zend\Db\Sql\Platform\Platform
   router.class: Maketok\Mvc\Router\Stack
   front_controller.class: Maketok\Mvc\Controller\Front
+  module_config_file_name: Config.php
+  module_config_name: Config
+  form_builder.class: Symfony\Component\Form\Forms
+  form_builder_extension_httpfoundation.class: Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension
+  form_builder_extension_validation.class: Symfony\Component\Form\Extension\Validator\ValidatorExtension
+  validation_model.class: Symfony\Component\Validator\Validation
 
 services:
   adapter:
@@ -59,3 +65,19 @@ services:
   front_controller:
     class: "%front_controller.class%"
     arguments: ["@router"]
+  form_builder_extension_httpfoundation:
+    class: "%form_builder_extension_httpfoundation.class%"
+  validation_model:
+    class: "%validation_model.class%"
+    factory_class: "%validation_model.class%"
+    factory_method: createValidator
+  form_builder_extension_validation:
+    class: "%form_builder_extension_validation.class%"
+    arguments: ["@validation_model"]
+  form_builder:
+    class: "%form_builder.class%"
+    factory_class: "%form_builder.class%"
+    factory_method: createFormFactoryBuilder
+    calls:
+      - [addExtension, ["@form_builder_extension_validation"]]
+      - [addExtension, ["@form_builder_extension_httpfoundation"]]

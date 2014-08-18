@@ -34,6 +34,9 @@ Includes next components from vendors:
 - symfony/config (2.*)
 - twig (~1)
 - zend-uri (2.*)
+- symfony/form (2.*)
+- symfony/twig-bridge (2.*)
+- symfony/validator (2.*)
 
 
 ### License

@@ -7,13 +7,9 @@
  */
 namespace modules\blog\controller;
 
-use Maketok\App\Site;
 use Maketok\Mvc\Controller\AbstractController;
 use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
-use Zend\Db\ResultSet\HydratingResultSet;
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Stdlib\Hydrator\ObjectProperty;
 
 class Article extends AbstractController
 {

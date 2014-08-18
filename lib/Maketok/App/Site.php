@@ -25,12 +25,15 @@ final class Site
     const DEFAULT_TIMEZONE = 'UTC';
     const ERROR_LOG = 'error.log';
     const SERVICE_CONTAINER_CLASS = 'MaketokServiceContainer';
+    const SERVICE_CONTAINER_ADMIN_CLASS = 'MaketokAdminServiceContainer';
 
     /** @var  ContainerBuilder */
     private static $_sc;
 
     /** @var  bool */
     private static $safeRun;
+    /** @var  bool */
+    private static $admin;
 
     private function __construct()
     {
@@ -43,11 +46,13 @@ final class Site
      * run accepts 2 params:
      * safeRun decides what parts of config to apply
      * evn - should we init our env
+     * admin - if set to true, we're working with admin interface
      *
      * @param bool $safeRun
      * @param bool $env
+     * @param bool $admin
      */
-    public static function run($safeRun = false, $env = true)
+    public static function run($safeRun = false, $env = true, $admin = false)
     {
         define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
         define('AR', APPLICATION_ROOT);
@@ -57,6 +62,7 @@ final class Site
         $loader->register();
 
         self::$safeRun = $safeRun;
+        self::$admin = $admin;
 
         self::_loadConfigs();
         if ($env) {
@@ -110,6 +116,9 @@ final class Site
         Config::applyConfig($mode);
     }
 
+    /**
+     * init evn
+     */
     private static function _initEnvironment()
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
@@ -118,7 +127,7 @@ final class Site
     }
 
     /**
-     * @return MaketokServiceContainer|ContainerBuilder
+     * @return ContainerBuilder
      */
     public static function getServiceContainer()
     {
@@ -127,13 +136,13 @@ final class Site
             $file = self::getContainerFileName();
             if (file_exists($file) && !Config::getConfig('debug')) {
                 require_once $file;
-                self::$_sc = new \MaketokServiceContainer();
+                $class = self::getSCClassName();
+                self::$_sc = new $class();
             } else {
                 $container = new ContainerBuilder();
                 $container->setParameter('application_root', AR);
                 $container->setParameter('debug', Config::getConfig('debug'));
                 $container->setParameter('log_dir', AR . DS . 'var' . DS . 'logs' . DS);
-                $container->setParameter('base_url', self::getBaseUrl());
                 $container->setParameter('cache_dir', AR . DS . 'var' . DS . 'cache' . DS);
                 $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
                 $loader->load('services.yml');
@@ -143,10 +152,31 @@ final class Site
                 if (self::$safeRun && file_exists(AR . DS . 'config' . DS . 'dev.services.yml')) {
                     $loader->load('dev.services.yml');
                 }
+                if (self::$admin && file_exists(AR . DS . 'config' . DS . 'admin.services.yml')) {
+                    $loader->load('admin.services.yml');
+                }
                 self::$_sc = $container;
             }
         }
         return self::$_sc;
+    }
+
+    /**
+     * @param bool $withNS
+     * @return string
+     */
+    private static function getSCClassName($withNS = true)
+    {
+        if (self::$admin) {
+            $scCN = self::SERVICE_CONTAINER_ADMIN_CLASS;
+        } else {
+            $scCN = self::SERVICE_CONTAINER_CLASS;
+        }
+        if ($withNS) {
+            return '\\' . $scCN;
+        } else {
+            return $scCN;
+        }
     }
 
     /**
@@ -156,7 +186,8 @@ final class Site
     {
         // we may not need to
         $container = self::getServiceContainer();
-        if ($container instanceof \MaketokServiceContainer) {
+        $class = self::getSCClassName();
+        if ($container instanceof $class) {
             return;
         }
         $activeModules = $state->modules;
@@ -175,7 +206,12 @@ final class Site
      */
     protected static function getContainerFileName()
     {
-        return AR . DS . 'var' . DS . 'cache' . DS . 'container.php';
+        if (self::$admin) {
+            $fn = 'container_admin.php';
+        } else {
+            $fn = 'container.php';
+        }
+        return AR . DS . 'var' . DS . 'cache' . DS . $fn;
     }
 
     /**
@@ -184,7 +220,8 @@ final class Site
     public static function scCompileAndDump(StateInterface $state)
     {
         $container = self::getServiceContainer();
-        if ($container instanceof \MaketokServiceContainer) {
+        $class = self::getSCClassName();
+        if ($container instanceof $class) {
             return;
         }
         $container->compile();
@@ -193,7 +230,7 @@ final class Site
             $dumper = new PhpDumper($container);
             file_put_contents(
                 self::getContainerFileName(),
-                $dumper->dump(array('class' => 'MaketokServiceContainer'))
+                $dumper->dump(array('class' => self::getSCClassName(false)))
             );
         }
     }
@@ -224,7 +261,7 @@ final class Site
      */
     public static function getBaseUrl()
     {
-        return Config::getConfig('base_url');
+        return self::getServiceContainer()->getParameter('base_url');
     }
 
 }

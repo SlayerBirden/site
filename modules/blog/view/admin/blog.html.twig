@@ -1,0 +1,34 @@
+{# note: this is blog index #}
+{% extends "admin.html.twig" %}
+{% block head %}
+{{ parent() }}
+{% endblock %}
+{% block content %}
+<div id="info" class="info">
+    <span class="important">{% trans description %}</span>
+</div>
+<section id="articles">
+    <table>
+        <tr>
+            <th>{% trans "Title" %}</th>
+            <th>{% trans "Content" %}</th>
+            <th>{% trans "Author" %}</th>
+            <th>{% trans "Created At" %}</th>
+            <th>{% trans "Updated At" %}</th>
+            <th>{% trans "Actions" %}</th>
+        </tr>
+    {% for article in articles %}
+        <tr>
+            <td>{{ article.title }}</td>
+            <td>{{ article.content|truncate(50) }}</td>
+            <td>{{ article.author }}</td>
+            <td>{{ article.created_at|date("F jS \\a\\t g:ia") }}</td>
+            <td>{{ article.updated_at|date("F jS \\a\\t g:ia") }}</td>
+            <td>{{ base_url }}/blog/article/{{ article.id }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="6">No articles found in the system! You really need to add one.</td></tr>
+    {% endfor %}
+    </table>
+</section>
+{% endblock %}

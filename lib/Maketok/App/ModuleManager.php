@@ -173,10 +173,12 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
     {
         /** @var Installer $installer */
         $installer = $state->installer;
+        $configFileName = Site::getServiceContainer()->getParameter('module_config_file_name');
+        $configName = Site::getServiceContainer()->getParameter('module_config_name');
         foreach ($this->getModuleDirectories() as $dir) {
-            if (file_exists($this->_getDir() . DS . $dir . DS . 'Config.php')) {
-                require_once $this->_getDir() . DS . $dir . DS . 'Config.php';
-                $className = "\\modules\\$dir\\Config";
+            if (file_exists($this->_getDir() . DS . $dir . DS . $configFileName)) {
+                include_once $this->_getDir() . DS . $dir . DS . $configFileName;
+                $className = "\\modules\\$dir\\$configName";
                 /** @var ConfigInterface $config */
                 $config = new $className();
                 array_push($this->_activeModules, $config);

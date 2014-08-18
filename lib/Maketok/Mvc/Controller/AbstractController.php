@@ -15,7 +15,8 @@ use Maketok\Util\RequestInterface;
 use Maketok\Template;
 use Zend\Uri\UriFactory;
 
-class AbstractController {
+class AbstractController
+{
 
     /** @var  Response */
     protected $_response;
@@ -112,6 +113,7 @@ class AbstractController {
         $uri = UriFactory::factory(Site::getBaseUrl());
         $uri->setPath('/css/');
         $templateVars['css_url'] = $uri->toString();
+        $templateVars['base_url'] = Site::getBaseUrl();
         $engine->loadDependencies($dependencyPaths);
         $engine->loadTemplate($path);
         $engine->setVariables($templateVars);
@@ -183,10 +185,19 @@ class AbstractController {
     }
 
     /**
-     * @return \Maketok\App\MaketokServiceContainer|\Symfony\Component\DependencyInjection\ContainerBuilder
+     * @return \Symfony\Component\DependencyInjection\ContainerBuilder
      */
     public function getSC()
     {
         return Site::getServiceContainer();
+    }
+
+    /**
+     * @return \Symfony\Component\Form\FormFactoryInterface
+     */
+    public function createFormBuilder()
+    {
+        $this->getSC()->get('form_builder')
+            ->getFormFactory();
     }
 } 

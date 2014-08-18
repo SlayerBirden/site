@@ -1,0 +1,13 @@
+AuthType Basic
+AuthName "Admin Area"
+AuthUserFile /var/www/.htpasswd
+Require valid-user
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-l
+
+    RewriteRule .* index.php [L]
+</IfModule>

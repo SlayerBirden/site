@@ -7,6 +7,10 @@
  */
 namespace Maketok\Template;
 
+use Symfony\Bridge\Twig\Extension\FormExtension;
+use Symfony\Bridge\Twig\Form\TwigRenderer;
+use Symfony\Bridge\Twig\Form\TwigRendererEngine;
+
 class Twig extends AbstractEngine
 {
 
@@ -26,12 +30,24 @@ class Twig extends AbstractEngine
      */
     public function __construct($debug = false)
     {
-        $loader = new \Twig_Loader_Filesystem();
+        $vendorTwigBridgeDir = AR . DS . 'vendor' . DS .
+            'symfony' . DS . 'twig-bridge' . DS .
+            'Symfony' . DS . 'Bridge' . DS . 'Twig' . DS . 'Resources' . DS . 'views' . DS . 'Form';
+        $loader = new \Twig_Loader_Filesystem(array(
+            $vendorTwigBridgeDir,
+        ));
         $this->_engine = new \Twig_Environment($loader, array(
             'cache' => AR . DS . self::CACHE_FOLDER,
-            'debug' => true,
+            'debug' => $debug,
         ));
         $this->_engine->addExtension(new \Twig_Extensions_Extension_I18n());
+        $this->_engine->addExtension(new \Twig_Extensions_Extension_Text());
+        $defaultFormTheme = 'form_div_layout.html.twig';
+        $formEngine = new TwigRendererEngine(array($defaultFormTheme));
+        $formEngine->setEnvironment($this->_engine);
+        $this->_engine->addExtension(
+            new FormExtension(new TwigRenderer($formEngine))
+        );
     }
 
     /**

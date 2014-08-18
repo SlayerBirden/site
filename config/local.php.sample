@@ -14,5 +14,4 @@ return [
         'max_execution_time' => 60,
     ],
     'debug' => true,
-    'base_url'=> 'http://mysite.com'
 ];

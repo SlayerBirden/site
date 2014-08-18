@@ -1,0 +1,23 @@
+{% extends "admin.html.twig" %}
+{% block content %}
+    <table>
+        <tr>
+            <th>{% trans "Module Code" %}</th>
+            <th>{% trans "Version" %}</th>
+            <th>{% trans "Is Active" %}</th>
+            <th>{% trans "Updated At" %}</th>
+            <th>{% trans "Actions" %}</th>
+        </tr>
+    {% for module in modules %}
+        <tr>
+            <td>{{ module.module_code }}</td>
+            <td>{{ module.version }}</td>
+            <td>{{ module.active }}</td>
+            <td>{{ module.updated_at }}</td>
+            <td><a href="{{ module.url }}">{% trans "View/Edit" %}</a></td>
+        </tr>
+    {% else %}
+        <tr><td colspan="5">No modules found in the system! Very strange, how is this message displayed than??</td></tr>
+    {% endfor %}
+    </table>
+{% endblock %}
