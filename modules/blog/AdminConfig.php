@@ -19,6 +19,9 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 class AdminConfig extends Config implements AdminConfigInterface, InstallerApplicableInterface, ExtensionInterface
 {
 
+    /**
+     * {@inheritdoc}
+     */
     public function initRoutes()
     {
         Site::getServiceContainer()->get('router')->addRoute(new Literal('/blog', array(

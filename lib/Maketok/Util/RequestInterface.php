@@ -12,4 +12,4 @@ namespace Maketok\Util;
 interface RequestInterface extends MessageInterface
 {
 
-} 
+}

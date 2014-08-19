@@ -22,13 +22,16 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
 
     private $_moduleDirs;
     private $_activeModules = [];
-    private $_disabledModules = [];
+//    private $_disabledModules = [];
 
     public function __construct($adapter)
     {
         parent::__construct('modules', $adapter, new RowGatewayFeature('module_code'));
     }
 
+    /**
+     * @return mixed
+     */
     public function getModuleDirectories()
     {
         if (is_null($this->_moduleDirs)) {

@@ -16,6 +16,9 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class ArticleType extends AbstractType
 {
 
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -29,6 +32,9 @@ class ArticleType extends AbstractType
             ->add('save', 'submit', array('label' => 'Save Article'));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(

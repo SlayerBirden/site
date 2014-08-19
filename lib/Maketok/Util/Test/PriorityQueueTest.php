@@ -59,4 +59,4 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->queue->isEmpty());
     }
-} 
+}

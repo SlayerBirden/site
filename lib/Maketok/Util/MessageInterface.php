@@ -14,4 +14,4 @@ interface MessageInterface
     public function getContent();
 
     public function setContent($content);
-} 
+}

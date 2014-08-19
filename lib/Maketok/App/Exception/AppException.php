@@ -12,4 +12,4 @@ namespace Maketok\App\Exception;
 class AppException extends \Exception
 {
 
-} 
+}

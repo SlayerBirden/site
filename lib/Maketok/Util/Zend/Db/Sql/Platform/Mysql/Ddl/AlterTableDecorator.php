@@ -40,6 +40,10 @@ class AlterTableDecorator extends AlterTable implements PlatformDecoratorInterfa
         return parent::getSqlString($platform);
     }
 
+    /**
+     * @param PlatformInterface $adapterPlatform
+     * @return array
+     */
     protected function processAddColumns(PlatformInterface $adapterPlatform = null)
     {
         $sqls = array();
@@ -72,6 +76,10 @@ class AlterTableDecorator extends AlterTable implements PlatformDecoratorInterfa
         return array($sqls);
     }
 
+    /**
+     * @param PlatformInterface $adapterPlatform
+     * @return array
+     */
     protected function processChangeColumns(PlatformInterface $adapterPlatform = null)
     {
         $sqls = array();

@@ -42,4 +42,4 @@ interface ConfigInterface
      * @return string
      */
     public function __toString();
-} 
+}

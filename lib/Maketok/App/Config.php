@@ -7,7 +7,6 @@
  */
 namespace Maketok\App;
 
-use Maketok\App\Ddl\Installer;
 use Maketok\App\Exception\ConfigException;
 use Maketok\App\Session\DbHandler;
 use Maketok\Observer\State;

@@ -8,12 +8,8 @@
 
 namespace Maketok\Mvc\Controller;
 
-use Maketok\App\Site;
-use Maketok\Http\Response;
 use Maketok\Mvc\GenericException;
-use Maketok\Util\RequestInterface;
 use Maketok\Template;
-use Zend\Uri\UriFactory;
 
 class AbstractAdminController extends AbstractController
 {

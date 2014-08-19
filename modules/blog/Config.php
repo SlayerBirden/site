@@ -73,6 +73,9 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
         ), [], ['id' => '\d+']));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function initListeners()
     {
         return;

@@ -14,6 +14,10 @@ use modules\cover\model\ModuleTable;
 class Modules extends AbstractAdminController
 {
 
+    /**
+     * @param RequestInterface $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function indexAction(RequestInterface $request)
     {
         $this->setTemplate('modules.html.twig');
@@ -27,6 +31,10 @@ class Modules extends AbstractAdminController
         ));
     }
 
+    /**
+     * @param RequestInterface $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function viewAction(RequestInterface $request)
     {
         $this->setTemplate('module.html.twig');

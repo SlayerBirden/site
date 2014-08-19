@@ -23,6 +23,7 @@ class Request extends HttpRequest implements RequestInterface
      */
     public function setContent($content)
     {
+        $this->content = $content;
         return $this;
     }
 }

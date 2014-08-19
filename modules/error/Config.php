@@ -25,11 +25,17 @@ class Config implements ConfigInterface
         return '0.1.0';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function initRoutes()
     {
         return;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function initListeners()
     {
         // this is a special case;

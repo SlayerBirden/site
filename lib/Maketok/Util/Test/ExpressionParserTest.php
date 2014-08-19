@@ -91,4 +91,4 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
             'article_id' => '123'
         ), $return);
     }
-} 
+}

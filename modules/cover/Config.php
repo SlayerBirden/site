@@ -24,6 +24,9 @@ class Config implements ConfigInterface
         return '0.1.0';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function initRoutes()
     {
         Site::getServiceContainer()->get('router')->addRoute(new Literal('/', array(
@@ -33,6 +36,9 @@ class Config implements ConfigInterface
         )));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function initListeners()
     {
         return;

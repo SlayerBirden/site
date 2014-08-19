@@ -21,6 +21,9 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class AdminConfig extends Config implements AdminConfigInterface, ExtensionInterface
 {
 
+    /**
+     * {@inheritdoc}
+     */
     public function initRoutes()
     {
         Site::getServiceContainer()->get('router')->addRoute(new Literal('/', array(
