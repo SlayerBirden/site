@@ -5,12 +5,12 @@
 {% endblock %}
 {% block content %}
     <article>
-        <span class="article-title">{{ title }}</span>
-        <div class="article-content">{{ content|nl2br }}</div>
+        <div class="article-title opened-article">{{ article.title }}</div>
+        <div class="article-content">{{ article.content|nl2br }}</div>
         <div class="article-meta">
-            <span class="article-author">{{ author }}</span>
-            <span class="article-date">{{ created_at|date("F jS \\a\\t g:ia") }}</span>
-            <span class="hide">id: {{ id }}</span>
+            <span class="article-author">{{ article.author }}</span>
+            <span class="article-date">{{ article.created_at|date("F jS \\a\\t g:ia") }}</span>
+            <span class="hide">id: {{ article.id }}</span>
         </div>
     </article>
     <div id="disqus_thread"></div>
@@ -27,6 +27,6 @@
 {% endblock %}
 {% block footer %}
     <div class="footer-content">
-        <span class="important">{% trans "footer" %}</span>
+        <span class="important">{% trans %}footer{% endtrans %}</span>
     </div>
 {% endblock %}

@@ -5,19 +5,29 @@
 {% endblock %}
 {% block content %}
 <div id="info" class="info">
-    <span class="important">{% trans description %}</span>
+    <span class="important">{% trans %}%description%{% endtrans %}</span>
 </div>
 <section id="articles">
     {% for article in articles %}
         <article class="article">
-            <h4 class="article-title">{{ article.title }}</h4>
-            <div class="article-content">{{ article.content|nl2br }}</div>
-            <div class="article-author">{{ article.author }}</div>
-            <div class="article-date">{{ article.created_at|date("F jS \\a\\t g:ia") }}</div>
-            <div class="article-link">
-                <a href="{{ article.url }}" class="general-link">{% trans "Open" %}</a>
-                <a href="{{ article.url }}#disqus_thread" class="comment-link">{% trans "Comments" %}</a>
+            <h4>
+                <a class="article-title" href="{{ article.url }}">{{ article.title }}</a>
+            </h4>
+            <div class="article-info">
+                <span class="article-date">{{ article.created_at|date("F jS \\a\\t g:ia") }}</span>
+                <span class="article-by">by</span>
+                <span class="article-author">{{ article.author }}</span>
             </div>
+            {% autoescape false %}
+            <div class="article-content">{{ article.content|nl2br|truncate(550) }}</div>
+            {% endautoescape %}
+            <span class="article-link">
+                <a href="{{ article.url }}" class="general-link">{% trans %}Open{% endtrans %}</a>
+            </span>
+            <span class="article-comments-link">
+                <a href="{{ article.url }}#disqus_thread" class="comment-link">{% trans %}Comments{% endtrans %}</a>
+            </span>
+
         </article>
     {% else %}
         <span>No articles found in the system! You really need to add one.</span>
@@ -26,7 +36,7 @@
 {% endblock %}
 {% block footer %}
 <div class="footer-content">
-    <span class="important">{% trans "Hello World!" %}</span>
+    <span class="important">{% trans %}Hello World!{% endtrans %}</span>
 </div>
 {% endblock %}
 {% block before_body_end %}

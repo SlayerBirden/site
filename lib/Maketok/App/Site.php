@@ -12,6 +12,9 @@ use Maketok\Observer\State;
 use Maketok\Observer\StateInterface;
 use Maketok\Observer\SubjectManager;
 use Maketok\Http\Request;
+use Maketok\Template\TemplateCompilerPass;
+use Maketok\Util\FormExtensionCompilerPass;
+use Maketok\Util\FormTypeCompilerPass;
 use Maketok\Util\RequestInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -140,7 +143,11 @@ final class Site
                 self::$_sc = new $class();
             } else {
                 $container = new ContainerBuilder();
-                $container->setParameter('application_root', AR);
+                $container->addCompilerPass(new TemplateCompilerPass);
+                $container->addCompilerPass(new FormExtensionCompilerPass);
+                $container->addCompilerPass(new FormTypeCompilerPass);
+                $container->setParameter('AR', AR);
+                $container->setParameter('DS', DS);
                 $container->setParameter('debug', Config::getConfig('debug'));
                 $container->setParameter('log_dir', AR . DS . 'var' . DS . 'logs' . DS);
                 $container->setParameter('cache_dir', AR . DS . 'var' . DS . 'cache' . DS);

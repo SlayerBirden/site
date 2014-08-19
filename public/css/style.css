@@ -41,6 +41,10 @@ a:hover.general-link {
     font-size: 1.4em;
 }
 
+#disqus_thread{
+    padding-top: 30px;
+}
+
 .info {
     font-size: 2em;
     margin: 10px 0 30px 0;
@@ -54,18 +58,27 @@ a:hover.general-link {
     border-bottom: 1px solid #7690AB;
 }
 
-.article-title {
+a.article-title, .article-title {
     font-size: 1.6em;
     font-weight: 400;
-    padding-bottom: 10px;
     display: block;
+    text-decoration: none;
+    color: #3a3a3a;
+}
+
+.article-title.opened-article{
+    padding-bottom: 20px;
+}
+
+a:hover.article-title{
+    text-decoration: underline;
+    color: #264666;
 }
 
 .article-author {
     font-size: 0.7em;
     font-weight: 600;
     padding-top: 15px;
-    display: block;
 }
 
 .article-date {
@@ -74,7 +87,31 @@ a:hover.general-link {
 }
 
 .article-link {
-    padding-top: 10px;
+    font-size: .8em;
+}
+
+.article-by{
+    font-size: .6em;
+}
+
+.article-info{
+    padding-bottom: 20px;
+    line-height: .8em;
+}
+
+.article-comments-link{
+    font-size: .8em;
+    line-height: 2em;
+    padding-top: 15px;
+    display: block;
+}
+
+.article-content{
+    display: inline;
+}
+
+.article-meta{
+    padding-top: 15px;
 }
 
 .hide {

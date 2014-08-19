@@ -19,65 +19,144 @@ parameters:
   form_builder.class: Symfony\Component\Form\Forms
   form_builder_extension_httpfoundation.class: Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension
   form_builder_extension_validation.class: Symfony\Component\Form\Extension\Validator\ValidatorExtension
+  form_builder_extension_di.class: Symfony\Component\Form\Extension\DependencyInjection\DependencyInjectionExtension
   validation_model.class: Symfony\Component\Validator\Validation
+  twig_extension_text.class: \Twig_Extensions_Extension_Text
+  defaultFormTheme: form_div_layout.html.twig
+  twig_renderer_engine.class: Symfony\Bridge\Twig\Form\TwigRendererEngine
+  twig_extension_form.class: Symfony\Bridge\Twig\Extension\FormExtension
+  twig_renderer.class: Symfony\Bridge\Twig\Form\TwigRenderer
+  translator.class: Symfony\Component\Translation\Translator
+  translation_locale: en
+  translator_loader.class: Symfony\Component\Translation\Loader\XliffFileLoader
+  translator_loader.type: xlf
+  twig_extension_translation.class: Symfony\Bridge\Twig\Extension\TranslationExtension
+  twig_env.class: \Twig_Environment
+  twig_loader.class: \Twig_Loader_Filesystem
 
 services:
   adapter:
     class: "%adapter.class%"
     arguments: [{driver: "%db_driver%", hostname: "%db_host%", database: "%db_database%", username: "%db_user%", password: "%db_passw%"}]
+
   template_engine:
     class: "%template_engine.class%"
     arguments: ["%debug%"]
+
   module_manager:
     class: "%module_manager.class%"
     arguments: ["@adapter"]
+
   session_handler:
     class: "%session_handler.class%"
+
   directory_handler:
     class: "%directory_handler.class%"
+
   subject_manager:
     class: "%subject_manager.class%"
     factory_class: "%subject_manager.class%"
     factory_method: getInstance
+
   registry:
     class: "%registry.class%"
     factory_class: "%registry.class%"
     factory_method: getInstance
+
   object_prop_hydrator:
     class: "%object_prop_hydrator.class%"
+
   default_logger_handler:
     class: "%default_logger_handler.class%"
     arguments: ["%log_dir%site.log", 100]
+
   logger:
     class: "%logger.class%"
     arguments: ["application_logger", ["@default_logger_handler"]]
+
   zend_sql_platform:
     class: "%zend_sql_platform.class%"
     arguments: ["@adapter"]
+
   zend_db_sql:
     class: "%zend_db_sql.class%"
     arguments: ["@adapter", [], "@zend_sql_platform"]
+
   ddl_installer:
     class: "%ddl_installer.class%"
     arguments: ["@adapter", "@zend_db_sql"]
+
   router:
     class: "%router.class%"
+
   front_controller:
     class: "%front_controller.class%"
     arguments: ["@router"]
+
   form_builder_extension_httpfoundation:
     class: "%form_builder_extension_httpfoundation.class%"
+    tags:
+      - { name: form.extension }
+
   validation_model:
     class: "%validation_model.class%"
     factory_class: "%validation_model.class%"
     factory_method: createValidator
+
   form_builder_extension_validation:
     class: "%form_builder_extension_validation.class%"
     arguments: ["@validation_model"]
+    tags:
+      - { name: form.extension }
+
   form_builder:
     class: "%form_builder.class%"
     factory_class: "%form_builder.class%"
     factory_method: createFormFactoryBuilder
+
+  twig_extension_text:
+    class: "%twig_extension_text.class%"
+    tags:
+      - { name: twig.extension }
+
+  twig_renderer_engine:
+    class: "%twig_renderer_engine.class%"
+    arguments: [["%defaultFormTheme%"]]
     calls:
-      - [addExtension, ["@form_builder_extension_validation"]]
-      - [addExtension, ["@form_builder_extension_httpfoundation"]]
+      - [setEnvironment, ["@twig_env"]]
+
+  twig_renderer:
+    class: "%twig_renderer.class%"
+    arguments: ["@twig_renderer_engine"]
+
+  twig_extension_form:
+    class: "%twig_extension_form.class%"
+    arguments: ["@twig_renderer"]
+    tags:
+      - { name: twig.extension }
+
+  translator_loader:
+    class: "%translator_loader.class%"
+
+  translator:
+    class: "%translator.class%"
+    calls:
+      - [addLoader, ["%translator_loader.type%", "@translator_loader"]]
+      - [addResource, ["%translator_loader.type%", "%AR%%DS%translations%DS%messages.en.xlf", "%translation_locale%"]]
+
+  twig_extension_translation:
+    class: "%twig_extension_translation.class%"
+    arguments: ["@translator"]
+    tags:
+      - { name: twig.extension }
+
+  twig_loader:
+    class: "%twig_loader.class%"
+    calls:
+      - [addPath, ["%AR%%DS%vendor%DS%symfony%DS%twig-bridge%DS%Symfony%DS%Bridge%DS%Twig%DS%Resources%DS%views%DS%Form"]]
+
+  twig_env:
+    class: "%twig_env.class%"
+    arguments:
+      - "@twig_loader"
+      - { cache: "%AR%%DS%var%DS%cache", debug: "%debug%" }

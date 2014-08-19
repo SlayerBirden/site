@@ -24,12 +24,7 @@ class Article extends AbstractController
         $this->setDependency(array('cover'));
         $this->setTemplate('article.html.twig');
         return $this->prepareResponse($request, array(
-            'title' => $article->title,
-            'content' => $article->content,
-            'author' => $article->author,
-            'created_at' => $article->created_at,
-            'updated_at' => $article->updated_at,
-            'id' => $article->id,
+            'article' => $article,
         ));
     }
 

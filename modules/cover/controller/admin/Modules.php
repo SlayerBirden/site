@@ -20,7 +20,11 @@ class Modules extends AbstractAdminController
         /** @var ModuleTable $articleTable */
         $moduleTable = $this->getSC()->get('module_table');
         $modules = $moduleTable->fetchAll();
-        return $this->prepareResponse($request, array('title' => 'Modules', 'modules' => $modules));
+        return $this->prepareResponse($request, array(
+            'title' => 'Modules',
+            'modules' => $modules,
+            'description' => 'Modules'
+        ));
     }
 
     public function viewAction(RequestInterface $request)

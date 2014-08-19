@@ -4,10 +4,10 @@
 {{ parent() }}
 {% endblock %}
 {% block content %}
-    {% trans "Oops! We couldn't find anything here. Try again." %}
+    {% trans %}Oops! We couldn't find anything here. Try again.{% endtrans %}
 {% endblock %}
 {% block footer %}
 <div class="footer-content">
-    <span class="important">{% trans "Hello World!" %}</span>
+    <span class="important">{% trans %}Hello World!{% endtrans %}</span>
 </div>
 {% endblock %}

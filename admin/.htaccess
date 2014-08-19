@@ -1,6 +1,6 @@
 AuthType Basic
 AuthName "Admin Area"
-AuthUserFile /var/www/.htpasswd
+AuthUserFile .htpasswd
 Require valid-user
 
 <IfModule mod_rewrite.c>

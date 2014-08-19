@@ -7,9 +7,7 @@
  */
 namespace Maketok\Template;
 
-use Symfony\Bridge\Twig\Extension\FormExtension;
-use Symfony\Bridge\Twig\Form\TwigRenderer;
-use Symfony\Bridge\Twig\Form\TwigRendererEngine;
+use Maketok\App\Site;
 
 class Twig extends AbstractEngine
 {
@@ -30,24 +28,23 @@ class Twig extends AbstractEngine
      */
     public function __construct($debug = false)
     {
-        $vendorTwigBridgeDir = AR . DS . 'vendor' . DS .
-            'symfony' . DS . 'twig-bridge' . DS .
-            'Symfony' . DS . 'Bridge' . DS . 'Twig' . DS . 'Resources' . DS . 'views' . DS . 'Form';
-        $loader = new \Twig_Loader_Filesystem(array(
-            $vendorTwigBridgeDir,
-        ));
-        $this->_engine = new \Twig_Environment($loader, array(
-            'cache' => AR . DS . self::CACHE_FOLDER,
-            'debug' => $debug,
-        ));
-        $this->_engine->addExtension(new \Twig_Extensions_Extension_I18n());
-        $this->_engine->addExtension(new \Twig_Extensions_Extension_Text());
-        $defaultFormTheme = 'form_div_layout.html.twig';
-        $formEngine = new TwigRendererEngine(array($defaultFormTheme));
-        $formEngine->setEnvironment($this->_engine);
-        $this->_engine->addExtension(
-            new FormExtension(new TwigRenderer($formEngine))
-        );
+        $this->_engine = Site::getServiceContainer()->get('twig_env');
+    }
+
+    /**
+     * @param \Twig_Extension $extension
+     */
+    public function addExtension(\Twig_Extension $extension)
+    {
+        $this->_engine->addExtension($extension);
+    }
+
+    /**
+     * @param string $path
+     */
+    public function addPath($path)
+    {
+        $this->_engine->getLoader()->addPath($path);
     }
 
     /**
@@ -57,7 +54,7 @@ class Twig extends AbstractEngine
      */
     public function loadTemplate($path)
     {
-        $this->_engine->getLoader()->addPath(dirname($path));
+        $this->addPath(dirname($path));
         $this->_template = $this->_engine->loadTemplate(basename($path));
     }
 

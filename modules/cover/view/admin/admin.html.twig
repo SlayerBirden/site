@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>{% trans title %}</title>
+    <title>{% trans %}%title%{% endtrans %}</title>
     {% block head %}
         <link rel="stylesheet" href="{{ css_url }}style.css">
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
@@ -18,15 +18,15 @@
     <nav>
         {% block menu %}
             <ul>
-                <li><a href="{{ base_url }}/modules">{% trans "Modules" %}</a></li>
-                <li><a href="{{ base_url }}/blog">{% trans "Blog" %}</a></li>
+                <li><a href="{{ base_url }}/modules">{% trans %}Modules{% endtrans %}</a></li>
+                <li><a href="{{ base_url }}/blog">{% trans %}Blog{% endtrans %}</a></li>
             </ul>
         {% endblock %}
     </nav>
     <section id="content">{% block content %}{% endblock %}</section>
     <footer>
         {% block footer %}{% endblock %}
-        {% trans '&copy; 2014 <a href="http://maketok.com">maketok.com</a>.' %}
+        {% trans %}'&copy; 2014 <a href="http://maketok.com">maketok.com</a>.'{% endtrans %}
     </footer>
     {% block before_body_end %}{% endblock %}
      </div>

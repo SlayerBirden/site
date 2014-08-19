@@ -113,6 +113,8 @@ class AbstractController
         $uri = UriFactory::factory(Site::getBaseUrl());
         $uri->setPath('/css/');
         $templateVars['css_url'] = $uri->toString();
+        $uri->setPath('/js/');
+        $templateVars['js_url'] = $uri->toString();
         $templateVars['base_url'] = Site::getBaseUrl();
         $engine->loadDependencies($dependencyPaths);
         $engine->loadTemplate($path);
@@ -195,9 +197,9 @@ class AbstractController
     /**
      * @return \Symfony\Component\Form\FormFactoryInterface
      */
-    public function createFormBuilder()
+    public function getFormFactory()
     {
-        $this->getSC()->get('form_builder')
+        return $this->getSC()->get('form_builder')
             ->getFormFactory();
     }
 } 
