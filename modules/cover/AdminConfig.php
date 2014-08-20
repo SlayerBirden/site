@@ -40,7 +40,7 @@ class AdminConfig extends Config implements AdminConfigInterface, ExtensionInter
             'module' => $this->getCode(),
             'controller' => 'modules\\cover\\controller\\admin\\Modules',
             'action' => 'view',
-        ), [], ['code' => '\w+']));
+        ), [], ['code' => '^\w+$']));
     }
 
     /**

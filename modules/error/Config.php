@@ -82,4 +82,13 @@ class Config implements ConfigInterface
     {
         return $this->getCode();
     }
+
+    /**
+     * some init work before other init processes (events and routes)
+     * @return mixed
+     */
+    public function initBefore()
+    {
+        return;
+    }
 }

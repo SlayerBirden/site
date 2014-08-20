@@ -3,6 +3,7 @@ parameters:
   article_result_set.class: Zend\Db\ResultSet\HydratingResultSet
   article_table_gateway.class: Zend\Db\TableGateway\TableGateway
   article_table.class: modules\blog\model\ArticleTable
+  validator_builder.yml.config.paths: [123]
 
 services:
   article_model:

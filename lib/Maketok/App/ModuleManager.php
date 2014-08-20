@@ -246,6 +246,7 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
         });
         // process active modules
         Site::getSubjectManager()->notify('modulemanager_process_before', new State(array('active_modules' => $activeModules)));
+        $config->initBefore();
         foreach ($activeModules as $config) {
             // events
             $config->initListeners();

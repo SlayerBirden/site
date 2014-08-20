@@ -22,6 +22,7 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Zend\Db\Adapter\Adapter;
+use Zend\Uri\UriFactory;
 
 final class Site
 {
@@ -269,6 +270,23 @@ final class Site
     public static function getBaseUrl()
     {
         return self::getServiceContainer()->getParameter('base_url');
+    }
+
+    /**
+     * @param string $path
+     * @param array $config
+     * @return string
+     */
+    public static function getUrl($path, array $config = null)
+    {
+        $uri = UriFactory::factory(Site::getBaseUrl());
+        $path = '/' . ltrim($path, '/');
+        $path = rtrim($path, '/');
+        if (!isset($config['wts'])) { // config Without Trailing Slash
+            $path  = $path . '/';
+        }
+        $uri->setPath($path);
+        return $uri->toString();
     }
 
 }

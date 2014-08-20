@@ -14,7 +14,7 @@ use Maketok\Mvc\Router\Route\Success;
 use Maketok\Util\RequestInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class Literal implements RouteInterface
+class Literal extends AbstractRoute implements RouteInterface
 {
 
 
@@ -48,7 +48,7 @@ class Literal implements RouteInterface
     public function match(RequestInterface $request)
     {
         $this->_request = $request;
-        if ($request->getPathInfo() === $this->_matchPath) {
+        if ($this->stripTrailingSlash($request->getPathInfo()) === $this->stripTrailingSlash($this->_matchPath)) {
             if (is_object($request->attributes) &&
                 ($request->attributes instanceof ParameterBag) &&
                 !empty($this->_defaults)) {

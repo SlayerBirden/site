@@ -65,12 +65,12 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
             'module' => $this->getCode(),
             'controller' => 'modules\\blog\\controller\\Article',
             'action' => 'index',
-        ), [], ['code' => '\w+']));
+        ), [], ['code' => '^[a-zA-Z0-9_.]+$']));
         Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/article/{id}', array(
             'module' => $this->getCode(),
             'controller' => 'modules\\blog\\controller\\Article',
             'action' => 'index',
-        ), [], ['id' => '\d+']));
+        ), [], ['id' => '^\d+$']));
     }
 
     /**
@@ -123,6 +123,11 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
             new FileLocator(__DIR__.'/config')
         );
         $loader->load('services.yml');
+        // todo: this will be fixed after main service config is reworked and divided
+        // validator config files
+        $validatorYmlConfigPaths = $container->getParameter('validator_builder.yml.config.paths');
+        $validatorYmlConfigPaths[] = __DIR__. DS .'config' . DS . 'validation.yml';
+        $container->setParameter('validator_builder.yml.config.paths', $validatorYmlConfigPaths);
     }
 
     /**
@@ -161,5 +166,14 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
     public function getAlias()
     {
         return $this->getCode();
+    }
+
+    /**
+     * some init work before other init processes (events and routes)
+     * @return mixed
+     */
+    public function initBefore()
+    {
+        return;
     }
 }

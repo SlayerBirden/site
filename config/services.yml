@@ -1,3 +1,4 @@
+# todo : leave only kernel params here, move all other out of this file
 parameters:
   template_engine.class: Maketok\Template\Twig
   session_handler.class: Maketok\App\Session\DbHandler
@@ -20,8 +21,11 @@ parameters:
   form_builder_extension_httpfoundation.class: Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension
   form_builder_extension_validation.class: Symfony\Component\Form\Extension\Validator\ValidatorExtension
   form_builder_extension_di.class: Symfony\Component\Form\Extension\DependencyInjection\DependencyInjectionExtension
-  validation_model.class: Symfony\Component\Validator\Validation
-  twig_extension_text.class: \Twig_Extensions_Extension_Text
+  validator.class: Symfony\Component\Validator\Validator
+  validator_builder.class: Symfony\Component\Validator\ValidatorBuilder
+  # todo will be fixed in latter commits
+  validator_builder.yml.config.paths: []
+  twig_extension_text.class: Twig_Extensions_Extension_Text
   defaultFormTheme: form_div_layout.html.twig
   twig_renderer_engine.class: Symfony\Bridge\Twig\Form\TwigRendererEngine
   twig_extension_form.class: Symfony\Bridge\Twig\Extension\FormExtension
@@ -31,8 +35,8 @@ parameters:
   translator_loader.class: Symfony\Component\Translation\Loader\XliffFileLoader
   translator_loader.type: xlf
   twig_extension_translation.class: Symfony\Bridge\Twig\Extension\TranslationExtension
-  twig_env.class: \Twig_Environment
-  twig_loader.class: \Twig_Loader_Filesystem
+  twig_env.class: Twig_Environment
+  twig_loader.class: Twig_Loader_Filesystem
 
 services:
   adapter:
@@ -98,14 +102,19 @@ services:
     tags:
       - { name: form.extension }
 
-  validation_model:
-    class: "%validation_model.class%"
-    factory_class: "%validation_model.class%"
-    factory_method: createValidator
+  validator_builder:
+    class: "%validator_builder.class%"
+    calls:
+      - [addYamlMappings, ["%validator_builder.yml.config.paths%"]]
+
+  validator:
+    class: "%validator.class%"
+    factory_service: validator_builder
+    factory_method: getValidator
 
   form_builder_extension_validation:
     class: "%form_builder_extension_validation.class%"
-    arguments: ["@validation_model"]
+    arguments: ["@validator"]
     tags:
       - { name: form.extension }
 

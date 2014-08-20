@@ -16,7 +16,7 @@ use Maketok\Util\ExpressionParser;
 use Maketok\Util\ExpressionParserInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class Parameterized implements RouteInterface
+class Parameterized extends AbstractRoute implements RouteInterface
 {
 
     /** @var  string */
@@ -66,7 +66,10 @@ class Parameterized implements RouteInterface
     public function match(RequestInterface $request)
     {
         $this->_request = $request;
-        if ($variables = $this->_expressionParser->parse($request->getPathInfo(), $this->_restrictions)) {
+        if ($variables = $this->_expressionParser->parse(
+            $this->stripTrailingSlash($request->getPathInfo()),
+            $this->_restrictions
+        )) {
             // set defaults
             if (is_object($request->attributes) &&
                 ($request->attributes instanceof ParameterBag) &&

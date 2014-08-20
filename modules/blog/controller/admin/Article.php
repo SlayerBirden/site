@@ -53,6 +53,37 @@ class Article extends AbstractAdminController
      */
     public function newAction(RequestInterface $request)
     {
+        $this->setDependency(array('cover'));
+        $this->setTemplate('article.html.twig');
+        $form = $this->getFormFactory()->create('article', null, array(
+            'action' => $this->getUrl('blog/article/save'),
+            'method' => 'POST',
+        ));
+        return $this->prepareResponse($request, array(
+            'title' => 'Add New Article ',
+            'description' => 'Article Creation',
+            'form' => $form->createView()
+        ));
+    }
 
+    /**
+     * @param RequestInterface $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function saveAction(RequestInterface $request)
+    {
+        $form = $this->getFormFactory()->create('article');
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            /** @var ArticleTable $articleTable */
+            $articleTable = $this->getSC()->get('article_table');
+            $articleTable->save($form->getData());
+            // todo success should go in session
+            return $this->_redirect('blog');
+        } else {
+            // todo errors should go in session
+            $errors = $form->getErrors();
+            return $this->_returnBack();
+        }
     }
 }

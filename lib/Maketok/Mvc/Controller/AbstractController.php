@@ -13,7 +13,7 @@ use Maketok\Http\Response;
 use Maketok\Mvc\GenericException;
 use Maketok\Util\RequestInterface;
 use Maketok\Template;
-use Zend\Uri\UriFactory;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class AbstractController
 {
@@ -110,11 +110,8 @@ class AbstractController
             $dependencyPaths[] = $this->_getTemplatePath('', $_dependencyModule);
         }
         // now add general variables
-        $uri = UriFactory::factory(Site::getBaseUrl());
-        $uri->setPath('/css/');
-        $templateVars['css_url'] = $uri->toString();
-        $uri->setPath('/js/');
-        $templateVars['js_url'] = $uri->toString();
+        $templateVars['css_url'] = Site::getUrl('/css/');
+        $templateVars['js_url'] = Site::getUrl('/js/');
         $templateVars['base_url'] = Site::getBaseUrl();
         $engine->loadDependencies($dependencyPaths);
         $engine->loadTemplate($path);
@@ -201,5 +198,42 @@ class AbstractController
     {
         return $this->getSC()->get('form_builder')
             ->getFormFactory();
+    }
+
+    /**
+     * @param string $url
+     * @return RedirectResponse
+     */
+    protected function _redirectUrl($url)
+    {
+       return new RedirectResponse($url);
+    }
+
+    /**
+     * @param string $path
+     * @return RedirectResponse
+     */
+    protected function _redirect($path)
+    {
+        $url = Site::getUrl($path);
+        return $this->_redirectUrl($url);
+    }
+
+    /**
+     * @return RedirectResponse
+     */
+    protected function _returnBack()
+    {
+        $referer = Site::getRequest()->headers->get('referer');
+        return $this->_redirectUrl($referer);
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public function getUrl($path)
+    {
+        return Site::getUrl($path);
     }
 }

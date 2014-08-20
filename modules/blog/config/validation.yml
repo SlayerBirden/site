@@ -1,0 +1,7 @@
+modules\blog\model\Article:
+  properties:
+    title:
+      - NotBlank: ~
+    code:
+      - NotBlank: ~
+      - Regex: "/^[a-zA-Z0-9_.]+$/"
