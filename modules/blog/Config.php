@@ -125,7 +125,14 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
         $loader->load('services.yml');
         // todo: this will be fixed after main service config is reworked and divided
         // validator config files
-        $validatorYmlConfigPaths = $container->getParameter('validator_builder.yml.config.paths');
+        $validatorYmlConfigPaths = [];
+        if ($container->hasParameter('validator_builder.yml.config.paths')) {
+            $validatorYmlConfigPaths = $container->getParameter('validator_builder.yml.config.paths');
+        }
+        if (!array($validatorYmlConfigPaths)) {
+            Site::getServiceContainer()->get('logger')->error("Wrong parameter type for validator_builder.yml.config.paths.");
+            return;
+        }
         $validatorYmlConfigPaths[] = __DIR__. DS .'config' . DS . 'validation.yml';
         $container->setParameter('validator_builder.yml.config.paths', $validatorYmlConfigPaths);
     }

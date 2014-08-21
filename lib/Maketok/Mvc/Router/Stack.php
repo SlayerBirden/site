@@ -22,6 +22,9 @@ class Stack implements RouterInterface
         $this->_routes = new \SplStack();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function addRoute(RouteInterface $route, $mode = self::STACK_MODE_APPEND)
     {
         if (self::STACK_MODE_APPEND === $mode) {
@@ -31,6 +34,9 @@ class Stack implements RouterInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function addRoutes(array $routes)
     {
         foreach ($routes as $route) {
@@ -38,6 +44,9 @@ class Stack implements RouterInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setRoutes(array $routes)
     {
         // we need to clear stack first
@@ -49,6 +58,9 @@ class Stack implements RouterInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function match(RequestInterface $request)
     {
         $matched = false;
@@ -62,7 +74,10 @@ class Stack implements RouterInterface
         return $matched;
     }
 
-    public function assemble(array $params)
+    /**
+     * {@inheritdoc}
+     */
+    public function assemble(array $params = array())
     {
         return;
     }

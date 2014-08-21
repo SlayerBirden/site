@@ -71,10 +71,13 @@ class Parameterized extends AbstractRoute implements RouteInterface
             $this->_restrictions
         )) {
             // set defaults
-            if (is_object($request->attributes) &&
-                ($request->attributes instanceof ParameterBag) &&
-                !empty($this->_defaults)) {
-                $request->attributes->add($this->_defaults);
+            if (is_object($request->attributes) && ($request->attributes instanceof ParameterBag)) {
+                $request->attributes->add(array(
+                    '_route' => $this,
+                ));
+                if (!empty($this->_defaults)) {
+                    $request->attributes->add($this->_defaults);
+                }
             }
             // set variables
             $this->_variables = $variables;
@@ -92,11 +95,11 @@ class Parameterized extends AbstractRoute implements RouteInterface
      * @param array $params
      * @return string
      */
-    public function assemble(array $params)
+    public function assemble(array $params = array())
     {
         // defaults
         $parameters = $this->_defaults;
-        $parameters = array_replace($parameters, $this->_variables);
+        $parameters = array_replace($parameters, $this->_variables, $params);
 
         return $this->_expressionParser->evaluate($parameters, $this->_restrictions);
     }

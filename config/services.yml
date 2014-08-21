@@ -1,171 +1,139 @@
 # todo : leave only kernel params here, move all other out of this file
 parameters:
-  template_engine.class: Maketok\Template\Twig
-  session_handler.class: Maketok\App\Session\DbHandler
-  directory_handler.class: Maketok\Util\DirectoryHandler
-  subject_manager.class: Maketok\Observer\SubjectManager
-  registry.class: Maketok\App\Registry
-  adapter.class: Zend\Db\Adapter\Adapter
-  module_manager.class: Maketok\App\ModuleManager
-  object_prop_hydrator.class: Zend\Stdlib\Hydrator\ObjectProperty
-  logger.class: Monolog\Logger
-  default_logger_handler.class: Monolog\Handler\StreamHandler
-  ddl_installer.class: Maketok\App\Ddl\Installer
-  zend_db_sql.class: Maketok\Util\Zend\Db\Sql\Sql
-  zend_sql_platform.class: Maketok\Util\Zend\Db\Sql\Platform\Platform
-  router.class: Maketok\Mvc\Router\Stack
-  front_controller.class: Maketok\Mvc\Controller\Front
   module_config_file_name: Config.php
   module_config_name: Config
-  form_builder.class: Symfony\Component\Form\Forms
-  form_builder_extension_httpfoundation.class: Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension
-  form_builder_extension_validation.class: Symfony\Component\Form\Extension\Validator\ValidatorExtension
-  form_builder_extension_di.class: Symfony\Component\Form\Extension\DependencyInjection\DependencyInjectionExtension
-  validator.class: Symfony\Component\Validator\Validator
-  validator_builder.class: Symfony\Component\Validator\ValidatorBuilder
-  # todo will be fixed in latter commits
-  validator_builder.yml.config.paths: []
-  twig_extension_text.class: Twig_Extensions_Extension_Text
   defaultFormTheme: form_div_layout.html.twig
-  twig_renderer_engine.class: Symfony\Bridge\Twig\Form\TwigRendererEngine
-  twig_extension_form.class: Symfony\Bridge\Twig\Extension\FormExtension
-  twig_renderer.class: Symfony\Bridge\Twig\Form\TwigRenderer
-  translator.class: Symfony\Component\Translation\Translator
   translation_locale: en
-  translator_loader.class: Symfony\Component\Translation\Loader\XliffFileLoader
-  translator_loader.type: xlf
-  twig_extension_translation.class: Symfony\Bridge\Twig\Extension\TranslationExtension
-  twig_env.class: Twig_Environment
-  twig_loader.class: Twig_Loader_Filesystem
 
 services:
   adapter:
-    class: "%adapter.class%"
+    class: Zend\Db\Adapter\Adapter
     arguments: [{driver: "%db_driver%", hostname: "%db_host%", database: "%db_database%", username: "%db_user%", password: "%db_passw%"}]
 
   template_engine:
-    class: "%template_engine.class%"
+    class: Maketok\Template\Twig
     arguments: ["%debug%"]
 
   module_manager:
-    class: "%module_manager.class%"
+    class: Maketok\App\ModuleManager
     arguments: ["@adapter"]
 
   session_handler:
-    class: "%session_handler.class%"
+    class: Maketok\App\Session\DbHandler
 
   directory_handler:
-    class: "%directory_handler.class%"
+    class: Maketok\Util\DirectoryHandler
 
   subject_manager:
-    class: "%subject_manager.class%"
-    factory_class: "%subject_manager.class%"
+    class: Maketok\Observer\SubjectManager
+    factory_class: Maketok\Observer\SubjectManager
     factory_method: getInstance
 
   registry:
-    class: "%registry.class%"
-    factory_class: "%registry.class%"
+    class: Maketok\App\Registry
+    factory_class: Maketok\App\Registry
     factory_method: getInstance
 
   object_prop_hydrator:
-    class: "%object_prop_hydrator.class%"
+    class: Zend\Stdlib\Hydrator\ObjectProperty
 
   default_logger_handler:
-    class: "%default_logger_handler.class%"
+    class: Monolog\Handler\StreamHandler
     arguments: ["%log_dir%site.log", 100]
 
   logger:
-    class: "%logger.class%"
+    class: Monolog\Logger
     arguments: ["application_logger", ["@default_logger_handler"]]
 
   zend_sql_platform:
-    class: "%zend_sql_platform.class%"
+    class: Maketok\Util\Zend\Db\Sql\Platform\Platform
     arguments: ["@adapter"]
 
   zend_db_sql:
-    class: "%zend_db_sql.class%"
+    class: Maketok\Util\Zend\Db\Sql\Sql
     arguments: ["@adapter", [], "@zend_sql_platform"]
 
   ddl_installer:
-    class: "%ddl_installer.class%"
+    class: Maketok\App\Ddl\Installer
     arguments: ["@adapter", "@zend_db_sql"]
 
   router:
-    class: "%router.class%"
+    class: Maketok\Mvc\Router\Stack
 
   front_controller:
-    class: "%front_controller.class%"
+    class: Maketok\Mvc\Controller\Front
     arguments: ["@router"]
 
   form_builder_extension_httpfoundation:
-    class: "%form_builder_extension_httpfoundation.class%"
+    class: Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension
     tags:
       - { name: form.extension }
 
   validator_builder:
-    class: "%validator_builder.class%"
+    class: Symfony\Component\Validator\ValidatorBuilder
     calls:
       - [addYamlMappings, ["%validator_builder.yml.config.paths%"]]
 
   validator:
-    class: "%validator.class%"
+    class: Symfony\Component\Validator\Validator
     factory_service: validator_builder
     factory_method: getValidator
 
   form_builder_extension_validation:
-    class: "%form_builder_extension_validation.class%"
+    class: Symfony\Component\Form\Extension\Validator\ValidatorExtension
     arguments: ["@validator"]
     tags:
       - { name: form.extension }
 
   form_builder:
-    class: "%form_builder.class%"
-    factory_class: "%form_builder.class%"
+    class: Symfony\Component\Form\FormBuilder
+    factory_class: Symfony\Component\Form\Forms
     factory_method: createFormFactoryBuilder
 
   twig_extension_text:
-    class: "%twig_extension_text.class%"
+    class: Twig_Extensions_Extension_Text
     tags:
       - { name: twig.extension }
 
   twig_renderer_engine:
-    class: "%twig_renderer_engine.class%"
+    class: Symfony\Bridge\Twig\Form\TwigRendererEngine
     arguments: [["%defaultFormTheme%"]]
     calls:
       - [setEnvironment, ["@twig_env"]]
 
   twig_renderer:
-    class: "%twig_renderer.class%"
+    class: Symfony\Bridge\Twig\Form\TwigRenderer
     arguments: ["@twig_renderer_engine"]
 
   twig_extension_form:
-    class: "%twig_extension_form.class%"
+    class: Symfony\Bridge\Twig\Extension\FormExtension
     arguments: ["@twig_renderer"]
     tags:
       - { name: twig.extension }
 
-  translator_loader:
-    class: "%translator_loader.class%"
+  translator_loader_xliff:
+    class: Symfony\Component\Translation\Loader\XliffFileLoader
 
   translator:
-    class: "%translator.class%"
+    class: Symfony\Component\Translation\Translator
+    arguments: ["%translation_locale%"]
     calls:
-      - [addLoader, ["%translator_loader.type%", "@translator_loader"]]
-      - [addResource, ["%translator_loader.type%", "%AR%%DS%translations%DS%messages.en.xlf", "%translation_locale%"]]
+      - [addLoader, [xlf, "@translator_loader_xliff"]]
+      - [addResource, [xlf, "%AR%%DS%translations%DS%messages.en.xlf", "%translation_locale%"]]
 
   twig_extension_translation:
-    class: "%twig_extension_translation.class%"
+    class: Symfony\Bridge\Twig\Extension\TranslationExtension
     arguments: ["@translator"]
     tags:
       - { name: twig.extension }
 
   twig_loader:
-    class: "%twig_loader.class%"
+    class: Twig_Loader_Filesystem
     calls:
       - [addPath, ["%AR%%DS%vendor%DS%symfony%DS%twig-bridge%DS%Symfony%DS%Bridge%DS%Twig%DS%Resources%DS%views%DS%Form"]]
 
   twig_env:
-    class: "%twig_env.class%"
+    class: Twig_Environment
     arguments:
       - "@twig_loader"
       - { cache: "%AR%%DS%var%DS%cache", debug: "%debug%" }

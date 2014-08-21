@@ -11,6 +11,7 @@ namespace Maketok\Mvc\Controller;
 use Maketok\App\Site;
 use Maketok\Http\Response;
 use Maketok\Mvc\GenericException;
+use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Util\RequestInterface;
 use Maketok\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -235,5 +236,16 @@ class AbstractController
     public function getUrl($path)
     {
         return Site::getUrl($path);
+    }
+
+    /**
+     * Get current url
+     * @return string
+     */
+    public function getCurrentUrl()
+    {
+        /** @var RouteInterface $route */
+        $route = Site::getRequest()->attributes->get('_route');
+        return $this->getUrl($route->assemble());
     }
 }

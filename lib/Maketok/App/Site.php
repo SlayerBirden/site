@@ -233,6 +233,10 @@ final class Site
             return;
         }
         $container->compile();
+        // add necessary params if no found
+        if (!$container->hasParameter('validator_builder.yml.config.paths')) {
+            $container->setParameter('validator_builder.yml.config.paths', []);
+        }
 
         if (!Config::getConfig('debug')) {
             $dumper = new PhpDumper($container);

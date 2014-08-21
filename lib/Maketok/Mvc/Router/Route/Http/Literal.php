@@ -49,10 +49,13 @@ class Literal extends AbstractRoute implements RouteInterface
     {
         $this->_request = $request;
         if ($this->stripTrailingSlash($request->getPathInfo()) === $this->stripTrailingSlash($this->_matchPath)) {
-            if (is_object($request->attributes) &&
-                ($request->attributes instanceof ParameterBag) &&
-                !empty($this->_defaults)) {
+            if (is_object($request->attributes) && ($request->attributes instanceof ParameterBag)) {
+                $request->attributes->add(array(
+                    '_route' => $this,
+                ));
+                if (!empty($this->_defaults)) {
                     $request->attributes->add($this->_defaults);
+                }
             }
             return new Success($this);
         }
@@ -63,7 +66,7 @@ class Literal extends AbstractRoute implements RouteInterface
      * @param array $params
      * @return string
      */
-    public function assemble(array $params)
+    public function assemble(array $params = array())
     {
         return $this->_matchPath;
     }

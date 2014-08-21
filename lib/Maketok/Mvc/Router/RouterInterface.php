@@ -15,9 +15,22 @@ interface RouterInterface extends RouteInterface
     const STACK_MODE_APPEND = 1;
     const STACK_MODE_PREPEND = 2;
 
+    /**
+     * @param RouteInterface $route
+     * @param int $mode
+     * @return mixed
+     */
     public function addRoute(RouteInterface $route, $mode = self::STACK_MODE_APPEND);
 
+    /**
+     * @param array $routes
+     * @return mixed
+     */
     public function addRoutes(array $routes);
 
+    /**
+     * @param array $routes
+     * @return mixed
+     */
     public function setRoutes(array $routes);
 }

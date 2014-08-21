@@ -22,7 +22,7 @@ interface RouteInterface
      * @param array $params
      * @return string
      */
-    public function assemble(array $params);
+    public function assemble(array $params = array());
 
     /**
      * @return RequestInterface

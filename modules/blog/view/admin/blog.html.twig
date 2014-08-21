@@ -12,6 +12,7 @@
     <table>
         <tr>
             <th>{% trans %}Title{% endtrans %}</th>
+            <th>{% trans %}Code{% endtrans %}</th>
             <th>{% trans %}Content{% endtrans %}</th>
             <th>{% trans %}Author{% endtrans %}</th>
             <th>{% trans %}Created At{% endtrans %}</th>
@@ -21,6 +22,7 @@
     {% for article in articles %}
         <tr>
             <td>{{ article.title }}</td>
+            <td>{{ article.code }}</td>
             <td>{{ article.content|truncate(50) }}</td>
             <td>{{ article.author }}</td>
             <td>{{ article.created_at|date("F jS \\a\\t g:ia") }}</td>
@@ -28,7 +30,7 @@
             <td><a href="{{ base_url }}/blog/article/{{ article.id }}">{% trans %}Edit{% endtrans %}</a></td>
         </tr>
     {% else %}
-        <tr><td colspan="6">No articles found in the system! You really need to add one.</td></tr>
+        <tr><td colspan="7">No articles found in the system! You really need to add one.</td></tr>
     {% endfor %}
     </table>
 </section>

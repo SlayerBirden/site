@@ -23,7 +23,18 @@ class Article extends AbstractAdminController
         $this->setDependency(array('cover'));
         $this->setTemplate('article.html.twig');
         $article = $this->_initArticle($request);
-        $form = $this->getFormFactory()->create('article', $article);
+        $form = $this->getFormFactory()->create('article', $article, array(
+            'action' => $this->getCurrentUrl(),
+            'method' => 'POST',
+        ));
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            /** @var ArticleTable $articleTable */
+            $articleTable = $this->getSC()->get('article_table');
+            $articleTable->save($form->getData());
+            // todo success should go in session
+            return $this->_redirect('blog');
+        }
         return $this->prepareResponse($request, array(
             'title' => 'Edit Article ' . $article->title,
             'description' => 'Article ' . $article->title,
@@ -56,23 +67,9 @@ class Article extends AbstractAdminController
         $this->setDependency(array('cover'));
         $this->setTemplate('article.html.twig');
         $form = $this->getFormFactory()->create('article', null, array(
-            'action' => $this->getUrl('blog/article/save'),
+            'action' => $this->getUrl('blog/article/new'),
             'method' => 'POST',
         ));
-        return $this->prepareResponse($request, array(
-            'title' => 'Add New Article ',
-            'description' => 'Article Creation',
-            'form' => $form->createView()
-        ));
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function saveAction(RequestInterface $request)
-    {
-        $form = $this->getFormFactory()->create('article');
         $form->handleRequest($request);
         if ($form->isValid()) {
             /** @var ArticleTable $articleTable */
@@ -80,10 +77,12 @@ class Article extends AbstractAdminController
             $articleTable->save($form->getData());
             // todo success should go in session
             return $this->_redirect('blog');
-        } else {
-            // todo errors should go in session
-            $errors = $form->getErrors();
-            return $this->_returnBack();
         }
+        return $this->prepareResponse($request, array(
+            'title' => 'Add New Article ',
+            'description' => 'Article Creation',
+            'form' => $form->createView()
+        ));
     }
+
 }
