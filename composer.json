@@ -34,7 +34,8 @@
         "zendframework/zend-uri": "2.*",
         "symfony/form": "2.*",
         "symfony/twig-bridge": "2.*",
-        "symfony/validator": "2.*"
+        "symfony/validator": "2.*",
+        "symfony/expression-language": "2.*"
     },
     "require-dev": {
         "phpunit/PHPUnit": "4.*",

@@ -31,6 +31,9 @@ class Index extends AbstractController
     {
         $this->setDependency(array('cover'));
         $this->setTemplate('500.html.twig');
-        return $this->prepareResponse($request, array('title' => 'Internal Error'), null, 500);
+        $params = array(
+            'title' => 'Internal Error',
+        );
+        return $this->prepareResponse($request, $params, null, 500);
     }
 }

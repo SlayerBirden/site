@@ -16,7 +16,6 @@ use Maketok\Template\TemplateCompilerPass;
 use Maketok\Util\FormExtensionCompilerPass;
 use Maketok\Util\FormTypeCompilerPass;
 use Maketok\Util\RequestInterface;
-use Maketok\Util\Monolog\StreamHandler;
 use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,6 +23,7 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Zend\Db\Adapter\Adapter;
+use Zend\Stdlib\ErrorHandler;
 use Zend\Uri\UriFactory;
 
 final class Site
@@ -130,42 +130,13 @@ final class Site
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         self::setRequest(Request::createFromGlobals());
         // TODO init error handler, exception handler
-        set_error_handler('Maketok\App\Site::maketokErrorHandler');
+        $config = Config::getConfig('php_config');
+        $errLevel = E_ALL;
+        if (isset($config['error_reporting'])) {
+            $errLevel = $config['error_reporting'];
+        }
+        ErrorHandler::start($errLevel);
         set_exception_handler('Maketok\App\Site::maketokExceptionHandler');
-    }
-
-    /**
-     * Custom error handler
-     * @param int $errno
-     * @param string $errstr
-     * @param string $errfile
-     * @param int $errline
-     * @param array $errcontext
-     */
-    public static function maketokErrorHandler($errno, $errstr, $errfile, $errline, array $errcontext)
-    {
-        /** @var Logger $logger */
-        $logger = self::getServiceContainer()->get('logger');
-        if (!$logger) {
-            $handler = new StreamHandler(AR . DS . 'var' . DS . 'logs' . DS . 'site.log');
-            $logger = new Logger('app_logger', array($handler));
-        }
-        $message = sprintf("There was an error %s in file %s on line #%d", $errstr, $errfile, $errline);
-        if ($errno & E_NOTICE) {
-            $logger->notice($message);
-        } elseif ($errno & E_WARNING) {
-            $logger->warning($message);
-        } elseif ($errno & E_RECOVERABLE_ERROR) {
-            $logger->error($message);
-            self::getSubjectManager()->notify('application_error_triggered', new State(array(
-                'errno' => $errno,
-                'message' => $message,
-            )));
-        } else {
-            // default behavior
-            $logger->info(sprintf("Unknown error type %d triggered with message %s in file %s on line #%d.",
-                $errno, $errstr, $errfile, $errline));
-        }
     }
 
     /**
@@ -174,18 +145,33 @@ final class Site
      */
     public static function maketokExceptionHandler( \Exception $e)
     {
-        /** @var Logger $logger */
-        $logger = self::getServiceContainer()->get('logger');
-        if (!$logger) {
-            $handler = new StreamHandler(AR . DS . 'var' . DS . 'logs' . DS . 'site.log');
-            $logger = new Logger('app_logger', array($handler));
+        try {
+            /** @var Logger $logger */
+            $logger = self::getServiceContainer()->get('logger');
+            if ($e instanceof \ErrorException) {
+                $errno = $e->getSeverity();
+                if ($errno & E_NOTICE || $errno & E_USER_NOTICE) {
+                    $logger->notice($e->__toString());
+                } elseif ($errno & E_WARNING || $errno & E_USER_WARNING) {
+                    $logger->warn($e->__toString());
+                } elseif ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
+                    $logger->err($e->__toString());
+                    self::getSubjectManager()->notify('application_error_triggered', new State(array(
+                        'exception' => $e,
+                        'message' => $e->__toString(),
+                    )));
+                }
+            } else {
+                $message = sprintf("Unhandled exception\n%s", $e->__toString());
+                $logger->emergency($message);
+                self::getSubjectManager()->notify('application_error_triggered', new State(array(
+                    'exception' => $e,
+                    'message' => $message,
+                )));
+            }
+        } catch (\Exception $e) {
+            printf("Exception thrown within the exception handler: %s", $e->__toString());
         }
-        $message = sprintf("Unhandled exception\n%s", $e->__toString());
-        $logger->emergency($message);
-        self::getSubjectManager()->notify('application_error_triggered', new State(array(
-            'exception' => $e,
-            'message' => $message,
-        )));
     }
 
     /**

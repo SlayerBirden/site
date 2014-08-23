@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util\Monolog;
+namespace Maketok\Util\Monolog\Handler;
 
 use Monolog\Handler\StreamHandler as BaseStreamHandler;
 

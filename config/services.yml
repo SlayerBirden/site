@@ -38,12 +38,15 @@ services:
     class: Zend\Stdlib\Hydrator\ObjectProperty
 
   default_logger_handler:
-    class: Maketok\Util\Monolog\StreamHandler
+    class: Maketok\Util\Monolog\Handler\StreamHandler
     arguments: ["%log_dir%site.log", 100]
+
+  chrome_debug_logger_handler:
+    class: Monolog\Handler\ChromePHPHandler
 
   logger:
     class: Monolog\Logger
-    arguments: ["application_logger", ["@default_logger_handler"]]
+    arguments: ["application_logger", ["@=parameter('debug') == true ? service('chrome_debug_logger_handler') : service('default_logger_handler')"]]
 
   zend_sql_platform:
     class: Maketok\Util\Zend\Db\Sql\Platform\Platform

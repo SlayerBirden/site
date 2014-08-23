@@ -15,6 +15,7 @@ use Maketok\Mvc\Router\Route\Success;
 use Maketok\Mvc\Router\RouterInterface;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\ResponseInterface;
+use Zend\Stdlib\ErrorHandler;
 
 class Front
 {
@@ -50,6 +51,7 @@ class Front
         ob_end_clean();
         $response->send();
         restore_exception_handler();
+        ErrorHandler::stop(true);
         exit;
     }
 
@@ -68,26 +70,45 @@ class Front
      */
     public function exceptionHandler(\Exception $e)
     {
-        $dumperClass = 'Maketok\Mvc\Router\Route\Http\Error\Dumper';
-        if (Site::getServiceContainer()->hasParameter('front_controller_error_dumper')) {
-            $dumperClass = Site::getServiceContainer()->getParameter('front_controller_error_dumper');
-        }
-        if ($e instanceof RouteException) {
-            // not found
-            $errorRoute = new Error(array(
-                'controller' => $dumperClass,
-                'action' => 'noroute',
-            ));
-            $this->launch($errorRoute->match(Site::getRequest()));
-        } else {
-            Site::getServiceContainer()
-                ->get('logger')
-                ->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
-            $errorRoute = new Error(array(
-                'controller' => $dumperClass,
-                'action' => 'error',
-            ));
-            $this->launch($errorRoute->match(Site::getRequest()));
+        try {
+            $dumperClass = 'Maketok\Mvc\Router\Route\Http\Error\Dumper';
+            if (Site::getServiceContainer()->hasParameter('front_controller_error_dumper')) {
+                $dumperClass = Site::getServiceContainer()->getParameter('front_controller_error_dumper');
+            }
+            if ($e instanceof RouteException) {
+                // not found
+                $errorRoute = new Error(array(
+                    'controller' => $dumperClass,
+                    'action' => 'noroute',
+                ));
+                $this->launch($errorRoute->match(Site::getRequest()));
+            } elseif ($e instanceof \ErrorException) {
+                $errno = $e->getSeverity();
+                if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
+                    Site::getServiceContainer()
+                        ->get('logger')
+                        ->err(sprintf("Front Controller dispatch error exception\n%s", $e->__toString()));
+                    $errorRoute = new Error(array(
+                        'controller' => $dumperClass,
+                        'action' => 'error',
+                        'exception' => $e,
+                    ));
+                    $this->launch($errorRoute->match(Site::getRequest()));
+                }
+
+            } else {
+                Site::getServiceContainer()
+                    ->get('logger')
+                    ->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
+                $errorRoute = new Error(array(
+                    'controller' => $dumperClass,
+                    'action' => 'error',
+                    'exception' => $e,
+                ));
+                $this->launch($errorRoute->match(Site::getRequest()));
+            }
+        } catch (\Exception $e) {
+            printf("Exception thrown within the front controller exception handler: %s", $e->__toString());
         }
     }
 
