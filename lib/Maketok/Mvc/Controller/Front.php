@@ -7,8 +7,11 @@
  */
 namespace Maketok\Mvc\Controller;
 
+use Maketok\App\Site;
 use Maketok\Mvc\RouteException;
+use Maketok\Mvc\Router\Route\Http\Error;
 use Maketok\Mvc\Router\Route\RouteInterface;
+use Maketok\Mvc\Router\Route\Success;
 use Maketok\Mvc\Router\RouterInterface;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\ResponseInterface;
@@ -26,22 +29,66 @@ class Front
      */
     public function dispatch(StateInterface $state)
     {
+        set_exception_handler(array($this, 'exceptionHandler'));
+        /** @var Success $success */
         if ($success = $this->_getRouter()->match($state->request)) {
-            $params = $success->getParameters();
-            ob_start();
-            $response = $this->_launchAction($params, $success->getMatchedRoute());
-            $content = ob_get_contents();
-            // TODO figure out what to do with buffered content
-            ob_end_clean();
-            $response->send();
-            exit;
+            $this->launch($success);
         }
         throw new RouteException("Could not match any route.");
     }
 
+    /**
+     * @param Success $success
+     */
+    public function launch(Success $success)
+    {
+        $params = $success->getParameters();
+        ob_start();
+        $response = $this->_launchAction($params, $success->getMatchedRoute());
+        $content = ob_get_contents();
+        // TODO figure out what to do with buffered content
+        ob_end_clean();
+        $response->send();
+        restore_exception_handler();
+        exit;
+    }
+
+    /**
+     * @param RouterInterface $router
+     */
     public function __construct(RouterInterface $router)
     {
         $this->_router = $router;
+    }
+
+    /**
+     * Custom exception handler
+     * @param \Exception $e
+     * @return \Maketok\Mvc\Router\Route\Success
+     */
+    public function exceptionHandler(\Exception $e)
+    {
+        $dumperClass = 'Maketok\Mvc\Router\Route\Http\Error\Dumper';
+        if (Site::getServiceContainer()->hasParameter('front_controller_error_dumper')) {
+            $dumperClass = Site::getServiceContainer()->getParameter('front_controller_error_dumper');
+        }
+        if ($e instanceof RouteException) {
+            // not found
+            $errorRoute = new Error(array(
+                'controller' => $dumperClass,
+                'action' => 'noroute',
+            ));
+            $this->launch($errorRoute->match(Site::getRequest()));
+        } else {
+            Site::getServiceContainer()
+                ->get('logger')
+                ->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
+            $errorRoute = new Error(array(
+                'controller' => $dumperClass,
+                'action' => 'error',
+            ));
+            $this->launch($errorRoute->match(Site::getRequest()));
+        }
     }
 
     /**

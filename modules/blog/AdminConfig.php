@@ -34,15 +34,15 @@ class AdminConfig extends Config implements AdminConfigInterface, InstallerAppli
             'controller' => 'modules\\blog\\controller\\admin\\Article',
             'action' => 'new',
         )));
-        Site::getServiceContainer()->get('router')->addRoute(new Literal('/blog/article/save', array(
+        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/article/edit/{id}', array(
             'module' => $this->getCode(),
             'controller' => 'modules\\blog\\controller\\admin\\Article',
-            'action' => 'save',
-        )));
-        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/article/{id}', array(
+            'action' => 'edit',
+        ), [], ['id' => '^\d+$']));
+        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/article/delete/{id}', array(
             'module' => $this->getCode(),
             'controller' => 'modules\\blog\\controller\\admin\\Article',
-            'action' => 'index',
+            'action' => 'delete',
         ), [], ['id' => '^\d+$']));
     }
 }

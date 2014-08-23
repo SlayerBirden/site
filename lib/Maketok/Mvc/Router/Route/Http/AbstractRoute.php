@@ -8,8 +8,16 @@
 
 namespace Maketok\Mvc\Router\Route\Http;
 
+use Maketok\Util\RequestInterface;
+
 abstract class AbstractRoute
 {
+
+    /** @var  RequestInterface */
+    protected $_request;
+
+    /** @var  array */
+    protected $_parameters;
 
     /**
      * this function is created to make sure there is no trailing-slash-error cases

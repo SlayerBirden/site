@@ -1,0 +1,59 @@
+input[type=text], textarea {
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+    transition: all 0.30s ease-in-out;
+    outline: none;
+    padding: 3px 0 3px 3px;
+    margin: 5px 1px 3px 0;
+    border: 2px solid #dadada;
+    border-radius: 7px;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    font-size: 1em;
+}
+
+input {
+    min-height: 30px;
+    min-width: 300px;
+}
+
+input.long, textarea.long {
+    width: 780px;
+}
+
+textarea {
+    min-height: 350px;
+    min-width: 300px;
+}
+
+input[type=text]:focus, textarea:focus {
+    box-shadow: 0 0 5px #9ecaed;
+    padding: 3px 0 3px 3px;
+    margin: 5px 1px 3px 0;
+    border: 2px solid #9ecaed;
+}
+
+td, th {
+    border: none;
+    padding: 15px;
+}
+
+table {
+    width: auto;
+}
+
+div.errors {
+    color: darkred;
+}
+
+div.errors ul {
+    list-style: none;
+}
+
+div.errors ul li {
+    background: lightpink;
+    border-radius: 8px;
+    margin: 3px 0;
+    padding: 3px;
+}

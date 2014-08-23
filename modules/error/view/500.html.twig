@@ -1,0 +1,14 @@
+{# note: this is blog index #}
+{% extends "base.html.twig" %}
+{% block head %}
+{{ parent() }}
+{% endblock %}
+{% block content %}
+    {% trans %}Oops! Application encountered an internal error.
+    Please stand by while the team of qualified engineers is fixing it!{% endtrans %}
+{% endblock %}
+{% block footer %}
+<div class="footer-content">
+    <span class="important">{% trans %}Hello World!{% endtrans %}</span>
+</div>
+{% endblock %}

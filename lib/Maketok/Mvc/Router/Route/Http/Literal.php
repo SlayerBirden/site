@@ -22,13 +22,7 @@ class Literal extends AbstractRoute implements RouteInterface
     protected $_matchPath;
 
     /** @var  array */
-    protected $_parameters;
-
-    /** @var  array */
     protected $_defaults;
-
-    /** @var  RequestInterface */
-    protected $_request;
 
     /**
      * @param $path

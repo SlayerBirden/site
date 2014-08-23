@@ -26,9 +26,6 @@ class Parameterized extends AbstractRoute implements RouteInterface
     protected $_expressionParser;
 
     /** @var  array */
-    protected $_parameters;
-
-    /** @var  array */
     protected $_variables;
 
     /** @var  array */
@@ -36,9 +33,6 @@ class Parameterized extends AbstractRoute implements RouteInterface
 
     /** @var  array */
     protected $_restrictions;
-
-    /** @var  RequestInterface */
-    protected $_request;
 
     /**
      * @param $path

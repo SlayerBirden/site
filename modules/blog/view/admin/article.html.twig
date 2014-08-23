@@ -1,8 +1,10 @@
 {# note: this is blog index #}
 {% extends "admin.html.twig" %}
+{% form_theme form 'maketok-form_table_layout.html.twig' %}
 {% block head %}
 {{ parent() }}
     <link rel="stylesheet" href="{{ css_url }}jquery.datetimepicker.css">
+    <link rel="stylesheet" href="{{ css_url }}form.css">
     <script src="{{ js_url }}jquery.js"></script>
     <script src="{{ js_url }}jquery.datetimepicker.js"></script>
 {% endblock %}
@@ -10,16 +12,7 @@
 <div id="info" class="info">
     <span class="important">{% trans %}%description%{% endtrans %}</span>
 </div>
-{{ form_start(form) }}
-    {{ form_errors(form) }}
-
-    {{ form_row(form.title) }}
-    {{ form_row(form.code) }}
-    {{ form_row(form.content) }}
-    {{ form_row(form.created_at) }}
-    {{ form_row(form.updated_at) }}
-    {{ form_row(form.author) }}
-{{ form_end(form) }}
+    {{ form(form) }}
     <script type="text/javascript">
         $(function() {
             $( "#article_created_at" ).datetimepicker({format:'Y-m-d H:i:s'});

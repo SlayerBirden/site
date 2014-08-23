@@ -89,4 +89,12 @@ class Stack implements RouterInterface
     {
         return;
     }
+
+    /**
+     * @return array
+     */
+    public function getParameters()
+    {
+        return array();
+    }
 }

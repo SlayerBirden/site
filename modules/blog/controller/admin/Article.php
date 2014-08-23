@@ -18,7 +18,7 @@ class Article extends AbstractAdminController
      * @param RequestInterface $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction(RequestInterface $request)
+    public function editAction(RequestInterface $request)
     {
         $this->setDependency(array('cover'));
         $this->setTemplate('article.html.twig');
@@ -26,6 +26,7 @@ class Article extends AbstractAdminController
         $form = $this->getFormFactory()->create('article', $article, array(
             'action' => $this->getCurrentUrl(),
             'method' => 'POST',
+            'attr' => array('back_url' => $this->getUrl('/blog')),
         ));
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -40,6 +41,23 @@ class Article extends AbstractAdminController
             'description' => 'Article ' . $article->title,
             'form' => $form->createView()
         ));
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function deleteAction(RequestInterface $request)
+    {
+        $article = $this->_initArticle($request);
+        /** @var ArticleTable $articleTable */
+        $articleTable = $this->getSC()->get('article_table');
+        try {
+            $articleTable->delete($article->id);
+        } catch (\Exception $e) {
+            $this->getSC()->get('logger')->error(sprintf("Could not remove article #%d", $article->id));
+        }
+        return $this->_redirect('/blog');
     }
 
     /**
@@ -69,6 +87,7 @@ class Article extends AbstractAdminController
         $form = $this->getFormFactory()->create('article', null, array(
             'action' => $this->getUrl('blog/article/new'),
             'method' => 'POST',
+            'attr' => array('back_url' => $this->getUrl('/blog')),
         ));
         $form->handleRequest($request);
         if ($form->isValid()) {

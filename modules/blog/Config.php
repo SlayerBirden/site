@@ -35,7 +35,7 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
      */
     public function getVersion()
     {
-        return '0.1.2';
+        return '0.1.3';
     }
 
     /**
@@ -43,7 +43,7 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
      */
     public static function getDdlConfigVersion()
     {
-        return '0.1.2';
+        return '0.1.3';
     }
 
     /**
@@ -65,7 +65,7 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
             'module' => $this->getCode(),
             'controller' => 'modules\\blog\\controller\\Article',
             'action' => 'index',
-        ), [], ['code' => '^[a-zA-Z0-9_.]+$']));
+        ), [], ['code' => '^[a-zA-Z0-9_.-]+$']));
         Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/article/{id}', array(
             'module' => $this->getCode(),
             'controller' => 'modules\\blog\\controller\\Article',

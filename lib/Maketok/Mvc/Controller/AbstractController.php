@@ -113,6 +113,7 @@ class AbstractController
         // now add general variables
         $templateVars['css_url'] = Site::getUrl('/css/');
         $templateVars['js_url'] = Site::getUrl('/js/');
+        $templateVars['images_url'] = Site::getUrl('/images/');
         $templateVars['base_url'] = Site::getBaseUrl();
         $engine->loadDependencies($dependencyPaths);
         $engine->loadTemplate($path);

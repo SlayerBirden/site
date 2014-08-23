@@ -23,4 +23,14 @@ class Index extends AbstractController
         $this->setTemplate('404.html.twig');
         return $this->prepareResponse($request, array('title' => 'Page Not Found'), null, 404);
     }
+    /**
+     * @param RequestInterface $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function errorAction(RequestInterface $request)
+    {
+        $this->setDependency(array('cover'));
+        $this->setTemplate('500.html.twig');
+        return $this->prepareResponse($request, array('title' => 'Internal Error'), null, 500);
+    }
 }

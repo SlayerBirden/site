@@ -53,10 +53,76 @@ a:hover.general-link {
 }
 
 td, th {
-    border: 1px solid #222222;
+    border-bottom: 1px solid #ccc;
     padding: 15px;
 }
 
 table {
     width: 100%;
+    margin: 10px 0 30px;
+}
+
+button.button, a.button {
+    display: inline-block;
+    margin: 2px 15px 2px 0;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    -moz-border-radius: 8;
+    -webkit-box-shadow: 3px 3px 5px #666666;
+    -moz-box-shadow: 3px 3px 5px #666666;
+    box-shadow: 3px 3px 5px #666666;
+    color: #fff;
+    background: #7690AB;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    font-size: 1em;
+    outline: 0;
+}
+
+button.button:hover, a.button:hover {
+    background: #264666;
+    text-decoration: none;
+}
+
+button.button.back, a.button.back {
+    background: url(../images/arrow-back.png) no-repeat 0 0;
+    color: #3a3a3a;
+    padding: 10px 20px 10px 48px;
+}
+
+button.button.back:hover, a.button.back:hover {
+    background-color: #eee;
+}
+
+.right {
+    text-align: right;
+}
+
+nav {
+    font-size: 1.2em;
+    text-align: left;
+}
+
+nav ul {
+    list-style: none;
+}
+
+nav ul li {
+    display: inline-block;
+    padding: 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    background: #a94442;
+    color: #fff;
+    padding:2px;
+}
+
+nav ul li a:hover {
+    text-decoration: none;
+    background: #ac2925;
+    color: #fff;
 }

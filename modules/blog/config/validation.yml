@@ -4,7 +4,7 @@ modules\blog\model\Article:
       - NotBlank: ~
       - Length:
           min: 2
-          max: 100
+          max: 200
           minMessage: "Title can not be less than {{ limit }} characters"
           maxMessage: "Title can not be longer than {{ limit }} characters"
     code:

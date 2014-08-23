@@ -28,4 +28,9 @@ interface RouteInterface
      * @return RequestInterface
      */
     public function getRequest();
+
+    /**
+     * @return array
+     */
+    public function getParameters();
 }

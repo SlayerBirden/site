@@ -38,7 +38,7 @@ services:
     class: Zend\Stdlib\Hydrator\ObjectProperty
 
   default_logger_handler:
-    class: Monolog\Handler\StreamHandler
+    class: Maketok\Util\Monolog\StreamHandler
     arguments: ["%log_dir%site.log", 100]
 
   logger:
@@ -127,10 +127,16 @@ services:
     tags:
       - { name: twig.extension }
 
+  twig_extension_debug:
+    class: Twig_Extension_Debug
+    tags:
+      - { name: twig.extension }
+
   twig_loader:
     class: Twig_Loader_Filesystem
     calls:
       - [addPath, ["%AR%%DS%vendor%DS%symfony%DS%twig-bridge%DS%Symfony%DS%Bridge%DS%Twig%DS%Resources%DS%views%DS%Form"]]
+      - [addPath, ["%AR%%DS%lib%DS%Maketok%DS%Template%DS%Resource%DS%view%DS%Form"]]
 
   twig_env:
     class: Twig_Environment

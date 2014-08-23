@@ -1,0 +1,94 @@
+{% use "form_div_layout.html.twig" %}
+
+{% block form_row -%}
+    <tr>
+        <td>
+            {{- form_label(form) -}}
+        </td>
+        <td>
+            {{- form_widget(form) -}}
+            <div class="errors">{{- form_errors(form) -}}</div>
+        </td>
+    </tr>
+{%- endblock form_row %}
+
+{% block button_row -%}
+    <tr>
+        <td></td>
+        <td>
+            {{- form_widget(form) -}}
+        </td>
+    </tr>
+{% endblock button_row %}
+
+{% block hidden_row -%}
+    <tr style="display: none">
+        <td colspan="2">
+            {{- form_widget(form) -}}
+        </td>
+    </tr>
+{% endblock hidden_row %}
+
+{% block form_widget_compound -%}
+    <table {{ block('widget_container_attributes') }}>
+        <colgroup>
+            <col width="180"/>
+            <col/>
+        </colgroup>
+        <tr>
+            <td colspan="2">
+                <a class="button back"
+                   href="{{ form.vars.attr.back_url }}">{% trans %}Return{% endtrans %}</a>
+            </td>
+        </tr>
+        {%- if form.parent is empty and errors|length > 0 -%}
+        <tr>
+            <td colspan="2">
+                {{- form_errors(form) -}}
+            </td>
+        </tr>
+        {%- endif %}
+        {{- block('form_inputs_rows') -}}
+        {{- block('form_buttons_compound') -}}
+        {{- form_rest(form) -}}
+        <tr>
+            <td colspan="2">
+                <a class="button back"
+                   href="{{ form.vars.attr.back_url }}">{% trans %}Return{% endtrans %}</a>
+            </td>
+        </tr>
+    </table>
+{%- endblock form_widget_compound %}
+
+{% use 'form_div_layout.html.twig' with form_label as base_form_label %}
+{# add required asterix #}
+{% block form_label %}
+    {{ block('base_form_label') }}
+
+    {% if required %}
+        <span class="required" title="This field is required">*</span>
+    {% endif %}
+{% endblock %}
+
+{% block form_inputs_rows -%}
+    {% for child in form %}
+        {# that is where type is stored #}
+        {% if child.vars.block_prefixes.1 not in ['button', 'reset', 'submit'] %}
+        {{- form_row(child) -}}
+        {% endif %}
+    {% endfor %}
+{%- endblock form_inputs_rows %}
+
+{% block form_buttons_compound -%}
+    <tr>
+        <td></td>
+        <td class="right">
+        {% for child in form %}
+            {# that is where type is stored #}
+            {% if child.vars.block_prefixes.1 in ['button', 'reset', 'submit'] %}
+            {{ form_widget(child) }}
+            {% endif %}
+        {% endfor %}
+        </td>
+    </tr>
+{%- endblock form_buttons_compound %}
