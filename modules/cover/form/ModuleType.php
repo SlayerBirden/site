@@ -2,17 +2,18 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace modules\blog\form;
+namespace modules\cover\form;
 
+use Maketok\Util\Symfony\Form\DataTransformer\StringToDateTimeTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class ArticleType extends AbstractType
+class ModuleType extends AbstractType
 {
 
     /**
@@ -21,13 +22,12 @@ class ArticleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('id', 'hidden')
-            ->add('title', 'text', array('attr' => array('class' => 'long')))
-            ->add('code', 'text')
-            ->add('content', 'textarea', array('attr' => array('class' => 'long')))
-            ->add('created_at', 'text')
-            ->add('updated_at', 'text')
-            ->add('author', 'text')
+            ->add('module_code', 'text', array('read_only' => true))
+            ->add('version', 'text', array('read_only' => true))
+            ->add('active', 'choice', array(
+                'choices'   => array('0' => 'Disabled', '1' => 'Enabled'),
+            ))
+            ->add('updated_at', 'text', array('read_only' => true))
             ->add('reset', 'reset', array('attr' => array('class' => 'button')))
             ->add('save', 'submit', array('label' => 'Save', 'attr' => array('class' => 'button')))
         ;
@@ -39,7 +39,7 @@ class ArticleType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'modules\blog\model\Article',
+            'data_class' => 'modules\cover\model\Module',
         ));
     }
 
@@ -50,6 +50,6 @@ class ArticleType extends AbstractType
      */
     public function getName()
     {
-        return 'article';
+        return 'module';
     }
 }

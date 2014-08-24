@@ -8,6 +8,8 @@
 namespace modules\blog\controller\admin;
 
 use Maketok\Mvc\Controller\AbstractAdminController;
+use Maketok\Mvc\RouteException;
+use Maketok\Util\Exception\ModelException;
 use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
 
@@ -63,17 +65,22 @@ class Article extends AbstractAdminController
     /**
      * @param RequestInterface $request
      * @return \modules\blog\model\Article
-     * @throws \Exception
+     * @throws RouteException
      */
     protected function _initArticle(RequestInterface $request)
     {
         $id = $request->attributes->get('id');
         if ($id === null) {
-            throw new \Exception("Can not process article without id or code.");
+            // route exception will lead to 404
+            throw new RouteException("Can not process article without id.");
         }
         /** @var ArticleTable $articleTable */
         $articleTable = $this->getSC()->get('article_table');
-        return $articleTable->find($id);
+        try {
+            return $articleTable->find($id);
+        } catch (ModelException $e) {
+            throw new RouteException("Could not find model by id.");
+        }
     }
 
     /**

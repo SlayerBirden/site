@@ -27,4 +27,3 @@ modules\blog\model\Article:
       - NotBlank: ~
     author:
       - NotBlank: ~
-

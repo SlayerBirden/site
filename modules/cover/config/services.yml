@@ -20,3 +20,8 @@ services:
   module_table:
     class: "%module_table.class%"
     arguments: ["@module_table_gateway", module_code]
+
+  module.form.type:
+            class: modules\cover\form\ModuleType
+            tags:
+                - { name: form.type, alias: module }
