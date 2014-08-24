@@ -37,7 +37,7 @@ class Article extends AbstractAdminController
             return $this->_redirect('blog');
         }
         return $this->prepareResponse($request, array(
-            'title' => 'Edit Article ' . $article->title,
+            'title' => 'Maketok Admin - Edit Article ' . $article->title,
             'description' => 'Article ' . $article->title,
             'form' => $form->createView()
         ));
@@ -98,7 +98,7 @@ class Article extends AbstractAdminController
             return $this->_redirect('blog');
         }
         return $this->prepareResponse($request, array(
-            'title' => 'Add New Article ',
+            'title' => 'Maketok Admin - Add New Article ',
             'description' => 'Article Creation',
             'form' => $form->createView()
         ));

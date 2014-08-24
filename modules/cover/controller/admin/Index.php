@@ -21,6 +21,6 @@ class Index extends AbstractAdminController
     {
 
         $this->setTemplate('admin.html.twig');
-        return $this->prepareResponse($request, array('title' => 'Admin Dashboard'));
+        return $this->prepareResponse($request, array('title' => 'Maketok Admin Dashboard'));
     }
 }

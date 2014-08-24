@@ -6,7 +6,8 @@
         "site",
         "maketok",
         "php",
-        "cms"
+        "cms",
+        "framework"
     ],
     "authors": [
         {

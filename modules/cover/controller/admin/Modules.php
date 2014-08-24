@@ -25,7 +25,7 @@ class Modules extends AbstractAdminController
         $moduleTable = $this->getSC()->get('module_table');
         $modules = $moduleTable->fetchAll();
         return $this->prepareResponse($request, array(
-            'title' => 'Modules',
+            'title' => 'Maketok Admin - Modules',
             'modules' => $modules,
             'description' => 'Modules'
         ));

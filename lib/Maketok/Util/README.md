@@ -22,7 +22,7 @@ StreamHandlerInterface:
 ```
 
 
-# License
+### License
 ---------
 
 [GPL 3.0](https://www.gnu.org/licenses/gpl-faq.html)

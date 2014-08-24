@@ -22,8 +22,6 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
      */
     private static $_installer;
 
-    private static $_installerLockName = 'test_ddl_installer.lock';
-
     /**
      * @var DdlCheck
      */
@@ -37,7 +35,6 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
     public static function setUpBeforeClass()
     {
         self::$_installer = Site::getServiceContainer()->get('ddl_installer');
-        self::$_installer->setInstallerLockName(self::$_installerLockName);
         self::$_natRecursiveCompareReflectionMethod = new \ReflectionMethod(get_class(self::$_installer), '_natRecursiveCompare');
         self::$_natRecursiveCompareReflectionMethod->setAccessible(true);
 
@@ -217,9 +214,7 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
     public static function tearDownAfterClass()
     {
         // clean up
-        $fullPath = AR . DS . 'var' . DS . 'locks' . DS . self::$_installerLockName;
-        $sh = new StreamHandler();
-        $sh->setPath($fullPath);
+        $sh = Site::getServiceContainer()->get('ddl_lock_stream_handler');
         $sh->writeWithLock('');
 
         $sql = <<<'SQL'

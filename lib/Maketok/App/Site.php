@@ -29,17 +29,43 @@ use Zend\Uri\UriFactory;
 final class Site
 {
     const DEFAULT_TIMEZONE = 'UTC';
-    const ERROR_LOG = 'error.log';
     const SERVICE_CONTAINER_CLASS = 'MaketokServiceContainer';
     const SERVICE_CONTAINER_ADMIN_CLASS = 'MaketokAdminServiceContainer';
 
+    /** load base configs */
+    const MODE_FRONTEND = 0b110001111111111;
+    /** load base+admin */
+    const MODE_ADMIN = 0b111001111111111;
+    /** load base + test, not load session,ddl configs */
+    const MODE_TEST = 0b010011111110011;
+    /** load base + dev, all configs */
+    const MODE_DEVELOPMENT = 0b110101111111111;
+
+    /**
+     * load parts
+     * including Config parts:
+     * const PHP = 0b1;
+     * const EVENTS = 0b10;
+     * const SESSION = 0b100;
+     * const DDL = 0b1000;
+     */
+    const MODE_LOAD_ENVIRONMENT = 0b10000000;
+    const MODE_LOAD_SC = 0b100000000;
+    const MODE_LOAD_BASE_CONFIGS = 0b1000000000;
+    const MODE_LOAD_TEST_CONFIGS = 0b10000000000;
+    const MODE_LOAD_DEV_CONFIGS = 0b100000000000;
+    const MODE_LOAD_ADMIN_CONFIGS = 0b1000000000000;
+    const MODE_APPLY_CONFIGS = 0b10000000000000;
+    const MODE_DISPATCH = 0b100000000000000;
+
     /** @var  ContainerBuilder */
     private static $_sc;
-
     /** @var  bool */
     private static $safeRun;
     /** @var  bool */
     private static $admin;
+    /** @var int */
+    private static $mode;
 
     private function __construct()
     {
@@ -47,19 +73,15 @@ final class Site
     }
 
     /**
-     * launch app process - can apply safeRun flag which minimizes prepare procedures
+     * launch app process
+     * this accepts integer mode flag, which specifies the logic of app
+     * default mode is MODE_FRONTEND
      *
-     * run accepts 2 params:
-     * safeRun decides what parts of config to apply
-     * evn - should we init our env
-     * admin - if set to true, we're working with admin interface
-     *
-     * @param bool $safeRun
-     * @param bool $env
-     * @param bool $admin
+     * @param int $mode
      */
-    public static function run($safeRun = false, $env = true, $admin = false)
+    public static function run($mode = self::MODE_FRONTEND)
     {
+        self::$mode = $mode;
         define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
         define('AR', APPLICATION_ROOT);
         define('DS', DIRECTORY_SEPARATOR);
@@ -67,17 +89,16 @@ final class Site
         $loader = new Autoload();
         $loader->register();
 
-        self::$safeRun = $safeRun;
-        self::$admin = $admin;
-
         self::_loadConfigs();
-        if ($env) {
+        if (self::$mode & self::MODE_LOAD_ENVIRONMENT) {
             self::_initEnvironment();
         }
         // we've done our job to init system
         // if safeRun is up, we don't need dispatcher
-        self::_applyConfigs($safeRun);
-        if ($safeRun) {
+        if (self::$mode & self::MODE_APPLY_CONFIGS) {
+            self::_applyConfigs();
+        }
+        if (!(self::$mode & self::MODE_DISPATCH)) {
             return;
         }
         self::getSubjectManager()->notify('dispatch', new State(array(
@@ -110,16 +131,11 @@ final class Site
     }
 
     /**
-     * apply
-     * @param bool $safeRun
+     * apply configs
      */
-    private static function _applyConfigs($safeRun)
+    private static function _applyConfigs()
     {
-        $mode = Config::ALL;
-        if ($safeRun) {
-            $mode = Config::PHP | Config::EVENTS;
-        }
-        Config::applyConfig($mode);
+        Config::applyConfig(self::$mode);
     }
 
     /**
@@ -169,8 +185,13 @@ final class Site
                     'message' => $message,
                 )));
             }
-        } catch (\Exception $e) {
-            printf("Exception thrown within the exception handler: %s", $e->__toString());
+        } catch (\Exception $ex) {
+            printf("Exception '%s' thrown within the exception handler in file %s on line %d. Previous exception: %s",
+                $ex->getMessage(),
+                $ex->getFile(),
+                $ex->getLine(),
+                $e->__toString()
+            );
         }
     }
 
@@ -197,14 +218,22 @@ final class Site
                 $container->setParameter('log_dir', AR . DS . 'var' . DS . 'logs' . DS);
                 $container->setParameter('cache_dir', AR . DS . 'var' . DS . 'cache' . DS);
                 $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
-                $loader->load('services.yml');
-                if (file_exists(AR . DS . 'config' . DS . 'local.services.yml')) {
-                    $loader->load('local.services.yml');
+                if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
+                    $loader->load('services.yml');
+                    if (file_exists(AR . DS . 'config' . DS . 'local.services.yml')) {
+                        $loader->load('local.services.yml');
+                    }
                 }
-                if (self::$safeRun && file_exists(AR . DS . 'config' . DS . 'dev.services.yml')) {
+                if ((self::$mode & self::MODE_LOAD_DEV_CONFIGS) &&
+                    file_exists(AR . DS . 'config' . DS . 'dev.services.yml')) {
                     $loader->load('dev.services.yml');
                 }
-                if (self::$admin && file_exists(AR . DS . 'config' . DS . 'admin.services.yml')) {
+                if ((self::$mode & self::MODE_LOAD_TEST_CONFIGS) &&
+                    file_exists(AR . DS . 'config' . DS . 'test.services.yml')) {
+                    $loader->load('test.services.yml');
+                }
+                if ((self::$mode & self::MODE_LOAD_ADMIN_CONFIGS) &&
+                    file_exists(AR . DS . 'config' . DS . 'admin.services.yml')) {
                     $loader->load('admin.services.yml');
                 }
                 self::$_sc = $container;

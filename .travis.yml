@@ -9,7 +9,7 @@ install: composer install --dev
 before_script:
   - cp config/local.php.sample config/local.php
   - mysql -e 'create database site_test;'
-  - cp config/travis.services.yml config/dev.services.yml
+  - yes | \cp -rf config/travis.services.yml config/test.services.yml
 
 script:
   - cd tests; ../vendor/bin/phpunit --testsuite "Util Test Suite"

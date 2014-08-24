@@ -56,6 +56,11 @@ interface StreamHandlerInterface
     public function setPath($path);
 
     /**
+     * @return string $path
+     */
+    public function pwd();
+
+    /**
      * @return bool
      */
     public function eof();

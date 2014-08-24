@@ -1,9 +1,9 @@
-# todo : leave only kernel params here, move all other out of this file
 parameters:
   module_config_file_name: Config.php
   module_config_name: Config
   defaultFormTheme: form_div_layout.html.twig
   translation_locale: en
+  dll_lock_path: "%AR%%DS%var%DS%locks%DS%ddl_installer.lock"
 
 services:
   adapter:
@@ -23,6 +23,11 @@ services:
 
   directory_handler:
     class: Maketok\Util\DirectoryHandler
+
+  ddl_lock_stream_handler:
+    class: Maketok\Util\StreamHandler
+    calls:
+      - [setPath, ["%dll_lock_path%"]]
 
   subject_manager:
     class: Maketok\Observer\SubjectManager
@@ -58,7 +63,7 @@ services:
 
   ddl_installer:
     class: Maketok\App\Ddl\Installer
-    arguments: ["@adapter", "@zend_db_sql"]
+    arguments: ["@adapter", "@zend_db_sql", "@ddl_lock_stream_handler"]
 
   router:
     class: Maketok\Mvc\Router\Stack

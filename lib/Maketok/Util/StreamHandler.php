@@ -175,4 +175,12 @@ class StreamHandler implements StreamHandlerInterface
             $this->_handle = null;
         }
     }
+
+    /**
+     * @return string $path
+     */
+    public function pwd()
+    {
+        return $this->_path;
+    }
 }

@@ -8,6 +8,7 @@
 namespace Maketok\App\Ddl;
 
 use Maketok\App\Site;
+use Maketok\Util\StreamHandlerInterface;
 use Maketok\Util\Zend\Db\Sql\Ddl\Column\Blob;
 use Maketok\Util\Zend\Db\Sql\Ddl\Column\Datetime;
 use Maketok\Util\Zend\Db\Sql\Ddl\Column;
@@ -28,8 +29,7 @@ class Installer
     /**
      * @var string
      */
-    private static $_installerLockSheetName = 'ddl_installer.lock';
-    private static $_lockStreamHandler;
+    protected static $_lockStreamHandler;
     private $_clients = array();
 
     /**
@@ -46,10 +46,17 @@ class Installer
 
     static $_availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey', 'index'];
 
-    public function __construct(Adapter $adapter, Sql $sql)
+    public function __construct(Adapter $adapter, Sql $sql, StreamHandlerInterface $lockStreamHandler)
     {
         self::$_adapter = $adapter;
         self::$_sql = $sql;
+        self::$_lockStreamHandler = $lockStreamHandler;
+        // init lock file
+        $_file = self::$_lockStreamHandler->pwd();
+        if (!file_exists($_file)) {
+            // create empty file if none exists
+            self::$_lockStreamHandler->write('');
+        }
     }
 
     /**
@@ -297,7 +304,7 @@ class Installer
     public static function getDdlInstallerMap()
     {
         if (!isset(self::$_map)) {
-            $data = self::_getLockStreamHandler()->read();
+            $data = self::getLockStreamHandler()->read();
             if (empty($data)) {
                 self::$_map = new \ArrayObject();
             } else {
@@ -312,18 +319,18 @@ class Installer
     /**
      * @return StreamHandler
      */
-    private static function _getLockStreamHandler()
+    public static function getLockStreamHandler()
     {
-        if (is_null(self::$_lockStreamHandler)) {
-            $fullPath = AR . DS . 'var' . DS . 'locks' . DS . self::$_installerLockSheetName;
-            self::$_lockStreamHandler = new StreamHandler();
-            self::$_lockStreamHandler->setPath($fullPath);
-            if (!file_exists($fullPath)) {
-                // if file does not exist - create empty file
-                self::$_lockStreamHandler->write('');
-            }
-        }
         return self::$_lockStreamHandler;
+    }
+
+    /**
+     * @param StreamHandlerInterface $handler
+     * @return void
+     */
+    public static function setLockStreamHandler(StreamHandlerInterface $handler)
+    {
+        self::$_lockStreamHandler = $handler;
     }
 
     /**
@@ -345,7 +352,7 @@ class Installer
             // remove client after processing
             unset($this->_clients[$_key]);
         }
-        $result = self::_getLockStreamHandler()->writeWithLock(json_encode(self::$_map->getArrayCopy()));
+        $result = self::getLockStreamHandler()->writeWithLock(json_encode(self::$_map->getArrayCopy()));
         if ($result === false || $result === 0) {
             throw new InstallerException('Error writing lock data to installer map.');
         }
@@ -543,15 +550,5 @@ class Installer
         }
         // versions are identical
         return 0;
-    }
-
-    /**
-     * @param string $name lock file name
-     * @return $this
-     */
-    public function setInstallerLockName($name)
-    {
-        self::$_installerLockSheetName = $name;
-        return $this;
     }
 }

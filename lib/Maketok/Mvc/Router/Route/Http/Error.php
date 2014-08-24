@@ -28,10 +28,13 @@ class Error extends AbstractRoute implements RouteInterface
     public function match(RequestInterface $request)
     {
         $this->_request = $request;
-        $request->attributes->add(array(
+        $attributes = array(
             '_route' => $this,
-            'exception' => $this->_parameters['exception'],
-        ));
+        );
+        if (isset($this->_parameters['exception'])) {
+            $attributes['exception'] = $this->_parameters['exception'];
+        }
+        $request->attributes->add($attributes);
         return new Success($this);
     }
 

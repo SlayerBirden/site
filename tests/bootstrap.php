@@ -5,4 +5,4 @@
  * @project store
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
-\Maketok\App\Site::run(true);
+\Maketok\App\Site::run(\Maketok\App\Site::MODE_TEST);

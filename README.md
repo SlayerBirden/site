@@ -23,20 +23,13 @@ This app is distributed under GPL 3.0 licence, and anyone can use it for his (or
 ### Tech
 --------
 
-Includes next components from vendors:
-- zend-db (zf 2.*)
-- zend-stdlib (zf 2.*)
-- monolog (~1.0)
-- phpunit (4.*)
-- vfsStream (~1.0)
-- symfony/http-foundation (2.*)
-- symfony/dependency-injection (2.*)
-- symfony/config (2.*)
-- twig (~1)
-- zend-uri (2.*)
-- symfony/form (2.*)
-- symfony/twig-bridge (2.*)
-- symfony/validator (2.*)
+Includes next major components from vendors:
+- zend-db (zf 2.*) for database connection
+- monolog (~1.0) for logging
+- symfony/http-foundation (2.*) for http request handling
+- symfony/dependency-injection (2.*) for DI
+- symfony/form (2.*) for creating forms
+- twig (~1) for templating
 
 
 ### License
