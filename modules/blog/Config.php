@@ -123,7 +123,6 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
             new FileLocator(__DIR__.'/config')
         );
         $loader->load('services.yml');
-        // todo: this will be fixed after main service config is reworked and divided
         // validator config files
         $validatorYmlConfigPaths = [];
         if ($container->hasParameter('validator_builder.yml.config.paths')) {

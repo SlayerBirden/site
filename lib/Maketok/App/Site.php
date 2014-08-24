@@ -145,7 +145,6 @@ final class Site
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         self::setRequest(Request::createFromGlobals());
-        // TODO init error handler, exception handler
         $config = Config::getConfig('php_config');
         $errLevel = E_ALL;
         if (isset($config['error_reporting'])) {
