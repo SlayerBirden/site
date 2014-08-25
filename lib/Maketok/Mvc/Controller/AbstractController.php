@@ -32,7 +32,7 @@ class AbstractController
     protected $_template;
 
     /** @var  array - dependencies for configs */
-    protected $_dependency = array();
+    protected $_viewDependency = array();
 
     /**
      * so some magic
@@ -107,7 +107,7 @@ class AbstractController
         // get template Engine
         $engine = $this->getSC()->get('template_engine');
         $dependencyPaths = array();
-        foreach ($this->_dependency as $_dependencyModule) {
+        foreach ($this->_viewDependency as $_dependencyModule) {
             $dependencyPaths[] = $this->_getTemplatePath('', $_dependencyModule);
         }
         // now add general variables
@@ -115,6 +115,7 @@ class AbstractController
         $templateVars['js_url'] = Site::getUrl('/js/');
         $templateVars['images_url'] = Site::getUrl('/images/');
         $templateVars['base_url'] = Site::getBaseUrl();
+        $templateVars['session'] = Site::getSession();
         $engine->loadDependencies($dependencyPaths);
         $engine->loadTemplate($path);
         $engine->setVariables($templateVars);
@@ -163,9 +164,9 @@ class AbstractController
      * @param array $moduleNames
      * @return $this
      */
-    public function setDependency(array $moduleNames)
+    public function setViewDependency(array $moduleNames)
     {
-        $this->_dependency = $moduleNames;
+        $this->_viewDependency = $moduleNames;
         return $this;
     }
 
@@ -180,9 +181,9 @@ class AbstractController
     /**
      * @return array
      */
-    public function getDependency()
+    public function getViewDependency()
     {
-        return $this->_dependency;
+        return $this->_viewDependency;
     }
 
     /**

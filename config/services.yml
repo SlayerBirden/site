@@ -15,11 +15,20 @@ services:
     arguments: ["%debug%"]
 
   module_manager:
-    class: Maketok\App\ModuleManager
+    class: Maketok\Module\ModuleManager
     arguments: ["@adapter"]
 
-  session_handler:
-    class: Maketok\App\Session\DbHandler
+  session_save_handler:
+    class: Maketok\Http\Session\DbHandler
+    arguments: ["@adapter"]
+
+  session_storage:
+    class: Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage
+    arguments: [[], "@session_save_handler"]
+
+  session_manager:
+    class: Symfony\Component\HttpFoundation\Session\Session
+    arguments: ["@session_storage"]
 
   directory_handler:
     class: Maketok\Util\DirectoryHandler
@@ -62,7 +71,7 @@ services:
     arguments: ["@adapter", [], "@zend_sql_platform"]
 
   ddl_installer:
-    class: Maketok\App\Ddl\Installer
+    class: Maketok\Ddl\Installer
     arguments: ["@adapter", "@zend_db_sql", "@ddl_lock_stream_handler"]
 
   router:

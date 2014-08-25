@@ -19,12 +19,7 @@ return [
                 'subscriber' => 'front_controller::dispatch',
                 'type' => 'service',
                 'priority' => 10,
-            ],
-            [
-                'subscriber' => 'Maketok\App\Session::init',
-                'type' => 'class',
-                'priority' => 100,
-            ],
+            ]
         ],
         'installer_before_process' => [
             [
@@ -54,8 +49,8 @@ return [
         ],
     ],
     'db_ddl' => [
-        '\Maketok\App\Session\DbHandler',
-        '\Maketok\App\ModuleManager',
+        '\Maketok\Http\Session\DbHandler',
+        '\Maketok\Module\ModuleManager',
     ],
     'debug' => false,
 ];

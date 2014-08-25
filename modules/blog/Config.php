@@ -9,7 +9,7 @@
 namespace modules\blog;
 
 
-use Maketok\App\Ddl\InstallerApplicableInterface;
+use Maketok\Ddl\InstallerApplicableInterface;
 use Maketok\App\Site;
 use Maketok\Module\ConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;

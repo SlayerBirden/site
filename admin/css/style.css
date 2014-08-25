@@ -126,3 +126,45 @@ nav ul li a:hover {
     background: #ac2925;
     color: #fff;
 }
+
+ul.error, ul.notice, ul.success, ul.warning {
+    list-style: none;
+}
+
+ul.error {
+    color: darkred;
+}
+
+ul.notice {
+    color: darkgoldenrod;
+}
+
+ul.success {
+    color: darkgreen;
+}
+
+ul.warning {
+    color: darkred;
+}
+
+ul.error li, ul.notice li, ul.success li, ul.warning li {
+    border-radius: 8px;
+    margin: 3px 0;
+    padding: 3px;
+}
+
+ul.error li {
+    background: lightpink;
+}
+
+ul.notice li {
+    background: lightgoldenrodyellow;
+}
+
+ul.success li {
+    background: lightgreen;
+}
+
+ul.warning li {
+    background: lightyellow;
+}

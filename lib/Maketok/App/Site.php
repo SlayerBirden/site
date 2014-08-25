@@ -60,10 +60,6 @@ final class Site
 
     /** @var  ContainerBuilder */
     private static $_sc;
-    /** @var  bool */
-    private static $safeRun;
-    /** @var  bool */
-    private static $admin;
     /** @var int */
     private static $mode;
 
@@ -107,7 +103,7 @@ final class Site
     }
 
     /**
-     * @return Request
+     * @return RequestInterface|null
      */
     public static function getRequest()
     {
@@ -115,10 +111,24 @@ final class Site
     }
 
     /**
+     * @return null|\Symfony\Component\HttpFoundation\Session\SessionInterface
+     */
+    public static function getSession()
+    {
+        if (self::getRequest()) {
+            return self::getRequest()->getSession();
+        }
+        return null;
+    }
+
+    /**
      * @param RequestInterface $request
      */
     public static function setRequest(RequestInterface $request)
     {
+        if (self::$mode & Config::SESSION) {
+            $request->setSession(self::getServiceContainer()->get('session_manager'));
+        }
         self::registry()->request = $request;
     }
 
@@ -247,7 +257,7 @@ final class Site
      */
     private static function getSCClassName($withNS = true)
     {
-        if (self::$admin) {
+        if (self::$mode & self::MODE_LOAD_ADMIN_CONFIGS) {
             $scCN = self::SERVICE_CONTAINER_ADMIN_CLASS;
         } else {
             $scCN = self::SERVICE_CONTAINER_CLASS;
@@ -286,7 +296,7 @@ final class Site
      */
     protected static function getContainerFileName()
     {
-        if (self::$admin) {
+        if (self::$mode & self::MODE_LOAD_ADMIN_CONFIGS) {
             $fn = 'container_admin.php';
         } else {
             $fn = 'container.php';

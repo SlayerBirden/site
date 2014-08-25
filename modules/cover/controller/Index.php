@@ -20,7 +20,7 @@ class Index extends AbstractController
     public function indexAction(RequestInterface $request)
     {
 
-        $this->setTemplate('base.html.twig');
-        return $this->prepareResponse($request, array('title' => 'Main Page'));
+        $this->setTemplate('cover.html.twig');
+        return $this->prepareResponse($request, array('title' => 'Cover Clover'));
     }
 }

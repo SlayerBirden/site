@@ -18,10 +18,6 @@ modules\blog\model\Article:
           minMessage: "Code can not be less than {{ limit }} characters"
           maxMessage: "Code can not be longer than {{ limit }} characters"
     created_at:
-      - NotBlank: ~
-      - DateTime: ~
-    updated_at:
-      - NotBlank: ~
       - DateTime: ~
     content:
       - NotBlank: ~

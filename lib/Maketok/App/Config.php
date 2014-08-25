@@ -8,7 +8,6 @@
 namespace Maketok\App;
 
 use Maketok\App\Exception\ConfigException;
-use Maketok\App\Session\DbHandler;
 use Maketok\Observer\State;
 
 class Config
@@ -107,13 +106,6 @@ class Config
                             throw new ConfigException("Unrecognized subscriber type");
                     }
                 }
-            }
-        }
-        if  ($mode & self::SESSION) {
-            switch (self::getConfig('session_storage')) {
-                case 'db':
-                    Site::registry()->session_save_handler = new DbHandler();
-                    break;
             }
         }
         if  ($mode & self::DDL) {

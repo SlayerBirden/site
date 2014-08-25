@@ -20,7 +20,7 @@ class Index extends AbstractController
      */
     public function indexAction(RequestInterface $request)
     {
-        $this->setDependency(array('cover'));
+        $this->setViewDependency(array('base'));
         $this->setTemplate('blog.html.twig');
         /** @var ArticleTable $articleTable */
         $articleTable = $this->getSC()->get('article_table');

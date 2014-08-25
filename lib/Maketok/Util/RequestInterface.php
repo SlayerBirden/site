@@ -9,7 +9,18 @@
 namespace Maketok\Util;
 
 
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 interface RequestInterface extends MessageInterface
 {
+    /**
+     * @param SessionInterface $session
+     * @return mixed
+     */
+    public function setSession(SessionInterface $session);
 
+    /**
+     * @return SessionInterface
+     */
+    public function getSession();
 }

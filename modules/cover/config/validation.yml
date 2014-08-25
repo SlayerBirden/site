@@ -1,6 +1,0 @@
-modules\cover\model\Module:
-  properties:
-    active:
-      - Choice:
-          choices: [0,1]
-          message: "Invalid state chosen."

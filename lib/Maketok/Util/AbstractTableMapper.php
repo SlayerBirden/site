@@ -8,6 +8,7 @@
 namespace Maketok\Util;
 
 use Maketok\Util\Exception\ModelException;
+use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\Zend\Db\Sql\InsertIgnore;
 use Zend\Db\ResultSet\HydratingResultSet;
 use Zend\Db\TableGateway\TableGateway;
@@ -97,13 +98,21 @@ abstract class AbstractTableMapper
 
     /**
      * @param object $model
+     * @throws Exception\ModelInfoException
      */
     public function save($model)
     {
         $data = $this->_getModelData($model);
+        // possible update
+        if (array_key_exists('updated_at', $data)) {
+            $data['updated_at'] = date("Y-m-d H:i:s");
+        }
+        // set created_at if it's not set
+        if (array_key_exists('created_at', $data) && empty($data['created_at'])) {
+            $data['created_at'] = date("Y-m-d H:i:s");
+        }
         // now determine update or insert
         if (isset($data[$this->ifn()])) {
-            // possible update
             $rowsAffected = $this->getGateway()->update($data, array($this->ifn() => $data[$this->ifn()]));
             if ($rowsAffected === 0) {
                 // either no corresponding rows exist, so we need to insert
@@ -111,7 +120,10 @@ abstract class AbstractTableMapper
                 // try to insert ignore
                 $insert = new InsertIgnore($this->getGateway()->getTable());
                 $insert->values($data);
-                $this->getGateway()->insertWith($insert);
+                $rowsAffected = $this->getGateway()->insertWith($insert);
+                if (!$rowsAffected) {
+                    throw new ModelInfoException("Nothing got changed");
+                }
             }
         } else {
             $this->getGateway()->insert($data);

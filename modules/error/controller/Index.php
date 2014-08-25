@@ -19,7 +19,7 @@ class Index extends AbstractController
      */
     public function norouteAction(RequestInterface $request)
     {
-        $this->setDependency(array('cover'));
+        $this->setViewDependency(array('base'));
         $this->setTemplate('404.html.twig');
         return $this->prepareResponse($request, array('title' => 'Page Not Found'), null, 404);
     }
@@ -29,7 +29,7 @@ class Index extends AbstractController
      */
     public function errorAction(RequestInterface $request)
     {
-        $this->setDependency(array('cover'));
+        $this->setViewDependency(array('base'));
         $this->setTemplate('500.html.twig');
         $params = array(
             'title' => 'Internal Error',

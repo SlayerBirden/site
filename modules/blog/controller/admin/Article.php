@@ -10,6 +10,7 @@ namespace modules\blog\controller\admin;
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
+use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
 
@@ -22,7 +23,7 @@ class Article extends AbstractAdminController
      */
     public function editAction(RequestInterface $request)
     {
-        $this->setDependency(array('cover'));
+        $this->setViewDependency(array('admin'));
         $this->setTemplate('article.html.twig');
         $article = $this->_initArticle($request);
         $form = $this->getFormFactory()->create('article', $article, array(
@@ -34,8 +35,25 @@ class Article extends AbstractAdminController
         if ($form->isValid()) {
             /** @var ArticleTable $articleTable */
             $articleTable = $this->getSC()->get('article_table');
-            $articleTable->save($form->getData());
-            // todo success should go in session
+            try {
+                $articleTable->save($form->getData());
+                $request->getSession()->getFlashBag()->add(
+                    'success',
+                    'The article was saved successfully!'
+                );
+            } catch (ModelInfoException $e) {
+                $request->getSession()->getFlashBag()->add(
+                    'notice',
+                    $e->getMessage()
+                );
+            } catch (\Exception $e) {
+                $this->getSC()->get('logger')->err($e);
+                $request->getSession()->getFlashBag()->add(
+                    'error',
+                    'There was an error processing your request. Our specialists will be looking into it.'
+                );
+                return $this->_returnBack();
+            }
             return $this->_redirect('blog');
         }
         return $this->prepareResponse($request, array(
@@ -89,7 +107,7 @@ class Article extends AbstractAdminController
      */
     public function newAction(RequestInterface $request)
     {
-        $this->setDependency(array('cover'));
+        $this->setViewDependency(array('admin'));
         $this->setTemplate('article.html.twig');
         $form = $this->getFormFactory()->create('article', null, array(
             'action' => $this->getUrl('blog/article/new'),
@@ -100,8 +118,25 @@ class Article extends AbstractAdminController
         if ($form->isValid()) {
             /** @var ArticleTable $articleTable */
             $articleTable = $this->getSC()->get('article_table');
-            $articleTable->save($form->getData());
-            // todo success should go in session
+            try {
+                $articleTable->save($form->getData());
+                $request->getSession()->getFlashBag()->add(
+                    'success',
+                    'The article was saved successfully!'
+                );
+            } catch (ModelInfoException $e) {
+                $request->getSession()->getFlashBag()->add(
+                    'notice',
+                    $e->getMessage()
+                );
+            } catch (\Exception $e) {
+                $this->getSC()->get('logger')->err($e);
+                $request->getSession()->getFlashBag()->add(
+                    'error',
+                    'There was an error processing your request. Our specialists will be looking into it.'
+                );
+                return $this->_returnBack();
+            }
             return $this->_redirect('blog');
         }
         return $this->prepareResponse($request, array(

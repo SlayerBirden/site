@@ -9,14 +9,12 @@
 namespace modules\blog;
 
 
-use Maketok\App\Ddl\InstallerApplicableInterface;
 use Maketok\App\Site;
 use Maketok\Module\AdminConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
-class AdminConfig extends Config implements AdminConfigInterface, InstallerApplicableInterface, ExtensionInterface
+class AdminConfig extends Config implements AdminConfigInterface
 {
 
     /**
