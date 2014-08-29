@@ -3,8 +3,9 @@
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
  * @project site
- * @developer Slayer
+ * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\App;
 
 use Maketok\Loader\Autoload;
@@ -13,14 +14,13 @@ use Maketok\Observer\StateInterface;
 use Maketok\Observer\SubjectManager;
 use Maketok\Http\Request;
 use Maketok\Template\TemplateCompilerPass;
-use Maketok\Util\FormExtensionCompilerPass;
-use Maketok\Util\FormTypeCompilerPass;
+use Maketok\Util\Symfony\Form\FormExtensionCompilerPass;
+use Maketok\Util\Symfony\Form\FormTypeCompilerPass;
 use Maketok\Util\RequestInterface;
 use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Zend\Db\Adapter\Adapter;
 use Zend\Stdlib\ErrorHandler;
@@ -66,6 +66,7 @@ final class Site
     private function __construct()
     {
         // we can't create an object of Site
+        return;
     }
 
     /**
@@ -309,23 +310,22 @@ final class Site
      */
     public static function scCompileAndDump(StateInterface $state)
     {
-        $container = self::getServiceContainer();
-        $class = self::getSCClassName();
-        if ($container instanceof $class) {
-            return;
-        }
-        $container->compile();
-        // add necessary params if no found
-        if (!$container->hasParameter('validator_builder.yml.config.paths')) {
-            $container->setParameter('validator_builder.yml.config.paths', []);
-        }
+        $file = self::getContainerFileName();
+        if (!file_exists($file) || Config::getConfig('debug')) {
+            $container = self::getServiceContainer();
+            $container->compile();
+            // add necessary params if no found
+            if (!$container->hasParameter('validator_builder.yml.config.paths')) {
+                $container->setParameter('validator_builder.yml.config.paths', []);
+            }
 
-        if (!Config::getConfig('debug')) {
-            $dumper = new PhpDumper($container);
-            file_put_contents(
-                self::getContainerFileName(),
-                $dumper->dump(array('class' => self::getSCClassName(false)))
-            );
+            if (!Config::getConfig('debug')) {
+                $dumper = new PhpDumper($container);
+                file_put_contents(
+                    self::getContainerFileName(),
+                    $dumper->dump(array('class' => self::getSCClassName(false)))
+                );
+            }
         }
     }
 
@@ -337,6 +337,9 @@ final class Site
         return self::getServiceContainer()->get('adapter');
     }
 
+    /**
+     * @return Registry
+     */
     public static function registry()
     {
         return self::getServiceContainer()->get('registry');

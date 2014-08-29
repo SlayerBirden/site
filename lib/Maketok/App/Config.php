@@ -2,12 +2,13 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 namespace Maketok\App;
 
 use Maketok\App\Exception\ConfigException;
+use Maketok\Ddl\Installer;
 use Maketok\Observer\State;
 
 class Config
@@ -109,9 +110,38 @@ class Config
             }
         }
         if  ($mode & self::DDL) {
+            /** @var Installer $installer */
             $installer = Site::getServiceContainer()->get('ddl_installer');
-            foreach (self::getConfig('db_ddl') as $client) {
-                $installer->addClient($client);
+            $clients = self::getConfig('db_ddl');
+            // sort by priority
+            usort($clients, function($a, $b){
+                if (!isset($a['priority']) || !isset($b['priority'])) {
+                    return 0;
+                }
+                if ($a['priority'] > $b['priority']) {
+                    return 1;
+                } elseif ($a['priority'] < $b['priority']) {
+                    return -1;
+                }
+                return 0;
+            });
+            foreach ($clients as $entry) {
+                // $entry is an array of 3 values:
+                // definition, type and priority
+                if (isset($entry['process']) && $entry['process'] == 'onload') {
+                    if (!isset($entry['type']) || !isset($entry['client'])) {
+                        throw new ConfigException('Can not attach DDL client without type or definition.');
+                    }
+                    switch ($entry['type']) {
+                        case 'service':
+                            $client = Site::getServiceContainer()->get($entry['definition']);
+                            break;
+                        default:
+                            $client = new $entry['definition']();
+                            break;
+                    }
+                    $installer->addClient($client);
+                }
             }
             Site::getSubjectManager()->notify('installer_before_process', new State(array('installer' => $installer)));
             if ($installer->hasClients()) {

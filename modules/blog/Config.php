@@ -2,7 +2,7 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
@@ -25,9 +25,9 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
     /**
      * @return array
      */
-    public static function getDdlConfig()
+    public function getDdlConfig()
     {
-        return include 'config/ddl/' . self::getDdlConfigVersion() . '.php';
+        return include __DIR__ . '/config/ddl/' . $this->getDdlConfigVersion() . '.php';
     }
 
     /**
@@ -41,15 +41,15 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
     /**
      * @return string
      */
-    public static function getDdlConfigVersion()
+    public function getDdlConfigVersion()
     {
-        return '0.1.3';
+        return $this->getVersion();
     }
 
     /**
      * @return string
      */
-    public static function getDdlConfigName()
+    public function getDdlConfigName()
     {
         return 'blog';
     }
@@ -79,14 +79,6 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
     public function initListeners()
     {
         return;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActive()
-    {
-        return true;
     }
 
     /**
@@ -181,5 +173,13 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
     public function initBefore()
     {
         return;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInstallProcessType()
+    {
+        return self::INSTALL_PROCESS_TYPE_ONDEMAND;
     }
 }

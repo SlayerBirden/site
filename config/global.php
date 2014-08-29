@@ -3,8 +3,9 @@
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
  * @project site
- * @developer Slayer
+ * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 return [
     'php_config' => [
         'display_errors' => 0,
@@ -16,9 +17,9 @@ return [
     'subject_config' => [
         'dispatch' => [
             [
-                'subscriber' => 'front_controller::dispatch',
-                'type' => 'service',
-                'priority' => 10,
+                'subscriber' => 'front_controller::dispatch', // class name (or service alias) and method name
+                'type' => 'service', // enum: service, static (in case static method), class
+                'priority' => 10, // greater means listener will be processed earlier
             ]
         ],
         'installer_before_process' => [
@@ -40,17 +41,26 @@ return [
                 'priority' => 0,
             ],
         ],
-        'module_list_exists' => [
-            [
-                'subscriber' => 'Maketok\App\Site::serviceContainerProcessModules',
-                'type' => 'static',
-                'priority' => 0,
-            ],
-        ],
     ],
     'db_ddl' => [
-        '\Maketok\Http\Session\DbHandler',
-        '\Maketok\Module\ModuleManager',
+        [
+            'definition' => 'module_manager', // service alias or class name
+            'type' => 'service', // enum: service, class
+            'process' => 'onload', // enum: onload, ondemand
+            'priority' => 0, // greater means installer will process module earlier
+        ],
+        [
+            'client' => 'session_save_handler',
+            'type' => 'service',
+            'process' => 'onload',
+            'priority' => 0,
+        ],
+    ],
+    'sc_extensions' => [
+        [
+            'definition' => 'module_manager', // service alias or class name
+            'type' => 'service', // enum: service, class
+        ],
     ],
     'debug' => false,
 ];
