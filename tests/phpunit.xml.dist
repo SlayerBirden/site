@@ -2,10 +2,10 @@
 
 <phpunit bootstrap="bootstrap.php" colors="true">
     <testsuites>
-        <testsuite name="Installer Test Suite">
-            <directory>../lib/Maketok/Ddl/Test/</directory>
+        <testsuite name="installer">
+            <directory>../lib/Maketok/Installer/Test/</directory>
         </testsuite>
-        <testsuite name="Util Test Suite">
+        <testsuite name="util">
             <directory>../lib/Maketok/Util/Test/</directory>
         </testsuite>
     </testsuites>

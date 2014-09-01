@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util;
+namespace Maketok\Util\Symfony\Form;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;

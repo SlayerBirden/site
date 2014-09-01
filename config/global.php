@@ -23,18 +23,18 @@ return [
             ]
         ],
         'installer_before_process' => [
-            [
-                'subscriber' => 'module_manager::processModuleConfig',
-                'type' => 'service',
-                'priority' => 10,
-            ],
+//            [
+//                'subscriber' => 'module_manager::processModuleConfig',
+//                'type' => 'service',
+//                'priority' => 10,
+//            ],
         ],
         'installer_after_process' => [
-            [
-                'subscriber' => 'module_manager::processModules',
-                'type' => 'service',
-                'priority' => 10,
-            ],
+//            [
+//                'subscriber' => 'module_manager::processModules',
+//                'type' => 'service',
+//                'priority' => 10,
+//            ],
             [
                 'subscriber' => 'Maketok\App\Site::scCompileAndDump',
                 'type' => 'static',
