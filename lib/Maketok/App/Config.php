@@ -5,6 +5,7 @@
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\App;
 
 use Maketok\App\Exception\ConfigException;

@@ -5,6 +5,7 @@
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\Util;
 
 use Maketok\Util\Exception\StreamException;
