@@ -3,7 +3,8 @@
 <phpunit bootstrap="bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="installer">
-            <directory>../lib/Maketok/Installer/Test/</directory>
+            <directory>../lib/Maketok/Installer/Ddl/Test/</directory>
+            <directory>../lib/Maketok/Installer/Data/Test/</directory>
         </testsuite>
         <testsuite name="util">
             <directory>../lib/Maketok/Util/Test/</directory>

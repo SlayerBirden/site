@@ -12,8 +12,8 @@ before_script:
   - yes | \cp -rf config/travis.services.yml config/test.services.yml
 
 script:
-  - cd tests; ../vendor/bin/phpunit --testsuite "Util Test Suite"
-  - ../vendor/bin/phpunit --testsuite "Installer Test Suite"
+  - cd tests; ../vendor/bin/phpunit --testsuite "util"
+  - ../vendor/bin/phpunit --testsuite "installer"
 
 notifications:
   email: true

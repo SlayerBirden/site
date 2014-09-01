@@ -1,0 +1,21 @@
+<?php
+/**
+ * This is a part of Maketok Site. Licensed under GPL 3.0
+ * Please do not use for your own profit.
+ * @project site
+ * @developer Slayer slayer.birden@gmail.com maketok.com
+ */
+
+namespace Maketok\Installer\Ddl;
+
+interface ResourceInterface
+{
+
+    public function getTable($table);
+
+    public function getColumn($table, $column);
+
+    public function getConstraint($table, $constraint);
+
+    public function getIndex($table, $index);
+}
