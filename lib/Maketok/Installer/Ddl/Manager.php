@@ -110,7 +110,14 @@ class Manager extends AbstractManager implements ManagerInterface
         $chain = [];
         switch ($client->getType()) {
             case $client::TYPE_INSTALL:
-                $chain[] = $this->_tableMapper->getCurrentConfig($client->getCode($this->_type));
+                $allConfigs = $this->getAllConfigs($client->getCode($this->_type));
+                $currentConfig = $this->_tableMapper->getCurrentConfig($client->getCode($this->_type));
+                $currentVersion = $currentConfig->version;
+                foreach ($allConfigs as $version => $config) {
+                    if ($version > $currentVersion) {
+                        $chain[] = $config;
+                    }
+                }
                 $chain[] = $client->getConfig($this->_type);
                 break;
             case $client::TYPE_UPDATE:
@@ -120,7 +127,7 @@ class Manager extends AbstractManager implements ManagerInterface
                 if ($currentConfig->version > $client->getNextVersion()) {
                     // downgrade
                     foreach ($allConfigs as $version => $config) {
-                        if ($version >= $client->getNextVersion() &&
+                        if ($version > $client->getNextVersion() &&
                             $version <= $currentVersion) {
                             $chain[] = $config;
                         }
@@ -130,7 +137,7 @@ class Manager extends AbstractManager implements ManagerInterface
                 } else {
                     // upgrade
                     foreach ($allConfigs as $version => $config) {
-                        if ($version >= $currentVersion &&
+                        if ($version > $currentVersion &&
                             $version <= $client->getNextVersion()) {
                             $chain[] = $config;
                         }

@@ -4,5 +4,9 @@
 # @developer Slayer slayer.birden@gmail.com maketok.com
 
 parameters:
-  module_config_file_name: AdminConfig.php
-  module_config_name: AdminConfig
+  db_user: user
+  db_passw: pass
+  db_host: localhost
+  db_database: site
+  db_driver: pdo_mysql
+  base_url: http://mysite.com

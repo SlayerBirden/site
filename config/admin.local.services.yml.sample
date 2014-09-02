@@ -4,5 +4,4 @@
 # @developer Slayer slayer.birden@gmail.com maketok.com
 
 parameters:
-  module_config_file_name: AdminConfig.php
-  module_config_name: AdminConfig
+  base_url: http://mysite.com:8888
