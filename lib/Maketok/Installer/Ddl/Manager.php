@@ -14,7 +14,6 @@ use Maketok\Installer\Exception;
 use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Resource\Model\DdlClientConfig;
-use Maketok\Installer\Resource\Model\DdlClientConfigType;
 use Maketok\Util\AbstractTableMapper;
 use Maketok\Util\StreamHandlerInterface;
 use Zend\Db\Adapter\Adapter;
@@ -27,24 +26,17 @@ class Manager extends AbstractManager implements ManagerInterface
     protected $_tableMapper;
 
     /**
-     * @var DdlClientConfigType
-     */
-    private $_clientConfigType;
-
-    /**
      * Constructor
      * @param Adapter $adapter
      * @param \Maketok\Util\Zend\Db\Sql\Sql|\Zend\Db\Sql\Sql $sql
      * @param ConfigReaderInterface $reader
      * @param \Maketok\Util\AbstractTableMapper $tableMapper
-     * @param \Maketok\Installer\Resource\Model\DdlClientConfigType $clientConfigType
      * @param StreamHandlerInterface $handler
      */
     public function __construct(Adapter $adapter,
                                 Sql $sql,
                                 ConfigReaderInterface $reader,
                                 AbstractTableMapper $tableMapper,
-                                DdlClientConfigType $clientConfigType,
                                 StreamHandlerInterface $handler = null)
     {
         $this->_adapter = $adapter;
@@ -54,7 +46,6 @@ class Manager extends AbstractManager implements ManagerInterface
         }
         $this->_sql = $sql;
         $this->_tableMapper = $tableMapper;
-        $this->_clientConfigType = $clientConfigType;
         $this->_type = 'ddl';
     }
 
@@ -83,9 +74,9 @@ class Manager extends AbstractManager implements ManagerInterface
         end($allConfigs);
         $last = key($allConfigs);
         if ($client->getType() == $client::TYPE_INSTALL) {
-            return $this->natRecursiveCompare($client->getVersion($this->_type), $last);
+            return $this->natRecursiveCompare($client->getVersion($this->_type), $last) === 1;
         } elseif ($client->getType() == $client::TYPE_UPDATE) {
-            return array_key_exists($client->next_version, $allConfigs);
+            return array_key_exists($client->getNextVersion(), $allConfigs);
         }
         return false;
     }
@@ -126,10 +117,10 @@ class Manager extends AbstractManager implements ManagerInterface
                 $allConfigs = $this->getAllConfigs($client->getCode($this->_type));
                 $currentConfig = $this->_tableMapper->getCurrentConfig($client->getCode($this->_type));
                 $currentVersion = $currentConfig->version;
-                if ($currentConfig->version > $client->next_version) {
+                if ($currentConfig->version > $client->getNextVersion()) {
                     // downgrade
                     foreach ($allConfigs as $version => $config) {
-                        if ($version >= $client->next_version &&
+                        if ($version >= $client->getNextVersion() &&
                             $version <= $currentVersion) {
                             $chain[] = $config;
                         }
@@ -140,7 +131,7 @@ class Manager extends AbstractManager implements ManagerInterface
                     // upgrade
                     foreach ($allConfigs as $version => $config) {
                         if ($version >= $currentVersion &&
-                            $version <= $client->next_version) {
+                            $version <= $client->getNextVersion()) {
                             $chain[] = $config;
                         }
                     }

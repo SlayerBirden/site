@@ -22,19 +22,7 @@ return [
                 'priority' => 10, // greater means listener will be processed earlier
             ]
         ],
-        'installer_before_process' => [
-//            [
-//                'subscriber' => 'module_manager::processModuleConfig',
-//                'type' => 'service',
-//                'priority' => 10,
-//            ],
-        ],
-        'installer_after_process' => [
-//            [
-//                'subscriber' => 'module_manager::processModules',
-//                'type' => 'service',
-//                'priority' => 10,
-//            ],
+        'config_after_process' => [
             [
                 'subscriber' => 'Maketok\App\Site::scCompileAndDump',
                 'type' => 'static',
@@ -42,6 +30,6 @@ return [
             ],
         ],
     ],
-    'di_extensions' => [],
+    'di_extensions' => ['\Maketok\Installer\DI'],
     'debug' => false,
 ];

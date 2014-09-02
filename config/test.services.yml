@@ -1,2 +1,12 @@
 parameters:
   dll_lock_path: "%AR%%DS%var%DS%locks%DS%test_ddl_installer.lock"
+
+services:
+
+  test_logger_handler:
+    class: Maketok\Util\Monolog\Handler\StreamHandler
+    arguments: ["%stdout%", 100]
+
+  logger:
+      class: Monolog\Logger
+      arguments: ["application_logger", []]

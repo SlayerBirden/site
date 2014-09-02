@@ -33,7 +33,7 @@ services:
   directory_handler:
     class: Maketok\Util\DirectoryHandler
 
-  ddl_lock_stream_handler:
+  lock_stream_handler:
     class: Maketok\Util\StreamHandler
     calls:
       - [setPath, ["%dll_lock_path%"]]
@@ -70,9 +70,17 @@ services:
     class: Maketok\Util\Zend\Db\Sql\Sql
     arguments: ["@adapter", [], "@zend_sql_platform"]
 
-  ddl_installer:
-    class: Maketok\Ddl\Installer
-    arguments: ["@adapter", "@zend_db_sql", "@ddl_lock_stream_handler"]
+  installer_ddl_reader:
+    class: Maketok\Installer\Ddl\ConfigReader
+
+  installer_ddl_manager:
+    class: Maketok\Installer\Ddl\Manager
+    arguments:
+      - "@adapter"
+      - "@zend_db_sql"
+      - "@installer_ddl_reader"
+      - "@ddl_client_config_table"
+      - "@lock_stream_handler"
 
   router:
     class: Maketok\Mvc\Router\Stack
@@ -89,7 +97,7 @@ services:
   validator_builder:
     class: Symfony\Component\Validator\ValidatorBuilder
     calls:
-      - [addYamlMappings, ["%validator_builder.yml.config.paths%"]]
+      - [addYamlMappings, ["@=container.hasParameter('validator_builder.yml.config.paths') ? parameter('validator_builder.yml.config.paths') : []"]]
 
   validator:
     class: Symfony\Component\Validator\Validator

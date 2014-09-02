@@ -31,4 +31,9 @@ interface ClientInterface extends BaseClientInterface
      * @return string
      */
     public function getType();
+
+    /**
+     * @return string
+     */
+    public function getNextVersion();
 }

@@ -9,7 +9,6 @@
 namespace Maketok\App;
 
 use Maketok\App\Exception\ConfigException;
-use Maketok\Ddl\Installer;
 use Maketok\Observer\State;
 
 class Config
@@ -20,7 +19,7 @@ class Config
     const PHP = 0b1;
     const EVENTS = 0b10;
     const SESSION = 0b100;
-    const DDL = 0b1000;
+    const INSTALLER = 0b1000;
 
     /**
      * @param array $config1
@@ -110,46 +109,12 @@ class Config
                 }
             }
         }
-        if  ($mode & self::DDL) {
-            /** @var Installer $installer */
-            $installer = Site::getServiceContainer()->get('ddl_installer');
-            $clients = self::getConfig('db_ddl');
-            // sort by priority
-            usort($clients, function($a, $b){
-                if (!isset($a['priority']) || !isset($b['priority'])) {
-                    return 0;
-                }
-                if ($a['priority'] > $b['priority']) {
-                    return 1;
-                } elseif ($a['priority'] < $b['priority']) {
-                    return -1;
-                }
-                return 0;
-            });
-            foreach ($clients as $entry) {
-                // $entry is an array of 3 values:
-                // definition, type and priority
-                if (isset($entry['process']) && $entry['process'] == 'onload') {
-                    if (!isset($entry['type']) || !isset($entry['client'])) {
-                        throw new ConfigException('Can not attach DDL client without type or definition.');
-                    }
-                    switch ($entry['type']) {
-                        case 'service':
-                            $client = Site::getServiceContainer()->get($entry['definition']);
-                            break;
-                        default:
-                            $client = new $entry['definition']();
-                            break;
-                    }
-                    $installer->addClient($client);
-                }
-            }
-            Site::getSubjectManager()->notify('installer_before_process', new State(array('installer' => $installer)));
-            if ($installer->hasClients()) {
-                $installer->processClients();
-            }
-            Site::getSubjectManager()->notify('installer_after_process', new State(array('installer' => $installer)));
+        if  ($mode & self::INSTALLER) {
+            Site::getSubjectManager()->notify('installer_before_process', new State([]));
+            // TODO add logic
+            Site::getSubjectManager()->notify('installer_after_process', new State([]));
         }
+        Site::getSubjectManager()->notify('config_after_process', new State([]));
     }
 
     /**

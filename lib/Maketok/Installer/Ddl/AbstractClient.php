@@ -41,4 +41,12 @@ abstract class AbstractClient implements ClientInterface
     {
         return $this->_type;
     }
+
+    /**
+     * @return string
+     */
+    public function getNextVersion()
+    {
+        return $this->next_version;
+    }
 }

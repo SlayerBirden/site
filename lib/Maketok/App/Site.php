@@ -21,6 +21,7 @@ use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Zend\Db\Adapter\Adapter;
 use Zend\Stdlib\ErrorHandler;
@@ -47,7 +48,7 @@ final class Site
      * const PHP = 0b1;
      * const EVENTS = 0b10;
      * const SESSION = 0b100;
-     * const DDL = 0b1000;
+     * const INSTALLER = 0b1000;
      */
     const MODE_LOAD_ENVIRONMENT = 0b10000000;
     const MODE_LOAD_SC = 0b100000000;
@@ -227,6 +228,7 @@ final class Site
                 $container->setParameter('debug', Config::getConfig('debug'));
                 $container->setParameter('log_dir', AR . DS . 'var' . DS . 'logs' . DS);
                 $container->setParameter('cache_dir', AR . DS . 'var' . DS . 'cache' . DS);
+                $container->setParameter('stdout', STDOUT);
                 $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
                 if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
                     $loader->load('services.yml');
@@ -247,9 +249,23 @@ final class Site
                     $loader->load('admin.services.yml');
                 }
                 self::$_sc = $container;
+                // now handle some registered lib extensions
+                foreach (Config::getConfig('di_extensions') as $className) {
+                    $ext = new $className();
+                    self::_addDiExtension($ext);
+                }
             }
         }
         return self::$_sc;
+    }
+
+    /**
+     * @param ExtensionInterface $extension
+     */
+    protected static function _addDiExtension(ExtensionInterface $extension)
+    {
+        self::$_sc->registerExtension($extension);
+        self::$_sc->loadFromExtension($extension->getAlias());
     }
 
     /**
@@ -286,8 +302,7 @@ final class Site
             // include each module into sc
             // only the ones that work :)
             if ($moduleConfig instanceof ExtensionInterface) {
-                $container->registerExtension($moduleConfig);
-                $container->loadFromExtension($moduleConfig->getAlias());
+                self::_addDiExtension($moduleConfig);
             }
         }
     }
@@ -314,10 +329,6 @@ final class Site
         if (!file_exists($file) || Config::getConfig('debug')) {
             $container = self::getServiceContainer();
             $container->compile();
-            // add necessary params if no found
-            if (!$container->hasParameter('validator_builder.yml.config.paths')) {
-                $container->setParameter('validator_builder.yml.config.paths', []);
-            }
 
             if (!Config::getConfig('debug')) {
                 $dumper = new PhpDumper($container);
