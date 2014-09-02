@@ -12,10 +12,10 @@ interface ConfigReaderInterface
 {
 
     /**
-     * @param array $config
+     * @param array $configChain
      * @return void
      */
-    public function processConfig(array $config);
+    public function processConfig(array $configChain);
 
     /**
      * @return void

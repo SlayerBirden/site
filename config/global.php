@@ -42,25 +42,6 @@ return [
             ],
         ],
     ],
-    'db_ddl' => [
-        [
-            'definition' => 'module_manager', // service alias or class name
-            'type' => 'service', // enum: service, class
-            'process' => 'onload', // enum: onload, ondemand
-            'priority' => 0, // greater means installer will process module earlier
-        ],
-        [
-            'client' => 'session_save_handler',
-            'type' => 'service',
-            'process' => 'onload',
-            'priority' => 0,
-        ],
-    ],
-    'sc_extensions' => [
-        [
-            'definition' => 'module_manager', // service alias or class name
-            'type' => 'service', // enum: service, class
-        ],
-    ],
+    'di_extensions' => [],
     'debug' => false,
 ];

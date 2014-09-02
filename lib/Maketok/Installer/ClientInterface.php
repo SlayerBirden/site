@@ -12,18 +12,21 @@ interface ClientInterface
 {
 
     /**
+     * @param string $type
      * @return string
      */
-    public function getVersion();
+    public function getVersion($type);
 
     /**
+     * @param string $type
      * @return array
      */
-    public function getConfig();
+    public function getConfig($type);
 
     /**
+     * @param string $type
      * @return string
      */
-    public function getCode();
+    public function getCode($type);
 
 }

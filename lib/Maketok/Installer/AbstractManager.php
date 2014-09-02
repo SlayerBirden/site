@@ -24,24 +24,13 @@ abstract class AbstractManager implements ManagerInterface
     protected $_streamHandler;
     /** @var array */
     protected $_messages;
+    /** @var \Maketok\Util\Zend\Db\Sql\Sql  */
+    protected $_sql;
+    /** @var \Maketok\Util\AbstractTableMapper  */
+    protected $_tableMapper;
+    /** @var string */
+    protected $_type;
 
-
-    /**
-     * Constructor
-     * @param Adapter $adapter
-     * @param ConfigReaderInterface $reader
-     * @param StreamHandlerInterface $handler
-     */
-    public function __construct(Adapter $adapter,
-                                ConfigReaderInterface $reader,
-                                StreamHandlerInterface $handler = null)
-    {
-        $this->_adapter = $adapter;
-        $this->_reader = $reader;
-        if (!is_null($handler)) {
-            $this->_streamHandler = $handler;
-        }
-    }
 
     /**
      * @param StreamHandlerInterface $handler
@@ -70,7 +59,7 @@ abstract class AbstractManager implements ManagerInterface
         if (is_null($this->_clients)) {
             $this->_clients = [];
         }
-        $this->_clients[$client->getCode()] = $client;
+        $this->_clients[$client->getCode($this->_type)] = $client;
     }
 
     /**
@@ -87,5 +76,41 @@ abstract class AbstractManager implements ManagerInterface
     public function hasClients()
     {
         return count($this->_clients) > 0;
+    }
+
+    /**
+     * the recursive compare function
+     * should compare versions
+     * @param $a
+     * @param $b
+     * @return int
+     */
+    public function natRecursiveCompare($a, $b)
+    {
+        $aA = explode('.', $a);
+        $aB = explode('.', $b);
+        if (count($aA) > count($aB)) {
+            for ($i = count($aB); $i < count($aA); $i++){
+                $aB[] = 0;
+            }
+        } elseif(count($aB) > count($aA)) {
+            for ($i = count($aA); $i < count($aB); $i++){
+                $aA[] = 0;
+            }
+        }
+        // cast all versions to int
+        foreach ($aA as &$v) {$v = (int) $v;}
+        foreach ($aB as &$v) {$v = (int) $v;}
+        for ($i = 0; $i < count($aA); $i++) {
+            if ($aA[$i] > $aB[$i]) {
+                return 1;
+            } elseif ($aB[$i] > $aA[$i]) {
+                return -1;
+            } elseif ($aA[$i] === $aB[$i]) {
+                continue;
+            }
+        }
+        // versions are identical
+        return 0;
     }
 }

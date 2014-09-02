@@ -66,6 +66,16 @@ abstract class AbstractTableMapper
     }
 
     /**
+     * @param array|\Closure|\Zend\Db\Sql\Where $filter
+     * @return \Zend\Db\ResultSet\ResultSet
+     */
+    public function fetchFilter($filter)
+    {
+        $resultSet = $this->_tableGateway->select($filter);
+        return $resultSet;
+    }
+
+    /**
      * @return TableGateway
      */
     public function getGateway()

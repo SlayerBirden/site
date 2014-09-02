@@ -1,0 +1,70 @@
+*ddl_client:
+  columns:
+    id:
+      type: integer
+      length: 10
+    code:
+      type: varchar
+      length: 55
+    version:
+      type: varchar
+      length: 15
+  constraints:
+    primary:
+      type: primaryKey
+      def: id
+    UNQ_KEY_CODE:
+      type: uniqueKey
+      def: code
+
+*ddl_client_config:
+  columns:
+    id:
+      type: integer
+      length: 10
+    client_id:
+      type: integer
+      length: 10
+    version:
+      type: varchar
+      length: 15
+    config:
+      type: text
+  constraints:
+    primary:
+      type: primaryKey
+      def: id
+    FK_KEY_CLIENT_ID:
+      type: foreignKey
+      def: client_id
+      referenceTable: ddl_client
+      referenceColumn: id
+
+*ddl_client_history:
+  columns:
+    id:
+      type: integer
+      length: 10
+    client_id:
+      type: integer
+      length: 10
+    prev_version:
+      type: varchar
+      length: 15
+    version:
+      type: varchar
+      length: 15
+    launcher:
+      type: varchar
+      length: 255
+    config:
+      type: text
+  constraints:
+    primary:
+      type: primaryKey
+      def: id
+    FK_KEY_CLIENT_ID:
+      type: foreignKey
+      def: client_id
+      referenceTable: ddl_client
+      referenceColumn: id

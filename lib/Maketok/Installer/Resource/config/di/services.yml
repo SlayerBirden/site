@@ -1,0 +1,58 @@
+services:
+
+  ddl_client_model:
+    class: Maketok\Installer\Resource\Model\DdlClient
+
+  ddl_client_result_set:
+    class: Zend\Db\ResultSet\HydratingResultSet
+    arguments: ["@object_prop_hydrator", "@ddl_client_model"]
+
+  ddl_client_table_gateway:
+    class: Zend\Db\TableGateway\TableGateway
+    arguments:
+      - ddl_client
+      - "@adapter"
+      - []
+      - "@ddl_client_result_set"
+
+  ddl_client_table:
+    class: Maketok\Installer\Resource\Model\DdlClientType
+    arguments: ["@ddl_client_table_gateway", id]
+
+  ddl_client_config_model:
+    class: Maketok\Installer\Resource\Model\DdlClientConfig
+
+  ddl_client_config_result_set:
+    class: Zend\Db\ResultSet\HydratingResultSet
+    arguments: ["@object_prop_hydrator", "@ddl_client_config_model"]
+
+  ddl_client_config_table_gateway:
+    class: Zend\Db\TableGateway\TableGateway
+    arguments:
+      - ddl_client_config
+      - "@adapter"
+      - []
+      - "@ddl_client_config_result_set"
+
+  ddl_client_config_table:
+    class: Maketok\Installer\Resource\Model\DdlClientConfigType
+    arguments: ["@ddl_client_config_table_gateway", id]
+
+  ddl_client_history_model:
+    class: Maketok\Installer\Resource\Model\DdlClientHistory
+
+  ddl_client_history_result_set:
+    class: Zend\Db\ResultSet\HydratingResultSet
+    arguments: ["@object_prop_hydrator", "@ddl_client_history_model"]
+
+  ddl_client_history_table_gateway:
+    class: Zend\Db\TableGateway\TableGateway
+    arguments:
+      - ddl_client_history
+      - "@adapter"
+      - []
+      - "@ddl_client_history_result_set"
+
+  ddl_client_history_table:
+    class: Maketok\Installer\Resource\Model\DdlClientHistoryType
+    arguments: ["@ddl_client_history_table_gateway", id]
