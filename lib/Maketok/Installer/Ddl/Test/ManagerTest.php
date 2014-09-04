@@ -79,6 +79,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $this->addMockMapper();
 
         $chain = [
+            [13],
             [20],
             [22],
         ];
@@ -92,6 +93,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->method('getNextVersion')
             ->will($this->returnValue('0.2.0'));
         $chain = [
+            [13],
             [20],
         ];
         $this->assertEquals($chain, self::$_manager->getConfigChain($client));
@@ -102,9 +104,10 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(ClientInterface::TYPE_UPDATE));
         $client->expects($this->any())
             ->method('getNextVersion')
-            ->will($this->returnValue('0.1.1'));
+            ->will($this->returnValue('0.1.0'));
         $chain = [
             [12],
+            [11],
         ];
         $this->assertEquals($chain, self::$_manager->getConfigChain($client));
     }
@@ -117,9 +120,13 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $refProp = new \ReflectionProperty(get_class(self::$_manager), '_tableMapper');
         $refProp->setAccessible(true);
         $mockMapper = $this->getMock('Maketok\Installer\Resource\Model\DdlClientConfigType');
-        $configItem1 = new DdlClientConfig();
-        $configItem1->version = '0.2.0';
-        $configItem1->config = [20];
+        $configItem0 = new DdlClientConfig();
+        $configItem0->version = '0.2.0';
+        $configItem0->config = [20];
+        $configItem0->id = '0';
+        $configItem1 = clone $configItem0;
+        $configItem1->version = '0.1.0';
+        $configItem1->config = [10];
         $configItem1->id = '1';
         $configItem2 = clone $configItem1;
         $configItem2->version = '0.1.1';
@@ -129,9 +136,13 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $configItem3->version = '0.1.2';
         $configItem3->config = [12];
         $configItem3->id = '3';
+        $configItem4 = clone $configItem1;
+        $configItem4->version = '0.1.3';
+        $configItem4->config = [13];
+        $configItem4->id = '4';
         $mockMapper->expects($this->any())
             ->method('getAllConfigs')
-            ->will($this->returnValue(array($configItem1, $configItem2, $configItem3)));
+            ->will($this->returnValue(array($configItem0, $configItem1, $configItem2, $configItem3, $configItem4)));
         $mockMapper->expects($this->any())
             ->method('getCurrentConfig')
             ->will($this->returnValue($configItem3));
@@ -183,7 +194,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(ClientInterface::TYPE_UPDATE));
         $client->expects($this->any())
             ->method('getNextVersion')
-            ->will($this->returnValue('0.1.3'));
+            ->will($this->returnValue('10'));
         $this->assertFalse(self::$_manager->validateClient($client));
     }
 }

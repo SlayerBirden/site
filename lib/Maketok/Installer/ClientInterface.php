@@ -19,7 +19,7 @@ interface ClientInterface
 
     /**
      * @param string $type
-     * @return array
+     * @return array|bool
      */
     public function getConfig($type);
 

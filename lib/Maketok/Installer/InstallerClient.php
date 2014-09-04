@@ -8,6 +8,7 @@
 
 namespace Maketok\Installer;
 
+use Maketok\App\Site;
 use Maketok\Installer\Ddl\AbstractClient;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
@@ -25,14 +26,19 @@ class InstallerClient extends AbstractClient
     }
 
     /**
-     * @param string $type
-     * @return array
+     * {@inherited}
      */
     public function getConfig($type)
     {
         $locator = new FileLocator(__DIR__.'/Resource/config/installer/'.$type);
         $ymlReader = new Yaml();
-        return $ymlReader->parse($locator->locate($this->getVersion($type).'.yml'));
+        try {
+            $file = $locator->locate($this->getVersion($type).'.yml');
+        } catch (\InvalidArgumentException $e) {
+            Site::getServiceContainer()->get('logger')->err($e->getMessage());
+            return false;
+        }
+        return $ymlReader->parse($file);
     }
 
     /**
