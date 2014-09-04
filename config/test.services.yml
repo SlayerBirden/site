@@ -10,7 +10,7 @@ services:
 
   test_logger_handler:
     class: Maketok\Util\Monolog\Handler\StreamHandler
-    arguments: ["%stdout%", 100]
+    arguments: ["php://stdout", 100]
 
   logger:
       class: Monolog\Logger

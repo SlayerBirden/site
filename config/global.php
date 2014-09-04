@@ -31,5 +31,14 @@ return [
         ],
     ],
     'di_extensions' => ['\Maketok\Installer\DI'],
-    'debug' => false,
+    'di_compiler_passes' => [
+        'Maketok\Template\TemplateCompilerPass',
+        'Maketok\Util\Symfony\Form\FormExtensionCompilerPass',
+        'Maketok\Util\Symfony\Form\FormTypeCompilerPass',
+    ],
+    'di_parameters' => [
+        'AR' => AR,
+        'DS' => DS,
+        'debug' => false,
+    ],
 ];

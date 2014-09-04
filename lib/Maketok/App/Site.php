@@ -64,6 +64,9 @@ final class Site
     /** @var int */
     private static $mode;
 
+    private static $_diParameters = [];
+    private static $_diConfigs = [];
+
     private function __construct()
     {
         // we can't create an object of Site
@@ -214,52 +217,57 @@ final class Site
         if (is_null(self::$_sc)) {
             // get cached file
             $file = self::getContainerFileName();
-            if (file_exists($file) && !Config::getConfig('debug')) {
+            if (file_exists($file) && !Config::getConfig('di_parameters/debug')) {
                 require_once $file;
                 $class = self::getSCClassName();
                 self::$_sc = new $class();
             } else {
-                $container = new ContainerBuilder();
-                $container->addCompilerPass(new TemplateCompilerPass);
-                $container->addCompilerPass(new FormExtensionCompilerPass);
-                $container->addCompilerPass(new FormTypeCompilerPass);
-                $container->setParameter('AR', AR);
-                $container->setParameter('DS', DS);
-                $container->setParameter('debug', Config::getConfig('debug'));
-                $container->setParameter('log_dir', AR . DS . 'var' . DS . 'logs' . DS);
-                $container->setParameter('cache_dir', AR . DS . 'var' . DS . 'cache' . DS);
-                $container->setParameter('stdout', 'php://stdout');
-                $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
-                if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
-                    $loader->load('services.yml');
-                    if (file_exists(AR . DS . 'config' . DS . 'local.services.yml')) {
-                        $loader->load('local.services.yml');
-                    }
-                }
-                if ((self::$mode & self::MODE_LOAD_DEV_CONFIGS) &&
-                    file_exists(AR . DS . 'config' . DS . 'dev.services.yml')) {
-                    $loader->load('dev.services.yml');
-                }
-                if ((self::$mode & self::MODE_LOAD_TEST_CONFIGS) &&
-                    file_exists(AR . DS . 'config' . DS . 'test.services.yml')) {
-                    $loader->load('test.services.yml');
-                }
-                if ((self::$mode & self::MODE_LOAD_ADMIN_CONFIGS) &&
-                    file_exists(AR . DS . 'config' . DS . 'admin.services.yml')) {
-                    $loader->load('admin.services.yml');
-                    if (file_exists(AR . DS . 'config' . DS . 'local.admin.services.yml')) {
-                        $loader->load('local.admin.services.yml');
-                    }
-                }
-                self::$_sc = $container;
-                // now handle some registered lib extensions
-                foreach (Config::getConfig('di_extensions') as $className) {
-                    $ext = new $className();
-                    self::_addDiExtension($ext);
-                }
+                self::_createSC();
             }
         }
         return self::$_sc;
+    }
+
+    /**
+     * Init Service Container
+     */
+    private static function _createSC()
+    {
+        $container = new ContainerBuilder();
+        foreach (Config::getConfig('di_compiler_passes') as $compilerPassName) {
+            $container->addCompilerPass(new $compilerPassName());
+        }
+        foreach (Config::getConfig('di_parameters') as $k => $v) {
+            $container->setParameter($k, $v);
+        }
+        $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
+        if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
+            $loader->load('services.yml');
+            if (file_exists(AR . DS . 'config' . DS . 'local.services.yml')) {
+                $loader->load('local.services.yml');
+            }
+        }
+        if ((self::$mode & self::MODE_LOAD_DEV_CONFIGS) &&
+            file_exists(AR . DS . 'config' . DS . 'dev.services.yml')) {
+            $loader->load('dev.services.yml');
+        }
+        if ((self::$mode & self::MODE_LOAD_TEST_CONFIGS) &&
+            file_exists(AR . DS . 'config' . DS . 'test.services.yml')) {
+            $loader->load('test.services.yml');
+        }
+        if ((self::$mode & self::MODE_LOAD_ADMIN_CONFIGS) &&
+            file_exists(AR . DS . 'config' . DS . 'admin.services.yml')) {
+            $loader->load('admin.services.yml');
+            if (file_exists(AR . DS . 'config' . DS . 'local.admin.services.yml')) {
+                $loader->load('local.admin.services.yml');
+            }
+        }
+        self::$_sc = $container;
+        // now handle some registered lib extensions
+        foreach (Config::getConfig('di_extensions') as $className) {
+            $ext = new $className();
+            self::_addDiExtension($ext);
+        }
     }
 
     /**
@@ -329,11 +337,11 @@ final class Site
     public static function scCompileAndDump()
     {
         $file = self::getContainerFileName();
-        if (!file_exists($file) || Config::getConfig('debug')) {
+        if (!file_exists($file) || Config::getConfig('di_parameters/debug')) {
             $container = self::getServiceContainer();
             $container->compile();
 
-            if (!Config::getConfig('debug')) {
+            if (!Config::getConfig('di_parameters/debug')) {
                 $dumper = new PhpDumper($container);
                 file_put_contents(
                     self::getContainerFileName(),

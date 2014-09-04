@@ -149,6 +149,20 @@ class Config
         if (isset(self::$_config[$key])) {
             return self::$_config[$key];
         }
-        return array();
+        if (is_string($key) && (strpos($key, '/') !== false)) {
+            // complex key
+            $keys = explode('/', $key);
+            $_conf = self::$_config;
+            foreach ($keys as $key) {
+                if (array_key_exists($key, $_conf)) {
+                    $_conf = $_conf[$key];
+                } else {
+                    $_conf = [];
+                    break;
+                }
+            }
+            return $_conf;
+        }
+        return [];
     }
 }

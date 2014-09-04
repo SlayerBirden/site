@@ -9,6 +9,8 @@ parameters:
   defaultFormTheme: form_div_layout.html.twig
   translation_locale: en
   dll_lock_path: "%AR%%DS%var%DS%locks%DS%ddl_installer.lock"
+  log_dir: "%AR%%DS%var%DS%log%DS%"
+  cache_dir: "%AR%%DS%var%DS%cache%DS%"
 
 services:
   adapter:
