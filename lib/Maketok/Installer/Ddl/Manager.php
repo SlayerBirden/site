@@ -25,6 +25,9 @@ class Manager extends AbstractManager implements ManagerInterface
     /** @var \Maketok\Installer\Resource\Model\DdlClientConfigType  */
     protected $_tableMapper;
 
+    /** @var array */
+    protected $_directives;
+
     /**
      * Constructor
      * @param Adapter $adapter
@@ -48,9 +51,6 @@ class Manager extends AbstractManager implements ManagerInterface
         $this->_tableMapper = $tableMapper;
         $this->_type = 'ddl';
     }
-
-    /** @var array */
-    protected $_directives;
 
     /**
      * {@inherited}

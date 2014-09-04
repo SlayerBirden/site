@@ -44,7 +44,7 @@ class Resource implements ResourceInterface
                 $tableInfo['constraints'][] = $this->_parseConstraint($row);
             } elseif ((strpos($row, '  KEY') !== false) ||
                 (strpos($row, '  INDEX') !== false)) {
-                $tableInfo['indexes'][] = $this->_parseIndex($row);
+                $tableInfo['indices'][] = $this->_parseIndex($row);
             } else {
                 $tableInfo['columns'][] = $this->_parseColumn($row);
             }

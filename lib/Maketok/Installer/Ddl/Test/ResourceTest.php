@@ -68,7 +68,7 @@ SQL;
         $this->assertNotEmpty($result);
 
         $this->assertCount(7, $result['columns']);
-        $this->assertCount(3, $result['indexes']);
+        $this->assertCount(3, $result['indices']);
         $this->assertCount(3, $result['constraints']);
         $fk = $result['constraints'][2];
         $this->assertNotEmpty($fk);
