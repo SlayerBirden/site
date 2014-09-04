@@ -99,6 +99,7 @@ final class Site
         if (!(self::$mode & self::MODE_DISPATCH)) {
             return;
         }
+        $builder = self::getServiceContainer()->get('validator_builder');
         self::getSubjectManager()->notify('dispatch', new State(array(
             'request' => self::getRequest()
         )));
@@ -237,6 +238,7 @@ final class Site
         foreach (Config::getConfig('di_parameters') as $k => $v) {
             $container->setParameter($k, $v);
         }
+        $container->set('service_container', $container);
         $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
         if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
             $loader->load('services.yml');
@@ -338,13 +340,11 @@ final class Site
             $container = self::getServiceContainer();
             $container->compile();
 
-            if (!Config::getConfig('di_parameters/debug')) {
-                $dumper = new PhpDumper($container);
-                file_put_contents(
-                    self::getContainerFileName(),
-                    $dumper->dump(array('class' => self::getSCClassName(false)))
-                );
-            }
+            $dumper = new PhpDumper($container);
+            file_put_contents(
+                self::getContainerFileName(),
+                $dumper->dump(array('class' => self::getSCClassName(false)))
+            );
         }
     }
 
