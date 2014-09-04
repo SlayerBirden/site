@@ -247,8 +247,8 @@ final class Site
                 if ((self::$mode & self::MODE_LOAD_ADMIN_CONFIGS) &&
                     file_exists(AR . DS . 'config' . DS . 'admin.services.yml')) {
                     $loader->load('admin.services.yml');
-                    if (file_exists(AR . DS . 'config' . DS . 'admin.local.services.yml')) {
-                        $loader->load('admin.local.services.yml');
+                    if (file_exists(AR . DS . 'config' . DS . 'local.admin.services.yml')) {
+                        $loader->load('local.admin.services.yml');
                     }
                 }
                 self::$_sc = $container;
