@@ -228,7 +228,7 @@ final class Site
                 $container->setParameter('debug', Config::getConfig('debug'));
                 $container->setParameter('log_dir', AR . DS . 'var' . DS . 'logs' . DS);
                 $container->setParameter('cache_dir', AR . DS . 'var' . DS . 'cache' . DS);
-                $container->setParameter('stdout', STDOUT);
+                $container->setParameter('stdout', 'php://stdout');
                 $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
                 if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
                     $loader->load('services.yml');
@@ -324,9 +324,9 @@ final class Site
     }
 
     /**
-     * @param StateInterface $state
+     * @observe config_after_process
      */
-    public static function scCompileAndDump(StateInterface $state)
+    public static function scCompileAndDump()
     {
         $file = self::getContainerFileName();
         if (!file_exists($file) || Config::getConfig('debug')) {

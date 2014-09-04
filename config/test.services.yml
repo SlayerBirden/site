@@ -14,4 +14,4 @@ services:
 
   logger:
       class: Monolog\Logger
-      arguments: ["application_logger", []]
+      arguments: ["application_logger", ["@test_logger_handler"]]
