@@ -238,7 +238,6 @@ final class Site
         foreach (Config::getConfig('di_parameters') as $k => $v) {
             $container->setParameter($k, $v);
         }
-        $container->set('service_container', $container);
         $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
         if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
             $loader->load('services.yml');
