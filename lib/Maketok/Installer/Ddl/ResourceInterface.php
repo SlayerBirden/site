@@ -12,12 +12,16 @@ interface ResourceInterface
 {
 
     /**
+     * get table description
+     *
      * @param string $table
      * @return array
      */
     public function getTable($table);
 
     /**
+     * get column description
+     *
      * @param string $table
      * @param string $column
      * @return array
@@ -25,6 +29,8 @@ interface ResourceInterface
     public function getColumn($table, $column);
 
     /**
+     * get constraint description
+     *
      * @param string $table
      * @param string $constraint
      * @return array
@@ -32,6 +38,8 @@ interface ResourceInterface
     public function getConstraint($table, $constraint);
 
     /**
+     * get index description
+     *
      * @param string $table
      * @param string $index
      * @return array

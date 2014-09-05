@@ -12,18 +12,25 @@ interface ClientInterface
 {
 
     /**
+     * get client version to install
+     *
      * @param string $type
      * @return string
      */
     public function getVersion($type);
 
     /**
+     * get client config to install
+     *
      * @param string $type
      * @return array|bool
      */
     public function getConfig($type);
 
     /**
+     * get client identifier
+     * must be unique
+     *
      * @param string $type
      * @return string
      */

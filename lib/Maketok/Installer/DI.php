@@ -36,7 +36,7 @@ class DI extends Extension
     }
 
     /**
-     * {@inherited}
+     * {@inheritdoc}
      */
     public function getAlias()
     {

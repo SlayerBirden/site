@@ -14,34 +14,45 @@ interface ManagerInterface
 {
 
     /**
+     * sets mutex adapter and stream writer as one entity
+     *
      * @param StreamHandlerInterface $handler
      * @return $this
      */
     public function setStreamHandler(StreamHandlerInterface $handler);
 
     /**
+     * getter for stream handler
+     *
      * @return StreamHandlerInterface
      */
     public function getStreamHandler();
 
     /**
+     * adds client to install queue
+     *
      * @param ClientInterface $client
      * @return $this
      */
     public function addClient(ClientInterface $client);
 
     /**
+     * get all clients in queue
+     *
      * @return array|\ArrayObject
      */
     public function getClients();
 
     /**
+     * check if has clients
+     *
      * @return bool
      */
     public function hasClients();
 
     /**
-     * This is where all clients are processed
+     * process all registered clients
+     *
      * @return void
      */
     public function process();

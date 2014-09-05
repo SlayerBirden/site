@@ -3,7 +3,7 @@
 # @project site
 # @developer Slayer slayer.birden@gmail.com maketok.com
 
-*ddl_client:
+*installer_ddl_client:
   columns:
     id:
       type: integer
@@ -22,7 +22,42 @@
       type: uniqueKey
       def: code
 
-*ddl_client_config:
+*installer_ddl_client_resources:
+  columns:
+    id:
+      type: integer
+      length: 10
+    client_id:
+      type: integer
+      length: 10
+    resource:
+      type: varchar
+      length: 255
+  constraints:
+    primary:
+      type: primaryKey
+      def: id
+    UNQ_KEY_CLIENT_RESOURCE:
+      type: uniqueKey
+      def: [client_id, resource]
+
+*installer_ddl_client_shared_resources:
+  columns:
+    id:
+      type: integer
+      length: 10
+    client_id:
+      type: integer
+      length: 10
+    resource:
+      type: varchar
+      length: 255
+  constraints:
+    primary:
+      type: primaryKey
+      def: id
+
+*installer_ddl_client_config:
   columns:
     id:
       type: integer
@@ -45,7 +80,7 @@
       referenceTable: ddl_client
       referenceColumn: id
 
-*ddl_client_history:
+*installer_ddl_client_history:
   columns:
     id:
       type: integer

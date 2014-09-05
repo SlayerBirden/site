@@ -21,7 +21,7 @@ class DdlClientConfigType extends AbstractTableMapper
     public function getAllConfigs($code)
     {
         return $this->fetchFilter(function (Select $select) use ($code) {
-            $select->join(array('p' => 'ddl_client'), "p.id = ddl_client_config.client_id", [])
+            $select->join(array('p' => 'installer_ddl_client'), "p.id = installer_ddl_client_config.client_id", [])
                 ->where(array('p.code' => $code))->order('version ASC');
         });
     }
@@ -34,7 +34,7 @@ class DdlClientConfigType extends AbstractTableMapper
     {
         $resultSet = $this->fetchFilter(function (Select $select) use ($code) {
             $select->join(array('p' => 'ddl_client'),
-                "p.id = ddl_client_config.client_id AND p.version = ddl_client_config.version", [])
+                "p.id = installer_ddl_client_config.client_id AND p.version = installer_ddl_client_config.version", [])
                 ->where(array('p.code' => $code))->limit(1);
         });
         return $resultSet->current();

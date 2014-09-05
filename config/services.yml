@@ -78,12 +78,11 @@ services:
     arguments: ["@adapter", [], "@zend_sql_platform"]
 
   installer_ddl_resource:
-    class: Maketok\Installer\Ddl\ConfigReader
+    class: Maketok\Installer\Ddl\Mysql\Resource
     arguments: ["@adapter"]
 
   installer_ddl_reader:
     class: Maketok\Installer\Ddl\ConfigReader
-    arguments: ["@installer_ddl_resource"]
 
   installer_ddl_manager:
     class: Maketok\Installer\Ddl\Manager
@@ -91,6 +90,7 @@ services:
       - "@adapter"
       - "@zend_db_sql"
       - "@installer_ddl_reader"
+      - "@installer_ddl_resource"
       - "@ddl_client_config_table"
       - "@lock_stream_handler"
 

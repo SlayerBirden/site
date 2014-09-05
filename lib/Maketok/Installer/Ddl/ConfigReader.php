@@ -39,7 +39,6 @@ class ConfigReader implements ConfigReaderInterface
      *      ],
      *  ],
      * ]
-     *
      * @var array
      */
     protected $_directives = [
@@ -60,18 +59,7 @@ class ConfigReader implements ConfigReaderInterface
     const TYPE_UPDATE = 0b1000;
 
     /**
-     * @var ResourceInterface
-     */
-    private $_resource;
-
-    public function __construct(ResourceInterface $resource)
-    {
-        $this->_resource = $resource;
-    }
-
-    /**
-     * @param array $configChain
-     * @return void
+     * {@inheritdoc}
      */
     public function processConfig(array $configChain)
     {
@@ -203,7 +191,7 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * @return void
+     * {@inheritdoc}
      */
     public function validateDirectives()
     {
@@ -211,7 +199,7 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getDirectives()
     {
@@ -219,7 +207,7 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * @return void
+     * {@inheritdoc}
      */
     public function compileDirectives()
     {

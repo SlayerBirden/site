@@ -12,22 +12,30 @@ interface ConfigReaderInterface
 {
 
     /**
+     * create directives out of config chain
+     *
      * @param array $configChain
      * @return void
      */
     public function processConfig(array $configChain);
 
     /**
+     * validate directives:
+     *
      * @return void
      */
     public function validateDirectives();
 
     /**
+     * compile directives, so all opposites are removed and updates stacked
+     *
      * @return void
      */
     public function compileDirectives();
 
     /**
+     * returns the directives
+     *
      * @return array
      */
     public function getDirectives();

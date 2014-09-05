@@ -27,18 +27,24 @@ class Manager extends AbstractManager implements ManagerInterface
 
     /** @var array */
     protected $_directives;
+    /**
+     * @var ResourceInterface
+     */
+    protected $_resource;
 
     /**
      * Constructor
      * @param Adapter $adapter
      * @param \Maketok\Util\Zend\Db\Sql\Sql|\Zend\Db\Sql\Sql $sql
      * @param ConfigReaderInterface $reader
+     * @param ResourceInterface $resource
      * @param \Maketok\Util\AbstractTableMapper $tableMapper
      * @param StreamHandlerInterface $handler
      */
     public function __construct(Adapter $adapter,
                                 Sql $sql,
                                 ConfigReaderInterface $reader,
+                                ResourceInterface $resource,
                                 AbstractTableMapper $tableMapper,
                                 StreamHandlerInterface $handler = null)
     {
@@ -50,10 +56,11 @@ class Manager extends AbstractManager implements ManagerInterface
         $this->_sql = $sql;
         $this->_tableMapper = $tableMapper;
         $this->_type = 'ddl';
+        $this->_resource = $resource;
     }
 
     /**
-     * {@inherited}
+     * {@inheritdoc}
      */
     public function addClient(BaseClientInterface $client)
     {
@@ -169,6 +176,14 @@ class Manager extends AbstractManager implements ManagerInterface
      * @return array
      */
     public function mergeDirectives(array $newDirectives)
+    {
+        // @TODO add logic
+    }
+
+    /**
+     * @return bool
+     */
+    public function validateDirectives()
     {
         // @TODO add logic
     }

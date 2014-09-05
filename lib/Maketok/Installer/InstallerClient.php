@@ -17,8 +17,21 @@ class InstallerClient extends AbstractClient
 {
 
     /**
-     * @param string $type
-     * @return string
+     * register own resources
+     */
+    public function __construct()
+    {
+        $this->claimResources([
+            'installer_ddl_client',
+            'installer_ddl_client_resources',
+            'installer_ddl_client_shared_resources',
+            'installer_ddl_client_config',
+            'installer_ddl_client_history',
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getVersion($type)
     {
@@ -26,7 +39,7 @@ class InstallerClient extends AbstractClient
     }
 
     /**
-     * {@inherited}
+     * {@inheritdoc}
      */
     public function getConfig($type)
     {
@@ -42,8 +55,7 @@ class InstallerClient extends AbstractClient
     }
 
     /**
-     * @param string $type
-     * @return string
+     * {@inheritdoc}
      */
     public function getCode($type)
     {

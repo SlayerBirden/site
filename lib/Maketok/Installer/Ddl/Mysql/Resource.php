@@ -6,8 +6,9 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Installer\Ddl;
+namespace Maketok\Installer\Ddl\Mysql;
 
+use Maketok\Installer\Ddl\ResourceInterface;
 use Zend\Db\Adapter\Adapter;
 
 class Resource implements ResourceInterface
@@ -22,7 +23,7 @@ class Resource implements ResourceInterface
     }
 
     /**
-     * {@inherited}
+     * {@inheritdoc}
      */
     public function getTable($table)
     {
@@ -78,7 +79,7 @@ class Resource implements ResourceInterface
     }
 
     /**
-     * {@inherited}
+     * {@inheritdoc}
      */
     public function getColumn($table, $column)
     {
@@ -93,7 +94,7 @@ class Resource implements ResourceInterface
     }
 
     /**
-     * {@inherited}
+     * {@inheritdoc}
      */
     public function getConstraint($table, $constraint)
     {
@@ -108,7 +109,7 @@ class Resource implements ResourceInterface
     }
 
     /**
-     * {@inherited}
+     * {@inheritdoc}
      */
     public function getIndex($table, $index)
     {

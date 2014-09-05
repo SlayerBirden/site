@@ -26,7 +26,7 @@ class Manager extends AbstractManager implements ManagerInterface
     }
 
     /**
-     * {@inherited}
+     * {@inheritdoc}
      */
     public function addClient(BaseClientInterface $client)
     {

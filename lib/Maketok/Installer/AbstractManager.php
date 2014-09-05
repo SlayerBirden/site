@@ -33,8 +33,7 @@ abstract class AbstractManager implements ManagerInterface
 
 
     /**
-     * @param StreamHandlerInterface $handler
-     * @return $this
+     * {@inheritdoc}
      */
     public function setStreamHandler(StreamHandlerInterface $handler)
     {
@@ -43,7 +42,7 @@ abstract class AbstractManager implements ManagerInterface
     }
 
     /**
-     * @return StreamHandlerInterface
+     * {@inheritdoc}
      */
     public function getStreamHandler()
     {
@@ -51,8 +50,7 @@ abstract class AbstractManager implements ManagerInterface
     }
 
     /**
-     * @param ClientInterface $client
-     * @return $this
+     * {@inheritdoc}
      */
     public function addClient(ClientInterface $client)
     {
@@ -63,7 +61,7 @@ abstract class AbstractManager implements ManagerInterface
     }
 
     /**
-     * @return array|\ArrayObject
+     * {@inheritdoc}
      */
     public function getClients()
     {
@@ -71,7 +69,7 @@ abstract class AbstractManager implements ManagerInterface
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function hasClients()
     {
@@ -81,12 +79,18 @@ abstract class AbstractManager implements ManagerInterface
     /**
      * the recursive compare function
      * should compare versions
-     * @param $a
-     * @param $b
+     * for strings only!
+     *
+     * @param string $a
+     * @param string $b
+     * @throws \InvalidArgumentException
      * @return int
      */
     public function natRecursiveCompare($a, $b)
     {
+        if (!is_string($a) || !is_string($b)) {
+            throw new \InvalidArgumentException("Compared arguments must be strings.");
+        }
         $aA = explode('.', $a);
         $aB = explode('.', $b);
         if (count($aA) > count($aB)) {
@@ -110,7 +114,7 @@ abstract class AbstractManager implements ManagerInterface
                 continue;
             }
         }
-        // versions are identical
+        // identical
         return 0;
     }
 }

@@ -15,10 +15,13 @@ abstract class AbstractClient implements ClientInterface
     protected $_type;
     /** @var string */
     public $next_version;
+    /** @var array */
+    protected $_ownedResources;
+    /** @var array */
+    protected $_accessResources;
 
     /**
-     * @param string $version
-     * @return void
+     * {@inheritdoc}
      */
     public function registerUpdate($version)
     {
@@ -27,7 +30,7 @@ abstract class AbstractClient implements ClientInterface
     }
 
     /**
-     * @return void
+     * {@inheritdoc}
      */
     public function registerInstall()
     {
@@ -35,7 +38,7 @@ abstract class AbstractClient implements ClientInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getType()
     {
@@ -43,10 +46,41 @@ abstract class AbstractClient implements ClientInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getNextVersion()
     {
         return $this->next_version;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function registerResourceAccess(array $resources)
+    {
+
+        $this->_accessResources = array_merge($this->_accessResources, $resources);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @throws \InvalidArgumentException
+     */
+    public function claimResource($resource)
+    {
+        if (!is_string($resource)) {
+            throw new \InvalidArgumentException("Resource identifier must be a string.");
+        }
+        $this->_ownedResources[] = $resource;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function claimResources(array $resources)
+    {
+        foreach ($resources as $resource) {
+            $this->claimResource((string) $resource);
+        }
     }
 }
