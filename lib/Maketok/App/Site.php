@@ -61,9 +61,6 @@ final class Site
     /** @var int */
     private static $mode;
 
-    private static $_diParameters = [];
-    private static $_diConfigs = [];
-
     private function __construct()
     {
         // we can't create an object of Site
@@ -99,7 +96,6 @@ final class Site
         if (!(self::$mode & self::MODE_DISPATCH)) {
             return;
         }
-        $builder = self::getServiceContainer()->get('validator_builder');
         self::getSubjectManager()->notify('dispatch', new State(array(
             'request' => self::getRequest()
         )));
