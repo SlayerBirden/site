@@ -37,4 +37,12 @@ class ConfigReader implements ConfigReaderInterface
     {
         // TODO: Implement getDirectives() method.
     }
+
+    /**
+     * @return void
+     */
+    public function compileDirectives()
+    {
+        // TODO: Implement compileDirectives() method.
+    }
 }

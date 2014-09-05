@@ -93,7 +93,7 @@ class ConfigReader implements ConfigReaderInterface
                                 $this->addTableEntityTypeDirective($entityType, $table, 'add', $entityName, $entityDefinition);
                             } elseif ($_type & self::TYPE_REMOVE) {
                                 $this->addTableEntityTypeDirective($entityType, $table, 'remove', $entityName, $entityDefinition);
-                            } elseif ($_type & self::TYPE_UPDATE) {
+                            } elseif ($_type & self::TYPE_UPDATE || $_type & self::TYPE_ID) {
                                 $this->addTableEntityTypeDirective($entityType, $table, 'update', $entityName, $entityDefinition);
                             }
                         }
@@ -216,5 +216,13 @@ class ConfigReader implements ConfigReaderInterface
     public function getDirectives()
     {
         return $this->_directives;
+    }
+
+    /**
+     * @return void
+     */
+    public function compileDirectives()
+    {
+        // TODO: Implement compileDirectives() method.
     }
 }

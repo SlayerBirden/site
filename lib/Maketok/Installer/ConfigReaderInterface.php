@@ -23,6 +23,11 @@ interface ConfigReaderInterface
     public function validateDirectives();
 
     /**
+     * @return void
+     */
+    public function compileDirectives();
+
+    /**
      * @return array
      */
     public function getDirectives();
