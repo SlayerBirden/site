@@ -54,7 +54,7 @@ CREATE TABLE `test_store` (
   CONSTRAINT `FK_STORE_WEBSITE` FOREIGN KEY (`website_id`) REFERENCES `test_website` (`website_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='Stores';
 SQL;
-        $adapter = Site::getAdapter();
+        $adapter = Site::getServiceContainer()->get('adapter');
         $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         self::$_resource = new Resource($adapter);
     }
@@ -170,7 +170,7 @@ SQL;
 DROP TABLE IF EXISTS `test_store`;
 DROP TABLE IF EXISTS `test_website`;
 SQL;
-        $adapter = Site::getAdapter();
+        $adapter = Site::getServiceContainer()->get('adapter');
         $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
     }
 }

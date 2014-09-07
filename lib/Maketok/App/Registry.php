@@ -10,6 +10,13 @@ namespace Maketok\App;
 
 use Maketok\App\Exception\AppException;
 
+/**
+ * Class Registry
+ * This existed before DI was introduced
+ * Not sure why it's left here, but let it be
+ * Maybe someone will take advantage of good old registry
+ * @package Maketok\App
+ */
 final class Registry
 {
     private $_keys = array();

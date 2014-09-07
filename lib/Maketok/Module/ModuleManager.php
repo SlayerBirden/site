@@ -40,7 +40,7 @@ class ModuleManager implements InstallerApplicableInterface, ExtensionInterface
                 $this->_modules[$module->getCode()] = $module;
             }
         }
-        Site::getSubjectManager()->notify('module_list_exists', new State(array(
+        s::getServiceContainer()->get('subject_manager')->notify('module_list_exists', new State(array(
             'modules' => $this->_modules
         )));
     }
@@ -299,7 +299,7 @@ class ModuleManager implements InstallerApplicableInterface, ExtensionInterface
             $this->_tableType->save($module);
         }
         // process active modules
-        Site::getSubjectManager()->notify('modulemanager_process_before',
+        Site::getServiceContainer()->get('subject_manager')->notify('modulemanager_process_before',
             new State(array('active_modules' => $this->getActiveModules())));
         foreach ($this->getActiveModules() as $config) {
             // before
@@ -310,13 +310,13 @@ class ModuleManager implements InstallerApplicableInterface, ExtensionInterface
             // events
             $config->initListeners();
         }
-        Site::getSubjectManager()->notify('modulemanager_init_listeners_after',
+        Site::getServiceContainer()->get('subject_manager')->notify('modulemanager_init_listeners_after',
             new State(array('active_modules' => $this->getActiveModules())));
         foreach ($this->getActiveModules() as $config) {
             // routes
             $config->initRoutes();
         }
-        Site::getSubjectManager()->notify('modulemanager_process_after',
+        Site::getServiceContainer()->get('subject_manager')->notify('modulemanager_process_after',
             new State(array('active_modules' => $this->getActiveModules())));
     }
 

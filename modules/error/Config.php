@@ -45,7 +45,7 @@ class Config implements ConfigInterface, ExtensionInterface
         // this is a special case;
         // attaching routes after all other modules are processes
         // we need to catch only unmatched ones
-        Site::getSubjectManager()->attach(
+        Site::getServiceContainer()->get('subject_manager')->attach(
             'modulemanager_init_listeners_after',
             array($this, 'initNoRoute'), 1);
     }

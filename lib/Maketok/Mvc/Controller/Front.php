@@ -82,7 +82,7 @@ class Front
                     'controller' => $dumperClass,
                     'action' => 'noroute',
                 ));
-                $this->launch($errorRoute->match(Site::getRequest()));
+                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
             } elseif ($e instanceof \ErrorException) {
                 $errno = $e->getSeverity();
                 if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
@@ -94,7 +94,7 @@ class Front
                         'action' => 'error',
                         'exception' => $e,
                     ));
-                    $this->launch($errorRoute->match(Site::getRequest()));
+                    $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
                 }
 
             } else {
@@ -106,7 +106,7 @@ class Front
                     'action' => 'error',
                     'exception' => $e,
                 ));
-                $this->launch($errorRoute->match(Site::getRequest()));
+                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
             }
         } catch (\Exception $ex) {
             printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Previous exception: %s",

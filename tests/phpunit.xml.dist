@@ -9,5 +9,8 @@
         <testsuite name="util">
             <directory>../lib/Maketok/Util/Test/</directory>
         </testsuite>
+        <testsuite name="app">
+            <directory>../lib/Maketok/App/Test/</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

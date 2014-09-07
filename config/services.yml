@@ -180,3 +180,6 @@ services:
     arguments:
       - "@twig_loader"
       - { cache: "%AR%%DS%var%DS%cache", debug: "%debug%" }
+
+  request:
+    synthetic: true

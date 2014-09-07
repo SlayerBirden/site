@@ -221,7 +221,7 @@ class InstallerTest extends \PHPUnit_Framework_TestCase
 DROP TABLE IF EXISTS `table_two`;
 DROP TABLE IF EXISTS `table_one`;
 SQL;
-        $adapter = Site::getAdapter();
+        $adapter = Site::getServiceContainer()->get('adapter');
         $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
     }
 }

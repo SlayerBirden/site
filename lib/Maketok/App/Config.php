@@ -13,7 +13,7 @@ use Maketok\Observer\State;
 
 class Config
 {
-    static protected $_config = array();
+    private static $_config = [];
 
     const ALL = 0b111111;
     const PHP = 0b1;
@@ -89,19 +89,19 @@ class Config
                     switch ($data['type']) {
                         case 'class':
                             list($subClass, $subMethod) = explode('::', $data['subscriber']);
-                            $subcriber = self::classFactory($subClass);
+                            $subscriber = self::classFactory($subClass);
                             $priority = (isset($data['priority']) ? $data['priority'] : null);
-                            Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
+                            Site::getServiceContainer()->get('subject_manager')->attach($subjectName, array($subscriber, $subMethod), $priority);
                             break;
                         case 'static':
                             $priority = (isset($data['priority']) ? $data['priority'] : null);
-                            Site::getSubjectManager()->attach($subjectName, $data['subscriber'], $priority);
+                            Site::getServiceContainer()->get('subject_manager')->attach($subjectName, $data['subscriber'], $priority);
                             break;
                         case 'service':
                             list($subService, $subMethod) = explode('::', $data['subscriber']);
-                            $subcriber = self::serviceFactory($subService);
+                            $subscriber = self::serviceFactory($subService);
                             $priority = (isset($data['priority']) ? $data['priority'] : null);
-                            Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
+                            Site::getServiceContainer()->get('subject_manager')->attach($subjectName, array($subscriber, $subMethod), $priority);
                             break;
                         default:
                             throw new ConfigException("Unrecognized subscriber type");
@@ -110,27 +110,27 @@ class Config
             }
         }
         if  ($mode & self::INSTALLER) {
-            Site::getSubjectManager()->notify('installer_before_process', new State([]));
+            Site::getServiceContainer()->get('subject_manager')->notify('installer_before_process', new State([]));
             // TODO add logic
-            Site::getSubjectManager()->notify('installer_after_process', new State([]));
+            Site::getServiceContainer()->get('subject_manager')->notify('installer_after_process', new State([]));
         }
-        Site::getSubjectManager()->notify('config_after_process', new State([]));
+        Site::getServiceContainer()->get('subject_manager')->notify('config_after_process', new State([]));
     }
 
     /**
      * Factory Method
      * @param string $className
-     * @return mixed
+     * @return object
      */
     public static function classFactory($className)
     {
-        return new $className;
+        return new $className();
     }
 
     /**
      * Factory Method
      * @param string $serviceName
-     * @return mixed
+     * @return object
      */
     public static function serviceFactory($serviceName)
     {

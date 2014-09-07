@@ -20,7 +20,7 @@ class DdlCheck
 
     public function __construct()
     {
-        $this->_adapter =  Site::getAdapter();
+        $this->_adapter =  Site::getServiceContainer()->get('adapter');
     }
 
     /**

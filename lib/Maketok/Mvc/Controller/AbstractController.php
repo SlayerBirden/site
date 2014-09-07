@@ -227,7 +227,7 @@ class AbstractController
      */
     protected function _returnBack()
     {
-        $referer = Site::getRequest()->headers->get('referer');
+        $referer = Site::getServiceContainer()->get('request')->headers->get('referer');
         return $this->_redirectUrl($referer);
     }
 
@@ -247,7 +247,7 @@ class AbstractController
     public function getCurrentUrl()
     {
         /** @var RouteInterface $route */
-        $route = Site::getRequest()->attributes->get('_route');
+        $route = Site::getServiceContainer()->get('request')->attributes->get('_route');
         return $this->getUrl($route->assemble());
     }
 }

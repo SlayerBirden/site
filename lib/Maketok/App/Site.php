@@ -11,7 +11,6 @@ namespace Maketok\App;
 use Maketok\Loader\Autoload;
 use Maketok\Observer\State;
 use Maketok\Observer\StateInterface;
-use Maketok\Observer\SubjectManager;
 use Maketok\Http\Request;
 use Maketok\Util\RequestInterface;
 use Monolog\Logger;
@@ -20,7 +19,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Zend\Db\Adapter\Adapter;
 use Zend\Stdlib\ErrorHandler;
 use Zend\Uri\UriFactory;
 
@@ -96,17 +94,9 @@ final class Site
         if (!(self::$mode & self::MODE_DISPATCH)) {
             return;
         }
-        self::getSubjectManager()->notify('dispatch', new State(array(
-            'request' => self::getRequest()
+        self::getServiceContainer()->get('subject_manager')->notify('dispatch', new State(array(
+            'request' => self::getServiceContainer()->get('request'),
         )));
-    }
-
-    /**
-     * @return RequestInterface|null
-     */
-    public static function getRequest()
-    {
-        return self::registry()->request;
     }
 
     /**
@@ -114,8 +104,8 @@ final class Site
      */
     public static function getSession()
     {
-        if (self::getRequest()) {
-            return self::getRequest()->getSession();
+        if (self::getServiceContainer()->get('request')) {
+            return self::getServiceContainer()->get('request')->getSession();
         }
         return null;
     }
@@ -128,7 +118,7 @@ final class Site
         if (self::$mode & Config::SESSION) {
             $request->setSession(self::getServiceContainer()->get('session_manager'));
         }
-        self::registry()->request = $request;
+        self::getServiceContainer()->set('request', $request);
     }
 
     /**
@@ -180,7 +170,7 @@ final class Site
                     $logger->warn($e->__toString());
                 } elseif ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
                     $logger->err($e->__toString());
-                    self::getSubjectManager()->notify('application_error_triggered', new State(array(
+                    self::getServiceContainer()->get('subject_manager')->notify('application_error_triggered', new State(array(
                         'exception' => $e,
                         'message' => $e->__toString(),
                     )));
@@ -188,7 +178,7 @@ final class Site
             } else {
                 $message = sprintf("Unhandled exception\n%s", $e->__toString());
                 $logger->emergency($message);
-                self::getSubjectManager()->notify('application_error_triggered', new State(array(
+                self::getServiceContainer()->get('subject_manager')->notify('application_error_triggered', new State(array(
                     'exception' => $e,
                     'message' => $message,
                 )));
@@ -220,6 +210,15 @@ final class Site
             }
         }
         return self::$_sc;
+    }
+
+    /**
+     * alias
+     * @return ContainerBuilder
+     */
+    public static function getSC()
+    {
+        return self::getServiceContainer();
     }
 
     /**
@@ -344,30 +343,6 @@ final class Site
     }
 
     /**
-     * @return Adapter
-     */
-    public static function getAdapter()
-    {
-        return self::getServiceContainer()->get('adapter');
-    }
-
-    /**
-     * @return Registry
-     */
-    public static function registry()
-    {
-        return self::getServiceContainer()->get('registry');
-    }
-
-    /**
-     * @return SubjectManager
-     */
-    public static function getSubjectManager()
-    {
-        return self::getServiceContainer()->get('subject_manager');
-    }
-
-    /**
      * @return string
      */
     public static function getBaseUrl()
@@ -382,10 +357,10 @@ final class Site
      */
     public static function getUrl($path, array $config = null)
     {
-        $uri = UriFactory::factory(Site::getBaseUrl());
+        $uri = UriFactory::factory(self::getServiceContainer()->getParameter('base_url'));
         $path = '/' . ltrim($path, '/');
         $path = rtrim($path, '/');
-        if (!isset($config['wts'])) { // config Without Trailing Slash
+        if (!isset($config['wts']) || !$config['wts']) { // config Without Trailing Slash
             $path  = $path . '/';
         }
         $uri->setPath($path);
