@@ -8,15 +8,13 @@
 
 namespace Maketok\Installer\Resource\Model;
 
-class DdlClientConfig
+class DdlClientDependency
 {
 
     /** @var int */
     public $id;
     /** @var int */
     public $client_id;
-    /** @var string */
-    public $version;
-    /** @var string */
-    public $config;
+    /** @var int */
+    public $dependency_id;
 }

@@ -14,26 +14,47 @@ interface ClientInterface
     /**
      * get client version to install
      *
-     * @param string $type
      * @return string
      */
-    public function getVersion($type);
+    public function getDdlVersion();
 
     /**
      * get client config to install
      *
-     * @param string $type
+     * @param string $version
      * @return array|bool
      */
-    public function getConfig($type);
+    public function getDdlConfig($version);
 
     /**
      * get client identifier
      * must be unique
      *
-     * @param string $type
      * @return string
      */
-    public function getCode($type);
+    public function getDdlCode();
+
+    /**
+     * get client version to install
+     *
+     * @return string
+     */
+    public function getDataVersion();
+
+    /**
+     * get client config to install
+     *
+     * @param string $version
+     * @return array|bool
+     */
+    public function getDataConfig($version);
+
+    /**
+     * get client identifier
+     * must be unique
+     *
+     * @return string
+     */
+    public function getDataCode();
 
 }

@@ -17,23 +17,9 @@ class InstallerClient extends AbstractClient
 {
 
     /**
-     * register own resources
-     */
-    public function __construct()
-    {
-        $this->claimResources([
-            'installer_ddl_client',
-            'installer_ddl_client_resources',
-            'installer_ddl_client_shared_resources',
-            'installer_ddl_client_config',
-            'installer_ddl_client_history',
-        ]);
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function getVersion($type)
+    public function getDdlVersion()
     {
         return '0.1.0';
     }
@@ -41,12 +27,12 @@ class InstallerClient extends AbstractClient
     /**
      * {@inheritdoc}
      */
-    public function getConfig($type)
+    public function getDdlConfig($version)
     {
         $locator = new FileLocator(__DIR__.'/Resource/config/installer/'.$type);
         $ymlReader = new Yaml();
         try {
-            $file = $locator->locate($this->getVersion($type).'.yml');
+            $file = $locator->locate($version.'.yml');
         } catch (\InvalidArgumentException $e) {
             Site::getServiceContainer()->get('logger')->err($e->getMessage());
             return false;
@@ -57,7 +43,7 @@ class InstallerClient extends AbstractClient
     /**
      * {@inheritdoc}
      */
-    public function getCode($type)
+    public function getDdlCode()
     {
         return 'installer';
     }

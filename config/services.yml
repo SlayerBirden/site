@@ -91,7 +91,6 @@ services:
       - "@zend_db_sql"
       - "@installer_ddl_reader"
       - "@installer_ddl_resource"
-      - "@ddl_client_config_table"
       - "@lock_stream_handler"
 
   router:

@@ -20,7 +20,7 @@ class DdlClientHistory
     /** @var string */
     public $version;
     /** @var string */
-    public $launcher;
+    public $initializer;
     /** @var string */
-    public $config;
+    public $created_at;
 }

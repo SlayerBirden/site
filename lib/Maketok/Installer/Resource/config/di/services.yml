@@ -24,24 +24,24 @@ services:
     class: Maketok\Installer\Resource\Model\DdlClientType
     arguments: ["@ddl_client_table_gateway", id]
 
-  ddl_client_config_model:
-    class: Maketok\Installer\Resource\Model\DdlClientConfig
+  ddl_client_dependency_model:
+    class: Maketok\Installer\Resource\Model\DdlClientDependency
 
-  ddl_client_config_result_set:
+  ddl_client_dependency_result_set:
     class: Zend\Db\ResultSet\HydratingResultSet
-    arguments: ["@object_prop_hydrator", "@ddl_client_config_model"]
+    arguments: ["@object_prop_hydrator", "@ddl_client_dependency_model"]
 
-  ddl_client_config_table_gateway:
+  ddl_client_dependency_table_gateway:
     class: Zend\Db\TableGateway\TableGateway
     arguments:
       - installer_ddl_client_config
       - "@adapter"
       - []
-      - "@ddl_client_config_result_set"
+      - "@ddl_client_dependency_result_set"
 
-  ddl_client_config_table:
-    class: Maketok\Installer\Resource\Model\DdlClientConfigType
-    arguments: ["@ddl_client_config_table_gateway", id]
+  ddl_client_dependency_table:
+    class: Maketok\Installer\Resource\Model\DdlClientDependencyType
+    arguments: ["@ddl_client_dependency_table_gateway", id]
 
   ddl_client_history_model:
     class: Maketok\Installer\Resource\Model\DdlClientHistory

@@ -9,12 +9,12 @@
 namespace Maketok\Installer\Ddl\Test;
 
 use Maketok\App\Site;
-use Maketok\Installer\Ddl\Resource;
+use Maketok\Installer\Ddl\Mysql\Resource;
 use Zend\Db\Adapter\Adapter;
 
 class ResourceTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var \Maketok\Installer\Ddl\Resource */
+    /** @var \Maketok\Installer\Ddl\Mysql\Resource */
     protected static $_resource;
 
     /**

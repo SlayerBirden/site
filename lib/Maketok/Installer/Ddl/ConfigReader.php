@@ -9,183 +9,147 @@
 namespace Maketok\Installer\Ddl;
 
 use Maketok\Installer\ConfigReaderInterface;
+use Maketok\Installer\Resource\Model\DdlClient;
 
 class ConfigReader implements ConfigReaderInterface
 {
 
-    /** @var array */
-    protected  $_availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey'];
     /**
-     * [
-     *  'tables' => [
-     *      'add' => [],
-     *      'remove' => [],
-     *      'update' => [
-     *          'tableName' => [
-     *              'columns' => [
-     *                  'add' => [],
-     *                  'remove' => [],
-     *                  'update' => [],
-     *              ],
-     *              'constraints' => [
-     *                  'add' => [],
-     *                  'remove' => [],
-     *              ],
-     *              'indices' => [
-     *                  'add' => [],
-     *                  'remove' => [],
-     *              ],
-     *          ],
-     *      ],
-     *  ],
-     * ]
      * @var array
      */
-    protected $_directives = [
-        'tables' => [
-            'add' => [],
-            'remove' => [],
-            'update' => [],
-        ],
-    ];
-
-    const SYMBOL_ADD = '*';
-    const SYMBOL_REMOVE = '~';
-    const SYMBOL_ID = '&';
-
-    const TYPE_ADD = 0b1;
-    const TYPE_REMOVE = 0b10;
-    const TYPE_ID = 0b100;
-    const TYPE_UPDATE = 0b1000;
+    private $_tree;
 
     /**
      * {@inheritdoc}
      */
-    public function processConfig(array $configChain)
+    public function buildDependencyTree($clients)
     {
-        foreach ($configChain as $config) {
-            // nest layer is tables
-            foreach ($config as $table => $definition) {
-                $_type = $this->_getType($table);
-                if ($_type & self::TYPE_ADD) {
-                    $this->addTableDirective($table, 'add', $definition);
-                } elseif ($_type & self::TYPE_REMOVE) {
-                    $this->addTableDirective($table, 'remove', $definition);
-                } else {
-                    // update case
-                    // next layer is columns/constraints/indices
-                    foreach ($definition as $entityType => $entities) {
-                        foreach ($entities as $entityName => $entityDefinition) {
-                            $_type = $this->_getType($entityName);
-                            if ($_type & self::TYPE_ADD) {
-                                $this->addTableEntityTypeDirective($entityType, $table, 'add', $entityName, $entityDefinition);
-                            } elseif ($_type & self::TYPE_REMOVE) {
-                                $this->addTableEntityTypeDirective($entityType, $table, 'remove', $entityName, $entityDefinition);
-                            } elseif ($_type & self::TYPE_UPDATE || $_type & self::TYPE_ID) {
-                                $this->addTableEntityTypeDirective($entityType, $table, 'update', $entityName, $entityDefinition);
-                            }
-                        }
+        usort($clients, array($this, 'dependencyBubbleSort'));
+        foreach ($clients as $client) {
+            /** @var DdlClient $client */
+            foreach ($client->config as $table => $definition) {
+                $branch = [
+                    'client' => $client->id,
+                    'version' => $client->version,
+                    'definition' => $definition,
+                    'dependents' => [],
+                ];
+                if (isset($this->_tree[$table])) {
+                    $upperBranch = $this->_tree[$table];
+                    if (!in_array($upperBranch['client'], $client->dependencies)) {
+                        throw new DependencyTreeException(
+                            sprintf("Client %s tries to modify resource %s without declaring dependency.", $client->code, $table)
+                        );
+                    } else {
+                        $upperBranch['dependents'][] = $branch;
                     }
+                } else {
+                    $this->_tree[$table] = $branch;
                 }
             }
         }
     }
 
     /**
-     * @param string $table
-     * @param string $operation
-     * @param string $tableDef
-     */
-    public function addTableDirective($table, $operation, $tableDef)
-    {
-        $this->_directives['tables'][$operation][$this->strip($table)] = $tableDef;
-    }
-
-    /**
-     * @param string $type
-     * @param string $table
-     * @param string $operation
-     * @param string $name
-     * @param string $def
-     * @throws \InvalidArgumentException
-     */
-    public function addTableEntityTypeDirective($type, $table, $operation, $name, $def)
-    {
-        if ($type != 'columns' && $type != 'constraints' && $type != 'indices') {
-            throw new \InvalidArgumentException(sprintf("Can not add entity: invalid type %s", $type));
-        }
-        $this->_directives['tables']['update'][$table][$type][$operation][$this->strip($name)] = $def;
-    }
-
-    /**
-     * @param string $string
-     * @return string
-     */
-    public function strip($string)
-    {
-        return ltrim($string, self::SYMBOL_ADD . self::SYMBOL_REMOVE);
-    }
-
-    /**
-     * @param string $table
-     * @param string $operation
-     * @param string $columnName
-     * @param string $columnDef
-     */
-    public function addColumnDirective($table, $operation, $columnName, $columnDef)
-    {
-        $this->addTableEntityTypeDirective('columns', $table, $operation, $columnName, $columnDef);
-    }
-
-    /**
-     * @param string $table
-     * @param string $operation
-     * @param string $constraintName
-     * @param string $constraintDef
-     */
-    public function addConstraintDirective($table, $operation, $constraintName, $constraintDef)
-    {
-        $this->addTableEntityTypeDirective('constraints', $table, $operation, $constraintName, $constraintDef);
-    }
-
-    /**
-     * @param string $table
-     * @param string $operation
-     * @param string $indexName
-     * @param string $indexDef
-     */
-    public function addIndexDirective($table, $operation, $indexName, $indexDef)
-    {
-        $this->addTableEntityTypeDirective('indices', $table, $operation, $indexName, $indexDef);
-    }
-
-    /**
-     * @param string $string
-     * @throws \LogicException
+     * @param DdlClient $a
+     * @param DdlClient $b
      * @return int
      */
-    protected function _getType($string)
+    public function dependencyBubbleSort(DdlClient $a, DdlClient $b)
     {
-        $res = 0;
-        for ($i = 0; $i < 3; ++$i) {
-            switch (substr($string, $i, 1)) {
-                case self::SYMBOL_ADD:
-                    $res = $res | self::TYPE_ADD;
-                    break;
-                case self::SYMBOL_REMOVE:
-                    $res = $res | self::TYPE_REMOVE;
-                    break;
-                case self::SYMBOL_ID:
-                    $res = $res | self::TYPE_ID;
-                    break;
+        if (count($a->dependencies) && !count($b->dependencies)) {
+            return -1;
+        } elseif (!count($a->dependencies) && count($b->dependencies)) {
+            return 1;
+        } elseif (count($a->dependencies) && count($b->dependencies)) {
+            if (in_array($a->id, $b->dependencies)) {
+                return 1;
+            } elseif (in_array($b->id, $a->dependencies)) {
+                return -1;
             }
         }
-        if ($res === 0) {
-            $res = $res | self::TYPE_UPDATE;
+        return 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validateDependencyTree()
+    {
+        foreach ($this->_tree as $branch) {
+            $this->recursiveDependentsValidation($branch);
         }
-        // little validation
-        if ($res & self::TYPE_ADD && $res & self::TYPE_REMOVE) {
-            throw new \LogicException("Directive can not be add and remove at the same time.");
+    }
+
+    /**
+     * @param array $branch
+     * @throws DependencyTreeException
+     */
+    public function recursiveDependentsValidation(array $branch)
+    {
+        if (!count($branch['dependents'])) {
+            return;
+        }
+        // now get it :)
+        $params = [];
+        foreach ($branch['dependents'] as $dBranch) {
+            $params[] = $dBranch['definition'];
+        }
+        $intersects = $this->recursiveArrayUIntersectAssoc($params, function($a, $b) {
+            if (is_string($a) && !is_string($b)) {
+                return 1;
+            } elseif (is_string($a) && is_string($b)) {
+                if ($a != $b) {
+                    return 0;
+                }
+            }
+            return -1;
+        });
+        if (count($intersects)) {
+            throw new DependencyTreeException(
+                sprintf("The clients conflicts with each other. Map: %s", print_r($intersects, true))
+            );
+        }
+    }
+
+    /**
+     * @param array $compares
+     * @param callable $sort
+     * @return array
+     */
+    public function recursiveArrayUIntersectAssoc(array $compares, \Closure $sort)
+    {
+        $res = call_user_func_array('array_uintersect_assoc', ($compares + [$sort]));
+        $next = [];
+        foreach ($compares as $compare) {
+            if (is_array($compare)) {
+                foreach ($compare as $comp) {
+                    $next[] = $comp;
+                }
+            }
+        }
+        return array_replace_recursive($res, $this->recursiveArrayUIntersectAssoc($next, $sort));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function mergeDependencyTree()
+    {
+        foreach ($this->_tree as $branch) {
+            $branch['definition'] = $this->recursiveMerge($branch);
+        }
+    }
+
+    /**
+     * @param array $branch
+     * @return array
+     */
+    public function recursiveMerge(array $branch)
+    {
+        $res = $branch['definition'];
+        foreach ($branch['dependents'] as $dBranch) {
+            $res = array_replace_recursive($res, $this->recursiveMerge($dBranch));
         }
         return $res;
     }
@@ -193,24 +157,8 @@ class ConfigReader implements ConfigReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function validateDirectives()
+    public function getDependencyTree()
     {
-        // TODO: Implement validateDirectives() method.
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDirectives()
-    {
-        return $this->_directives;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function compileDirectives()
-    {
-        // TODO: Implement compileDirectives() method.
+        return $this->_tree;
     }
 }

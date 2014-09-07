@@ -11,76 +11,38 @@ namespace Maketok\Installer\Ddl;
 abstract class AbstractClient implements ClientInterface
 {
 
-    /** @var string */
-    protected $_type;
-    /** @var string */
-    public $next_version;
     /** @var array */
-    protected $_ownedResources;
-    /** @var array */
-    protected $_accessResources;
+    protected $_dependencies;
 
     /**
      * {@inheritdoc}
      */
-    public function registerUpdate($version)
+    public function registerDependencies(array $dependencies)
     {
-        $this->next_version = $version;
-        $this->_type = self::TYPE_UPDATE;
+        $this->_dependencies = array_replace($this->_dependencies, $dependencies);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function registerInstall()
+    public function getDataConfig($version)
     {
-        $this->_type = self::TYPE_INSTALL;
+        return [];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getType()
+    public function getDataVersion()
     {
-        return $this->_type;
+        return '0';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getNextVersion()
+    public function getDataCode()
     {
-        return $this->next_version;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function registerResourceAccess(array $resources)
-    {
-
-        $this->_accessResources = array_merge($this->_accessResources, $resources);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @throws \InvalidArgumentException
-     */
-    public function claimResource($resource)
-    {
-        if (!is_string($resource)) {
-            throw new \InvalidArgumentException("Resource identifier must be a string.");
-        }
-        $this->_ownedResources[] = $resource;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function claimResources(array $resources)
-    {
-        foreach ($resources as $resource) {
-            $this->claimResource((string) $resource);
-        }
+        return '';
     }
 }

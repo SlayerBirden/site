@@ -12,31 +12,31 @@ interface ConfigReaderInterface
 {
 
     /**
-     * create directives out of config chain
+     * create config tree for all clients
      *
-     * @param array $configChain
+     * @param array|\ArrayObject $clients
      * @return void
      */
-    public function processConfig(array $configChain);
+    public function buildDependencyTree($clients);
 
     /**
-     * validate directives:
+     * validate tree
      *
      * @return void
      */
-    public function validateDirectives();
+    public function validateDependencyTree();
 
     /**
-     * compile directives, so all opposites are removed and updates stacked
+     * compile tree, merge all branches into main branch
      *
      * @return void
      */
-    public function compileDirectives();
+    public function mergeDependencyTree();
 
     /**
      * returns the directives
      *
      * @return array
      */
-    public function getDirectives();
+    public function getDependencyTree();
 }

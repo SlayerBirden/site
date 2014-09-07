@@ -8,17 +8,10 @@
 
 namespace Maketok\Installer\Resource\Model;
 
-class DdlClient
+use Maketok\Util\AbstractTableMapper;
+use Zend\Db\Sql\Select;
+
+class DdlClientDependencyType extends AbstractTableMapper
 {
 
-    /** @var int */
-    public $id;
-    /** @var string */
-    public $code;
-    /** @var string */
-    public $version;
-    /** @var array */
-    public $config;
-    /** @var array */
-    public $dependencies;
 }

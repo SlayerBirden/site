@@ -45,7 +45,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      * @test
      * @covers mergeDirectives
      */
-    public function testMergeDirectives()
+    public function testCreateDirectives()
     {
         // @TODO add logic
     }
@@ -54,147 +54,8 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      * @test
      * @covers applyDirectives
      */
-    public function testApplyDirectives()
+    public function testValidateConfig()
     {
         // @TODO add logic
-    }
-
-    /**
-     * @test
-     * @covers getConfigChain
-     */
-    public function testGetConfigChain()
-    {
-        $client = $this->getMock('\Maketok\Installer\Ddl\ClientInterface');
-        $client->expects($this->any())
-            ->method('getType')
-            ->will($this->returnValue(ClientInterface::TYPE_INSTALL));
-        $client->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue('0.2.2'));
-        $client->expects($this->any())
-            ->method('getConfig')
-            ->will($this->returnValue([22]));
-
-        $this->addMockMapper();
-
-        $chain = [
-            [13],
-            [20],
-            [22],
-        ];
-        $this->assertEquals($chain, self::$_manager->getConfigChain($client));
-
-        $client = $this->getMock('\Maketok\Installer\Ddl\ClientInterface');
-        $client->expects($this->any())
-            ->method('getType')
-            ->will($this->returnValue(ClientInterface::TYPE_UPDATE));
-        $client->expects($this->any())
-            ->method('getNextVersion')
-            ->will($this->returnValue('0.2.0'));
-        $chain = [
-            [13],
-            [20],
-        ];
-        $this->assertEquals($chain, self::$_manager->getConfigChain($client));
-
-        $client = $this->getMock('\Maketok\Installer\Ddl\ClientInterface');
-        $client->expects($this->any())
-            ->method('getType')
-            ->will($this->returnValue(ClientInterface::TYPE_UPDATE));
-        $client->expects($this->any())
-            ->method('getNextVersion')
-            ->will($this->returnValue('0.1.0'));
-        $chain = [
-            [12],
-            [11],
-        ];
-        $this->assertEquals($chain, self::$_manager->getConfigChain($client));
-    }
-
-    /**
-     * helper method
-     */
-    public function addMockMapper()
-    {
-        $refProp = new \ReflectionProperty(get_class(self::$_manager), '_tableMapper');
-        $refProp->setAccessible(true);
-        $mockMapper = $this->getMock('Maketok\Installer\Resource\Model\DdlClientConfigType');
-        $configItem0 = new DdlClientConfig();
-        $configItem0->version = '0.2.0';
-        $configItem0->config = [20];
-        $configItem0->id = '0';
-        $configItem1 = clone $configItem0;
-        $configItem1->version = '0.1.0';
-        $configItem1->config = [10];
-        $configItem1->id = '1';
-        $configItem2 = clone $configItem1;
-        $configItem2->version = '0.1.1';
-        $configItem2->config = [11];
-        $configItem2->id = '2';
-        $configItem3 = clone $configItem1;
-        $configItem3->version = '0.1.2';
-        $configItem3->config = [12];
-        $configItem3->id = '3';
-        $configItem4 = clone $configItem1;
-        $configItem4->version = '0.1.3';
-        $configItem4->config = [13];
-        $configItem4->id = '4';
-        $mockMapper->expects($this->any())
-            ->method('getAllConfigs')
-            ->will($this->returnValue(array($configItem0, $configItem1, $configItem2, $configItem3, $configItem4)));
-        $mockMapper->expects($this->any())
-            ->method('getCurrentConfig')
-            ->will($this->returnValue($configItem3));
-        $refProp->setValue(self::$_manager, $mockMapper);
-    }
-
-    /**
-     * @test
-     * @covers validateClient
-     */
-    public function testValidateClient()
-    {
-        $client = $this->getMock('\Maketok\Installer\Ddl\ClientInterface');
-        $client->expects($this->any())
-            ->method('getType')
-            ->will($this->returnValue(ClientInterface::TYPE_INSTALL));
-        $client->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue('0.2.2'));
-        // set up mapper
-        $this->addMockMapper();
-        // now when all fixture work is done, let's test it works
-        $this->assertTrue(self::$_manager->validateClient($client));
-
-        // let's set up one more for update
-        $client = $this->getMock('\Maketok\Installer\Ddl\ClientInterface');
-        $client->expects($this->any())
-            ->method('getType')
-            ->will($this->returnValue(ClientInterface::TYPE_UPDATE));
-        $client->expects($this->any())
-            ->method('getNextVersion')
-            ->will($this->returnValue('0.2.0'));
-        // check
-        $this->assertTrue(self::$_manager->validateClient($client));
-
-        // false tests
-        $client = $this->getMock('\Maketok\Installer\Ddl\ClientInterface');
-        $client->expects($this->any())
-            ->method('getType')
-            ->will($this->returnValue(ClientInterface::TYPE_INSTALL));
-        $client->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue('0.2.0'));
-        $this->assertFalse(self::$_manager->validateClient($client));
-
-        $client = $this->getMock('\Maketok\Installer\Ddl\ClientInterface');
-        $client->expects($this->any())
-            ->method('getType')
-            ->will($this->returnValue(ClientInterface::TYPE_UPDATE));
-        $client->expects($this->any())
-            ->method('getNextVersion')
-            ->will($this->returnValue('10'));
-        $this->assertFalse(self::$_manager->validateClient($client));
     }
 }

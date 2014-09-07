@@ -29,6 +29,7 @@ class Config
     public static function merge(array $config1, array $config2)
     {
         // recursive merge distinct implementation
+        // credits: http://php.net/manual/en/function.array-merge-recursive.php#92195
         $_merged = $config1;
         foreach ($config2 as $key => &$value) {
             if (isset($_merged[$key]) && is_array($_merged[$key]) && is_array($value)) {
