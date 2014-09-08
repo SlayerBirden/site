@@ -97,13 +97,13 @@ class ConfigReader implements ConfigReaderInterface
         }
         $intersects = $this->recursiveArrayUIntersectAssoc($params, function($a, $b) {
             if (is_string($a) && !is_string($b)) {
-                return 1;
+                return -1;
             } elseif (is_string($a) && is_string($b)) {
                 if ($a != $b) {
                     return 0;
                 }
             }
-            return -1;
+            return 1;
         });
         if (count($intersects)) {
             throw new DependencyTreeException(
@@ -113,22 +113,41 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
+     * // credits go to http://stackoverflow.com/a/4627583/927404
      * @param array $compares
      * @param callable $sort
      * @return array
      */
     public function recursiveArrayUIntersectAssoc(array $compares, \Closure $sort)
     {
-        $res = call_user_func_array('array_uintersect_assoc', ($compares + [$sort]));
-        $next = [];
-        foreach ($compares as $compare) {
-            if (is_array($compare)) {
-                foreach ($compare as $comp) {
-                    $next[] = $comp;
+        $first = array_shift($compares);
+        $keys = [];
+        if (is_array($first)) {
+            $keys[] = array_keys($first);
+        }
+        foreach ($compares as $arr) {
+            if ($sort($first, $arr) == 0) {
+                return $first;
+            } elseif (!is_array($first) || !is_array($arr)) {
+                return null;
+            }
+            $keys[] = array_keys($arr);
+        }
+        $commonKeys = call_user_func_array('array_intersect', $keys);
+        $ret = [];
+        foreach ($commonKeys as $key) {
+            $arrays = [];
+            if (isset($first[$key])) {
+                $arrays[] = $first[$key];
+            }
+            foreach ($compares as $fa) {
+                if (isset($fa[$key])) {
+                    $arrays[] = $fa[$key];
                 }
             }
+            $ret[$key] = $this->recursiveArrayUIntersectAssoc($arrays, $sort);
         }
-        return array_replace_recursive($res, $this->recursiveArrayUIntersectAssoc($next, $sort));
+        return array_filter($ret);
     }
 
     /**
