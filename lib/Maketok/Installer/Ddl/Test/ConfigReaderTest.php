@@ -228,9 +228,144 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testRecursiveArrayUIntersectAssoc()
+    public function testGetNotEqualsComparison()
     {
+        $this->assertEquals(1, $this->reader->getNotEqualsComparison(1, '1'));
+        $this->assertEquals(-1, $this->reader->getNotEqualsComparison('1', 1));
+        $this->assertEquals(0, $this->reader->getNotEqualsComparison('1', '2'));
+    }
 
+    /**
+     * @test
+     * @depends testGetNotEqualsComparison
+     */
+    public function testRecursiveArrayCollide()
+    {
+        $compares = [
+            [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar'
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                ],
+            ],
+            [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar',
+                    ],
+                    'version' => [
+                        'type' => 'varchar',
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                    'UNQ_KEY_CODE' => [
+                        'type' => 'uniqueKey',
+                        'definition' => ['code'],
+                    ],
+                ],
+            ],
+            [
+                'columns' => [
+                    'id' => [
+                        'type' => 'varchar',
+                    ],
+                    'code' => [
+                        'type' => 'varchar',
+                    ],
+                    'version' => [
+                        'type' => 'varchar',
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                    'UNQ_KEY_CODE' => [
+                        'type' => 'uniqueKey',
+                        'definition' => ['code', 'version'],
+                    ],
+                ],
+            ],
+            [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar',
+                        'length' => 155,
+                    ],
+                    'title' => [
+                        'type' => 'varchar',
+                        'length' => 255,
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                ],
+            ],
+            [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar',
+                        'length' => 255,
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                ],
+            ],
+        ];
+
+        $expected = [
+            'columns' => [
+                'id' => [
+                    'type' => 'integer',
+                    '~type' => 'varchar',
+                ],
+                'code' => [
+                    'length' => 155,
+                    '~length' => 255,
+                ],
+            ],
+            'constraints' => [
+                'UNQ_KEY_CODE' => [
+                    'definition' => ['code'],
+                    '~definition' => ['code', 'version'],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expected,
+            $this->reader->recursiveArrayCollide($compares,
+                array($this->reader, 'getNotEqualsComparison')));
     }
 
 }

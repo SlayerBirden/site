@@ -233,25 +233,25 @@ final class Site
         foreach (Config::getConfig('di_parameters') as $k => $v) {
             $container->setParameter($k, $v);
         }
-        $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
+        $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config' . DS . 'di'));
         if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
             $loader->load('services.yml');
-            if (file_exists(AR . DS . 'config' . DS . 'local.services.yml')) {
+            if (file_exists(AR . DS . 'config' . DS . 'di' . DS . 'local.services.yml')) {
                 $loader->load('local.services.yml');
             }
         }
         if ((self::$mode & self::MODE_LOAD_DEV_CONFIGS) &&
-            file_exists(AR . DS . 'config' . DS . 'dev.services.yml')) {
+            file_exists(AR . DS . 'config' . DS . 'di' . DS . 'dev.services.yml')) {
             $loader->load('dev.services.yml');
         }
         if ((self::$mode & self::MODE_LOAD_TEST_CONFIGS) &&
-            file_exists(AR . DS . 'config' . DS . 'test.services.yml')) {
+            file_exists(AR . DS . 'config' . DS . 'di' . DS . 'test.services.yml')) {
             $loader->load('test.services.yml');
         }
         if ((self::$mode & self::MODE_LOAD_ADMIN_CONFIGS) &&
-            file_exists(AR . DS . 'config' . DS . 'admin.services.yml')) {
+            file_exists(AR . DS . 'config' . DS . 'di' . DS . 'admin.services.yml')) {
             $loader->load('admin.services.yml');
-            if (file_exists(AR . DS . 'config' . DS . 'local.admin.services.yml')) {
+            if (file_exists(AR . DS . 'config' . DS . 'di' . DS . 'local.admin.services.yml')) {
                 $loader->load('local.admin.services.yml');
             }
         }

@@ -95,16 +95,7 @@ class ConfigReader implements ConfigReaderInterface
         foreach ($branch['dependents'] as $dBranch) {
             $params[] = $dBranch['definition'];
         }
-        $intersects = $this->recursiveArrayUIntersectAssoc($params, function($a, $b) {
-            if (is_string($a) && !is_string($b)) {
-                return -1;
-            } elseif (is_string($a) && is_string($b)) {
-                if ($a != $b) {
-                    return 0;
-                }
-            }
-            return 1;
-        });
+        $intersects = $this->recursiveArrayCollide($params, array($this, 'getNotEqualsComparison'));
         if (count($intersects)) {
             throw new DependencyTreeException(
                 sprintf("The clients conflicts with each other. Map: %s", print_r($intersects, true))
@@ -113,41 +104,34 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * // credits go to http://stackoverflow.com/a/4627583/927404
+     * Function to intersect not equal strings
+     * @param mixed $a
+     * @param mixed $b
+     * @return int
+     */
+    public function getNotEqualsComparison($a, $b)
+    {
+        if (is_string($a) && !is_string($b)) {
+            return -1;
+        } elseif (is_string($a) && is_string($b)) {
+            if ($a != $b) {
+                return 0;
+            }
+        }
+        return 1;
+    }
+
+    /**
+     * the purpose of this function is to find intersected areas of
+     * arbitrary number of configs using specific comparison function
+     *
      * @param array $compares
      * @param callable $sort
-     * @return array
+     * @return array|string|null
      */
-    public function recursiveArrayUIntersectAssoc(array $compares, \Closure $sort)
+    public function recursiveArrayCollide(array $compares, \Closure $sort)
     {
-        $first = array_shift($compares);
-        $keys = [];
-        if (is_array($first)) {
-            $keys[] = array_keys($first);
-        }
-        foreach ($compares as $arr) {
-            if ($sort($first, $arr) == 0) {
-                return $first;
-            } elseif (!is_array($first) || !is_array($arr)) {
-                return null;
-            }
-            $keys[] = array_keys($arr);
-        }
-        $commonKeys = call_user_func_array('array_intersect', $keys);
-        $ret = [];
-        foreach ($commonKeys as $key) {
-            $arrays = [];
-            if (isset($first[$key])) {
-                $arrays[] = $first[$key];
-            }
-            foreach ($compares as $fa) {
-                if (isset($fa[$key])) {
-                    $arrays[] = $fa[$key];
-                }
-            }
-            $ret[$key] = $this->recursiveArrayUIntersectAssoc($arrays, $sort);
-        }
-        return array_filter($ret);
+
     }
 
     /**
