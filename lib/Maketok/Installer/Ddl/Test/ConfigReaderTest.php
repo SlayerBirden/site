@@ -9,6 +9,7 @@
 namespace Maketok\Installer\Ddl\Test;
 
 use Maketok\Installer\Ddl\ConfigReader;
+use Maketok\Installer\Resource\Model\DdlClient;
 
 class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,14 +31,6 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     public function testBuildDependencyTree()
     {
         // TODO: Implement
-    }
-
-    /**
-     * @test
-     */
-    public function testValidateDependencyTree()
-    {
-        // TODO: Implement validateDependencyTree() method.
     }
 
     /**
@@ -228,144 +221,26 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testGetNotEqualsComparison()
+    public function testDependencyBubbleSortCallback()
     {
-        $this->assertEquals(1, $this->reader->getNotEqualsComparison(1, '1'));
-        $this->assertEquals(-1, $this->reader->getNotEqualsComparison('1', 1));
-        $this->assertEquals(0, $this->reader->getNotEqualsComparison('1', '2'));
-    }
+        $client1 = new DdlClient();
+        $client1->id = 1;
+        $client2 = new DdlClient();
+        $client2->id = 2;
+        $client2->dependencies = [1];
+        $client3 = new DdlClient();
+        $client3->id = 3;
+        $client3->dependencies = [5];
+        $client4 = new DdlClient();
+        $client4->id = 4;
+        $client5 = new DdlClient();
+        $client5->id = 5;
+        $client5->dependencies = [1];
 
-    /**
-     * @test
-     * @depends testGetNotEqualsComparison
-     */
-    public function testRecursiveArrayCollide()
-    {
-        $compares = [
-            [
-                'columns' => [
-                    'id' => [
-                        'type' => 'integer',
-                    ],
-                    'code' => [
-                        'type' => 'varchar'
-                    ],
-                ],
-                'constraints' => [
-                    'primary' => [
-                        'type' => 'primaryKey',
-                        'definition' => ['id'],
-                    ],
-                ],
-            ],
-            [
-                'columns' => [
-                    'id' => [
-                        'type' => 'integer',
-                    ],
-                    'code' => [
-                        'type' => 'varchar',
-                    ],
-                    'version' => [
-                        'type' => 'varchar',
-                    ],
-                ],
-                'constraints' => [
-                    'primary' => [
-                        'type' => 'primaryKey',
-                        'definition' => ['id'],
-                    ],
-                    'UNQ_KEY_CODE' => [
-                        'type' => 'uniqueKey',
-                        'definition' => ['code'],
-                    ],
-                ],
-            ],
-            [
-                'columns' => [
-                    'id' => [
-                        'type' => 'varchar',
-                    ],
-                    'code' => [
-                        'type' => 'varchar',
-                    ],
-                    'version' => [
-                        'type' => 'varchar',
-                    ],
-                ],
-                'constraints' => [
-                    'primary' => [
-                        'type' => 'primaryKey',
-                        'definition' => ['id'],
-                    ],
-                    'UNQ_KEY_CODE' => [
-                        'type' => 'uniqueKey',
-                        'definition' => ['code', 'version'],
-                    ],
-                ],
-            ],
-            [
-                'columns' => [
-                    'id' => [
-                        'type' => 'integer',
-                    ],
-                    'code' => [
-                        'type' => 'varchar',
-                        'length' => 155,
-                    ],
-                    'title' => [
-                        'type' => 'varchar',
-                        'length' => 255,
-                    ],
-                ],
-                'constraints' => [
-                    'primary' => [
-                        'type' => 'primaryKey',
-                        'definition' => ['id'],
-                    ],
-                ],
-            ],
-            [
-                'columns' => [
-                    'id' => [
-                        'type' => 'integer',
-                    ],
-                    'code' => [
-                        'type' => 'varchar',
-                        'length' => 255,
-                    ],
-                ],
-                'constraints' => [
-                    'primary' => [
-                        'type' => 'primaryKey',
-                        'definition' => ['id'],
-                    ],
-                ],
-            ],
-        ];
-
-        $expected = [
-            'columns' => [
-                'id' => [
-                    'type' => 'integer',
-                    '~type' => 'varchar',
-                ],
-                'code' => [
-                    'length' => 155,
-                    '~length' => 255,
-                ],
-            ],
-            'constraints' => [
-                'UNQ_KEY_CODE' => [
-                    'definition' => ['code'],
-                    '~definition' => ['code', 'version'],
-                ],
-            ],
-        ];
-
-        $this->assertEquals($expected,
-            $this->reader->recursiveArrayCollide($compares,
-                array($this->reader, 'getNotEqualsComparison')));
+        $clients = [$client1, $client2, $client3, $client4, $client5];
+        $expected = [$client1, $client4, $client2, $client5, $client3];
+        usort($clients, array($this->reader, 'dependencyBubbleSortCallback'));
+        $this->assertEquals($expected, $clients);
     }
 
 }

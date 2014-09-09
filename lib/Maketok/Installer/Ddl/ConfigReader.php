@@ -24,7 +24,7 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function buildDependencyTree($clients)
     {
-        usort($clients, array($this, 'dependencyBubbleSort'));
+        usort($clients, array($this, 'dependencyBubbleSortCallback'));
         foreach ($clients as $client) {
             /** @var DdlClient $client */
             foreach ($client->config as $table => $definition) {
@@ -55,18 +55,24 @@ class ConfigReader implements ConfigReaderInterface
      * @param DdlClient $b
      * @return int
      */
-    public function dependencyBubbleSort(DdlClient $a, DdlClient $b)
+    public function dependencyBubbleSortCallback(DdlClient $a, DdlClient $b)
     {
         if (count($a->dependencies) && !count($b->dependencies)) {
-            return -1;
-        } elseif (!count($a->dependencies) && count($b->dependencies)) {
             return 1;
+        } elseif (!count($a->dependencies) && count($b->dependencies)) {
+            return -1;
         } elseif (count($a->dependencies) && count($b->dependencies)) {
             if (in_array($a->id, $b->dependencies)) {
-                return 1;
-            } elseif (in_array($b->id, $a->dependencies)) {
                 return -1;
+            } elseif (in_array($b->id, $a->dependencies)) {
+                return 1;
             }
+        }
+        // this makes sort stable
+        if ($a->id > $b->id) {
+            return 1;
+        } elseif ($b->id > $a->id) {
+            return -1;
         }
         return 0;
     }
@@ -76,62 +82,7 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function validateDependencyTree()
     {
-        foreach ($this->_tree as $branch) {
-            $this->recursiveDependentsValidation($branch);
-        }
-    }
-
-    /**
-     * @param array $branch
-     * @throws DependencyTreeException
-     */
-    public function recursiveDependentsValidation(array $branch)
-    {
-        if (!count($branch['dependents'])) {
-            return;
-        }
-        // now get it :)
-        $params = [];
-        foreach ($branch['dependents'] as $dBranch) {
-            $params[] = $dBranch['definition'];
-        }
-        $intersects = $this->recursiveArrayCollide($params, array($this, 'getNotEqualsComparison'));
-        if (count($intersects)) {
-            throw new DependencyTreeException(
-                sprintf("The clients conflicts with each other. Map: %s", print_r($intersects, true))
-            );
-        }
-    }
-
-    /**
-     * Function to intersect not equal strings
-     * @param mixed $a
-     * @param mixed $b
-     * @return int
-     */
-    public function getNotEqualsComparison($a, $b)
-    {
-        if (is_string($a) && !is_string($b)) {
-            return -1;
-        } elseif (is_string($a) && is_string($b)) {
-            if ($a != $b) {
-                return 0;
-            }
-        }
-        return 1;
-    }
-
-    /**
-     * the purpose of this function is to find intersected areas of
-     * arbitrary number of configs using specific comparison function
-     *
-     * @param array $compares
-     * @param callable $sort
-     * @return array|string|null
-     */
-    public function recursiveArrayCollide(array $compares, \Closure $sort)
-    {
-
+        // not needed now
     }
 
     /**
