@@ -43,18 +43,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers mergeDirectives
+     * @covers createDirectives
      */
     public function testCreateDirectives()
-    {
-        // @TODO add logic
-    }
-
-    /**
-     * @test
-     * @covers applyDirectives
-     */
-    public function testValidateConfig()
     {
         // @TODO add logic
     }

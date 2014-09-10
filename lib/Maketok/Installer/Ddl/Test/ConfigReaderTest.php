@@ -23,6 +23,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->reader = new ConfigReader();
         $this->treeProp = new \ReflectionProperty(get_class($this->reader), '_tree');
+        $this->treeProp->setAccessible(true);
     }
 
     /**
@@ -30,23 +31,204 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testBuildDependencyTree()
     {
-        // TODO: Implement
-    }
-
-    /**
-     * @test
-     */
-    public function testMergeDependencyTree()
-    {
-        // TODO: Implement mergeDependencyTree() method.
-    }
-
-    /**
-     * @test
-     */
-    public function testGetDependencyTree()
-    {
-        // TODO: Implement getDependencyTree() method.
+        $client1 = new DdlClient();
+        $client1->id = 1;
+        $client1->code = 'm1';
+        $client1->version = '0.1.0';
+        $client1->config = [
+            'modules' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar'
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                ],
+            ],
+            'test' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar'
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                ],
+            ]
+        ];
+        $client2 = new DdlClient();
+        $client2->id = 2;
+        $client2->code = 'm2';
+        $client2->version = '0.1.0';
+        $client2->config = [
+            'modules' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar',
+                    ],
+                    'version' => [
+                        'type' => 'varchar',
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                    'UNQ_KEY_CODE' => [
+                        'type' => 'uniqueKey',
+                        'definition' => ['code'],
+                    ],
+                ],
+            ],
+        ];
+        $client2->dependencies = [1];
+        $client3 = new DdlClient();
+        $client3->id = 3;
+        $client3->code = 'm3';
+        $client3->version = '2';
+        $client3->config = [
+            'modules' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar',
+                        'length' => 255,
+                    ],
+                    'version' => [
+                        'type' => 'varchar',
+                        'length' => 255,
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                ],
+            ],
+        ];
+        $client3->dependencies = [1,2];
+        $this->reader->buildDependencyTree(array($client1, $client2, $client3));
+        $expected = [
+            'modules' => [
+                'client' => 1,
+                'version' => '0.1.0',
+                'definition' => [
+                    'columns' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'code' => [
+                            'type' => 'varchar'
+                        ],
+                    ],
+                    'constraints' => [
+                        'primary' => [
+                            'type' => 'primaryKey',
+                            'definition' => ['id'],
+                        ],
+                    ],
+                ],
+                'dependents' => [
+                    [
+                        'client' => 2,
+                        'version' => '0.1.0',
+                        'definition' => [
+                            'columns' => [
+                                'id' => [
+                                    'type' => 'integer',
+                                ],
+                                'code' => [
+                                    'type' => 'varchar',
+                                ],
+                                'version' => [
+                                    'type' => 'varchar',
+                                ],
+                            ],
+                            'constraints' => [
+                                'primary' => [
+                                    'type' => 'primaryKey',
+                                    'definition' => ['id'],
+                                ],
+                                'UNQ_KEY_CODE' => [
+                                    'type' => 'uniqueKey',
+                                    'definition' => ['code'],
+                                ],
+                            ],
+                        ],
+                        'dependents' => [],
+                    ],
+                    [
+                        'client' => 3,
+                        'version' => '2',
+                        'definition' => [
+                            'columns' => [
+                                'id' => [
+                                    'type' => 'integer',
+                                ],
+                                'code' => [
+                                    'type' => 'varchar',
+                                    'length' => 255,
+                                ],
+                                'version' => [
+                                    'type' => 'varchar',
+                                    'length' => 255,
+                                ],
+                            ],
+                            'constraints' => [
+                                'primary' => [
+                                    'type' => 'primaryKey',
+                                    'definition' => ['id'],
+                                ],
+                            ],
+                        ],
+                        'dependents' => [],
+                    ],
+                ],
+            ],
+            'test' => [
+                'client' => 1,
+                'version' => '0.1.0',
+                'definition' => [
+                    'columns' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'code' => [
+                            'type' => 'varchar'
+                        ],
+                    ],
+                    'constraints' => [
+                        'primary' => [
+                            'type' => 'primaryKey',
+                            'definition' => ['id'],
+                        ],
+                    ],
+                ],
+                'dependents' => [],
+            ],
+        ];
+        $this->assertEquals($expected, $this->reader->getDependencyTree());
+        return $this->reader->getDependencyTree();
     }
 
     /**
@@ -216,6 +398,69 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         ];
 
         $this->assertEquals($expected, $this->reader->recursiveMerge($branch));
+    }
+
+    /**
+     * @test
+     * @depends testBuildDependencyTree
+     * @depends testRecursiveMerge
+     */
+    public function testMergeDependencyTree($tree)
+    {
+        $expected = [
+            'modules' => [
+                'client' => 1,
+                'version' => '0.1.0',
+                'definition' => [
+                    'columns' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'code' => [
+                            'type' => 'varchar',
+                            'length' => 255,
+                        ],
+                        'version' => [
+                            'type' => 'varchar',
+                            'length' => 255,
+                        ],
+                    ],
+                    'constraints' => [
+                        'primary' => [
+                            'type' => 'primaryKey',
+                            'definition' => ['id'],
+                        ],
+                        'UNQ_KEY_CODE' => [
+                            'type' => 'uniqueKey',
+                            'definition' => ['code'],
+                        ],
+                    ],
+                ],
+            ],
+            'test' => [
+                'client' => 1,
+                'version' => '0.1.0',
+                'definition' => [
+                    'columns' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'code' => [
+                            'type' => 'varchar'
+                        ],
+                    ],
+                    'constraints' => [
+                        'primary' => [
+                            'type' => 'primaryKey',
+                            'definition' => ['id'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $this->treeProp->setValue($this->reader, $tree);
+        $this->reader->mergeDependencyTree();
+        $this->assertEquals($expected, $this->reader->getDependencyTree());
     }
 
     /**

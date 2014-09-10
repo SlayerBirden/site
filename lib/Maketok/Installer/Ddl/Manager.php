@@ -76,14 +76,6 @@ class Manager extends AbstractManager implements ManagerInterface
     }
 
     /**
-     * @return bool
-     */
-    public function validateConfig()
-    {
-        // @TODO add logic
-    }
-
-    /**
      * @return void
      */
     public function createDirectives()
