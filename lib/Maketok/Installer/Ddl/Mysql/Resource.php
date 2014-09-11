@@ -28,6 +28,9 @@ class Resource implements ResourceInterface
     public function getTable($table)
     {
         $data = $this->_getTableArray($table);
+        if (empty($data)) {
+            return [];
+        }
         $fLine = array_shift($data);
         $lLine = array_pop($data);
         $tableInfo = array();
@@ -59,10 +62,15 @@ class Resource implements ResourceInterface
      */
     protected function _getTableArray($table)
     {
-        $result = $this->_adapter->query("SHOW CREATE TABLE `$table`", Adapter::QUERY_MODE_EXECUTE);
-        $data = $result->current();
-        $data = $data->getArrayCopy();
-        $data = explode("\n", $data['Create Table']);
+        try {
+            $result = $this->_adapter->query("SHOW CREATE TABLE `$table`", Adapter::QUERY_MODE_EXECUTE);
+            $data = $result->current();
+            $data = $data->getArrayCopy();
+            $data = explode("\n", $data['Create Table']);
+        } catch (\Exception $e) {
+            // this is case with un-existing table
+            $data = [];
+        }
         return $data;
     }
 

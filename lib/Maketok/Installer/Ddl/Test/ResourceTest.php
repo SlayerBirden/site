@@ -164,6 +164,23 @@ SQL;
         $this->assertEquals(array('is_active', 'sort_order'), $result['definition']);
     }
 
+    /**
+     * test that no error thrown on non existing table
+     * and default return is array
+     * @test
+     */
+    public function testFalseStates()
+    {
+        $falseTable = 'falseT';
+        $falseColumn = 'fc';
+        $falseConstraint = 'fcon';
+        $falseIndex = 'fidx';
+        $this->assertEquals([], self::$_resource->getTable($falseTable));
+        $this->assertEquals([], self::$_resource->getColumn($falseTable, $falseColumn));
+        $this->assertEquals([], self::$_resource->getConstraint($falseTable, $falseConstraint));
+        $this->assertEquals([], self::$_resource->getIndex($falseTable, $falseIndex));
+    }
+
     static public function tearDownAfterClass()
     {
         $sql = <<<'SQL'

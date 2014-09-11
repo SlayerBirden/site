@@ -39,4 +39,11 @@ interface ConfigReaderInterface
      * @return array
      */
     public function getDependencyTree();
+
+    /**
+     * return merged config
+     *
+     * @return array
+     */
+    public function getMergedConfig();
 }

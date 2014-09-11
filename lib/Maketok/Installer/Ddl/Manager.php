@@ -20,8 +20,8 @@ use Zend\Db\Sql\Sql;
 class Manager extends AbstractManager implements ManagerInterface
 {
 
-    /** @var array */
-    protected $_directives;
+    /** @var Directives */
+    private $_directives;
     /**
      * @var ResourceInterface
      */
@@ -76,10 +76,104 @@ class Manager extends AbstractManager implements ManagerInterface
     }
 
     /**
+     * @throws \LogicException
      * @return void
      */
     public function createDirectives()
     {
-        // @TODO add logic
+        $config = $this->_reader->getMergedConfig();
+        foreach ($config as $table => $definition) {
+            if (!isset($definition['columns']) || !is_array($definition['columns'])) {
+                throw new \LogicException(sprintf('Can not have a table `%s` without columns definition.'
+                    , $table));
+            }
+            $dbConfig = $this->_resource->getTable($table);
+            // compare def with db
+            if (empty($dbConfig)) {
+                // add table
+                $this->_directives['addTables'] = [$table, $definition];
+            } else {
+                $_newColumns = $definition['columns'];
+                $_oldColumns = $dbConfig['columns'];
+                $this->_intelligentCompareColumns($_oldColumns, $_newColumns, $table);
+                $_oldConstraints = isset($dbConfig['constraints']) ? $dbConfig['constraints'] : array();
+                $_newConstraints = isset($definition['constraints']) ? $definition['constraints'] : array();
+                $this->_intelligentCompareConstraints($_oldConstraints, $_newConstraints, $table);
+                $_oldIndices = isset($dbConfig['indices']) ? $dbConfig['indices'] : array();
+                $_newIndices = isset($definition['indices']) ? $definition['indices'] : array();
+                $this->_intelligentCompareIndices($_oldIndices, $_newIndices, $table);
+            }
+        }
+    }
+
+    /**
+     * @param array $a old
+     * @param array $b new
+     * @param string $tableName
+     * @return array
+     */
+    protected function _intelligentCompareColumns(array $a, array $b, $tableName)
+    {
+        foreach ($b as $columnName => $columnDefinition) {
+            if (!array_key_exists($columnName, $a) && !isset($columnDefinition['old_name'])) {
+                $this->_directives->addColumns[] = [$tableName, $columnName, $columnDefinition];
+            } elseif (isset($columnDefinition['old_name']) && is_string($columnDefinition['old_name'])) {
+                $this->_directives->changeColumns[] = [
+                    $tableName,
+                    $columnDefinition['old_name'],
+                    $columnName,
+                    $columnDefinition,
+                ];
+            } elseif ($columnDefinition === $a[$columnName]) {
+                continue;
+            } else {
+                $this->_directives->changeColumns[] = [$tableName, $columnName,  $columnName, $columnDefinition];
+            }
+        }
+        foreach ($a as $columnName => $columnDefinition) {
+            if (!array_key_exists($columnName, $b)) {
+                $this->_directives->dropColumns[] = [$tableName, $columnName];
+            }
+        }
+    }
+
+    /**
+     * @param array $a old
+     * @param array $b new
+     * @param string $tableName
+     * @return array
+     */
+    protected function _intelligentCompareConstraints(array $a, array $b, $tableName)
+    {
+        foreach ($b as $constraintName => $constraintDefinition) {
+            if (!array_key_exists($constraintName, $a)) {
+                $this->_directives->addConstraints[] = [$tableName, $constraintName, $constraintDefinition];
+            }
+        }
+        foreach ($a as $constraintName => $constraintDefinition) {
+            if (!array_key_exists($constraintName, $b)) {
+                $this->_directives->dropConstraints[] = [$tableName, $constraintName];
+            }
+        }
+    }
+
+    /**
+     * @param array $a old
+     * @param array $b new
+     * @param string $tableName
+     * @return array
+     */
+    protected function _intelligentCompareIndices(array $a, array $b, $tableName)
+    {
+        foreach ($b as $indexName => $indexDefinition) {
+            if (!array_key_exists($indexName, $a)) {
+                $this->_directives->addIndices[] = [$tableName, $indexName, $indexDefinition];
+            }
+        }
+        foreach ($a as $indexName => $indexDefinition) {
+            if (!array_key_exists($indexName, $b)) {
+                $this->_directives->dropIndices[] = [$tableName, $indexName];
+            }
+        }
     }
 }

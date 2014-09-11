@@ -18,6 +18,8 @@ class ConfigReader implements ConfigReaderInterface
      * @var array
      */
     private $_tree;
+    /** @var bool */
+    private $_isMerged = false;
 
     /**
      * {@inheritdoc}
@@ -34,11 +36,12 @@ class ConfigReader implements ConfigReaderInterface
                     'definition' => $definition,
                     'dependents' => [],
                 ];
-                if (isset($this->_tree[$table])) {
-                    $upperBranch = &$this->_tree[$table];
+                if ($upperBranch = &$this->_getTree($table)) {
                     if (!in_array($upperBranch['client'], $client->dependencies)) {
                         throw new DependencyTreeException(
-                            sprintf("Client %s tries to modify resource %s without declaring dependency.", $client->code, $table)
+                            sprintf("Client %s tries to modify resource %s without declaring dependency.",
+                                $client->code,
+                                $table)
                         );
                     } else {
                         $upperBranch['dependents'][] = $branch;
@@ -90,12 +93,16 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function mergeDependencyTree()
     {
-        foreach ($this->_tree as &$branch) {
+        if ($this->_isMerged) {
+            return;
+        }
+        foreach ($this->_getTree() as &$branch) {
             $branch['definition'] = $this->recursiveMerge($branch);
             if (isset($branch['dependents'])) {
                 unset($branch['dependents']);
             }
         }
+        $this->_isMerged = true;
     }
 
     /**
@@ -116,6 +123,49 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function getDependencyTree()
     {
+        return $this->_getTree();
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsMerged()
+    {
+        return $this->_isMerged;
+    }
+
+    /**
+     * internal getter
+     * @param null|string $table
+     * @return array|null
+     */
+    private function &_getTree($table = null)
+    {
+        if (!isset($this->_tree)) {
+            return [];
+        }
+        if (is_string($table)) {
+            if (isset($this->_tree[$table])) {
+                return $this->_tree[$table];
+            } else {
+                return null;
+            }
+        }
         return $this->_tree;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMergedConfig()
+    {
+        if (!$this->_isMerged) {
+            $this->mergeDependencyTree();
+        }
+        $config = [];
+        foreach ($this->_getTree() as $table => $branch) {
+            $config[$table] = $branch['definition'];
+        }
+        return $config;
     }
 }
