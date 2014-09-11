@@ -1,6 +1,6 @@
 config/local.php
 config/di/local.services.yml
-config/dev.services.yml
+config/di/dev.services.yml
 config/di/local.admin.services.yml
 .idea
 mysql-connector-java-5.1.26-bin.jar
