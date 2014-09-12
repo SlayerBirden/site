@@ -36,15 +36,15 @@ class ConfigReader implements ConfigReaderInterface
                     'definition' => $definition,
                     'dependents' => [],
                 ];
-                if ($upperBranch = &$this->_getTree($table)) {
-                    if (!in_array($upperBranch['client'], $client->dependencies)) {
+                if (isset($this->_tree[$table])) {
+                    if (!in_array($this->_tree[$table]['client'], $client->dependencies)) {
                         throw new DependencyTreeException(
                             sprintf("Client %s tries to modify resource %s without declaring dependency.",
                                 $client->code,
                                 $table)
                         );
                     } else {
-                        $upperBranch['dependents'][] = $branch;
+                        $this->_tree[$table]['dependents'][] = $branch;
                     }
                 } else {
                     $this->_tree[$table] = $branch;
@@ -96,7 +96,7 @@ class ConfigReader implements ConfigReaderInterface
         if ($this->_isMerged) {
             return;
         }
-        foreach ($this->_getTree() as &$branch) {
+        foreach ($this->_tree as &$branch) {
             $branch['definition'] = $this->recursiveMerge($branch);
             if (isset($branch['dependents'])) {
                 unset($branch['dependents']);
@@ -139,7 +139,7 @@ class ConfigReader implements ConfigReaderInterface
      * @param null|string $table
      * @return array|null
      */
-    private function &_getTree($table = null)
+    private function _getTree($table = null)
     {
         if (!isset($this->_tree)) {
             return [];

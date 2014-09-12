@@ -227,8 +227,9 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                 'dependents' => [],
             ],
         ];
-        $this->assertEquals($expected, $this->reader->getDependencyTree());
-        return $this->reader->getDependencyTree();
+        $tree = $this->reader->getDependencyTree();
+        $this->assertEquals($expected, $tree, print_r($tree, 1));
+        return $tree;
     }
 
     /**
@@ -460,7 +461,8 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         ];
         $this->treeProp->setValue($this->reader, $tree);
         $this->reader->mergeDependencyTree();
-        $this->assertEquals($expected, $this->reader->getDependencyTree());
+        $tree = $this->reader->getDependencyTree();
+        $this->assertEquals($expected, $tree, print_r($tree, 1));
     }
 
     /**
