@@ -43,7 +43,7 @@ services:
   lock_stream_handler:
     class: Maketok\Util\StreamHandler
     calls:
-      - [setPath, ["%dll_lock_path%"]]
+      - [setPath, ["%installer_dll_lock_path%"]]
 
   subject_manager:
     class: Maketok\Observer\SubjectManager
@@ -79,7 +79,7 @@ services:
 
   installer_ddl_resource:
     class: Maketok\Installer\Ddl\Mysql\Resource
-    arguments: ["@adapter"]
+    arguments: ["@adapter", "@zend_db_sql"]
 
   installer_ddl_reader:
     class: Maketok\Installer\Ddl\ConfigReader
@@ -87,8 +87,6 @@ services:
   installer_ddl_manager:
     class: Maketok\Installer\Ddl\Manager
     arguments:
-      - "@adapter"
-      - "@zend_db_sql"
       - "@installer_ddl_reader"
       - "@installer_ddl_resource"
       - "@lock_stream_handler"
