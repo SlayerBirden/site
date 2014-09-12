@@ -10,7 +10,7 @@ namespace Maketok\Util\Zend\Db\Sql\Ddl\Column;
 
 use Zend\Db\Sql\Ddl\Column\Date;
 
-class Datetime extends Date
+class DateTime extends Date
 {
     /**
      * @var string

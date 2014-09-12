@@ -33,6 +33,9 @@ class Manager extends AbstractManager implements ManagerInterface
         if (!($client instanceof ClientInterface)) {
             throw new Exception("Wrong client type.");
         }
-        parent::addClient($client);
+        if (is_null($this->_clients)) {
+            $this->_clients = [];
+        }
+        $this->_clients[$client->getDataCode()] = $client;
     }
 }

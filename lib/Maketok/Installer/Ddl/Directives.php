@@ -41,16 +41,20 @@ class Directives implements \IteratorAggregate, \Countable
      */
     public function getIterator()
     {
+        // order is important
+        // drop tables before adding
+        // add/change columns before adding constraints
+        // drop constraints before dropping columns
         return new \ArrayIterator(array(
-            'addTables' => $this->addTables,
             'dropTables' => $this->dropTables,
+            'addTables' => $this->addTables,
+            'dropConstraints' => $this->dropConstraints,
+            'dropIndices' => $this->dropIndices,
+            'dropColumns' => $this->dropColumns,
             'addColumns' => $this->addColumns,
             'changeColumns' => $this->changeColumns,
-            'dropColumns' => $this->dropColumns,
             'addConstraints' => $this->addConstraints,
-            'dropConstraints' => $this->dropConstraints,
             'addIndices' => $this->addIndices,
-            'dropIndices' => $this->dropIndices,
         ));
     }
 

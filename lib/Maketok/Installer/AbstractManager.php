@@ -52,17 +52,6 @@ abstract class AbstractManager implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function addClient(ClientInterface $client)
-    {
-        if (is_null($this->_clients)) {
-            $this->_clients = [];
-        }
-        $this->_clients[$client->getCode($this->_type)] = $client;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getClients()
     {
         return $this->_clients;

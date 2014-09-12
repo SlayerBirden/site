@@ -8,9 +8,9 @@ parameters:
   module_config_name: Config
   defaultFormTheme: form_div_layout.html.twig
   translation_locale: en
-  dll_lock_path: "%AR%%DS%var%DS%locks%DS%ddl_installer.lock"
-  log_dir: "%AR%%DS%var%DS%log%DS%"
-  cache_dir: "%AR%%DS%var%DS%cache%DS%"
+  installer_dll_lock_path: "%AR%/var/locks/installer_ddl.lock"
+  log_dir: "%AR%/var/log/"
+  cache_dir: "%AR%/var/cache/"
 
 services:
   adapter:
@@ -155,7 +155,7 @@ services:
     arguments: ["%translation_locale%"]
     calls:
       - [addLoader, [xlf, "@translator_loader_xliff"]]
-      - [addResource, [xlf, "%AR%%DS%translations%DS%messages.en.xlf", "%translation_locale%"]]
+      - [addResource, [xlf, "%AR%/translations/messages.en.xlf", "%translation_locale%"]]
 
   twig_extension_translation:
     class: Symfony\Bridge\Twig\Extension\TranslationExtension
@@ -171,14 +171,14 @@ services:
   twig_loader:
     class: Twig_Loader_Filesystem
     calls:
-      - [addPath, ["%AR%%DS%vendor%DS%symfony%DS%twig-bridge%DS%Symfony%DS%Bridge%DS%Twig%DS%Resources%DS%views%DS%Form"]]
-      - [addPath, ["%AR%%DS%lib%DS%Maketok%DS%Template%DS%Resource%DS%view%DS%Form"]]
+      - [addPath, ["%AR%/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Resources/views/Form"]]
+      - [addPath, ["%AR%/lib/Maketok/Template/Resource/view/Form"]]
 
   twig_env:
     class: Twig_Environment
     arguments:
       - "@twig_loader"
-      - { cache: "%AR%%DS%var%DS%cache", debug: "%debug%" }
+      - { cache: "%AR%/var/cache", debug: "%debug%" }
 
   request:
     synthetic: true

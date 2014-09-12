@@ -14,8 +14,6 @@ use Maketok\Installer\Exception;
 use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Util\StreamHandlerInterface;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Sql;
 
 class Manager extends AbstractManager implements ManagerInterface
 {
@@ -27,31 +25,20 @@ class Manager extends AbstractManager implements ManagerInterface
      */
     protected $_resource;
 
-    /** @var array */
-    protected  $_availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey'];
-
-
     /**
      * Constructor
-     * @param Adapter $adapter
-     * @param \Maketok\Util\Zend\Db\Sql\Sql|\Zend\Db\Sql\Sql $sql
      * @param ConfigReaderInterface $reader
      * @param ResourceInterface $resource
      * @param StreamHandlerInterface $handler
      */
-    public function __construct(Adapter $adapter,
-                                Sql $sql,
-                                ConfigReaderInterface $reader,
+    public function __construct(ConfigReaderInterface $reader,
                                 ResourceInterface $resource,
                                 StreamHandlerInterface $handler = null)
     {
-        $this->_adapter = $adapter;
         $this->_reader = $reader;
         if (!is_null($handler)) {
             $this->_streamHandler = $handler;
         }
-        $this->_sql = $sql;
-        $this->_type = 'ddl';
         $this->_resource = $resource;
     }
 
@@ -63,7 +50,10 @@ class Manager extends AbstractManager implements ManagerInterface
         if (!($client instanceof ClientInterface)) {
             throw new Exception("Wrong client type.");
         }
-        parent::addClient($client);
+        if (is_null($this->_clients)) {
+            $this->_clients = [];
+        }
+        $this->_clients[$client->getDdlCode()] = $client;
     }
 
     /**
@@ -72,7 +62,21 @@ class Manager extends AbstractManager implements ManagerInterface
      */
     public function process()
     {
+        // lock process
+        $this->_streamHandler->lock();
+        try {
+            // build tree
+            $this->_reader->buildDependencyTree($this->_clients);
+            // create directives
+            $this->createDirectives();
+            // create db procedures
+            $this->_resource->createProcedures($this->_directives);
+            // run
+            $this->_resource->runProcedures();
+        } catch (\Exception $e) {
 
+        }
+        $this->_streamHandler->unLock();
     }
 
     /**
@@ -127,7 +131,7 @@ class Manager extends AbstractManager implements ManagerInterface
             } elseif ($columnDefinition === $a[$columnName]) {
                 continue;
             } else {
-                $this->_directives->changeColumns[] = [$tableName, $columnName,  $columnName, $columnDefinition];
+                $this->_directives->changeColumns[] = [$tableName, $columnName, $columnName, $columnDefinition];
             }
         }
         foreach ($a as $columnName => $columnDefinition) {
