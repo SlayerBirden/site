@@ -20,4 +20,27 @@ interface ClientInterface extends BaseClientInterface
      * @return mixed
      */
     public function registerDependencies(array $dependencies);
+
+    /**
+     * get client version to install
+     *
+     * @return string
+     */
+    public function getDdlVersion();
+
+    /**
+     * get client config to install
+     *
+     * @param string $version
+     * @return array|bool
+     */
+    public function getDdlConfig($version);
+
+    /**
+     * get client identifier
+     * must be unique
+     *
+     * @return string
+     */
+    public function getDdlCode();
 }

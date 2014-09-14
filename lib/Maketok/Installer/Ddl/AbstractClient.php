@@ -21,28 +21,4 @@ abstract class AbstractClient implements ClientInterface
     {
         $this->_dependencies = array_replace($this->_dependencies, $dependencies);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDataConfig($version)
-    {
-        return [];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDataVersion()
-    {
-        return '0';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDataCode()
-    {
-        return '';
-    }
 }
