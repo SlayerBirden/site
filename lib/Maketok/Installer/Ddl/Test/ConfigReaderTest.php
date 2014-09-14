@@ -490,4 +490,109 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $clients);
     }
 
+    /**
+     * @test
+     * @covers getMergedConfig
+     */
+    public function testGetMergedConfig()
+    {
+        $tree = [
+            'modules' => [
+                'client' => 1,
+                'version' => '0.1.0',
+                'definition' => [
+                    'columns' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'code' => [
+                            'type' => 'varchar',
+                            'length' => 255,
+                        ],
+                        'version' => [
+                            'type' => 'varchar',
+                            'length' => 255,
+                        ],
+                    ],
+                    'constraints' => [
+                        'primary' => [
+                            'type' => 'primaryKey',
+                            'definition' => ['id'],
+                        ],
+                        'UNQ_KEY_CODE' => [
+                            'type' => 'uniqueKey',
+                            'definition' => ['code'],
+                        ],
+                    ],
+                ],
+            ],
+            'test' => [
+                'client' => 1,
+                'version' => '0.1.0',
+                'definition' => [
+                    'columns' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'code' => [
+                            'type' => 'varchar'
+                        ],
+                    ],
+                    'constraints' => [
+                        'primary' => [
+                            'type' => 'primaryKey',
+                            'definition' => ['id'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->treeProp->setValue($this->reader, $tree);
+        $expected = [
+            'modules' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar',
+                        'length' => 255,
+                    ],
+                    'version' => [
+                        'type' => 'varchar',
+                        'length' => 255,
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                    'UNQ_KEY_CODE' => [
+                        'type' => 'uniqueKey',
+                        'definition' => ['code'],
+                    ],
+                ],
+            ],
+            'test' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar'
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                ],
+            ],
+        ];
+        $this->assertEquals($expected, $this->reader->getMergedConfig());
+    }
+
 }

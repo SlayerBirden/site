@@ -112,8 +112,10 @@ class ConfigReader implements ConfigReaderInterface
     public function recursiveMerge(array $branch)
     {
         $res = $branch['definition'];
-        foreach ($branch['dependents'] as $dBranch) {
-            $res = array_replace_recursive($res, $this->recursiveMerge($dBranch));
+        if (isset($branch['dependents'])) {
+            foreach ($branch['dependents'] as $dBranch) {
+                $res = array_replace_recursive($res, $this->recursiveMerge($dBranch));
+            }
         }
         return $res;
     }

@@ -8,6 +8,7 @@
 
 namespace Maketok\Installer\Ddl;
 
+use Maketok\App\Site;
 use Maketok\Installer\AbstractManager;
 use Maketok\Installer\ConfigReaderInterface;
 use Maketok\Installer\Exception;
@@ -74,7 +75,9 @@ class Manager extends AbstractManager implements ManagerInterface
             // run
             $this->_resource->runProcedures();
         } catch (\Exception $e) {
-
+            Site::getServiceContainer()
+                ->get('logger')
+                ->err(sprintf("Exception while running DDL Installer process: %s", $e->__toString()));
         }
         $this->_streamHandler->unLock();
     }
@@ -85,6 +88,10 @@ class Manager extends AbstractManager implements ManagerInterface
      */
     public function createDirectives()
     {
+        if (!empty($this->_directives)) {
+            // no point in creating directives when they already exist
+            return;
+        }
         $config = $this->_reader->getMergedConfig();
         foreach ($config as $table => $definition) {
             if (!isset($definition['columns']) || !is_array($definition['columns'])) {
@@ -111,6 +118,15 @@ class Manager extends AbstractManager implements ManagerInterface
     }
 
     /**
+     * @return Directives
+     */
+    public function getDirectives()
+    {
+        return $this->_directives;
+    }
+
+
+    /**
      * @param array $a old
      * @param array $b new
      * @param string $tableName
@@ -118,6 +134,7 @@ class Manager extends AbstractManager implements ManagerInterface
      */
     protected function _intelligentCompareColumns(array $a, array $b, $tableName)
     {
+        $_changeMap = [];
         foreach ($b as $columnName => $columnDefinition) {
             if (!array_key_exists($columnName, $a) && !isset($columnDefinition['old_name'])) {
                 $this->_directives->addColumns[] = [$tableName, $columnName, $columnDefinition];
@@ -128,6 +145,7 @@ class Manager extends AbstractManager implements ManagerInterface
                     $columnName,
                     $columnDefinition,
                 ];
+                $_changeMap[$columnDefinition['old_name']] = $tableName;
             } elseif ($columnDefinition === $a[$columnName]) {
                 continue;
             } else {
@@ -135,7 +153,7 @@ class Manager extends AbstractManager implements ManagerInterface
             }
         }
         foreach ($a as $columnName => $columnDefinition) {
-            if (!array_key_exists($columnName, $b)) {
+            if (!array_key_exists($columnName, $b) && !isset($_changeMap[$columnName])) {
                 $this->_directives->dropColumns[] = [$tableName, $columnName];
             }
         }

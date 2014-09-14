@@ -8,7 +8,8 @@
 
 namespace Maketok\Installer\Ddl\Test;
 
-use Maketok\App\Site;
+use Maketok\Installer\Ddl\ClientInterface;
+use Maketok\Installer\Ddl\Manager;
 
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,16 +19,10 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        self::$_manager = Site::getServiceContainer()->get('installer_ddl_manager');
-    }
-
-    /**
-     * @test
-     * @covers process
-     */
-    public function testProcess()
-    {
-        // @TODO add logic
+        self::$_manager = new Manager(
+            $this->getMock('Maketok\Installer\Ddl\ConfigReader'),
+            $this->getMock('Maketok\Installer\Ddl\Mysql\Resource', [], [], '', false)
+        );
     }
 
     /**
@@ -44,9 +39,10 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         self::$_manager->addClient($client);
         $this->assertTrue(self::$_manager->hasClients());
         $this->assertCount(1, self::$_manager->getClients());
+        /** @var ClientInterface $actual */
         $actual = current(self::$_manager->getClients());
         $this->assertEquals('0.1.0', $actual->getDdlVersion());
-        $this->assertEquals([], $actual->getDdlConfig());
+        $this->assertEquals([], $actual->getDdlConfig(''));
         $this->assertEquals('t1', $actual->getDdlCode());
 
         $client = $this->getMock('Maketok\Installer\Ddl\ClientInterface');
@@ -60,7 +56,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $clients = self::$_manager->getClients();
         $actual = $clients['t2'];
         $this->assertEquals('0.1.0', $actual->getDdlVersion());
-        $this->assertEquals([], $actual->getDdlConfig());
+        $this->assertEquals([], $actual->getDdlConfig(''));
         $this->assertEquals('t2', $actual->getDdlCode());
 
         $client = $this->getMock('Maketok\Installer\Ddl\ClientInterface');
@@ -74,7 +70,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $clients = self::$_manager->getClients();
         $actual = $clients['t2'];
         $this->assertEquals('0.2.0', $actual->getDdlVersion());
-        $this->assertEquals(['bla'], $actual->getDdlConfig());
+        $this->assertEquals(['bla'], $actual->getDdlConfig(''));
         $this->assertEquals('t2', $actual->getDdlCode());
     }
 
@@ -84,6 +80,126 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateDirectives()
     {
-        // @TODO add logic
+        $refProp = new \ReflectionProperty(get_class(self::$_manager), '_reader');
+        $refProp->setAccessible(true);
+
+        $mock = $this->getMock('Maketok\Installer\Ddl\ConfigReader');
+        $merged = [
+            'modules' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar',
+                        'length' => 255,
+                        'old_name' => 'alias',
+                    ],
+                    'version' => [
+                        'type' => 'varchar',
+                        'length' => 255,
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                    'UNQ_KEY_CODE' => [
+                        'type' => 'uniqueKey',
+                        'definition' => ['code'],
+                    ],
+                ],
+            ],
+            'test' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar'
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                ],
+            ],
+        ];
+        $mock->expects($this->any())
+            ->method('getMergedConfig')
+            ->will($this->returnValue($merged));
+        $refProp->setValue(self::$_manager, $mock);
+
+        $refPropRes = new \ReflectionProperty(get_class(self::$_manager), '_resource');
+        $refPropRes->setAccessible(true);
+        $mock = $this->getMock('Maketok\Installer\Ddl\Mysql\Resource', [], [], '', false);
+        $mock->expects($this->any())
+            ->method('getTable')
+            ->will($this->returnValueMap([
+                ['modules', [
+                    'columns' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'alias' => [
+                            'type' => 'varchar',
+                            'length' => 255,
+                        ],
+                        'title' => [
+                            'type' => 'varchar',
+                            'length' => 255,
+                        ],
+                    ],
+                    'constraints' => [
+                        'primary' => [
+                            'type' => 'primaryKey',
+                            'definition' => ['id'],
+                        ],
+                    ],
+                ]],
+                ['test', [
+                    'columns' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'code' => [
+                            'type' => 'varchar'
+                        ],
+                    ],
+                    'constraints' => [
+                        'primary' => [
+                            'type' => 'primaryKey',
+                            'definition' => ['id'],
+                        ],
+                    ],
+                ]],
+            ]));
+        $refPropRes->setValue(self::$_manager, $mock);
+
+        self::$_manager->createDirectives();
+
+        $expectedDirectives = self::$_manager->getDirectives();
+        $this->assertCount(1, $expectedDirectives->addColumns);
+        $this->assertCount(1, $expectedDirectives->changeColumns);
+        $this->assertCount(1, $expectedDirectives->dropColumns);
+        $this->assertCount(1, $expectedDirectives->addConstraints);
+    }
+
+    /**
+     * @test
+     * @expectedException \LogicException
+     */
+    public function testCreateDirectivesException()
+    {
+        $refProp = new \ReflectionProperty(get_class(self::$_manager), '_reader');
+        $refProp->setAccessible(true);
+
+        $mock = $this->getMock('Maketok\Installer\Ddl\ConfigReader');
+        $mock->expects($this->any())->method('getMergedConfig')->will($this->returnValue([1]));
+        $refProp->setValue(self::$_manager, $mock);
+        self::$_manager->createDirectives();
     }
 }

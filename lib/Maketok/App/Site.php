@@ -13,6 +13,7 @@ use Maketok\Observer\State;
 use Maketok\Observer\StateInterface;
 use Maketok\Http\Request;
 use Maketok\Util\RequestInterface;
+use Maketok\Util\StreamHandler;
 use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -32,8 +33,8 @@ final class Site
     const MODE_FRONTEND = 0b110001111111111;
     /** load base+admin */
     const MODE_ADMIN = 0b111001111111111;
-    /** load base + test, not load session,ddl configs */
-    const MODE_TEST = 0b010011111110011;
+    /** load base + test, not load session,ddl configs, not load env */
+    const MODE_TEST = 0b010011100110011;
     /** load base + dev, all configs */
     const MODE_DEVELOPMENT = 0b110101111111111;
 
@@ -45,6 +46,7 @@ final class Site
      * const SESSION = 0b100;
      * const INSTALLER = 0b1000;
      */
+    const MODE_DUMP_SC = 0b1000000;
     const MODE_LOAD_ENVIRONMENT = 0b10000000;
     const MODE_LOAD_SC = 0b100000000;
     const MODE_LOAD_BASE_CONFIGS = 0b1000000000;
@@ -233,25 +235,25 @@ final class Site
         foreach (Config::getConfig('di_parameters') as $k => $v) {
             $container->setParameter($k, $v);
         }
-        $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config' . DS . 'di'));
+        $loader = new YamlFileLoader($container, new FileLocator(AR . '/config/di'));
         if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
             $loader->load('services.yml');
-            if (file_exists(AR . DS . 'config' . DS . 'di' . DS . 'local.services.yml')) {
+            if (file_exists(AR . '/config/di/local.services.yml')) {
                 $loader->load('local.services.yml');
             }
         }
         if ((self::$mode & self::MODE_LOAD_DEV_CONFIGS) &&
-            file_exists(AR . DS . 'config' . DS . 'di' . DS . 'dev.services.yml')) {
+            file_exists(AR . '/config/di/dev.services.yml')) {
             $loader->load('dev.services.yml');
         }
         if ((self::$mode & self::MODE_LOAD_TEST_CONFIGS) &&
-            file_exists(AR . DS . 'config' . DS . 'di' . DS . 'test.services.yml')) {
+            file_exists(AR . '/config/di/test.services.yml')) {
             $loader->load('test.services.yml');
         }
         if ((self::$mode & self::MODE_LOAD_ADMIN_CONFIGS) &&
-            file_exists(AR . DS . 'config' . DS . 'di' . DS . 'admin.services.yml')) {
+            file_exists(AR . '/config/di/admin.services.yml')) {
             $loader->load('admin.services.yml');
-            if (file_exists(AR . DS . 'config' . DS . 'di' . DS . 'local.admin.services.yml')) {
+            if (file_exists(AR . '/config/di/local.admin.services.yml')) {
                 $loader->load('local.admin.services.yml');
             }
         }
@@ -321,7 +323,7 @@ final class Site
         } else {
             $fn = 'container.php';
         }
-        return AR . DS . 'var' . DS . 'cache' . DS . $fn;
+        return AR . '/var/cache/' . $fn;
     }
 
     /**
@@ -334,11 +336,15 @@ final class Site
             $container = self::getServiceContainer();
             $container->compile();
 
-            $dumper = new PhpDumper($container);
-            file_put_contents(
-                self::getContainerFileName(),
-                $dumper->dump(array('class' => self::getSCClassName(false)))
-            );
+            if (self::$mode & self::MODE_DUMP_SC) {
+                $dumper = new PhpDumper($container);
+                /** @var StreamHandler $writer */
+                $writer = $container->get('lock_stream_handler');
+                $writer->writeWithLock(
+                    $dumper->dump(array('class' => self::getSCClassName(false))),
+                    self::getContainerFileName()
+                );
+            }
         }
     }
 

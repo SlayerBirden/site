@@ -256,8 +256,8 @@ class Resource implements ResourceInterface
             $constraintInfo['on_delete'] = $matches[5];
             $constraintInfo['on_update'] = $matches[6];
         }
-        if (is_string($name) && ($constraintInfo['name'] == $name) ||
-            ($constraintInfo['type'] == 'primary' && strtolower($name) == 'primary') ||
+        if (isset($constraintInfo['name']) && is_string($name) && ($constraintInfo['name'] == $name) ||
+            (isset($constraintInfo['type']) && $constraintInfo['type'] == 'primary' && strtolower($name) == 'primary') ||
             is_null($name)) {
             return $constraintInfo;
         }

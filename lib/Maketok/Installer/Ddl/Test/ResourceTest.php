@@ -56,7 +56,7 @@ CREATE TABLE `test_store` (
 SQL;
         $adapter = Site::getServiceContainer()->get('adapter');
         $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        self::$_resource = new Resource($adapter);
+        self::$_resource = new Resource($adapter, Site::getServiceContainer()->get('zend_db_sql'));
     }
 
     /**
@@ -129,7 +129,7 @@ SQL;
         $this->assertNotEmpty($result);
 
         $this->assertEquals('primary', $result['type']);
-        $this->assertNull($result['name']);
+        $this->assertFalse(isset($result['name']));
         $this->assertEquals(array('website_id'), $result['definition']);
 
         $result = self::$_resource->getConstraint('test_website', 'code');
@@ -149,7 +149,7 @@ SQL;
         $this->assertEquals('website_id', $result['reference_column']);
         $this->assertEquals('CASCADE', $result['on_delete']);
         $this->assertEquals('CASCADE', $result['on_update']);
-        $this->assertNull($result['definition']);
+        $this->assertFalse(isset($result['definition']));
     }
 
     /**
