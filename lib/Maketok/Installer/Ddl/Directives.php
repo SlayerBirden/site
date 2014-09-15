@@ -59,6 +59,19 @@ class Directives implements \IteratorAggregate, \Countable
     }
 
     /**
+     * @param string $key
+     * @param mixed $def
+     * @throws \InvalidArgumentException
+     */
+    public function addProp($key, $def)
+    {
+        if (!property_exists($this, $key)) {
+            throw new \InvalidArgumentException(sprintf("The property %s does not exist.", $key));
+        }
+        array_push($this->$key, $def);
+    }
+
+    /**
      * (PHP 5 &gt;= 5.1.0)<br/>
      * Count elements of an object
      * @link http://php.net/manual/en/countable.count.php

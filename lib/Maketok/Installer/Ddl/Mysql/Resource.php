@@ -30,8 +30,8 @@ class Resource implements ResourceInterface
      * @var \Zend\Db\Sql\Sql
      */
     private $sql;
-    /** @var array */
-    private $_procedures = [];
+    /** @var array|\Iterator */
+    private $_procedures;
 
     public function __construct(Adapter $adapter, Sql $sql)
     {
@@ -80,7 +80,8 @@ class Resource implements ResourceInterface
     protected function _getTableArray($table)
     {
         try {
-            $result = $this->_adapter->query("SHOW CREATE TABLE `$table`", Adapter::QUERY_MODE_EXECUTE);
+            $result = $this->_adapter->query(
+                "SHOW CREATE TABLE `$table`", Adapter::QUERY_MODE_EXECUTE);
             $data = $result->current();
             $data = $data->getArrayCopy();
             $data = explode("\n", $data['Create Table']);
@@ -256,8 +257,12 @@ class Resource implements ResourceInterface
             $constraintInfo['on_delete'] = $matches[5];
             $constraintInfo['on_update'] = $matches[6];
         }
-        if (isset($constraintInfo['name']) && is_string($name) && ($constraintInfo['name'] == $name) ||
-            (isset($constraintInfo['type']) && $constraintInfo['type'] == 'primary' && strtolower($name) == 'primary') ||
+        if ((isset($constraintInfo['name']) &&
+                is_string($name) &&
+                $constraintInfo['name'] == $name) ||
+            (isset($constraintInfo['type']) &&
+                $constraintInfo['type'] == 'primary' &&
+                strtolower($name) == 'primary') ||
             is_null($name)) {
             return $constraintInfo;
         }
@@ -266,64 +271,88 @@ class Resource implements ResourceInterface
 
     /**
      * {@inheritdoc}
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     public function createProcedures(Directives $directives)
     {
+        if (isset($this->_procedures)) {
+            throw new \LogicException("Wrong context of launching create procedures method. The procedures are already created.");
+        }
+        $this->_procedures = [];
         foreach ($directives as $type => $list) {
             switch ($type) {
                 case 'addTables':
-                    if (!isset($list[0]) || !isset($list[1])) {
-                        throw new \InvalidArgumentException("Not enough parameter to add table.");
+                    foreach ($list as $item) {
+                        if (!isset($item[0]) || !isset($item[1])) {
+                            throw new \InvalidArgumentException("Not enough parameter to add table.");
+                        }
+                        $this->_procedures[] = $this->_addTable($item[0], $item[1]);
                     }
-                    $this->_procedures[] = $this->_addTable($list[0], $list[1]);
                     break;
                 case 'dropTables':
-                    if (!isset($list[0])) {
-                        throw new \InvalidArgumentException("Not enough parameter to drop table.");
+                    foreach ($list as $item) {
+                        if (!isset($item[0])) {
+                            throw new \InvalidArgumentException("Not enough parameter to drop table.");
+                        }
+                        $this->_procedures[] = $this->_dropTable($item[0]);
                     }
-                    $this->_procedures[] = $this->_dropTable($list[0]);
                     break;
                 case 'addColumns':
-                    if (!isset($list[0]) || !isset($list[1]) || !isset($list[2])) {
-                        throw new \InvalidArgumentException("Not enough parameter to add columns.");
+                    foreach ($list as $item) {
+                        if (!isset($item[0]) || !isset($item[1]) || !isset($item[2])) {
+                            throw new \InvalidArgumentException("Not enough parameter to add columns.");
+                        }
+                        $this->_procedures[] = $this->_addColumn($item[0], $item[1], $item[2]);
                     }
-                    $this->_procedures[] = $this->_addColumn($list[0], $list[1], $list[2]);
                     break;
                 case 'changeColumns':
-                    if (!isset($list[0]) || !isset($list[1]) || !isset($list[2]) || !isset($list[3])) {
-                        throw new \InvalidArgumentException("Not enough parameter to change table.");
+                    foreach ($list as $item) {
+                        if (!isset($item[0]) || !isset($item[1]) || !isset($item[2]) || !isset($item[3])) {
+                            throw new \InvalidArgumentException("Not enough parameter to change column.");
+                        }
+                        $this->_procedures[] = $this->_changeColumn($item[0], $item[1], $item[2], $item[3]);
                     }
-                    $this->_procedures[] = $this->_changeColumn($list[0], $list[1], $list[2], $list[3]);
                     break;
                 case 'dropColumns':
-                    if (!isset($list[0]) || !isset($list[1])) {
-                        throw new \InvalidArgumentException("Not enough parameter to drop table.");
+                    foreach ($list as $item) {
+                        if (!isset($item[0]) || !isset($item[1])) {
+                            throw new \InvalidArgumentException("Not enough parameter to drop table.");
+                        }
+                        $this->_procedures[] = $this->_dropColumn($item[0], $item[1]);
                     }
-                    $this->_procedures[] = $this->_dropColumn($list[0], $list[1]);
                     break;
                 case 'addConstraints':
-                    if (!isset($list[0]) || !isset($list[1]) || !isset($list[2])) {
-                        throw new \InvalidArgumentException("Not enough parameter to add constraints.");
+                    foreach ($list as $item) {
+                        if (!isset($item[0]) || !isset($item[1]) || !isset($item[2])) {
+                            throw new \InvalidArgumentException("Not enough parameter to add constraints.");
+                        }
+                        $this->_procedures[] = $this->_addConstraint($item[0], $item[1], $item[2]);
                     }
-                    $this->_procedures[] = $this->_addConstraint($list[0], $list[1], $list[2]);
                     break;
                 case 'dropConstraints':
-                    if (!isset($list[0]) || !isset($list[1])) {
-                        throw new \InvalidArgumentException("Not enough parameter to drop constraint.");
+                    foreach ($list as $item) {
+                        if (!isset($item[0]) || !isset($item[1])) {
+                            throw new \InvalidArgumentException("Not enough parameter to drop constraint.");
+                        }
+                        $this->_procedures[] = $this->_dropConstraint($item[0], $item[1]);
                     }
-                    $this->_procedures[] = $this->_dropConstraint($list[0], $list[1]);
                     break;
                 case 'addIndices':
-                    if (!isset($list[0]) || !isset($list[1]) || !isset($list[2])) {
-                        throw new \InvalidArgumentException("Not enough parameter to add index.");
+                    foreach ($list as $item) {
+                        if (!isset($item[0]) || !isset($item[1]) || !isset($item[2])) {
+                            throw new \InvalidArgumentException("Not enough parameter to add index.");
+                        }
+                        $this->_procedures[] = $this->_addConstraint($item[0], $item[1], $item[2]);
                     }
-                    $this->_procedures[] = $this->_addConstraint($list[0], $list[1], $list[2]);
                     break;
                 case 'dropIndices':
-                    if (!isset($list[0]) || !isset($list[1])) {
-                        throw new \InvalidArgumentException("Not enough parameter to drop index.");
+                    foreach ($list as $item) {
+                        if (!isset($item[0]) || !isset($item[1])) {
+                            throw new \InvalidArgumentException("Not enough parameter to drop index.");
+                        }
+                        $this->_procedures[] = $this->_dropConstraint($item[0], $item[1]);
                     }
-                    $this->_procedures[] = $this->_dropConstraint($list[0], $list[1]);
                     break;
             }
         }
@@ -331,9 +360,17 @@ class Resource implements ResourceInterface
 
     /**
      * {@inheritdoc}
+     * @throws \LogicException
      */
     public function runProcedures()
     {
+        if (is_null($this->_procedures)) {
+            throw new \LogicException("Wrong context of using runProcedures. Procedures are not created yet.");
+        }
+        if (!(is_array($this->_procedures) ||
+            (is_object($this->_procedures) && $this->_procedures instanceof \Iterator))) {
+            throw new \LogicException("Unknown type of procedures.");
+        }
         foreach ($this->_procedures as $query) {
             $this->_commit($query);
         }

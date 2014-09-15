@@ -88,10 +88,11 @@ class Manager extends AbstractManager implements ManagerInterface
      */
     public function createDirectives()
     {
-        if (!empty($this->_directives)) {
+        if (isset($this->_directives)) {
             // no point in creating directives when they already exist
             return;
         }
+        $this->_directives = new Directives();
         $config = $this->_reader->getMergedConfig();
         foreach ($config as $table => $definition) {
             if (!isset($definition['columns']) || !is_array($definition['columns'])) {
@@ -102,7 +103,7 @@ class Manager extends AbstractManager implements ManagerInterface
             // compare def with db
             if (empty($dbConfig)) {
                 // add table
-                $this->_directives['addTables'] = [$table, $definition];
+                $this->_directives->addProp('addTables', [$table, $definition]);
             } else {
                 $_newColumns = $definition['columns'];
                 $_oldColumns = $dbConfig['columns'];
@@ -137,24 +138,25 @@ class Manager extends AbstractManager implements ManagerInterface
         $_changeMap = [];
         foreach ($b as $columnName => $columnDefinition) {
             if (!array_key_exists($columnName, $a) && !isset($columnDefinition['old_name'])) {
-                $this->_directives->addColumns[] = [$tableName, $columnName, $columnDefinition];
+                $this->_directives->addProp('addColumns', [$tableName, $columnName, $columnDefinition]);
             } elseif (isset($columnDefinition['old_name']) && is_string($columnDefinition['old_name'])) {
-                $this->_directives->changeColumns[] = [
+                $this->_directives->addProp('changeColumns', [
                     $tableName,
                     $columnDefinition['old_name'],
                     $columnName,
                     $columnDefinition,
-                ];
+                ]);
                 $_changeMap[$columnDefinition['old_name']] = $tableName;
             } elseif ($columnDefinition === $a[$columnName]) {
                 continue;
             } else {
-                $this->_directives->changeColumns[] = [$tableName, $columnName, $columnName, $columnDefinition];
+                $this->_directives->addProp('changeColumns',
+                    [$tableName, $columnName, $columnName, $columnDefinition]);
             }
         }
         foreach ($a as $columnName => $columnDefinition) {
             if (!array_key_exists($columnName, $b) && !isset($_changeMap[$columnName])) {
-                $this->_directives->dropColumns[] = [$tableName, $columnName];
+                $this->_directives->addProp('dropColumns', [$tableName, $columnName]);
             }
         }
     }
@@ -169,12 +171,13 @@ class Manager extends AbstractManager implements ManagerInterface
     {
         foreach ($b as $constraintName => $constraintDefinition) {
             if (!array_key_exists($constraintName, $a)) {
-                $this->_directives->addConstraints[] = [$tableName, $constraintName, $constraintDefinition];
+                $this->_directives->addProp('addConstraints',
+                    [$tableName, $constraintName, $constraintDefinition]);
             }
         }
         foreach ($a as $constraintName => $constraintDefinition) {
             if (!array_key_exists($constraintName, $b)) {
-                $this->_directives->dropConstraints[] = [$tableName, $constraintName];
+                $this->_directives->addProp('dropConstraints', [$tableName, $constraintName]);
             }
         }
     }
@@ -189,12 +192,12 @@ class Manager extends AbstractManager implements ManagerInterface
     {
         foreach ($b as $indexName => $indexDefinition) {
             if (!array_key_exists($indexName, $a)) {
-                $this->_directives->addIndices[] = [$tableName, $indexName, $indexDefinition];
+                $this->_directives->addProp('addIndices', [$tableName, $indexName, $indexDefinition]);
             }
         }
         foreach ($a as $indexName => $indexDefinition) {
             if (!array_key_exists($indexName, $b)) {
-                $this->_directives->dropIndices[] = [$tableName, $indexName];
+                $this->_directives->addProp('dropIndices', [$tableName, $indexName]);
             }
         }
     }

@@ -9,6 +9,7 @@
 namespace Maketok\Installer\Ddl\Test;
 
 use Maketok\App\Site;
+use Maketok\Installer\Ddl\Directives;
 use Maketok\Installer\Ddl\Mysql\Resource;
 use Zend\Db\Adapter\Adapter;
 
@@ -51,12 +52,14 @@ CREATE TABLE `test_store` (
   KEY `FK_STORE_WEBSITE` (`website_id`),
   KEY `is_active` (`is_active`,`sort_order`),
   KEY `FK_STORE_GROUP` (`group_id`),
-  CONSTRAINT `FK_STORE_WEBSITE` FOREIGN KEY (`website_id`) REFERENCES `test_website` (`website_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `FK_STORE_WEBSITE` FOREIGN KEY (`website_id`)
+   REFERENCES `test_website` (`website_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='Stores';
 SQL;
         $adapter = Site::getServiceContainer()->get('adapter');
         $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        self::$_resource = new Resource($adapter, Site::getServiceContainer()->get('zend_db_sql'));
+        self::$_resource = new Resource($adapter,
+            Site::getServiceContainer()->get('zend_db_sql'));
     }
 
     /**
@@ -177,10 +180,102 @@ SQL;
         $falseIndex = 'fidx';
         $this->assertEquals([], self::$_resource->getTable($falseTable));
         $this->assertEquals([], self::$_resource->getColumn($falseTable, $falseColumn));
-        $this->assertEquals([], self::$_resource->getConstraint($falseTable, $falseConstraint));
+        $this->assertEquals([],
+            self::$_resource->getConstraint($falseTable, $falseConstraint));
         $this->assertEquals([], self::$_resource->getIndex($falseTable, $falseIndex));
     }
 
+    /**
+     * @test
+     * @covers createProcedures
+     */
+    public function testCreateProcedures()
+    {
+        self::$_resource = new Resource(Site::getServiceContainer()->get('adapter'),
+            Site::getServiceContainer()->get('zend_db_sql'));
+        $directives = new Directives();
+        $directives->addTables = [
+            [
+                'test',
+                [
+                    'columns' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'code' => [
+                            'type' => 'varchar'
+                        ],
+                    ],
+                ]
+            ]
+        ];
+        $directives->changeColumns = [
+            [
+                'test2',
+                'oldCol',
+                'newCol',
+                ['type' => 'integer']
+            ],
+        ];
+        $directives->dropConstraints = [
+            [
+                'test2',
+                'UNQ_KEY_OOPS'
+            ],
+        ];
+
+        self::$_resource->createProcedures($directives);
+        $refProp = new \ReflectionProperty(get_class(self::$_resource), '_procedures');
+        $refProp->setAccessible(true);
+        // the order is switched
+        $expected = [
+            "CREATE TABLE `test` ( `id` INTEGER NOT NULL, `code` VARCHAR() NOT NULL )",
+            "ALTER TABLE `test2` DROP FOREIGN KEY `UNQ_KEY_OOPS`",
+            "ALTER TABLE `test2` CHANGE COLUMN `oldCol` `newCol` INTEGER NOT NULL",
+        ];
+        $procedures = $refProp->getValue(self::$_resource);
+        $this->assertCount(3, $procedures);
+        for ($i = 0; $i < 3; ++$i) {
+            $this->assertEquals($expected[$i], preg_replace('/\s+/', ' ', $procedures[$i]));
+        }
+    }
+
+    /**
+     * @test
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Wrong context of launching create procedures method
+     */
+    public function testCreateProceduresWrongContext()
+    {
+        self::$_resource = new Resource(Site::getServiceContainer()->get('adapter'),
+            Site::getServiceContainer()->get('zend_db_sql'));
+        $directives = new Directives();
+        self::$_resource->createProcedures($directives);
+        self::$_resource->createProcedures($directives);
+    }
+
+    /**
+     * @test
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Not enough parameter to change column
+     */
+    public function testCreateProceduresWrongDirectives()
+    {
+        self::$_resource = new Resource(Site::getServiceContainer()->get('adapter'),
+            Site::getServiceContainer()->get('zend_db_sql'));
+        $directives = new Directives();
+        $directives->changeColumns = [
+            [
+                'test',
+                [],
+            ],
+        ];
+        self::$_resource->createProcedures($directives);
+    }
+
+    /**
+     * tear down routine
+     */
     static public function tearDownAfterClass()
     {
         $sql = <<<'SQL'
