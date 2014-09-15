@@ -16,10 +16,10 @@ interface ClientInterface extends BaseClientInterface
     /**
      * client register dependencies (parents)
      * it must register dependencies to change resources that were created by other clients
-     * @param array $dependencies
-     * @return mixed
+     *
+     * @return array
      */
-    public function registerDependencies(array $dependencies);
+    public function getDependencies();
 
     /**
      * get client version to install

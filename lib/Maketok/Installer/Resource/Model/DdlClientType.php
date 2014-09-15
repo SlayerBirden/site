@@ -8,9 +8,24 @@
 
 namespace Maketok\Installer\Resource\Model;
 
+use Maketok\Installer\Exception;
 use Maketok\Util\AbstractTableMapper;
 
 class DdlClientType extends AbstractTableMapper
 {
 
+    /**
+     * @param string $code
+     * @return array|\ArrayObject|null
+     * @throws \Maketok\Installer\Exception
+     */
+    public function getClientByCode($code)
+    {
+        $resultSet = $this->getGateway()->select(array('code' => $code));
+        $row = $resultSet->current();
+        if (!$row) {
+            throw new Exception(sprintf("Could not find client with code %s.", $code));
+        }
+        return $row;
+    }
 }

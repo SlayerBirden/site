@@ -14,6 +14,9 @@ use Maketok\Installer\ConfigReaderInterface;
 use Maketok\Installer\Exception;
 use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
+use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
+use Maketok\Installer\Resource\Model\DdlClient;
+use Maketok\Installer\Resource\Model\DdlClientType;
 use Maketok\Util\StreamHandlerInterface;
 
 class Manager extends AbstractManager implements ManagerInterface
@@ -54,7 +57,29 @@ class Manager extends AbstractManager implements ManagerInterface
         if (is_null($this->_clients)) {
             $this->_clients = [];
         }
-        $this->_clients[$client->getDdlCode()] = $client;
+        $this->_clients[$client->getDdlCode()] = $this->getClientModel($client);
+    }
+
+    /**
+     * @param DdlClientInterface $client
+     * @return DdlClient
+     */
+    public function getClientModel(DdlClientInterface $client)
+    {
+        try {
+            /** @var DdlClientType $type */
+            $type = Site::getServiceContainer()->get('ddl_client_table');
+            $model = $type->getClientByCode($client->getDdlCode());
+        } catch (\Exception $e) {
+            // this is kind of a way to catch non existing table request
+            // TODO need to find a better way in the future
+            $model = new DdlClient();
+        }
+        $model->code = $client->getDdlCode();
+        $model->version = $client->getDdlVersion();
+        $model->config = $client->getDdlConfig($model->version);
+        $model->dependencies = $client->getDependencies();
+        return $model;
     }
 
     /**

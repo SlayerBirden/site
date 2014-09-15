@@ -9,11 +9,11 @@
 namespace Maketok\Installer;
 
 use Maketok\App\Site;
-use Maketok\Installer\Ddl\AbstractClient;
+use Maketok\Installer\Ddl\ClientInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
 
-class InstallerClient extends AbstractClient
+class InstallerClient implements ClientInterface
 {
 
     /**
@@ -29,7 +29,7 @@ class InstallerClient extends AbstractClient
      */
     public function getDdlConfig($version)
     {
-        $locator = new FileLocator(__DIR__.'/Resource/config/installer/'.$type);
+        $locator = new FileLocator(__DIR__.'/Resource/config/installer/ddl/');
         $ymlReader = new Yaml();
         try {
             $file = $locator->locate($version.'.yml');
@@ -46,5 +46,16 @@ class InstallerClient extends AbstractClient
     public function getDdlCode()
     {
         return 'installer';
+    }
+
+    /**
+     * client register dependencies (parents)
+     * it must register dependencies to change resources that were created by other clients
+     *
+     * @return array
+     */
+    public function getDependencies()
+    {
+        return [];
     }
 }

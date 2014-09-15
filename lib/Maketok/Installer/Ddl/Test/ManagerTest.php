@@ -10,6 +10,7 @@ namespace Maketok\Installer\Ddl\Test;
 
 use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Installer\Ddl\Manager;
+use Maketok\Installer\Resource\Model\DdlClient;
 
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -39,11 +40,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         self::$_manager->addClient($client);
         $this->assertTrue(self::$_manager->hasClients());
         $this->assertCount(1, self::$_manager->getClients());
-        /** @var ClientInterface $actual */
+        /** @var DdlClient $actual */
         $actual = current(self::$_manager->getClients());
-        $this->assertEquals('0.1.0', $actual->getDdlVersion());
-        $this->assertEquals([], $actual->getDdlConfig(''));
-        $this->assertEquals('t1', $actual->getDdlCode());
+        $this->assertEquals('0.1.0', $actual->version);
+        $this->assertEquals([], $actual->config);
+        $this->assertEquals('t1', $actual->code);
 
         $client = $this->getMock('Maketok\Installer\Ddl\ClientInterface');
         $client->expects($this->any())->method('getDdlVersion')->will($this->returnValue('0.1.0'));
@@ -55,9 +56,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, self::$_manager->getClients());
         $clients = self::$_manager->getClients();
         $actual = $clients['t2'];
-        $this->assertEquals('0.1.0', $actual->getDdlVersion());
-        $this->assertEquals([], $actual->getDdlConfig(''));
-        $this->assertEquals('t2', $actual->getDdlCode());
+        $this->assertEquals('0.1.0', $actual->version);
+        $this->assertEquals([], $actual->config);
+        $this->assertEquals('t2', $actual->code);
 
         $client = $this->getMock('Maketok\Installer\Ddl\ClientInterface');
         $client->expects($this->any())->method('getDdlVersion')->will($this->returnValue('0.2.0'));
@@ -69,9 +70,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, self::$_manager->getClients());
         $clients = self::$_manager->getClients();
         $actual = $clients['t2'];
-        $this->assertEquals('0.2.0', $actual->getDdlVersion());
-        $this->assertEquals(['bla'], $actual->getDdlConfig(''));
-        $this->assertEquals('t2', $actual->getDdlCode());
+        $this->assertEquals('0.2.0', $actual->version);
+        $this->assertEquals(['bla'], $actual->config);
+        $this->assertEquals('t2', $actual->code);
     }
 
     /**

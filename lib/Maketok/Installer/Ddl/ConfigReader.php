@@ -85,7 +85,8 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function validateDependencyTree()
     {
-        // not needed now
+        // TODO 1) validate that 2 clients do not modify 1 resource without declaring dependencies
+        // TODO 2) validate that there are no clients with dependencies to missing clients
     }
 
     /**
