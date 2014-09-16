@@ -23,6 +23,7 @@ class ConfigReader implements ConfigReaderInterface
 
     /**
      * {@inheritdoc}
+     * validation is happening here
      * @throws DependencyTreeException
      */
     public function buildDependencyTree($clients)
