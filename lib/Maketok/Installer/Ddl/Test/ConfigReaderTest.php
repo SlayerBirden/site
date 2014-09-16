@@ -234,6 +234,95 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException \Maketok\Installer\Ddl\DependencyTreeException
+     */
+    public function testRebuildTree()
+    {
+        $this->reader->buildDependencyTree(['m1' => [], 'm2' => []]);
+        $this->reader->buildDependencyTree([]);
+    }
+
+    /**
+     * @test
+     * @expectedException \Maketok\Installer\Ddl\DependencyTreeException
+     * @expectedExceptionMessage Unresolved dependency
+     */
+    public function testBuildWrongTree()
+    {
+        $client1 = new DdlClient();
+        $client1->id = 1;
+        $client1->code = 'm1';
+        $client1->version = '0.1.0';
+        $client1->config = [
+            'modules' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar'
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                ],
+            ],
+            'test' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar'
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                ],
+            ]
+        ];
+        $client1->dependencies = ['m0'];
+        $client2 = new DdlClient();
+        $client2->id = 2;
+        $client2->code = 'm2';
+        $client2->version = '0.1.0';
+        $client2->config = [
+            'modules' => [
+                'columns' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'code' => [
+                        'type' => 'varchar',
+                    ],
+                    'version' => [
+                        'type' => 'varchar',
+                    ],
+                ],
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                    'UNQ_KEY_CODE' => [
+                        'type' => 'uniqueKey',
+                        'definition' => ['code'],
+                    ],
+                ],
+            ],
+        ];
+        $client2->dependencies = ['m1'];
+        $this->reader->buildDependencyTree([$client1, $client2]);
+    }
+
+    /**
+     * @test
      */
     public function testRecursiveMerge()
     {
@@ -463,6 +552,16 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         $this->reader->mergeDependencyTree();
         $tree = $this->reader->getDependencyTree();
         $this->assertEquals($expected, $tree, print_r($tree, 1));
+    }
+
+    /**
+     * @test
+     * @expectedException \Maketok\Installer\Ddl\DependencyTreeException
+     * @expectedExceptionMessage The tree is not built yet
+     */
+    public function testMergeDependencyTreeEmpty()
+    {
+        $this->reader->mergeDependencyTree();
     }
 
     /**

@@ -23,11 +23,25 @@ class ConfigReader implements ConfigReaderInterface
 
     /**
      * {@inheritdoc}
+     * @throws DependencyTreeException
      */
     public function buildDependencyTree($clients)
     {
-        usort($clients, array($this, 'dependencyBubbleSortCallback'));
+        if (is_array($this->_tree) && !empty($this->_tree)) {
+            throw new DependencyTreeException("Invalid context of calling method. The tree is already built.");
+        }
+        try {
+            usort($clients, array($this, 'dependencyBubbleSortCallback'));
+        } catch (\Exception $e) {
+            // for now suppress the error. It will be revealed later
+        }
         foreach ($clients as $client) {
+            if (!is_object($client)) {
+                throw new DependencyTreeException(sprintf("Invalid Client. Type: %s", gettype($client)));
+            }
+            if (!($client instanceof DdlClient)) {
+                throw new DependencyTreeException(sprintf("Invalid Client. Class: %s", get_class($client)));
+            }
             /** @var DdlClient $client */
             foreach ($client->config as $table => $definition) {
                 $branch = [
@@ -47,6 +61,14 @@ class ConfigReader implements ConfigReaderInterface
                         $this->_tree[$table]['dependents'][] = $branch;
                     }
                 } else {
+                    if ($client->dependencies) {
+                        foreach ($client->dependencies as $dependency) {
+                            if (!isset($this->_tree[$dependency])) {
+                                throw new DependencyTreeException(
+                                    sprintf("Unresolved dependency '%s' for client %s.", $dependency, $client->code));
+                            }
+                        }
+                    }
                     $this->_tree[$table] = $branch;
                 }
             }
@@ -91,17 +113,20 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function validateDependencyTree()
     {
-        // TODO 1) validate that 2 clients do not modify 1 resource without declaring dependencies
-        // TODO 2) validate that there are no clients with dependencies to missing clients
+        // not in use now
     }
 
     /**
      * {@inheritdoc}
+     * @throws DependencyTreeException
      */
     public function mergeDependencyTree()
     {
         if ($this->_isMerged) {
             return;
+        }
+        if (is_null($this->_tree)) {
+            throw new DependencyTreeException("Invalid context of calling method. The tree is not built yet.");
         }
         foreach ($this->_tree as &$branch) {
             $branch['definition'] = $this->recursiveMerge($branch);
