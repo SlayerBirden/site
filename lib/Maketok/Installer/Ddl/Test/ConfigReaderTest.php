@@ -98,7 +98,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
-        $client2->dependencies = [1];
+        $client2->dependencies = ['m1'];
         $client3 = new DdlClient();
         $client3->id = 3;
         $client3->code = 'm3';
@@ -126,11 +126,11 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
-        $client3->dependencies = [1,2];
+        $client3->dependencies = ['m1', 'm2'];
         $this->reader->buildDependencyTree(array($client1, $client2, $client3));
         $expected = [
             'modules' => [
-                'client' => 1,
+                'client' => 'm1',
                 'version' => '0.1.0',
                 'definition' => [
                     'columns' => [
@@ -150,7 +150,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                 ],
                 'dependents' => [
                     [
-                        'client' => 2,
+                        'client' => 'm2',
                         'version' => '0.1.0',
                         'definition' => [
                             'columns' => [
@@ -178,7 +178,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                         'dependents' => [],
                     ],
                     [
-                        'client' => 3,
+                        'client' => 'm3',
                         'version' => '2',
                         'definition' => [
                             'columns' => [
@@ -206,7 +206,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
             'test' => [
-                'client' => 1,
+                'client' => 'm1',
                 'version' => '0.1.0',
                 'definition' => [
                     'columns' => [
@@ -238,7 +238,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     public function testRecursiveMerge()
     {
         $branch = [
-            'client' => 1,
+            'client' => 'm1',
             'version' => '0.1.0',
             'definition' => [
                 'columns' => [
@@ -258,7 +258,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
             ],
             'dependents' => [
                 [
-                    'client' => 2,
+                    'client' => 'm2',
                     'version' => '0.1.0',
                     'definition' => [
                         'columns' => [
@@ -285,7 +285,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                     ],
                     'dependents' => [
                         [
-                            'client' => 3,
+                            'client' => 'm3',
                             'version' => '0.1.0',
                             'definition' => [
                                 'columns' => [
@@ -317,7 +317,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
                 [
-                    'client' => 4,
+                    'client' => 'm4',
                     'version' => '0.1.0',
                     'definition' => [
                         'columns' => [
@@ -338,7 +338,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                     ],
                     'dependents' => [
                         [
-                            'client' => 5,
+                            'client' => 'm5',
                             'version' => '0.1.0',
                             'definition' => [
                                 'columns' => [
@@ -410,7 +410,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     {
         $expected = [
             'modules' => [
-                'client' => 1,
+                'client' => 'm1',
                 'version' => '0.1.0',
                 'definition' => [
                     'columns' => [
@@ -439,7 +439,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
             'test' => [
-                'client' => 1,
+                'client' => 'm1',
                 'version' => '0.1.0',
                 'definition' => [
                     'columns' => [
@@ -472,17 +472,21 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     {
         $client1 = new DdlClient();
         $client1->id = 1;
+        $client1->code = 'm1';
         $client2 = new DdlClient();
         $client2->id = 2;
-        $client2->dependencies = [1];
+        $client2->code = 'm2';
+        $client2->dependencies = ['m1'];
         $client3 = new DdlClient();
         $client3->id = 3;
-        $client3->dependencies = [5];
+        $client3->code = 'm3';
+        $client3->dependencies = ['m5'];
         $client4 = new DdlClient();
         $client4->id = 4;
+        $client4->code = 'm4';
         $client5 = new DdlClient();
-        $client5->id = 5;
-        $client5->dependencies = [1];
+        $client5->code = 'm5';
+        $client5->dependencies = ['m1'];
 
         $clients = [$client1, $client2, $client3, $client4, $client5];
         $expected = [$client1, $client4, $client2, $client5, $client3];
@@ -498,7 +502,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     {
         $tree = [
             'modules' => [
-                'client' => 1,
+                'client' => 'm1',
                 'version' => '0.1.0',
                 'definition' => [
                     'columns' => [
@@ -527,7 +531,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
             'test' => [
-                'client' => 1,
+                'client' => 'm1',
                 'version' => '0.1.0',
                 'definition' => [
                     'columns' => [

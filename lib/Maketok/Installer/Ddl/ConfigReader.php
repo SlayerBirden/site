@@ -31,7 +31,7 @@ class ConfigReader implements ConfigReaderInterface
             /** @var DdlClient $client */
             foreach ($client->config as $table => $definition) {
                 $branch = [
-                    'client' => $client->id,
+                    'client' => $client->code,
                     'version' => $client->version,
                     'definition' => $definition,
                     'dependents' => [],
@@ -65,13 +65,19 @@ class ConfigReader implements ConfigReaderInterface
         } elseif (!count($a->dependencies) && count($b->dependencies)) {
             return -1;
         } elseif (count($a->dependencies) && count($b->dependencies)) {
-            if (in_array($a->id, $b->dependencies)) {
+            if (in_array($a->code, $b->dependencies)) {
                 return -1;
-            } elseif (in_array($b->id, $a->dependencies)) {
+            } elseif (in_array($b->code, $a->dependencies)) {
                 return 1;
             }
         }
         // this makes sort stable
+        if (is_null($a->id) && !is_null($b->id)) {
+            return 1;
+        }
+        if (is_null($b->id) && !is_null($a->id)) {
+            return -1;
+        }
         if ($a->id > $b->id) {
             return 1;
         } elseif ($b->id > $a->id) {
