@@ -14,24 +14,8 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testProcessConfig()
+    public function testBuildDependencyTree()
     {
-        // @TODO: add logic
-    }
 
-    /**
-     * @test
-     */
-    public function testValidateDirectives()
-    {
-        // @TODO: add logic
-    }
-
-    /**
-     * @test
-     */
-    public function testGetDirectives()
-    {
-        // @TODO: add logic
     }
 }

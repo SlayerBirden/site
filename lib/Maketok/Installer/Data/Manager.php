@@ -17,8 +17,7 @@ class Manager extends AbstractManager implements ManagerInterface
 {
 
     /**
-     * This is where all clients are processed
-     * @return void
+     * {@inheritdoc}
      */
     public function process()
     {

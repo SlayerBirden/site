@@ -14,43 +14,7 @@ class ConfigReader implements ConfigReaderInterface
 {
 
     /**
-     * @param array $configChain
-     * @return void
-     */
-    public function processConfig(array $configChain)
-    {
-        // TODO: Implement processConfig() method.
-    }
-
-    /**
-     * @return void
-     */
-    public function validateDirectives()
-    {
-        // TODO: Implement validateDirectives() method.
-    }
-
-    /**
-     * @return array
-     */
-    public function getDirectives()
-    {
-        // TODO: Implement getDirectives() method.
-    }
-
-    /**
-     * @return void
-     */
-    public function compileDirectives()
-    {
-        // TODO: Implement compileDirectives() method.
-    }
-
-    /**
-     * create config tree for all clients
-     *
-     * @param array|\ArrayObject $clients
-     * @return void
+     * {@inheritdoc}
      */
     public function buildDependencyTree($clients)
     {
@@ -58,9 +22,7 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * validate tree
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function validateDependencyTree()
     {
@@ -68,9 +30,7 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * compile tree, merge all branches into main branch
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function mergeDependencyTree()
     {
@@ -78,9 +38,7 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * returns the directives
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getDependencyTree()
     {
@@ -88,9 +46,7 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * return merged config
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getMergedConfig()
     {
