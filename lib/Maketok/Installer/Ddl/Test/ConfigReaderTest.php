@@ -9,7 +9,7 @@
 namespace Maketok\Installer\Ddl\Test;
 
 use Maketok\Installer\Ddl\ConfigReader;
-use Maketok\Installer\Resource\Model\DdlClient;
+use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 
 class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 {

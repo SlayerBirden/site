@@ -9,7 +9,7 @@
 namespace Maketok\Installer\Ddl;
 
 use Maketok\Installer\ConfigReaderInterface;
-use Maketok\Installer\Resource\Model\DdlClient;
+use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 
 class ConfigReader implements ConfigReaderInterface
 {

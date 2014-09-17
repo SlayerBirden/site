@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Installer\Resource\Model;
+namespace Maketok\Installer\Ddl\Resource\Model;
 
 use Maketok\Util\AbstractTableMapper;
 

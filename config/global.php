@@ -30,7 +30,7 @@ return [
             ],
         ],
     ],
-    'di_extensions' => ['\Maketok\Installer\DI'],
+    'di_extensions' => ['\Maketok\Installer\Ddl\DI'],
     'di_compiler_passes' => [
         'Maketok\Template\TemplateCompilerPass',
         'Maketok\Util\Symfony\Form\FormExtensionCompilerPass',

@@ -8,7 +8,9 @@
 
 namespace Maketok\Installer\Ddl;
 
-class DependencyTreeException extends \RuntimeException
+use Maketok\Installer\Exception;
+
+class DependencyTreeException extends Exception
 {
 
 }

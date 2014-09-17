@@ -6,21 +6,19 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Installer\Resource\Model;
+namespace Maketok\Installer\Ddl\Resource\Model;
 
-class DdlClientHistory
+class DdlClient
 {
 
     /** @var int */
     public $id;
-    /** @var int */
-    public $client_id;
     /** @var string */
-    public $prev_version;
+    public $code;
     /** @var string */
     public $version;
-    /** @var string */
-    public $initializer;
-    /** @var string */
-    public $created_at;
+    /** @var array */
+    public $config;
+    /** @var array */
+    public $dependencies;
 }

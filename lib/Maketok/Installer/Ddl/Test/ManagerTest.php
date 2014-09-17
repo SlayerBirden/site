@@ -8,9 +8,8 @@
 
 namespace Maketok\Installer\Ddl\Test;
 
-use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Installer\Ddl\Manager;
-use Maketok\Installer\Resource\Model\DdlClient;
+use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {

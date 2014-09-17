@@ -11,12 +11,12 @@ namespace Maketok\Installer\Ddl;
 use Maketok\App\Site;
 use Maketok\Installer\AbstractManager;
 use Maketok\Installer\ConfigReaderInterface;
+use Maketok\Installer\Ddl\Resource\Model\DdlClient;
+use Maketok\Installer\Ddl\Resource\Model\DdlClientType;
 use Maketok\Installer\Exception;
 use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
-use Maketok\Installer\Resource\Model\DdlClient;
-use Maketok\Installer\Resource\Model\DdlClientType;
 use Maketok\Util\StreamHandlerInterface;
 
 class Manager extends AbstractManager implements ManagerInterface

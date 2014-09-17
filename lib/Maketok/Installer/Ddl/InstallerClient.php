@@ -6,10 +6,9 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Installer;
+namespace Maketok\Installer\Ddl;
 
 use Maketok\App\Site;
-use Maketok\Installer\Ddl\ClientInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
 
