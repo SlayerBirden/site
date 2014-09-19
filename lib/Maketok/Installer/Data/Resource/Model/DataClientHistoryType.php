@@ -6,11 +6,11 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Installer\Ddl\Resource\Model;
+namespace Maketok\Installer\Data\Resource\Model;
 
 use Maketok\Util\AbstractTableMapper;
 
-class DdlClientDependencyType extends AbstractTableMapper
+class DataClientHistoryType extends AbstractTableMapper
 {
 
 }
