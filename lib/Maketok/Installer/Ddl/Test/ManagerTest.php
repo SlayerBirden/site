@@ -8,6 +8,7 @@
 
 namespace Maketok\Installer\Ddl\Test;
 
+use Maketok\Installer\Ddl\Directives;
 use Maketok\Installer\Ddl\Manager;
 use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 
@@ -21,7 +22,8 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     {
         self::$_manager = new Manager(
             $this->getMock('Maketok\Installer\Ddl\ConfigReader'),
-            $this->getMock('Maketok\Installer\Ddl\Mysql\Resource', [], [], '', false)
+            $this->getMock('Maketok\Installer\Ddl\Mysql\Resource', [], [], '', false),
+            new Directives()
         );
     }
 
@@ -181,6 +183,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
         self::$_manager->createDirectives();
 
+        /** @var Directives $expectedDirectives */
         $expectedDirectives = self::$_manager->getDirectives();
         $this->assertCount(1, $expectedDirectives->addColumns);
         $this->assertCount(1, $expectedDirectives->changeColumns);

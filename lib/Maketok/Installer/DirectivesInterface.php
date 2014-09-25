@@ -8,13 +8,8 @@
 
 namespace Maketok\Installer;
 
-interface ConfigReaderInterface
+
+interface DirectivesInterface extends \IteratorAggregate, \Countable
 {
 
-    /**
-     * return merged config
-     *
-     * @return array
-     */
-    public function getMergedConfig();
 }

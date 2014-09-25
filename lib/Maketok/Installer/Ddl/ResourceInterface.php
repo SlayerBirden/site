@@ -8,7 +8,10 @@
 
 namespace Maketok\Installer\Ddl;
 
-interface ResourceInterface
+use Maketok\Installer\DirectivesInterface;
+use Maketok\Installer\ResourceInterface as BaseResource;
+
+interface ResourceInterface extends BaseResource
 {
 
     /**
@@ -45,17 +48,4 @@ interface ResourceInterface
      * @return array
      */
     public function getIndex($table, $index);
-
-    /**
-     * create real DB procedures from manager directives
-     * @param Directives $directives
-     * @return mixed
-     */
-    public function createProcedures(Directives $directives);
-
-    /**
-     * run existing procedures
-     * @return mixed
-     */
-    public function runProcedures();
 }

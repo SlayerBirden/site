@@ -8,9 +8,10 @@
 
 namespace Maketok\Installer\Ddl;
 
+use Maketok\Installer\DirectivesInterface;
 use Traversable;
 
-class Directives implements \IteratorAggregate, \Countable
+class Directives implements DirectivesInterface
 {
 
     /** @var array */

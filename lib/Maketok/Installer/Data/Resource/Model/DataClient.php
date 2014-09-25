@@ -19,6 +19,4 @@ class DataClient
     public $version;
     /** @var array */
     public $config;
-    /** @var array */
-    public $dependencies;
 }

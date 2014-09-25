@@ -10,7 +10,6 @@ namespace Maketok\Installer\Ddl;
 
 use Maketok\App\Site;
 use Maketok\Installer\AbstractManager;
-use Maketok\Installer\ConfigReaderInterface;
 use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 use Maketok\Installer\Ddl\Resource\Model\DdlClientType;
 use Maketok\Installer\Exception;
@@ -22,28 +21,24 @@ use Maketok\Util\StreamHandlerInterface;
 class Manager extends AbstractManager implements ManagerInterface
 {
 
-    /** @var Directives */
-    private $_directives;
-    /**
-     * @var ResourceInterface
-     */
-    protected $_resource;
-
     /**
      * Constructor
      * @param ConfigReaderInterface $reader
      * @param ResourceInterface $resource
-     * @param StreamHandlerInterface $handler
+     * @param Directives $directives
+     * @param StreamHandlerInterface|null $handler
      */
     public function __construct(ConfigReaderInterface $reader,
                                 ResourceInterface $resource,
+                                Directives $directives,
                                 StreamHandlerInterface $handler = null)
     {
         $this->_reader = $reader;
-        if (!is_null($handler)) {
-            $this->_streamHandler = $handler;
+        $this->_streamHandler = $handler;
+        $this->_directives = $directives;
+        if ($handler) {
+            $this->_resource = $resource;
         }
-        $this->_resource = $resource;
     }
 
     /**
@@ -113,11 +108,6 @@ class Manager extends AbstractManager implements ManagerInterface
      */
     public function createDirectives()
     {
-        if (isset($this->_directives)) {
-            // no point in creating directives when they already exist
-            return;
-        }
-        $this->_directives = new Directives();
         $config = $this->_reader->getMergedConfig();
         foreach ($config as $table => $definition) {
             if (!isset($definition['columns']) || !is_array($definition['columns'])) {
@@ -142,15 +132,6 @@ class Manager extends AbstractManager implements ManagerInterface
             }
         }
     }
-
-    /**
-     * @return Directives
-     */
-    public function getDirectives()
-    {
-        return $this->_directives;
-    }
-
 
     /**
      * @param array $a old

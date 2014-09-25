@@ -56,4 +56,18 @@ interface ManagerInterface
      * @return void
      */
     public function process();
+
+    /**
+     * get created directives for resource
+     *
+     * @return DirectivesInterface
+     */
+    public function getDirectives();
+
+    /**
+     * create directives for resource
+     *
+     * @return void
+     */
+    public function createDirectives();
 }

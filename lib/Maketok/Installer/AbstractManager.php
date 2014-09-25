@@ -30,7 +30,32 @@ abstract class AbstractManager implements ManagerInterface
     protected $_tableMapper;
     /** @var string */
     protected $_type;
+    /** @var DirectivesInterface */
+    protected $_directives;
+    /**
+     * @var ResourceInterface
+     */
+    protected $_resource;
 
+    /**
+     * Constructor
+     * @param ConfigReaderInterface $reader
+     * @param ResourceInterface $resource
+     * @param DirectivesInterface $directives
+     * @param StreamHandlerInterface|null $handler
+     */
+    public function __construct(ConfigReaderInterface $reader,
+                                ResourceInterface $resource,
+                                DirectivesInterface $directives,
+                                StreamHandlerInterface $handler = null)
+    {
+        $this->_reader = $reader;
+        $this->_streamHandler = $handler;
+        $this->_directives = $directives;
+        if ($handler) {
+            $this->_resource = $resource;
+        }
+    }
 
     /**
      * {@inheritdoc}
@@ -105,5 +130,13 @@ abstract class AbstractManager implements ManagerInterface
         }
         // identical
         return 0;
+    }
+
+    /**
+     * @return DirectivesInterface
+     */
+    public function getDirectives()
+    {
+        return $this->_directives;
     }
 }

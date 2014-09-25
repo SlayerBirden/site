@@ -10,6 +10,7 @@ namespace Maketok\Installer\Ddl\Mysql;
 
 use Maketok\Installer\Ddl\Directives;
 use Maketok\Installer\Ddl\ResourceInterface;
+use Maketok\Installer\DirectivesInterface;
 use Maketok\Installer\Exception;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Ddl\AlterTable;
@@ -274,7 +275,7 @@ class Resource implements ResourceInterface
      * @throws \LogicException
      * @throws \InvalidArgumentException
      */
-    public function createProcedures(Directives $directives)
+    public function createProcedures(DirectivesInterface $directives)
     {
         if (isset($this->_procedures)) {
             throw new \LogicException("Wrong context of launching create procedures method. The procedures are already created.");

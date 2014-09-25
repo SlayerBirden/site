@@ -8,14 +8,9 @@
 
 namespace Maketok\Installer\Data;
 
-class ConfigReader implements ConfigReaderInterface
+use Maketok\Installer\ConfigReaderInterface as BaseConfigReader;
+
+interface ConfigReaderInterface extends BaseConfigReader
 {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMergedConfig()
-    {
-        // TODO: Implement getMergedConfig() method.
-    }
 }

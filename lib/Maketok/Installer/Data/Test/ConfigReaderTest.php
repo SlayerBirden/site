@@ -14,8 +14,8 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testBuildDependencyTree()
+    public function testGetMergedConfig()
     {
-
+        // @TODO add logic
     }
 }
