@@ -8,14 +8,46 @@
 
 namespace Maketok\Installer\Data;
 
+use Maketok\Installer\Data\Resource\Model\DataClient;
+
 class ConfigReader implements ConfigReaderInterface
 {
+
+    /**
+     * @var array
+     */
+    protected $_config = [];
+
+    /**
+     * create config out of clients
+     * @param array $clients
+     */
+    public function createConfig($clients)
+    {
+        $configsToMerge = [];
+        foreach ($clients as $client) {
+            /** @var DataClient $client */
+            $configsToMerge = $client->config;
+        }
+        $this->_mergeConfigs($configsToMerge);
+    }
+
+    /**
+     * simple data merging
+     * @param array $configs
+     */
+    protected function _mergeConfigs(array $configs)
+    {
+        foreach ($configs as $table => $data) {
+            $_config[$table][] = $data;
+        }
+    }
 
     /**
      * {@inheritdoc}
      */
     public function getMergedConfig()
     {
-        // TODO: Implement getMergedConfig() method.
+        return $this->_config;
     }
 }

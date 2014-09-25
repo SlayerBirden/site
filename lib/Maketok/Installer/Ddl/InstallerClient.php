@@ -28,7 +28,7 @@ class InstallerClient implements ClientInterface
      */
     public function getDdlConfig($version)
     {
-        $locator = new FileLocator(__DIR__.'/Resource/config/installer/');
+        $locator = new FileLocator(__DIR__.'/Resource/config/installer/ddl');
         $ymlReader = new Yaml();
         try {
             $file = $locator->locate($version.'.yml');
