@@ -109,10 +109,11 @@ class Front
                 $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
             }
         } catch (\Exception $ex) {
-            printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Previous exception: %s",
+            printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Trace: %s. Previous exception: %s",
                 $ex->getMessage(),
                 $ex->getFile(),
                 $ex->getLine(),
+                $ex->getTraceAsString(),
                 $e->__toString()
             );
         }
