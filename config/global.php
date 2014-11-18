@@ -18,9 +18,9 @@ return [
         'dispatch' => [
             [
                 'subscriber' => 'front_controller::dispatch', // class name (or service alias) and method name
-                'type' => 'service', // enum: service, static (in case static method), class
+                'type' => 'service', // enum: service, static (in case static method), class, closure
                 'priority' => 10, // greater means listener will be processed earlier
-            ]
+            ],
         ],
         'config_after_process' => [
             [

@@ -14,6 +14,7 @@ use Maketok\Observer\State;
 class Config
 {
     private static $_config = [];
+    private static $_isApplied = false;
 
     const ALL = 0b111111;
     const PHP = 0b1;
@@ -32,8 +33,12 @@ class Config
         // credits: http://php.net/manual/en/function.array-merge-recursive.php#92195
         $_merged = $config1;
         foreach ($config2 as $key => &$value) {
-            if (isset($_merged[$key]) && is_array($_merged[$key]) && is_array($value)) {
+            if (isset($_merged[$key]) &&
+                is_array($_merged[$key]) &&
+                is_array($value) && !is_numeric($key)) {
                 $_merged[$key] = self::merge($_merged[$key], $value);
+            } elseif (is_numeric($key)) {
+                $_merged[] = $value;
             } else {
                 $_merged[$key] = $value;
             }
@@ -79,6 +84,9 @@ class Config
      */
     public static function applyConfig($mode = self::ALL)
     {
+        if (self::$_isApplied) {
+            return;
+        }
         if  ($mode & self::PHP) {
             foreach (self::getConfig('php_config') as $key => $value) {
                 @ini_set($key, $value);
@@ -95,6 +103,7 @@ class Config
                             Site::getServiceContainer()->get('subject_manager')->attach($subjectName, array($subscriber, $subMethod), $priority);
                             break;
                         case 'static':
+                        case 'closure':
                             $priority = (isset($data['priority']) ? $data['priority'] : null);
                             Site::getServiceContainer()->get('subject_manager')->attach($subjectName, $data['subscriber'], $priority);
                             break;
@@ -115,6 +124,7 @@ class Config
             // TODO add logic
             Site::getServiceContainer()->get('subject_manager')->notify('installer_after_process', new State([]));
         }
+        self::$_isApplied = true;
         Site::getServiceContainer()->get('subject_manager')->notify('config_after_process', new State([]));
     }
 
