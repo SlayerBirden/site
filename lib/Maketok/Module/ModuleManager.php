@@ -8,8 +8,6 @@
 
 namespace Maketok\Module;
 
-use Maketok\Ddl\Installer;
-use Maketok\Ddl\InstallerApplicableInterface;
 use Maketok\App\Site;
 use Maketok\Module\Model\Module;
 use Maketok\Module\Model\ModuleTable;
@@ -21,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class ModuleManager implements InstallerApplicableInterface, ExtensionInterface
+class ModuleManager implements ExtensionInterface
 {
 
     /** @var ModuleTable */
@@ -31,42 +29,9 @@ class ModuleManager implements InstallerApplicableInterface, ExtensionInterface
     /** @var array */
     private $_activeModules;
 
-    public function __construct(AbstractTableMapper $tableType, array $moduleClasses)
+    public function __construct(AbstractTableMapper $tableType)
     {
         $this->_tableType = $tableType;
-        foreach ($moduleClasses as $moduleClass) {
-            $module = new $moduleClass();
-            if ($module instanceof ConfigInterface) {
-                $this->_modules[$module->getCode()] = $module;
-            }
-        }
-        s::getServiceContainer()->get('subject_manager')->notify('module_list_exists', new State(array(
-            'modules' => $this->_modules
-        )));
-    }
-
-    /**
-     * @return array
-     */
-    public function getDdlConfig()
-    {
-        return include __DIR__ .'/Resource/config/ddl/' . $this->getDdlConfigVersion() . '.php';
-    }
-
-    /**
-     * @return string
-     */
-    public function getDdlConfigVersion()
-    {
-        return '0.2.1';
-    }
-
-    /**
-     * @return string
-     */
-    public function getDdlConfigName()
-    {
-        return 'module_manager';
     }
 
     /**
@@ -92,36 +57,7 @@ class ModuleManager implements InstallerApplicableInterface, ExtensionInterface
      */
     public function uninstallModule($code)
     {
-        /** @var Module $module */
-        $module = $this->_tableType->find($code);
-        if (!$module->getCanBeUninstalled()) {
-            return false;
-        }
-        /** @var ConfigInterface $moduleConfig */
-        $moduleConfig = $this->getModule($code);
-        if (empty($moduleConfig)) {
-            return false;
-        }
-        if ($moduleConfig->getInstallProcessType() == $moduleConfig::INSTALL_PROCESS_TYPE_ONLOAD) {
-            // this type can't be uninstalled
-            return false;
-        }
-        if (!($moduleConfig instanceof InstallerApplicableInterface)) {
-            // this module can't be uninstalled
-            return false;
-        }
-
-        /** @var Installer $ddlInstaller */
-        $ddlInstaller = Site::getServiceContainer()->get('ddl_installer');
-        $ddlInstaller->addClient(array(
-            'def' => [],
-            'name' => $module->module_code,
-            'version' => $module->version,
-        ));
-        $ddlInstaller->processClients();
-
-        $this->_tableType->moveToVersion($module, '0');
-        return true;
+        // @TODO
     }
 
     /**
@@ -130,32 +66,7 @@ class ModuleManager implements InstallerApplicableInterface, ExtensionInterface
      */
     public function installModule($code)
     {
-        /** @var Module $module */
-        $module = $this->_tableType->find($code);
-        if (!$module->getCanBeUninstalled()) {
-            return false;
-        }
-        /** @var ConfigInterface $moduleConfig */
-        $moduleConfig = $this->getModule($code);
-        if (empty($moduleConfig)) {
-            return false;
-        }
-        if ($moduleConfig->getInstallProcessType() == $moduleConfig::INSTALL_PROCESS_TYPE_ONLOAD) {
-            // this type can't be uninstalled
-            return false;
-        }
-        if (!($moduleConfig instanceof InstallerApplicableInterface)) {
-            // this module can't be uninstalled
-            return false;
-        }
-
-        /** @var Installer $ddlInstaller */
-        $ddlInstaller = Site::getServiceContainer()->get('ddl_installer');
-        $ddlInstaller->addClient($moduleConfig);
-        $ddlInstaller->processClients();
-
-        $this->_tableType->moveToVersion($module, $moduleConfig->getVersion());
-        return true;
+        // @TODO
     }
 
     /**
@@ -165,47 +76,7 @@ class ModuleManager implements InstallerApplicableInterface, ExtensionInterface
      */
     public function updateToVersion($code, $version)
     {
-        /** @var Module $module */
-        $module = $this->_tableType->find($code);
-        if (!$module->getCanBeUninstalled()) {
-            return false;
-        }
-        /** @var ConfigInterface $moduleConfig */
-        $moduleConfig = $this->getModule($code);
-        if (empty($moduleConfig)) {
-            return false;
-        }
-        if ($moduleConfig->getInstallProcessType() == $moduleConfig::INSTALL_PROCESS_TYPE_ONLOAD) {
-            // this type can't be uninstalled
-            return false;
-        }
-        if (!($moduleConfig instanceof InstallerApplicableInterface)) {
-            // this module can't be uninstalled
-            return false;
-        }
-
-        /** @var Installer $ddlInstaller */
-        $ddlInstaller = Site::getServiceContainer()->get('ddl_installer');
-        $map = $ddlInstaller->getDdlInstallerMap();
-        if (isset($map[$module->module_code][$version])) {
-            $def = $map[$module->module_code][$version];
-        } elseif ($version == '0') {
-            $def = [];
-        } else {
-            // we can not update module to version not registered at Map
-            // that would mean that that state wasn't ever really installed
-            // and so we can't 'move back' to it
-            return false;
-        }
-        $ddlInstaller->addClient(array(
-            'def' => $def,
-            'name' => $module->module_code,
-            'version' => $version,
-        ));
-        $ddlInstaller->processClients();
-
-        $this->_tableType->moveToVersion($module, $moduleConfig->getVersion());
-        return true;
+        // @TODO
     }
 
     /**
@@ -213,7 +84,7 @@ class ModuleManager implements InstallerApplicableInterface, ExtensionInterface
      */
     public function activateModule($code)
     {
-        $this->_tableType->enable($this->_initModule($code));
+        // @TODO
     }
 
     /**
@@ -221,17 +92,7 @@ class ModuleManager implements InstallerApplicableInterface, ExtensionInterface
      */
     public function processModuleConfig(StateInterface $state)
     {
-        /** @var Installer $ddlInstaller */
-        $ddlInstaller = $state->installer;
-        // insert new modules
-        foreach ($this->_modules as $config) {
-            /** @var ConfigInterface $config */
-            // ddl
-            if (($config->getInstallProcessType() == $config::INSTALL_PROCESS_TYPE_ONLOAD)
-                && $config instanceof InstallerApplicableInterface) {
-                $ddlInstaller->addClient($config);
-            }
-        }
+        // @TODO
     }
 
     /**

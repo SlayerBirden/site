@@ -6,7 +6,7 @@
 services:
 
   data_client_model:
-    class: Maketok\Installer\Resource\Model\DdlClient
+    class: Maketok\Installer\Data\Resource\Model\DataClient
 
   data_client_result_set:
     class: Zend\Db\ResultSet\HydratingResultSet
@@ -21,11 +21,11 @@ services:
       - "@data_client_result_set"
 
   data_client_table:
-    class: Maketok\Installer\Resource\Model\DdlClientType
+    class: Maketok\Installer\Data\Resource\Model\DataClientType
     arguments: ["@data_client_table_gateway", id]
 
   data_client_history_model:
-    class: Maketok\Installer\Resource\Model\DdlClientHistory
+    class: Maketok\Installer\Data\Resource\Model\DataClientHistory
 
   data_client_history_result_set:
     class: Zend\Db\ResultSet\HydratingResultSet
@@ -40,5 +40,5 @@ services:
       - "@data_client_history_result_set"
 
   data_client_history_table:
-    class: Maketok\Installer\Resource\Model\DdlClientHistoryType
+    class: Maketok\Installer\Data\Resource\Model\DataClientHistoryType
     arguments: ["@data_client_history_table_gateway", id]
