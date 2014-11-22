@@ -1,8 +1,3 @@
-AuthType Basic
-AuthName "Admin Area"
-AuthUserFile .htpasswd
-Require valid-user
-
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
