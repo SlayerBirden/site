@@ -14,11 +14,20 @@ return [
                 'subscriber' => function() {
                     /** @var RouterInterface $router */
                     $router = \Maketok\App\Site::getServiceContainer()->get('router');
+                    // index
                     $router->addRoute( new \Maketok\Mvc\Router\Route\Http\Literal(
                         '/',  array(
                             'module' => 'admin_manager',
-                            'controller' => 'admin\\manager\\controller\\Index',
+                            'controller' => 'admin\\controller\\Index',
                             'action' => 'index',
+                        )
+                    ));
+                    // install
+                    $router->addRoute( new \Maketok\Mvc\Router\Route\Http\Literal(
+                        '/install/run',  array(
+                            'module' => 'admin_manager',
+                            'controller' => 'admin\\controller\\Install',
+                            'action' => 'run',
                         )
                     ));
                 },
