@@ -22,7 +22,7 @@ return array(
         'constraints' => array(
             'primary' => array(
                 'type' => 'primaryKey',
-                'def' => 'session_id',
+                'definition' => ['session_id'],
             )
         ),
     )

@@ -24,4 +24,9 @@ interface ResourceInterface
      * @return mixed
      */
     public function runProcedures();
+
+    /**
+     * @return array|\Iterator
+     */
+    public function getProcedures();
 }

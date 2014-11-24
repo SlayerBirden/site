@@ -21,13 +21,12 @@
                 <li><a href="{{ base_url }}/graphs">{% trans %}Graphs{% endtrans %}</a></li>
                 <li><a href="{{ base_url }}/system">{% trans %}System Management{% endtrans %}</a></li>
                 <li><a href="{{ base_url }}/health">{% trans %}Health check{% endtrans %}</a></li>
+                <li><a href="{{ base_url }}/install">{% trans %}Installer{% endtrans %}</a></li>
             </ul>
         {% endblock %}
     </nav>
     <section id="content">
-        {% block content %}
-            <button onclick="window.open('{{ install_url }}');">{% trans %}Run installer{% endtrans %}</button>
-        {% endblock %}
+        {% block content %}{% endblock %}
     </section>
     <footer>
         {% block footer %}{% endblock %}

@@ -101,4 +101,22 @@ class Directives implements DirectivesInterface
         }
         return false;
     }
+
+    /**
+     * @return array
+     */
+    public function asArray()
+    {
+        return [
+            'dropTables' => $this->dropTables,
+            'addTables' => $this->addTables,
+            'dropConstraints' => $this->dropConstraints,
+            'dropIndices' => $this->dropIndices,
+            'dropColumns' => $this->dropColumns,
+            'addColumns' => $this->addColumns,
+            'changeColumns' => $this->changeColumns,
+            'addConstraints' => $this->addConstraints,
+            'addIndices' => $this->addIndices,
+        ];
+    }
 }

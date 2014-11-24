@@ -30,6 +30,13 @@ return [
                             'action' => 'run',
                         )
                     ));
+                    $router->addRoute( new \Maketok\Mvc\Router\Route\Http\Literal(
+                        '/install',  array(
+                            'module' => 'admin_manager',
+                            'controller' => 'admin\\controller\\Install',
+                            'action' => 'index',
+                        )
+                    ));
                 },
                 'type' => 'closure',
                 'priority' => 100,

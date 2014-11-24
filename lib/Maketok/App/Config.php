@@ -9,6 +9,7 @@
 namespace Maketok\App;
 
 use Maketok\App\Exception\ConfigException;
+use Maketok\Installer\ManagerInterface;
 use Maketok\Observer\State;
 
 class Config
@@ -120,9 +121,24 @@ class Config
             }
         }
         if  ($mode & self::INSTALLER) {
-            Site::getServiceContainer()->get('subject_manager')->notify('installer_before_process', new State([]));
-            // TODO add logic
-            Site::getServiceContainer()->get('subject_manager')->notify('installer_after_process', new State([]));
+            Site::getServiceContainer()->get('subject_manager')->notify('installer_ddl_before_add', new State([]));
+            foreach (self::getConfig('ddl_client') as $clientCode => $client) {
+                /** @var ManagerInterface $manager */
+                $manager = Site::getServiceContainer()->get('installer_ddl_manager');
+                switch ($client['type']) {
+                    case 'class':
+                        $clientClass = self::classFactory($client['key']);
+                        $manager->addClient($clientClass);
+                        break;
+                    case 'service':
+                        $clientClass = self::serviceFactory($client['key']);
+                        $manager->addClient($clientClass);
+                        break;
+                    default:
+                        throw new ConfigException("Unrecognized installer client type");
+                }
+            }
+            Site::getServiceContainer()->get('subject_manager')->notify('installer_ddl_after_add', new State([]));
         }
         self::$_isApplied = true;
         Site::getServiceContainer()->get('subject_manager')->notify('config_after_process', new State([]));

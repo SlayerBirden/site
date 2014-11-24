@@ -27,6 +27,11 @@ class Resource implements ResourceInterface
 
     /** @var \Zend\Db\Adapter\Adapter  */
     protected $_adapter;
+
+    /** @var array  */
+    protected $_typeMap = [
+        'int' => 'integer',
+    ];
     /**
      * @var \Zend\Db\Sql\Sql
      */
@@ -63,15 +68,38 @@ class Resource implements ResourceInterface
             if ((strpos($row, ' PRIMARY ') !== false) ||
                 (strpos($row, ' UNIQUE ') !== false) ||
                 (strpos($row, ' CONSTRAINT ') !== false)) {
-                $tableInfo['constraints'][] = $this->_parseConstraint($row);
+                $constraint = $this->_parseConstraint($row);
+                if (isset($constraint['name'])) {
+                    $tableInfo['constraints'][$constraint['name']] = $this->_parseConstraint($row);
+                } elseif($constraint['type'] == 'primary') {
+                    $tableInfo['constraints']['primary'] = $this->_parseConstraint($row);
+                } else {
+                    $tableInfo['constraints'][$this->getRandomName()] = $this->_parseConstraint($row);
+                }
             } elseif ((strpos($row, '  KEY') !== false) ||
                 (strpos($row, '  INDEX') !== false)) {
-                $tableInfo['indices'][] = $this->_parseIndex($row);
+                $index = $this->_parseIndex($row);
+                if (isset($index['name'])) {
+                    $tableInfo['indices'][$index['name']] = $this->_parseIndex($row);
+                } else {
+                    $tableInfo['indices'][$index['type']] = $this->_parseIndex($row);
+                }
             } else {
-                $tableInfo['columns'][] = $this->_parseColumn($row);
+                $column = $this->_parseColumn($row);
+                $name = $column['name'];
+                unset($column['name']);
+                $tableInfo['columns'][$name] = $column;
             }
         }
         return $tableInfo;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRandomName()
+    {
+        return substr(uniqid('', true), -5);
     }
 
     /**
@@ -200,6 +228,18 @@ class Resource implements ResourceInterface
             return $columnInfo;
         }
         return [];
+    }
+
+    /**
+     * @param string $type
+     * @return string
+     */
+    public function convertType($type)
+    {
+        if (isset($this->_typeMap[$type])) {
+            return $this->_typeMap[$type];
+        }
+        return $type;
     }
 
     /**
@@ -333,10 +373,10 @@ class Resource implements ResourceInterface
                     break;
                 case 'dropConstraints':
                     foreach ($list as $item) {
-                        if (!isset($item[0]) || !isset($item[1])) {
+                        if (!isset($item[0]) || !isset($item[1]) || !isset($item[2])) {
                             throw new \InvalidArgumentException("Not enough parameter to drop constraint.");
                         }
-                        $this->_procedures[] = $this->_dropConstraint($item[0], $item[1]);
+                        $this->_procedures[] = $this->_dropConstraint($item[0], $item[1], $item[2]);
                     }
                     break;
                 case 'addIndices':
@@ -352,7 +392,7 @@ class Resource implements ResourceInterface
                         if (!isset($item[0]) || !isset($item[1])) {
                             throw new \InvalidArgumentException("Not enough parameter to drop index.");
                         }
-                        $this->_procedures[] = $this->_dropConstraint($item[0], $item[1]);
+                        $this->_procedures[] = $this->_dropConstraint($item[0], $item[1], 'index');
                     }
                     break;
             }
@@ -446,14 +486,14 @@ class Resource implements ResourceInterface
             $type = '\\Maketok\\Util\\Zend\\Db\\Sql\\Ddl\\Index\\Index';
         }
         if ($constraintDefinition['type'] == 'foreignKey') {
-            $column = $constraintDefinition['def'];
-            $refTable = $constraintDefinition['referenceTable'];
-            $refColumn = $constraintDefinition['referenceColumn'];
-            $onDelete = (isset($constraintDefinition['onDelete']) ? $constraintDefinition['onDelete'] : 'CASCADE');
-            $onUpdate = (isset($constraintDefinition['onUpdate']) ? $constraintDefinition['onUpdate'] : 'CASCADE');
+            $column = $constraintDefinition['column'];
+            $refTable = $constraintDefinition['reference_table'];
+            $refColumn = $constraintDefinition['reference_column'];
+            $onDelete = (isset($constraintDefinition['on_delete']) ? $constraintDefinition['on_delete'] : 'CASCADE');
+            $onUpdate = (isset($constraintDefinition['on_update']) ? $constraintDefinition['on_update'] : 'CASCADE');
             $constraint = new $type($constraintName, $column, $refTable, $refColumn, $onDelete, $onUpdate);
         } else {
-            $constraint = new $type($constraintDefinition['def'], $constraintName);
+            $constraint = new $type($constraintDefinition['definition'], $constraintName);
         }
 
         $table->addConstraint($constraint);
@@ -497,15 +537,22 @@ class Resource implements ResourceInterface
     /**
      * @param string $tableName
      * @param string $constraintName
+     * @param string $type
      * @return mixed
      */
-    private function _dropConstraint($tableName, $constraintName)
+    private function _dropConstraint($tableName, $constraintName, $type)
     {
         $table = new AlterTable($tableName);
         $table->dropConstraint($constraintName);
-        // big thanks to MySQL for this hack!!
         $query = $this->_getQuery($table);
-        $query = str_replace('CONSTRAINT', 'FOREIGN KEY', $query);
+        // big thanks to MySQL for this hack!!
+        if ($type == 'foreign_key') {
+            $query = str_replace('CONSTRAINT', 'FOREIGN KEY', $query);
+        } elseif ($type == 'primary') {
+            $query = "DROP FOREIGN KEY";
+        } elseif ($type == 'unique' || $type == 'index') {
+            $query = str_replace('CONSTRAINT', 'INDEX', $query);
+        }
         return $query;
     }
 
@@ -594,5 +641,13 @@ class Resource implements ResourceInterface
                 break;
         }
         return $column;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getProcedures()
+    {
+        return $this->_procedures;
     }
 }

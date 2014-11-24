@@ -94,6 +94,7 @@ services:
       - "@installer_ddl_resource"
       - "@installer_ddl_directives"
       - "@lock_stream_handler"
+      - "@logger"
 
   router:
     class: Maketok\Mvc\Router\Stack

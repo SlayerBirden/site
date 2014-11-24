@@ -17,9 +17,14 @@ use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
 use Maketok\Util\StreamHandlerInterface;
+use Monolog\Logger;
 
 class Manager extends AbstractManager implements ManagerInterface
 {
+    /**
+     * @var Logger
+     */
+    private $_logger;
 
     /**
      * Constructor
@@ -27,11 +32,13 @@ class Manager extends AbstractManager implements ManagerInterface
      * @param ResourceInterface $resource
      * @param Directives $directives
      * @param StreamHandlerInterface|null $handler
+     * @param Logger $logger
      */
     public function __construct(ConfigReaderInterface $reader,
                                 ResourceInterface $resource,
                                 Directives $directives,
-                                StreamHandlerInterface $handler = null)
+                                StreamHandlerInterface $handler = null,
+                                Logger $logger)
     {
         $this->_reader = $reader;
         $this->_streamHandler = $handler;
@@ -39,6 +46,7 @@ class Manager extends AbstractManager implements ManagerInterface
         if ($handler) {
             $this->_resource = $resource;
         }
+        $this->_logger = $logger;
     }
 
     /**
@@ -52,6 +60,7 @@ class Manager extends AbstractManager implements ManagerInterface
         if (is_null($this->_clients)) {
             $this->_clients = [];
         }
+        $this->_logger->debug(sprintf("Client added: %s", $client->getDdlCode()));
         $this->_clients[$client->getDdlCode()] = $this->getClientModel($client);
     }
 
@@ -88,16 +97,25 @@ class Manager extends AbstractManager implements ManagerInterface
         try {
             // build tree
             $this->_reader->buildDependencyTree($this->_clients);
+            $this->_logger->debug("Dependency Tree: %s", array(
+                'tree' => $this->_reader->getDependencyTree(),
+            ));
             // create directives
             $this->createDirectives();
+            $this->_logger->debug("Directives: %s", array(
+                'directives' => $this->_directives->asArray(),
+            ));
             // create db procedures
             $this->_resource->createProcedures($this->_directives);
+
+            $this->_logger->debug("Procedures: %s", array(
+                'procedures' => $this->_resource->getProcedures(),
+            ));
             // run
             $this->_resource->runProcedures();
+            $this->_logger->debug("All procedures have been completed.");
         } catch (\Exception $e) {
-            Site::getServiceContainer()
-                ->get('logger')
-                ->err(sprintf("Exception while running DDL Installer process: %s", $e->__toString()));
+            $this->_logger->err(sprintf("Exception while running DDL Installer process: %s", $e->__toString()));
         }
         $this->_streamHandler->unLock();
     }
@@ -109,6 +127,9 @@ class Manager extends AbstractManager implements ManagerInterface
     public function createDirectives()
     {
         $config = $this->_reader->getMergedConfig();
+        $this->_logger->debug("Merged Config: %s", array(
+            'config' => $config,
+        ));
         foreach ($config as $table => $definition) {
             if (!isset($definition['columns']) || !is_array($definition['columns'])) {
                 throw new \LogicException(sprintf('Can not have a table `%s` without columns definition.'
@@ -179,11 +200,29 @@ class Manager extends AbstractManager implements ManagerInterface
             if (!array_key_exists($constraintName, $a)) {
                 $this->_directives->addProp('addConstraints',
                     [$tableName, $constraintName, $constraintDefinition]);
+            } elseif ((isset($constraintDefinition['definition']) &&
+                $constraintDefinition['definition'] === $a[$constraintName]['definition']) || (
+                isset($constraintDefinition['column']) &&
+                $constraintDefinition['column'] == $a[$constraintName]['column'] &&
+                isset($constraintDefinition['reference_table']) &&
+                $constraintDefinition['reference_table'] == $a[$constraintName]['reference_table'] &&
+                isset($constraintDefinition['reference_column']) &&
+                $constraintDefinition['reference_column'] == $a[$constraintName]['reference_column'] &&
+                (!isset($constraintDefinition['on_delete']) ||
+                    $constraintDefinition['on_delete'] == $a[$constraintName]['on_delete']) &&
+                (!isset($constraintDefinition['on_update']) ||
+                    $constraintDefinition['on_update'] == $a[$constraintName]['on_update'])
+                )) {
+                continue;
+            } else {
+                $this->_directives->addProp('dropConstraints', [$tableName, $constraintName, $a[$constraintName]['type']]);
+                $this->_directives->addProp('addConstraints',
+                    [$tableName, $constraintName, $constraintDefinition]);
             }
         }
         foreach ($a as $constraintName => $constraintDefinition) {
             if (!array_key_exists($constraintName, $b)) {
-                $this->_directives->addProp('dropConstraints', [$tableName, $constraintName]);
+                $this->_directives->addProp('dropConstraints', [$tableName, $constraintName, $constraintDefinition['type']]);
             }
         }
     }
@@ -199,6 +238,12 @@ class Manager extends AbstractManager implements ManagerInterface
         foreach ($b as $indexName => $indexDefinition) {
             if (!array_key_exists($indexName, $a)) {
                 $this->_directives->addProp('addIndices', [$tableName, $indexName, $indexDefinition]);
+            } elseif ($indexDefinition['definition'] === $a[$indexName]['definition']) {
+                continue;
+            } else {
+                $this->_directives->addProp('dropIndices', [$tableName, $indexDefinition]);
+                $this->_directives->addProp('addIndices',
+                    [$tableName, $indexName, $indexDefinition]);
             }
         }
         foreach ($a as $indexName => $indexDefinition) {

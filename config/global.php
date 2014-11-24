@@ -41,4 +41,14 @@ return [
         'DS' => DS,
         'debug' => false,
     ],
+    'ddl_client' => [
+        'session' => [
+            'type' => 'service', // enum: class, service
+            'key' => 'session_save_handler',
+        ],
+        'installer_ddl' => [
+            'type' => 'class',
+            'key' => 'Maketok\\Installer\\Ddl\\InstallerClient',
+        ],
+    ],
 ];

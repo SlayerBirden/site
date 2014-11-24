@@ -73,7 +73,7 @@ SQL;
         $this->assertCount(7, $result['columns']);
         $this->assertCount(3, $result['indices']);
         $this->assertCount(3, $result['constraints']);
-        $fk = $result['constraints'][2];
+        $fk = end($result['constraints']);
         $this->assertNotEmpty($fk);
         $this->assertEquals('foreign_key', $fk['type']);
         $this->assertEquals('FK_STORE_WEBSITE', $fk['name']);
@@ -220,7 +220,8 @@ SQL;
         $directives->dropConstraints = [
             [
                 'test2',
-                'UNQ_KEY_OOPS'
+                'UNQ_KEY_OOPS',
+                'unique'
             ],
         ];
 
@@ -230,7 +231,7 @@ SQL;
         // the order is switched
         $expected = [
             "CREATE TABLE `test` ( `id` INTEGER NOT NULL, `code` VARCHAR() NOT NULL )",
-            "ALTER TABLE `test2` DROP FOREIGN KEY `UNQ_KEY_OOPS`",
+            "ALTER TABLE `test2` DROP INDEX `UNQ_KEY_OOPS`",
             "ALTER TABLE `test2` CHANGE COLUMN `oldCol` `newCol` INTEGER NOT NULL",
         ];
         $procedures = $refProp->getValue(self::$_resource);

@@ -8,7 +8,6 @@
 
 namespace admin\controller;
 
-use Maketok\App\Site;
 use Maketok\Util\RequestInterface;
 
 class Index extends AbstractController
@@ -21,8 +20,6 @@ class Index extends AbstractController
     public function indexAction(RequestInterface $request)
     {
         $this->setTemplate('base-manager.html.twig');
-        return $this->prepareResponse($request, array(
-            'install_url' => Site::getUrl('install/run')
-        ));
+        return $this->prepareResponse($request, array());
     }
 }
