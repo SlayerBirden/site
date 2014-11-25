@@ -127,8 +127,11 @@ class Manager extends AbstractManager implements ManagerInterface
     public function createDirectives()
     {
         $config = $this->_reader->getMergedConfig();
-        $this->processValidateMergedConfig($config);
         $this->_logger->debug("Merged Config: %s", array(
+            'config' => $config,
+        ));
+        $this->processValidateMergedConfig($config);
+        $this->_logger->debug("Processed Merged Config: %s", array(
             'config' => $config,
         ));
         foreach ($config as $table => $definition) {
