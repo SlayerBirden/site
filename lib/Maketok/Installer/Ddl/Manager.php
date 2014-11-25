@@ -60,7 +60,6 @@ class Manager extends AbstractManager implements ManagerInterface
         if (is_null($this->_clients)) {
             $this->_clients = [];
         }
-        $this->_logger->debug(sprintf("Client added: %s", $client->getDdlCode()));
         $this->_clients[$client->getDdlCode()] = $this->getClientModel($client);
     }
 
@@ -97,23 +96,23 @@ class Manager extends AbstractManager implements ManagerInterface
         try {
             // build tree
             $this->_reader->buildDependencyTree($this->_clients);
-            $this->_logger->debug("Dependency Tree: %s", array(
+            $this->_logger->info("Dependency Tree", array(
                 'tree' => $this->_reader->getDependencyTree(),
             ));
             // create directives
             $this->createDirectives();
-            $this->_logger->debug("Directives: %s", array(
+            $this->_logger->info("Directives", array(
                 'directives' => $this->_directives->asArray(),
             ));
             // create db procedures
             $this->_resource->createProcedures($this->_directives);
 
-            $this->_logger->debug("Procedures: %s", array(
+            $this->_logger->info("Procedures", array(
                 'procedures' => $this->_resource->getProcedures(),
             ));
             // run
             $this->_resource->runProcedures();
-            $this->_logger->debug("All procedures have been completed.");
+            $this->_logger->info("All procedures have been completed.");
         } catch (\Exception $e) {
             $this->_logger->err(sprintf("Exception while running DDL Installer process: %s", $e->__toString()));
         }
@@ -127,11 +126,11 @@ class Manager extends AbstractManager implements ManagerInterface
     public function createDirectives()
     {
         $config = $this->_reader->getMergedConfig();
-        $this->_logger->debug("Merged Config: %s", array(
+        $this->_logger->info("Merged Config", array(
             'config' => $config,
         ));
         $this->processValidateMergedConfig($config);
-        $this->_logger->debug("Processed Merged Config: %s", array(
+        $this->_logger->info("Processed Merged Config", array(
             'config' => $config,
         ));
         foreach ($config as $table => $definition) {
