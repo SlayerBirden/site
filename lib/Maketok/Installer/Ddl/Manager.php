@@ -127,6 +127,7 @@ class Manager extends AbstractManager implements ManagerInterface
     public function createDirectives()
     {
         $config = $this->_reader->getMergedConfig();
+        $this->processValidateMergedConfig($config);
         $this->_logger->debug("Merged Config: %s", array(
             'config' => $config,
         ));
@@ -150,6 +151,71 @@ class Manager extends AbstractManager implements ManagerInterface
                 $_oldIndices = isset($dbConfig['indices']) ? $dbConfig['indices'] : array();
                 $_newIndices = isset($definition['indices']) ? $definition['indices'] : array();
                 $this->_intelligentCompareIndices($_oldIndices, $_newIndices, $table);
+            }
+        }
+    }
+
+    /**
+     * first purpose of this is to make sure FK has correspondent index record
+     * otherwise create it
+     * this is because MySQL automatically creates index record for every FK
+     * see more at http://dev.mysql.com/doc/refman/5.6/en/innodb-foreign-key-constraints.html
+     *
+     * @param array $config
+     * @return array
+     * @throws Exception
+     */
+    public function processValidateMergedConfig(array &$config)
+    {
+        foreach ($config as $tableName => $definition) {
+            $needToCreateMap = false;
+            $fkMap = array();
+            if (isset($definition['constraints'])) {
+                foreach ($definition['constraints'] as $name => $constraintDef) {
+                    if (isset($constraintDef['type']) && $constraintDef['type'] == 'foreignKey') {
+                        // now check if FK has index announced
+                        $needToCreateMap = true;
+                        $fkMap[$constraintDef['column']] = $name;
+                    }
+                }
+            }
+            if ($needToCreateMap) {
+                // create index map
+                $indexMap = array();
+                if (isset($definition['indices'])) {
+                    foreach ($definition['indices'] as $name => $indexDef) {
+                        if (is_array($indexDef['definition'])) {
+                            $col = current($indexDef['definition']);
+                        } elseif(is_string($indexDef['definition'])) {
+                            $col = $indexDef['definition'];
+                        } else {
+                            throw new Exception("Unrecognizable index column definition.");
+                        }
+                        $indexMap[$col] = $name;
+                    }
+                }
+                foreach ($definition['constraints'] as $name => $constraintDef) {
+                    if (isset($constraintDef['type']) &&
+                        ($constraintDef['type'] == 'uniqueKey' || $constraintDef['type'] == 'primaryKey')) {
+                        if (is_array($constraintDef['definition'])) {
+                            $col = current($constraintDef['definition']);
+                        } elseif(is_string($constraintDef['definition'])) {
+                            $col = $constraintDef['definition'];
+                        } else {
+                            throw new Exception("Unrecognizable index column definition.");
+                        }
+                        $indexMap[$col] = $name;
+                    }
+                }
+                // check correspondence
+                foreach ($fkMap as $column => $name) {
+                    if (!isset($indexMap[$column])) {
+                        $config[$tableName]['indices'][$name] = [
+                            'type' => 'index',
+                            'definition' => [$column],
+                        ];
+                    }
+                }
             }
         }
     }

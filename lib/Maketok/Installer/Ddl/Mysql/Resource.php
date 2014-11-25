@@ -8,7 +8,6 @@
 
 namespace Maketok\Installer\Ddl\Mysql;
 
-use Maketok\Installer\Ddl\Directives;
 use Maketok\Installer\Ddl\ResourceInterface;
 use Maketok\Installer\DirectivesInterface;
 use Maketok\Installer\Exception;
@@ -18,6 +17,7 @@ use Zend\Db\Sql\Ddl\CreateTable;
 use Zend\Db\Sql\Ddl\DropTable;
 use Zend\Db\Sql\Ddl\SqlInterface;
 use Zend\Db\Sql\Sql;
+use Maketok\Util\Zend\Db\Sql\Ddl\Index\Index;
 
 class Resource implements ResourceInterface
 {
@@ -31,6 +31,7 @@ class Resource implements ResourceInterface
     /** @var array  */
     protected $_typeMap = [
         'int' => 'integer',
+        'datetime' => 'dateTime',
     ];
     /**
      * @var \Zend\Db\Sql\Sql
@@ -481,10 +482,6 @@ class Resource implements ResourceInterface
         }
         /** @var \Zend\Db\Sql\Ddl\Constraint\ConstraintInterface $type */
         $type = '\\Zend\\Db\\Sql\\Ddl\\Constraint\\' . ucfirst($constraintDefinition['type']);
-        if ($constraintDefinition['type'] == 'index') {
-            /** @var \Maketok\Util\Zend\Db\Sql\Ddl\Index\Index $type */
-            $type = '\\Maketok\\Util\\Zend\\Db\\Sql\\Ddl\\Index\\Index';
-        }
         if ($constraintDefinition['type'] == 'foreignKey') {
             $column = $constraintDefinition['column'];
             $refTable = $constraintDefinition['reference_table'];
@@ -492,6 +489,8 @@ class Resource implements ResourceInterface
             $onDelete = (isset($constraintDefinition['on_delete']) ? $constraintDefinition['on_delete'] : 'CASCADE');
             $onUpdate = (isset($constraintDefinition['on_update']) ? $constraintDefinition['on_update'] : 'CASCADE');
             $constraint = new $type($constraintName, $column, $refTable, $refColumn, $onDelete, $onUpdate);
+        } elseif($constraintDefinition['type'] == 'index') {
+            $constraint = new Index($constraintDefinition['definition'], $constraintName);
         } else {
             $constraint = new $type($constraintDefinition['definition'], $constraintName);
         }

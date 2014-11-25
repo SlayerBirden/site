@@ -16,7 +16,7 @@ return array(
                 'type' => 'text',
             ),
             'updated_at' => array(
-                'type' => 'datetime',
+                'type' => 'dateTime',
             ),
         ),
         'constraints' => array(
