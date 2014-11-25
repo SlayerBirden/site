@@ -188,7 +188,7 @@ class Resource implements ResourceInterface
         $columnInfo = array();
         if (preg_match('/`(\S+)` (\w+)\((\d+)\) (.*)/', $row, $matches)) {
             $columnInfo['name'] = $matches[1];
-            $columnInfo['type'] = $matches[2];
+            $columnInfo['type'] = $this->convertType($matches[2]);
             $columnInfo['length'] = $matches[3];
             $other = $matches[4];
             if (strpos($other, 'NOT NULL') !== false) {
@@ -207,7 +207,7 @@ class Resource implements ResourceInterface
             }
         } elseif (preg_match('/`(\S+)` (\w+) (.*)/', $row, $matches)) {
             $columnInfo['name'] = $matches[1];
-            $columnInfo['type'] = $matches[2];
+            $columnInfo['type'] = $this->convertType($matches[2]);
             $other = $matches[3];
             if (strpos($other, 'NOT NULL') !== false) {
                 $columnInfo['nullable'] = false;

@@ -174,11 +174,22 @@ class Manager extends AbstractManager implements ManagerInterface
                     $columnDefinition,
                 ]);
                 $_changeMap[$columnDefinition['old_name']] = $tableName;
-            } elseif ($columnDefinition === $a[$columnName]) {
+            } elseif ($columnDefinition == $a[$columnName]) { // not strict compare because scalar types may differ
                 continue;
             } else {
-                $this->_directives->addProp('changeColumns',
-                    [$tableName, $columnName, $columnName, $columnDefinition]);
+                // now we need to make sure new definitions contain same keys as old ones
+                $newDefinition = $columnDefinition;
+                $oldDefinition = $a[$columnName];
+                foreach ($oldDefinition as $key => $value) {
+                    if (!isset($newDefinition[$key])) {
+                        unset($oldDefinition[$key]);
+                    }
+                }
+                // not strict compare because scalar types may differ
+                if (!($oldDefinition == $newDefinition)) {
+                    $this->_directives->addProp('changeColumns',
+                        [$tableName, $columnName, $columnName, $newDefinition]);
+                }
             }
         }
         foreach ($a as $columnName => $columnDefinition) {
