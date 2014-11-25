@@ -133,11 +133,15 @@ abstract class AbstractTableMapper
                 $insert->values($data);
                 $rowsAffected = $this->getGateway()->insertWith($insert);
                 if (!$rowsAffected) {
-                    throw new ModelInfoException("Nothing got changed");
+                    // questionable
+//                    throw new ModelInfoException("Nothing got changed");
+                } else {
+                    $model->id = $this->getGateway()->getLastInsertValue();
                 }
             }
         } else {
             $this->getGateway()->insert($data);
+            $model->id = $this->getGateway()->getLastInsertValue();
         }
     }
 

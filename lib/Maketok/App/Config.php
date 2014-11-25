@@ -88,6 +88,7 @@ class Config
         if (self::$_isApplied) {
             return;
         }
+        Site::getServiceContainer()->get('subject_manager')->notify('config_before_process', new State([]));
         if  ($mode & self::PHP) {
             foreach (self::getConfig('php_config') as $key => $value) {
                 @ini_set($key, $value);
@@ -120,6 +121,7 @@ class Config
                 }
             }
         }
+        Site::getServiceContainer()->get('subject_manager')->notify('config_after_events_process', new State([]));
         if  ($mode & self::INSTALLER) {
             Site::getServiceContainer()->get('subject_manager')->notify('installer_ddl_before_add', new State([]));
             foreach (self::getConfig('ddl_client') as $clientCode => $client) {

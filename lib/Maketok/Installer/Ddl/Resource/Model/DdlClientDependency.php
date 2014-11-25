@@ -16,5 +16,5 @@ class DdlClientDependency
     /** @var int */
     public $client_id;
     /** @var int */
-    public $dependency_id;
+    public $dependency_code;
 }

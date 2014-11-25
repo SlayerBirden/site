@@ -73,9 +73,11 @@ class Manager extends AbstractManager implements ManagerInterface
             /** @var DdlClientType $type */
             $type = Site::getServiceContainer()->get('ddl_client_table');
             $model = $type->getClientByCode($client->getDdlCode());
+        } catch (Exception $e) {
+            // when there's no record for this client yet
+            $model = new DdlClient();
         } catch (\Exception $e) {
-            // this is kind of a way to catch non existing table request
-            // TODO need to find a better way in the future
+            // when no installer table exists
             $model = new DdlClient();
         }
         $model->code = $client->getDdlCode();
@@ -112,6 +114,12 @@ class Manager extends AbstractManager implements ManagerInterface
             ));
             // run
             $this->_resource->runProcedures();
+            // @TODO: create backup mechanism
+            /** @var DdlClientType $type */
+            $type = Site::getServiceContainer()->get('ddl_client_table');
+            foreach ($this->_clients as $client) {
+                $type->save($client);
+            }
             $this->_logger->info("All procedures have been completed.");
         } catch (\Exception $e) {
             $this->_logger->err(sprintf("Exception while running DDL Installer process: %s", $e->__toString()));

@@ -22,7 +22,7 @@ return [
                 'priority' => 10, // greater means listener will be processed earlier
             ],
         ],
-        'config_after_process' => [
+        'config_after_events_process' => [
             [
                 'subscriber' => 'Maketok\App\Site::scCompileAndDump',
                 'type' => 'static',
