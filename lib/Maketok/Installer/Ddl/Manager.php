@@ -163,6 +163,20 @@ class Manager extends AbstractManager implements ManagerInterface
                 $this->_intelligentCompareIndices($_oldIndices, $_newIndices, $table);
             }
         }
+        // make them unique
+        foreach ($this->_directives as &$type) {
+            $type = $this->_arrayUnique($type);
+        }
+    }
+
+    /**
+     * @param array $a
+     * @return array
+     */
+    private function _arrayUnique(array $a)
+    {
+        // kind of a hack to make it multi-dimensional
+        return array_unique($a, SORT_REGULAR);
     }
 
     /**
@@ -300,6 +314,16 @@ class Manager extends AbstractManager implements ManagerInterface
                 (!isset($constraintDefinition['on_update']) ||
                     $constraintDefinition['on_update'] == $a[$constraintName]['on_update'])
                 )) {
+                // now we need to check if in fact the reference column got changed
+                foreach ($this->_directives->changeColumns as $columnDirective) {
+                    if (isset($constraintDefinition['column']) &&
+                        isset($columnDirective[1]) && // key 1 is old name
+                        $columnDirective[1] == $constraintDefinition['reference_column']) {
+                        $this->_directives->addProp('dropConstraints', [$tableName, $constraintName, $a[$constraintName]['type']]);
+                        $this->_directives->addProp('addConstraints',
+                            [$tableName, $constraintName, $constraintDefinition]);
+                    }
+                }
                 continue;
             } else {
                 $this->_directives->addProp('dropConstraints', [$tableName, $constraintName, $a[$constraintName]['type']]);

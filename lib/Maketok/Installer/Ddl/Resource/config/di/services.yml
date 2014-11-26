@@ -7,10 +7,11 @@ services:
 
   ddl_client_model:
     class: Maketok\Installer\Ddl\Resource\Model\DdlClient
+    scope: prototype
 
   ddl_client_result_set:
     class: Zend\Db\ResultSet\HydratingResultSet
-    arguments: ["@object_prop_hydrator", "@ddl_client_model"]
+    arguments: ["@object_prop_hydrator", "@ddl_client_model="]
 
   ddl_client_table_gateway:
     class: Zend\Db\TableGateway\TableGateway
@@ -26,10 +27,11 @@ services:
 
   ddl_client_dependency_model:
     class: Maketok\Installer\Ddl\Resource\Model\DdlClientDependency
+    scope: prototype
 
   ddl_client_dependency_result_set:
     class: Zend\Db\ResultSet\HydratingResultSet
-    arguments: ["@object_prop_hydrator", "@ddl_client_dependency_model"]
+    arguments: ["@object_prop_hydrator", "@ddl_client_dependency_model="]
 
   ddl_client_dependency_table_gateway:
     class: Zend\Db\TableGateway\TableGateway
@@ -45,10 +47,11 @@ services:
 
   ddl_client_history_model:
     class: Maketok\Installer\Ddl\Resource\Model\DdlClientHistory
+    scope: prototype
 
   ddl_client_history_result_set:
     class: Zend\Db\ResultSet\HydratingResultSet
-    arguments: ["@object_prop_hydrator", "@ddl_client_history_model"]
+    arguments: ["@object_prop_hydrator", "@ddl_client_history_model="]
 
   ddl_client_history_table_gateway:
     class: Zend\Db\TableGateway\TableGateway

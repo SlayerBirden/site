@@ -77,11 +77,28 @@ class DdlClientType extends AbstractTableMapper
             /** @var DdlClientHistory $historyModel */
             $historyModel = Site::getServiceContainer()->get('ddl_client_history_model');
             $historyModel->client_id = $model->id;
-            $historyModel->prev_version = $oldVersion;
+            $historyModel->prev_version = (is_null($oldVersion) ? '' : $oldVersion);
             $historyModel->version = $model->version;
             $historyModel->initializer = 'installer';
-            $historyModel->created_at = date("Y-m-d H:i:s");
             $historyType->save($historyModel);
         }
+    }
+
+    /**
+     * @param $model
+     * @return array
+     * @throws ModelException
+     */
+    protected function _getModelData($model)
+    {
+        // hardcoded exclude columns
+        $data = parent::_getModelData($model);
+        if (array_key_exists('config', $data)) {
+            unset($data['config']);
+        }
+        if (array_key_exists('dependencies', $data)) {
+            unset($data['dependencies']);
+        }
+        return $data;
     }
 }
