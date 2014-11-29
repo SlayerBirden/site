@@ -4,7 +4,6 @@
 # @developer Slayer slayer.birden@gmail.com maketok.com
 
 parameters:
-  installer_dll_lock_path: "%AR%/var/locks/installer_ddl_test.lock"
   db_database: site_test
 
 services:
