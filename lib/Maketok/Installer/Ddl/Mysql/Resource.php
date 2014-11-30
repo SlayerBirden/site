@@ -32,7 +32,6 @@ class Resource implements ResourceInterface
     /** @var array  */
     protected $_typeMap = [
         'int' => 'integer',
-        'datetime' => 'dateTime',
     ];
     /**
      * @var \Zend\Db\Sql\Sql
