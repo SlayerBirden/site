@@ -13,11 +13,12 @@ use Maketok\Installer\DirectivesInterface;
 use Maketok\Installer\Exception;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Ddl\AlterTable;
+use Zend\Db\Sql\Ddl\Column\ColumnInterface;
 use Zend\Db\Sql\Ddl\CreateTable;
 use Zend\Db\Sql\Ddl\DropTable;
+use Zend\Db\Sql\Ddl\Index\Index;
 use Zend\Db\Sql\Ddl\SqlInterface;
 use Zend\Db\Sql\Sql;
-use Maketok\Util\Zend\Db\Sql\Ddl\Index\Index;
 
 class Resource implements ResourceInterface
 {
@@ -203,8 +204,8 @@ class Resource implements ResourceInterface
             if (strpos($other, 'unsigned') !== false) {
                 $columnInfo['unsigned'] = true;
             }
-            if (($pos = strpos($other, 'DEFAULT')) !== false) {
-                $columnInfo['default'] = substr($other, $pos + 9, -2);
+            if (strpos($other, 'DEFAULT') !== false) {
+                $columnInfo['default'] = $this->_getDefault($other);
             }
         } elseif (preg_match('/`(\S+)` (\w+) (.*)/', $row, $matches)) {
             $columnInfo['name'] = $matches[1];
@@ -222,13 +223,46 @@ class Resource implements ResourceInterface
                 $columnInfo['unsigned'] = true;
             }
             if (($pos = strpos($other, 'DEFAULT')) !== false) {
-                $columnInfo['default'] = substr($other, $pos + 9, -2);
+                $columnInfo['default'] = $this->_getDefault($other);
+            }
+            if (($pos = strpos($other, 'ON UPDATE')) !== false) {
+                $columnInfo['on_update'] = 1;
             }
         }
         if (is_string($name) && ($columnInfo['name'] == $name) || is_null($name)) {
             return $columnInfo;
         }
         return [];
+    }
+
+    /**
+     * @param $string
+     * @return null|string
+     */
+    protected function _getDefault($string)
+    {
+        // trim comma from the end of a row
+        $tok = strtok(trim($string, ','), " \n\t");
+        $defaultNext = false;
+        $result = null;
+        while ($tok !== false) {
+            if ($defaultNext) {
+                $result = $tok;
+                break;
+            }
+            if ($tok == 'DEFAULT') {
+                $defaultNext = true;
+            }
+            $tok = strtok(" \n\t");
+        }
+        if ($result) {
+            if ($result == 'NULL') {
+                $result = null;
+            } else {
+                $result = trim($result, "\"'");
+            }
+        }
+        return $result;
     }
 
     /**
@@ -582,19 +616,15 @@ class Resource implements ResourceInterface
     /**
      * @param string $name
      * @param array $definition
-     * @return bool|\Zend\Db\Sql\Ddl\Column\ColumnInterface
+     * @return bool|ColumnInterface
      */
     private function _getInitColumn($name, array $definition) {
         if (!isset($definition['type']) || is_int($name)) {
             // can't create column without type or name
             return false;
         }
-        /** @var \Zend\Db\Sql\Ddl\Column\ColumnInterface $type */
-        $type = '\\Maketok\\Util\\Zend\\Db\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
-        if (!class_exists($type)) {
-            // fallback
-            $type = '\\Zend\\Db\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
-        }
+        /** @var ColumnInterface $type */
+        $type = '\\Zend\\Db\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
         switch ($definition['type']) {
             case 'char':
             case 'varchar':
@@ -614,6 +644,9 @@ class Resource implements ResourceInterface
                 if (isset($definition['unsigned'])) {
                     $options['unsigned'] = $definition['unsigned'];
                 }
+                if (isset($definition['zero_fill'])) {
+                    $options['zero_fill'] = $definition['zero_fill'];
+                }
                 if (isset($definition['auto_increment'])) {
                     $options['auto_increment'] = $definition['auto_increment'];
                 }
@@ -623,11 +656,16 @@ class Resource implements ResourceInterface
             case 'float':
                 $digits = isset($definition['digits']) ? $definition['digits'] : null;
                 $decimal = isset($definition['decimal']) ? $definition['decimal'] : null;
+                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
+                $default = isset($definition['default']) ? $definition['default'] : null;
                 $options = array();
                 if (isset($definition['unsigned'])) {
                     $options['unsigned'] = $definition['unsigned'];
                 }
-                $column = new $type($name, $digits, $decimal, $options);
+                if (isset($definition['zero_fill'])) {
+                    $options['zero_fill'] = $definition['zero_fill'];
+                }
+                $column = new $type($name, $digits, $decimal, $nullable, $default, $options);
                 break;
             case 'blob':
             case 'text':
@@ -635,8 +673,20 @@ class Resource implements ResourceInterface
                 $length = isset($definition['length']) ? $definition['length'] : null;
                 $column = new $type($name, $length, $nullable);
                 break;
+            case 'datetime':
+            case 'timestamp':
+                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
+                $default = isset($definition['default']) ? $definition['default'] : null;
+                $options = array();
+                if (isset($definition['on_update'])) {
+                    $options['on_update'] = $definition['on_update'];
+                }
+                $column = new $type($name, $nullable, $default, $options);
+                break;
             default:
-                $column = new $type($name);
+                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
+                $default = isset($definition['default']) ? $definition['default'] : null;
+                $column = new $type($name, $nullable, $default);
                 break;
         }
         return $column;

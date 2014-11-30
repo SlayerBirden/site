@@ -33,6 +33,7 @@ CREATE TABLE `test_website` (
   `sort_order` smallint(5) unsigned NOT NULL DEFAULT '0',
   `default_group_id` smallint(5) unsigned NOT NULL DEFAULT '0',
   `is_default` tinyint(1) unsigned DEFAULT '0',
+  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_id`),
   UNIQUE KEY `code` (`code`),
   KEY `sort_order` (`sort_order`),
@@ -47,6 +48,7 @@ CREATE TABLE `test_store` (
   `name` varchar(255) NOT NULL,
   `sort_order` smallint(5) unsigned NOT NULL DEFAULT '0',
   `is_active` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `updated_at` timestamp NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`store_id`),
   UNIQUE KEY `code` (`code`),
   KEY `FK_STORE_WEBSITE` (`website_id`),
@@ -70,7 +72,7 @@ SQL;
         $result = self::$_resource->getTable('test_store');
         $this->assertNotEmpty($result);
 
-        $this->assertCount(7, $result['columns']);
+        $this->assertCount(8, $result['columns']);
         $this->assertCount(3, $result['indices']);
         $this->assertCount(3, $result['constraints']);
         $fk = end($result['constraints']);
@@ -121,6 +123,27 @@ SQL;
         $this->assertFalse(isset($result['auto_increment']));
         $this->assertFalse(isset($result['unsigned']));
         $this->assertEquals('oleg', $result['default']);
+
+        $result = self::$_resource->getColumn('test_website', 'created_at');
+        $this->assertNotEmpty($result);
+
+        $this->assertEquals('created_at', $result['name']);
+        $this->assertEquals('timestamp', $result['type']);
+        $this->assertFalse(isset($result['length']));
+        $this->assertFalse(isset($result['unsigned']));
+        $this->assertFalse($result['nullable']);
+        $this->assertEquals('CURRENT_TIMESTAMP', $result['default']);
+
+        $result = self::$_resource->getColumn('test_store', 'updated_at');
+        $this->assertNotEmpty($result);
+
+        $this->assertEquals('updated_at', $result['name']);
+        $this->assertEquals('timestamp', $result['type']);
+        $this->assertFalse(isset($result['length']));
+        $this->assertFalse(isset($result['unsigned']));
+        $this->assertFalse(isset($result['default']));
+        $this->assertTrue($result['nullable']);
+        $this->assertTrue(isset($result['on_update']));
     }
 
     /**
@@ -230,7 +253,7 @@ SQL;
         $refProp->setAccessible(true);
         // the order is switched
         $expected = [
-            "CREATE TABLE `test` ( `id` INTEGER NOT NULL, `code` VARCHAR() NOT NULL )",
+            "CREATE TABLE `test` ( `id` INTEGER NOT NULL, `code` VARCHAR NOT NULL )",
             "ALTER TABLE `test2` DROP INDEX `UNQ_KEY_OOPS`",
             "ALTER TABLE `test2` CHANGE COLUMN `oldCol` `newCol` INTEGER NOT NULL",
         ];
@@ -239,6 +262,35 @@ SQL;
         for ($i = 0; $i < 3; ++$i) {
             $this->assertEquals($expected[$i], preg_replace('/\s+/', ' ', $procedures[$i]));
         }
+    }
+
+    /**
+     * @test
+     * @covers createProcedures
+     */
+    public function testCreateProceduresTimestamp()
+    {
+        self::$_resource = new Resource(Site::getServiceContainer()->get('adapter'),
+            Site::getServiceContainer()->get('zend_db_sql'));
+        $directives = new Directives();
+        $directives->addColumns = [
+            [
+                'test2',
+                'oldCol',
+                ['type' => 'timestamp', 'on_update' => 1]
+            ],
+        ];
+
+        self::$_resource->createProcedures($directives);
+        $refProp = new \ReflectionProperty(get_class(self::$_resource), '_procedures');
+        $refProp->setAccessible(true);
+        // the order is switched
+        $expected = [
+            "ALTER TABLE `test2` ADD COLUMN `oldCol` TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP",
+        ];
+        $procedures = $refProp->getValue(self::$_resource);
+        $this->assertCount(1, $procedures);
+        $this->assertEquals($expected[0], preg_replace('/\s+/', ' ', $procedures[0]));
     }
 
     /**

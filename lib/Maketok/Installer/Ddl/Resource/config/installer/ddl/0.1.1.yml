@@ -67,7 +67,7 @@ installer_ddl_client_history:
       type: varchar
       length: 255
     created_at:
-      type: dateTime
+      type: datetime
   constraints:
     primary:
       type: primaryKey

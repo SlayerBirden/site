@@ -70,7 +70,7 @@ services:
     arguments: ["application_logger", ["@=parameter('debug') == true ? service('debug_logger_handler') : service('default_logger_handler')"]]
 
   zend_sql_platform:
-    class: Maketok\Util\Zend\Db\Sql\Platform\Platform
+    class: Zend\Db\Sql\Platform\Platform
     arguments: ["@adapter"]
 
   zend_db_sql:
