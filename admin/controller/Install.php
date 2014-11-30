@@ -19,10 +19,10 @@ class Install extends AbstractController
 {
 
     /**
-     * @param RequestInterface $request
+     * @internal param RequestInterface $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function runAction(RequestInterface $request)
+    public function runAction()
     {
         /** @var Logger $logger */
         $logger = $this->getSC()->get('logger');

@@ -8,11 +8,10 @@
 
 namespace Maketok\Installer\Ddl\Test;
 
+use Maketok\App\Site;
 use Maketok\Installer\Ddl\Directives;
 use Maketok\Installer\Ddl\Manager;
 use Maketok\Installer\Ddl\Resource\Model\DdlClient;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,7 +26,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             $this->getMock('Maketok\Installer\Ddl\Mysql\Resource', [], [], '', false),
             new Directives(),
             null,
-            new Logger(new TestHandler())
+            Site::getSC()->get('logger')
         );
     }
 
