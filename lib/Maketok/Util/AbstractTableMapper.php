@@ -8,6 +8,7 @@
 
 namespace Maketok\Util;
 
+use Maketok\App\Site;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\Zend\Db\Sql\InsertIgnore;
@@ -109,39 +110,43 @@ abstract class AbstractTableMapper
 
     /**
      * @param object $model
-     * @throws Exception\ModelInfoException
      */
     public function save($model)
     {
-        $data = $this->_getModelData($model);
-        // possible update
-        if (array_key_exists('updated_at', $data)) {
-            $data['updated_at'] = date("Y-m-d H:i:s");
-        }
-        // set created_at if it's not set
-        if (array_key_exists('created_at', $data) && empty($data['created_at'])) {
-            $data['created_at'] = date("Y-m-d H:i:s");
-        }
-        // now determine update or insert
-        if (isset($data[$this->ifn()])) {
-            $rowsAffected = $this->getGateway()->update($data, array($this->ifn() => $data[$this->ifn()]));
-            if ($rowsAffected === 0) {
-                // either no corresponding rows exist, so we need to insert
-                // or data set is not updated compared to db entry
-                // try to insert ignore
-                $insert = new InsertIgnore($this->getGateway()->getTable());
-                $insert->values($data);
-                $rowsAffected = $this->getGateway()->insertWith($insert);
-                if (!$rowsAffected) {
-                    // questionable
-//                    throw new ModelInfoException("Nothing got changed");
-                } else {
-                    $model->id = $this->getGateway()->getLastInsertValue();
-                }
+        try {
+            $data = $this->_getModelData($model);
+            // possible update
+            if (array_key_exists('updated_at', $data)) {
+                $data['updated_at'] = date("Y-m-d H:i:s");
             }
-        } else {
-            $this->getGateway()->insert($data);
-            $model->id = $this->getGateway()->getLastInsertValue();
+            // set created_at if it's not set
+            if (array_key_exists('created_at', $data) && empty($data['created_at'])) {
+                $data['created_at'] = date("Y-m-d H:i:s");
+            }
+            // now determine update or insert
+            if (isset($data[$this->ifn()])) {
+                $rowsAffected = $this->getGateway()->update($data, array($this->ifn() => $data[$this->ifn()]));
+                if ($rowsAffected === 0) {
+                    // either no corresponding rows exist, so we need to insert
+                    // or data set is not updated compared to db entry
+                    // try to insert ignore
+                    $insert = new InsertIgnore($this->getGateway()->getTable());
+                    $insert->values($data);
+                    $rowsAffected = $this->getGateway()->insertWith($insert);
+                    if (!$rowsAffected) {
+                        // questionable
+                        throw new ModelInfoException("Nothing got changed");
+                    } else {
+                        $model->id = $this->getGateway()->getLastInsertValue();
+                    }
+                }
+            } else {
+                $this->getGateway()->insert($data);
+                $model->id = $this->getGateway()->getLastInsertValue();
+            }
+        } catch (ModelInfoException $e) {
+            // Informative exceptions; for flow regulation
+            Site::getSC()->get('logger')->debug($e->getMessage());
         }
     }
 
@@ -160,6 +165,19 @@ abstract class AbstractTableMapper
             $data = $model->getData();
         } else {
             $data = array();
+        }
+        if (method_exists($model, 'getOrigin')) {
+            $originData = $model->getOrigin();
+            $fullData = $data;
+            foreach ($fullData as $key => $value) {
+                if (isset($originData[$key]) && ($originData[$key] == $value)) {
+                    unset($fullData[$key]);
+                }
+            }
+            if (count($fullData) == 0) {
+                // well nothing was changed
+                throw new ModelException("Nothing was changed.");
+            }
         }
         // do not proceed without data
         if (empty($data)) {

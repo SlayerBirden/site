@@ -56,7 +56,7 @@ services:
     factory_method: getInstance
 
   object_prop_hydrator:
-    class: Zend\Stdlib\Hydrator\ObjectProperty
+    class: Maketok\Util\Hydrator\Hybrid
 
   default_logger_handler:
     class: Maketok\Util\Monolog\Handler\StreamHandler

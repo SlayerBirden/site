@@ -129,12 +129,12 @@ class Config
                 $manager = Site::getServiceContainer()->get('installer_ddl_manager');
                 switch ($client['type']) {
                     case 'class':
-                        $clientClass = self::classFactory($client['key']);
-                        $manager->addClient($clientClass);
+                        $clientModel = self::classFactory($client['key']);
+                        $manager->addClient($clientModel);
                         break;
                     case 'service':
-                        $clientClass = self::serviceFactory($client['key']);
-                        $manager->addClient($clientClass);
+                        $clientModel = self::serviceFactory($client['key']);
+                        $manager->addClient($clientModel);
                         break;
                     default:
                         throw new ConfigException("Unrecognized installer client type");
