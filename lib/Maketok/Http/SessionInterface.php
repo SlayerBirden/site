@@ -1,0 +1,22 @@
+<?php
+/**
+ * This is a part of Maketok Site. Licensed under GPL 3.0
+ * Please do not use for your own profit.
+ * @project site
+ * @developer Slayer slayer.birden@gmail.com maketok.com
+ */
+
+namespace Maketok\Http;
+
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface as BaseSessionInterface;
+
+interface SessionInterface extends BaseSessionInterface
+{
+    /**
+     * Gets the flashbag interface.
+     *
+     * @return FlashBagInterface
+     */
+    public function getFlashBag();
+}

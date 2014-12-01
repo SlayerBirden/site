@@ -10,15 +10,11 @@ namespace Maketok\Util;
 
 use Maketok\Util\Exception\DirectoryException;
 
-class DirectoryHandler
+class DirectoryHandler implements DirectoryHandlerInterface
 {
 
-    const PERMISSIONS = 0755;
-
-
     /**
-     * @param string $path
-     * @return bool
+     * {@inheritdoc}
      */
     public function rm($path)
     {
@@ -45,12 +41,9 @@ class DirectoryHandler
     }
 
     /**
-     * @param string $path
-     * @param int $permissions
-     * @param bool $recursive
-     * @return bool
+     * {@inheritdoc}
      */
-    public function mkdir($path, $permissions = self::PERMISSIONS, $recursive = true)
+    public function mkdir($path, $permissions = 0755, $recursive = true)
     {
         $res = mkdir($path, $permissions, $recursive);
         return $res;
@@ -58,10 +51,7 @@ class DirectoryHandler
 
 
     /**
-     * @param null|string $path
-     * @param bool $namesOnly
-     * @return array
-     * @throws DirectoryException
+     * {@inheritdoc}
      */
     public function ls($path, $namesOnly = true)
     {

@@ -88,7 +88,6 @@ class Config
         if (self::$_isApplied) {
             return;
         }
-        Site::getServiceContainer()->get('subject_manager')->notify('config_before_process', new State([]));
         if  ($mode & self::PHP) {
             foreach (self::getConfig('php_config') as $key => $value) {
                 @ini_set($key, $value);

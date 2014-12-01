@@ -102,7 +102,7 @@ final class Site
     }
 
     /**
-     * @return null|\Symfony\Component\HttpFoundation\Session\SessionInterface
+     * @return null|\Maketok\Http\SessionInterface
      */
     public static function getSession()
     {
@@ -236,25 +236,33 @@ final class Site
             $container->setParameter($k, $v);
         }
         $loader = new YamlFileLoader($container, new FileLocator(AR . '/config/di'));
-        if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
-            $loader->load('services.yml');
-            if (file_exists(AR . '/config/di/local.services.yml')) {
-                $loader->load('local.services.yml');
-            }
-        }
-        if ((self::$mode & self::MODE_LOAD_DEV_CONFIGS) &&
-            file_exists(AR . '/config/di/dev.services.yml')) {
-            $loader->load('dev.services.yml');
-        }
-        if ((self::$mode & self::MODE_LOAD_TEST_CONFIGS) &&
-            file_exists(AR . '/config/di/test.services.yml')) {
-            $loader->load('test.services.yml');
-        }
-        if ((self::$mode & self::MODE_LOAD_ADMIN_CONFIGS) &&
-            file_exists(AR . '/config/di/admin.services.yml')) {
-            $loader->load('admin.services.yml');
-            if (file_exists(AR . '/config/di/local.admin.services.yml')) {
-                $loader->load('local.admin.services.yml');
+        $fileList = ['services', 'parameters'];
+        $envList = [
+            'base' => '',
+            'dev' => 'dev',
+            'test' => 'test',
+            'admin' => 'admin'
+        ];
+        foreach ($fileList as $fileName) {
+            foreach ($envList as $envCode => $envFileCode) {
+                $constantCode = strtoupper("mode_load_{$envCode}_configs");
+                $const = @constant("self::$constantCode");
+                if (is_null($const)) {
+                    continue;
+                }
+                $finalFileName = (empty($envFileCode) ? "$fileName.yml" : "$envFileCode.$fileName.yml");
+                if (self::$mode & $const) {
+                    // load config file if it exists
+                    if (file_exists(AR . "/config/di/$finalFileName")) {
+                        $loader->load($finalFileName);
+                    }
+                    // load "local" version of each file on top of the "normal" one
+                    // if it exists
+                    $finalLocalFileName = 'local.' . $finalFileName;
+                    if (file_exists(AR . "/config/di/$finalLocalFileName")) {
+                        $loader->load($finalLocalFileName);
+                    }
+                }
             }
         }
         self::$_sc = $container;

@@ -135,7 +135,8 @@ abstract class AbstractTableMapper
                     $rowsAffected = $this->getGateway()->insertWith($insert);
                     if (!$rowsAffected) {
                         // questionable
-                        throw new ModelInfoException("Nothing got changed");
+                        throw new ModelInfoException(sprintf("Model %s wasn't changed during save process.",
+                            get_class($model)));
                     } else {
                         $model->id = $this->getGateway()->getLastInsertValue();
                     }

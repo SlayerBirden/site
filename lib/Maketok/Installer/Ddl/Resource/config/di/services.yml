@@ -4,13 +4,12 @@
 # @developer Slayer slayer.birden@gmail.com maketok.com
 
 services:
-
   ddl_client_model:
     class: Maketok\Installer\Ddl\Resource\Model\DdlClient
     scope: prototype
 
   ddl_client_result_set:
-    class: Zend\Db\ResultSet\HydratingResultSet
+    class: %hydrating_resultset%
     arguments: ["@object_prop_hydrator", "@ddl_client_model="]
 
   ddl_client_table_gateway:
@@ -30,7 +29,7 @@ services:
     scope: prototype
 
   ddl_client_dependency_result_set:
-    class: Zend\Db\ResultSet\HydratingResultSet
+    class: %hydrating_resultset%
     arguments: ["@object_prop_hydrator", "@ddl_client_dependency_model="]
 
   ddl_client_dependency_table_gateway:
@@ -50,7 +49,7 @@ services:
     scope: prototype
 
   ddl_client_history_result_set:
-    class: Zend\Db\ResultSet\HydratingResultSet
+    class: %hydrating_resultset%
     arguments: ["@object_prop_hydrator", "@ddl_client_history_model="]
 
   ddl_client_history_table_gateway:

@@ -3,15 +3,6 @@
 # @project site
 # @developer Slayer slayer.birden@gmail.com maketok.com
 
-parameters:
-  module_config_file_name: Config.php
-  module_config_name: Config
-  defaultFormTheme: form_div_layout.html.twig
-  translation_locale: en
-  installer_dll_lock_path: "%AR%/var/locks/installer_ddl.lock"
-  log_dir: "%AR%/var/log/"
-  cache_dir: "%AR%/var/cache/"
-
 services:
   adapter:
     class: Zend\Db\Adapter\Adapter
@@ -23,7 +14,7 @@ services:
 
   module_manager:
     class: Maketok\Module\ModuleManager
-    arguments: ["@adapter"]
+    arguments: ["@module_table", "@directory_handler", "@subject_manager", "@logger", "@session_manager"]
 
   session_save_handler:
     class: Maketok\Http\Session\DbHandler
@@ -34,7 +25,7 @@ services:
     arguments: [[], "@session_save_handler"]
 
   session_manager:
-    class: Symfony\Component\HttpFoundation\Session\Session
+    class: Maketok\Http\Session
     arguments: ["@session_storage"]
 
   directory_handler:
@@ -42,8 +33,6 @@ services:
 
   lock_stream_handler:
     class: Maketok\Util\StreamHandler
-    calls:
-      - [setPath, ["%installer_dll_lock_path%"]]
 
   subject_manager:
     class: Maketok\Observer\SubjectManager

@@ -8,52 +8,12 @@
 
 namespace Maketok\Http;
 
+use Symfony\Component\HttpFoundation\Session\Session as BaseSession;
+
 /**
  * Class Session
  * @package Maketok\Http
- * @deprecated
  */
-class Session
+class Session extends BaseSession implements SessionInterface
 {
-    /**
-     * Session start
-     */
-    public function start()
-    {
-        session_start();
-    }
-
-    /**
-     * Session destroy
-     */
-    public function destroy()
-    {
-        session_destroy();
-    }
-
-    /**
-     * Session regenerate
-     */
-    public function regenerate()
-    {
-        session_regenerate_id();
-    }
-
-    /**
-     * @param \SessionHandlerInterface $handler
-     */
-    public function registerSaveHandler(\SessionHandlerInterface $handler)
-    {
-        session_set_save_handler($handler, true);
-    }
-
-    /**
-     * @param \SessionHandlerInterface $handler
-     */
-    public function init(\SessionHandlerInterface $handler)
-    {
-        ini_set('session.save_handler', 'user');
-        $this->registerSaveHandler($handler);
-        $this->start();
-    }
 }

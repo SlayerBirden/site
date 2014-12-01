@@ -9,17 +9,23 @@
 namespace Maketok\Module;
 
 use Maketok\App\Site;
+use Maketok\Http\SessionInterface;
+use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\Model\Module;
 use Maketok\Module\Model\ModuleTable;
 use Maketok\Observer\State;
-use Maketok\Observer\StateInterface;
+use Maketok\Observer\SubjectManagerInterface;
 use Maketok\Util\AbstractTableMapper;
+use Maketok\Util\DirectoryHandlerInterface;
+use Maketok\Util\Exception\ModelException;
+use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Yaml\Yaml;
 
-class ModuleManager implements ExtensionInterface
+class ModuleManager implements ExtensionInterface, ClientInterface
 {
 
     /** @var ModuleTable */
@@ -28,10 +34,43 @@ class ModuleManager implements ExtensionInterface
     private $_modules = [];
     /** @var array */
     private $_activeModules;
+    /** @var array */
+    private $_moduleDirs;
+    /**
+     * @var SubjectManagerInterface
+     */
+    private $sm;
+    /**
+     * @var DirectoryHandlerInterface
+     */
+    private $dh;
+    /**
+     * @var Logger
+     */
+    private $logger;
+    /**
+     * @var SessionInterface
+     */
+    private $session;
 
-    public function __construct(AbstractTableMapper $tableType)
+    /**
+     * @param AbstractTableMapper $tableType
+     * @param DirectoryHandlerInterface $dh
+     * @param SubjectManagerInterface $sm
+     * @param Logger $logger
+     * @param SessionInterface $session
+     */
+    public function __construct(AbstractTableMapper $tableType,
+                                DirectoryHandlerInterface $dh,
+                                SubjectManagerInterface $sm,
+                                Logger $logger,
+                                SessionInterface $session)
     {
         $this->_tableType = $tableType;
+        $this->dh = $dh;
+        $this->sm = $sm;
+        $this->logger = $logger;
+        $this->session = $session;
     }
 
     /**
@@ -39,12 +78,20 @@ class ModuleManager implements ExtensionInterface
      */
     public function disableModule($code)
     {
-        $this->_tableType->disable($this->_initModule($code));
+        try {
+            $module = $this->_initModule($code);
+            $module->active = 0;
+            $this->_tableType->save($module);
+        } catch (ModelException $e) {
+            $this->logger->err($e->getMessage());
+            $this->session->getFlashBag()->add('error', 'Could not update disable.');
+        }
     }
 
     /**
      * @param string $code
      * @return Module
+     * @throws ModelException
      */
     protected function _initModule($code)
     {
@@ -52,21 +99,25 @@ class ModuleManager implements ExtensionInterface
     }
 
     /**
+     * to uninstall module you need to move it out of "modules" directory
+     *
      * @param string $code
      * @return bool
      */
     public function uninstallModule($code)
     {
-        // @TODO
+        // @TODO implement move
     }
 
     /**
+     * to install module you need to add it to "modules" directory
+     *
      * @param string $code
      * @return bool
      */
     public function installModule($code)
     {
-        // @TODO
+        // @TODO implement add
     }
 
     /**
@@ -76,7 +127,14 @@ class ModuleManager implements ExtensionInterface
      */
     public function updateToVersion($code, $version)
     {
-        // @TODO
+        try {
+            $module = $this->_initModule($code);
+            $module->version = $version;
+            $this->_tableType->save($module);
+        } catch (ModelException $e) {
+            $this->logger->err($e->getMessage());
+            $this->session->getFlashBag()->add('error', 'Could not update to version.');
+        }
     }
 
     /**
@@ -84,15 +142,14 @@ class ModuleManager implements ExtensionInterface
      */
     public function activateModule($code)
     {
-        // @TODO
-    }
-
-    /**
-     * @param StateInterface $state
-     */
-    public function processModuleConfig(StateInterface $state)
-    {
-        // @TODO
+        try {
+            $module = $this->_initModule($code);
+            $module->active = 1;
+            $this->_tableType->save($module);
+        } catch (ModelException $e) {
+            $this->logger->err($e->getMessage());
+            $this->session->getFlashBag()->add('error', 'Could not update activate.');
+        }
     }
 
     /**
@@ -101,7 +158,7 @@ class ModuleManager implements ExtensionInterface
     public function getActiveModules()
     {
         if (is_null($this->_activeModules)) {
-            $activeDbModulesResultSet = $this->_tableType->getActiveModules();
+            $activeDbModulesResultSet = $this->_tableType->fetchFilter(array('active' => 1));
             $activeDbModuleCodes = [];
             foreach ($activeDbModulesResultSet as $module) {
                 $activeDbModuleCodes[] = $module->module_code;
@@ -133,6 +190,46 @@ class ModuleManager implements ExtensionInterface
     }
 
     /**
+     * @return mixed
+     */
+    public function getModuleDirectories()
+    {
+        if (is_null($this->_moduleDirs)) {
+            $this->_moduleDirs = $this->dh->ls($this->getDir());
+        }
+        return $this->_moduleDirs;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDir()
+    {
+        return AR . DS . 'modules';
+    }
+
+    /**
+     * @internal param StateInterface $state
+     */
+    public function processModuleConfig()
+    {
+        $configFileName = Site::getSC()->getParameter('module_config_file_name');
+        $configName = Site::getSC()->getParameter('module_config_name');
+        foreach ($this->getModuleDirectories() as $dir) {
+            if (file_exists($this->getDir() . DS . $dir . DS . $configFileName)) {
+                include_once $this->getDir() . DS . $dir . DS . $configFileName;
+                $className = "\\modules\\$dir\\$configName";
+                /** @var ConfigInterface $config */
+                $config = new $className();
+                array_push($this->_modules, $config);
+            }
+        }
+        $this->sm->notify('module_list_exists', new State(array(
+            'modules' => $this->_modules
+        )));
+    }
+
+    /**
      * @param StateInterface
      */
     public function processModules()
@@ -140,44 +237,21 @@ class ModuleManager implements ExtensionInterface
         if (empty($this->_modules)) {
             return;
         }
-        // update db
-        foreach ($this->_modules as $code => $moduleConfig) {
-            if ($module = $this->_tableType->find($code)) {
-                if ($moduleConfig->getInstallProcessType() == $moduleConfig::INSTALL_PROCESS_TYPE_ONLOAD) {
-                    $module->version = $moduleConfig->getVersion();
-                }
-            } else {
-                /** @var ConfigInterface $moduleConfig */
-                $module = new Module;
-                if ($moduleConfig->getInstallProcessType() == $moduleConfig::INSTALL_PROCESS_TYPE_ONLOAD) {
-                    $module->version = $moduleConfig->getVersion();
-                } else {
-                    $module->version = '0';
-                }
-                $module->state = Module::MODULE_STATE_ACTIVE;
-                $module->module_code = $moduleConfig->getCode();
-            }
-            $this->_tableType->save($module);
-        }
         // process active modules
-        Site::getServiceContainer()->get('subject_manager')->notify('modulemanager_process_before',
+        $this->sm->notify('modulemanager_process_before',
             new State(array('active_modules' => $this->getActiveModules())));
         foreach ($this->getActiveModules() as $config) {
-            // before
-            /** @var ConfigInterface $config */
-            $config->initBefore();
-        }
-        foreach ($this->getActiveModules() as $config) {
             // events
+            /** @var ConfigInterface $config */
             $config->initListeners();
         }
-        Site::getServiceContainer()->get('subject_manager')->notify('modulemanager_init_listeners_after',
+        $this->sm->notify('modulemanager_init_listeners_after',
             new State(array('active_modules' => $this->getActiveModules())));
         foreach ($this->getActiveModules() as $config) {
             // routes
             $config->initRoutes();
         }
-        Site::getServiceContainer()->get('subject_manager')->notify('modulemanager_process_after',
+        $this->sm->notify('modulemanager_process_after',
             new State(array('active_modules' => $this->getActiveModules())));
     }
 
@@ -195,7 +269,7 @@ class ModuleManager implements ExtensionInterface
     {
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__.'/Resource/config')
+            new FileLocator(__DIR__.'/Resource/config/di')
         );
         $loader->load('services.yml');
     }
@@ -234,6 +308,66 @@ class ModuleManager implements ExtensionInterface
      * @api
      */
     public function getAlias()
+    {
+        return 'module_manager';
+    }
+
+    /**
+     * client register dependencies (parents)
+     * it must register dependencies to change resources that were created by other clients
+     *
+     * @return array
+     */
+    public function getDependencies()
+    {
+        // TODO: Implement getDependencies() method.
+    }
+
+    /**
+     * get client version to install
+     *
+     * @return string
+     */
+    public function getDdlVersion()
+    {
+        return '0.2.1';
+    }
+
+    /**
+     * get client config to install
+     *
+     * @param string $version
+     * @throws Exception
+     * @return array|bool
+     */
+    public function getDdlConfig($version)
+    {
+        $locator = new FileLocator(__DIR__.'/Resource/config/ddl');
+        try {
+            $file = $locator->locate($version.'.yml');
+            $reader = new Yaml();
+            return $reader->parse($file);
+        } catch (\InvalidArgumentException $e) {
+            // nested try
+            try {
+                $file = $locator->locate($version.'.php');
+                return include $file;
+            } catch (\InvalidArgumentException $nextE) {
+                $this->logger->err($e->getMessage());
+                $this->logger->err($nextE->getMessage());
+            }
+        }
+        return false;
+
+    }
+
+    /**
+     * get client identifier
+     * must be unique
+     *
+     * @return string
+     */
+    public function getDdlCode()
     {
         return 'module_manager';
     }

@@ -9,10 +9,7 @@
 namespace modules\error;
 
 
-use Maketok\App\Site;
 use Maketok\Module\ConfigInterface;
-use Maketok\Mvc\Router\Route\Http\Parameterized;
-use Maketok\Observer\StateInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -35,31 +32,6 @@ class Config implements ConfigInterface, ExtensionInterface
     public function initRoutes()
     {
         return;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function initListeners()
-    {
-        // this is a special case;
-        // attaching routes after all other modules are processes
-        // we need to catch only unmatched ones
-        Site::getServiceContainer()->get('subject_manager')->attach(
-            'modulemanager_init_listeners_after',
-            array($this, 'initNoRoute'), 1);
-    }
-
-    /**
-     * @param StateInterface $state
-     */
-    public function initNoRoute(StateInterface $state)
-    {
-        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/{anything}', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\error\\controller\\Index',
-            'action' => 'noroute',
-        ), [], []));
     }
 
     /**
@@ -88,15 +60,6 @@ class Config implements ConfigInterface, ExtensionInterface
     }
 
     /**
-     * some init work before other init processes (events and routes)
-     * @return mixed
-     */
-    public function initBefore()
-    {
-        return;
-    }
-
-    /**
      * Loads a specific configuration.
      *
      * @param array $config An array of configuration values
@@ -110,7 +73,7 @@ class Config implements ConfigInterface, ExtensionInterface
     {
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__.'/config')
+            new FileLocator(__DIR__.'/config/di')
         );
         $loader->load('services.yml');
     }
@@ -151,5 +114,13 @@ class Config implements ConfigInterface, ExtensionInterface
     public function getAlias()
     {
         return $this->getCode();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function initListeners()
+    {
+        return;
     }
 }

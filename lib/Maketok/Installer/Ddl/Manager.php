@@ -60,7 +60,11 @@ class Manager extends AbstractManager implements ManagerInterface
         if (is_null($this->_clients)) {
             $this->_clients = [];
         }
-        $this->_clients[$client->getDdlCode()] = $this->getClientModel($client);
+        $model = $this->getClientModel($client);
+        if ($model->config !== FALSE) {
+            // only include model if it has config
+            $this->_clients[$client->getDdlCode()] = $model;
+        }
     }
 
     /**
@@ -76,14 +80,16 @@ class Manager extends AbstractManager implements ManagerInterface
         } catch (Exception $e) {
             // when there's no record for this client yet
             $model = new DdlClient();
+            $model->version = $client->getDdlVersion();
+            $model->code = $client->getDdlCode();
         } catch (\Exception $e) {
             // when no installer table exists
             $model = new DdlClient();
+            $model->version = $client->getDdlVersion();
+            $model->code = $client->getDdlCode();
         }
-        $model->code = $client->getDdlCode();
-        $model->version = $client->getDdlVersion();
-        $model->config = $client->getDdlConfig($model->version);
         $model->dependencies = $client->getDependencies();
+        $model->config = $client->getDdlConfig($model->version);
         return $model;
     }
 

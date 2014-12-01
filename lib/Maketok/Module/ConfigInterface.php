@@ -42,10 +42,4 @@ interface ConfigInterface
      * @return string
      */
     public function __toString();
-
-    /**
-     * some init work before other init processes (events and routes)
-     * @return mixed
-     */
-    public function initBefore();
 }

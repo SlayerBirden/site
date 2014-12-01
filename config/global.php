@@ -50,5 +50,9 @@ return [
             'type' => 'class',
             'key' => 'Maketok\\Installer\\Ddl\\InstallerClient',
         ],
+        'module_manager' => [
+            'type' => 'service',
+            'key' => 'module_manager',
+        ],
     ],
 ];

@@ -10,7 +10,8 @@ install: composer install --dev
 before_script:
   - cp config/local.php.sample config/local.php
   - mysql -e 'create database site_test;'
-  - yes | \cp -rf config/di/travis.services.yml config/di/test.services.yml
+#  - yes | \cp -f config/di/travis.services.yml config/di/test.services.yml
+  - yes | \cp -f config/di/travis.parameters.yml config/di/test.parameters.yml
 
 script:
   - cd tests; ../vendor/bin/phpunit --testsuite "util"
