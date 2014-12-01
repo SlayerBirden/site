@@ -1,2 +1,3 @@
-parameters:
-  front_controller_error_dumper: modules\error\controller\Index
+services:
+    front_controller_error_dumper:
+      class: modules\error\controller\Index

@@ -23,4 +23,14 @@ interface RequestInterface extends MessageInterface
      * @return SessionInterface
      */
     public function getSession();
+
+    /**
+     * @return array|\IteratorAggregate
+     */
+    public function getAttributes();
+
+    /**
+     * @return mixed
+     */
+    public function getPathInfo();
 }

@@ -64,21 +64,29 @@ class Parameterized extends AbstractRoute implements RouteInterface
             $this->stripTrailingSlash($request->getPathInfo()),
             $this->_restrictions
         )) {
+            $attributes = $request->getAttributes();
             // set defaults
-            if (is_object($request->attributes) && ($request->attributes instanceof ParameterBag)) {
-                $request->attributes->add(array(
+            if (is_object($attributes) && ($attributes instanceof ParameterBag)) {
+                $attributes->add(array(
                     '_route' => $this,
                 ));
                 if (!empty($this->_defaults)) {
-                    $request->attributes->add($this->_defaults);
+                    $attributes->add($this->_defaults);
+                }
+            } elseif (is_array($attributes)) {
+                $attributes[] = ['_route' => $this];
+                if (!empty($this->_defaults)) {
+                    $attributes[] = $this->_defaults;
                 }
             }
             // set variables
             $this->_variables = $variables;
-            if (is_object($request->attributes) &&
-                ($request->attributes instanceof ParameterBag) &&
+            if (is_object($attributes) &&
+                ($attributes instanceof ParameterBag) &&
                 !empty($variables)) {
-                $request->attributes->add($variables);
+                $attributes->add($variables);
+            } elseif (is_array($attributes)) {
+                $attributes[] = $variables;
             }
             return new Success($this);
         }

@@ -17,6 +17,11 @@ class Request extends HttpRequest implements RequestInterface
 {
 
     /**
+     * {@inheritdoc}
+     */
+    public $attributes;
+
+    /**
      * currently not in use
      * @param $content
      * @return $this
@@ -25,5 +30,13 @@ class Request extends HttpRequest implements RequestInterface
     {
         $this->content = $content;
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
     }
 }

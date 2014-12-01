@@ -72,14 +72,11 @@ class Front
     public function exceptionHandler(\Exception $e)
     {
         try {
-            $dumperClass = 'Maketok\Mvc\Router\Route\Http\Error\Dumper';
-            if (Site::getServiceContainer()->hasParameter('front_controller_error_dumper')) {
-                $dumperClass = Site::getServiceContainer()->getParameter('front_controller_error_dumper');
-            }
+            $dumper = Site::getSC()->get('front_controller_error_dumper');
             if ($e instanceof RouteException) {
                 // not found
                 $errorRoute = new Error(array(
-                    'controller' => $dumperClass,
+                    'controller' => $dumper,
                     'action' => 'noroute',
                 ));
                 $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
@@ -90,7 +87,7 @@ class Front
                         ->get('logger')
                         ->err(sprintf("Front Controller dispatch error exception\n%s", $e->__toString()));
                     $errorRoute = new Error(array(
-                        'controller' => $dumperClass,
+                        'controller' => $dumper,
                         'action' => 'error',
                         'exception' => $e,
                     ));
@@ -102,7 +99,7 @@ class Front
                     ->get('logger')
                     ->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
                 $errorRoute = new Error(array(
-                    'controller' => $dumperClass,
+                    'controller' => $dumper,
                     'action' => 'error',
                     'exception' => $e,
                 ));
@@ -139,7 +136,12 @@ class Front
             throw new RouteException("Missing controller or action for a matched route.");
         }
 
-        $controller = new $parameters['controller'];
+        if (is_object($parameters['controller'])) {
+            $controller = $parameters['controller'];
+        } else {
+            $controllerClass = (string) $parameters['controller'];
+            $controller = new $controllerClass();
+         }
         $actionName = $parameters['action'] . 'Action';
         return $controller->$actionName($route->getRequest());
     }

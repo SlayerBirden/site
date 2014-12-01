@@ -185,3 +185,6 @@ services:
 
   request:
     synthetic: true
+
+  front_controller_error_dumper:
+    class: Maketok\Mvc\Router\Route\Http\Error\Dumper

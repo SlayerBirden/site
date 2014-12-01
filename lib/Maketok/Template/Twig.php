@@ -66,7 +66,7 @@ class Twig extends AbstractEngine
      */
     public function setVariables(array $variables)
     {
-        $this->_variables = $variables;
+        $this->_variables = array_merge($this->_variables, $variables);
     }
 
     /**

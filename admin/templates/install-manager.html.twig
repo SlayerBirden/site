@@ -1,5 +1,21 @@
 {% extends "base-manager.html.twig" %}
 {% block content %}
     {{ parent() }}
-    <button onclick="window.open('{{ install_url }}');">{% trans %}Run installer{% endtrans %}</button>
+    <button onclick="openPopup('{{ install_url }}');">{% trans %}Run installer{% endtrans %}</button>
+    <script type="application/javascript">
+        function openPopup(url) {
+            var specs = {
+                width: 800,
+                height: 500
+            };
+            var specsArray = [];
+            var key;
+            for (key in specs) {
+                if (specs.hasOwnProperty(key)) {
+                    specsArray.push(key + '=' + specs[key]);
+                }
+            }
+            window.open(url, "Installer Process", specsArray.join(', '));
+        }
+    </script>
 {% endblock %}

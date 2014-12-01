@@ -12,6 +12,7 @@ use Maketok\App\Site;
 use Maketok\Http\Response;
 use Maketok\Mvc\GenericException;
 use Maketok\Mvc\Router\Route\RouteInterface;
+use Maketok\Template\EngineInterface;
 use Maketok\Util\RequestInterface;
 use Maketok\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -105,6 +106,7 @@ class AbstractController
     {
         $path = $this->_getTemplatePath();
         // get template Engine
+        /** @var EngineInterface $engine */
         $engine = $this->getSC()->get('template_engine');
         $dependencyPaths = array();
         foreach ($this->_viewDependency as $_dependencyModule) {

@@ -20,6 +20,8 @@ class Index extends AbstractController
     public function indexAction(RequestInterface $request)
     {
         $this->setTemplate('base-manager.html.twig');
-        return $this->prepareResponse($request, array());
+        return $this->prepareResponse($request, array(
+            'title' => 'Admin Management Area'
+        ));
     }
 }
