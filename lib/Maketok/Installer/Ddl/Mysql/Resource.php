@@ -191,6 +191,11 @@ class Resource implements ResourceInterface
             $columnInfo['name'] = $matches[1];
             $columnInfo['type'] = $this->convertType($matches[2]);
             $columnInfo['length'] = $matches[3];
+            // hardcode for boolean type
+            // which is fictional type, alias for tinyint(1)
+            if ($columnInfo['type'] == 'tinyint' && $columnInfo['length'] == 1) {
+                $columnInfo['type'] = 'boolean';
+            }
             $other = $matches[4];
             if (strpos($other, 'NOT NULL') !== false) {
                 $columnInfo['nullable'] = false;

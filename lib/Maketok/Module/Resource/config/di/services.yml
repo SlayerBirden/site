@@ -1,6 +1,6 @@
 services:
   module_model:
-    class: modules\modules\model\Module
+    class: Maketok\Module\Model\Module
 
   module_result_set:
     class: %hydrating_resultset%
@@ -15,10 +15,10 @@ services:
       - "@module_result_set"
 
   module_table:
-    class: modules\modules\model\ModuleTable
+    class: Maketok\Module\Model\ModuleTable
     arguments: ["@module_table_gateway", module_code]
 
   module.form.type:
-            class: modules\modules\form\ModuleType
+            class: Maketok\Module\Resource\form\ModuleType
             tags:
                 - { name: form.type, alias: module }

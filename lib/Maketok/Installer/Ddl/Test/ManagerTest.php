@@ -26,7 +26,8 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             $this->getMock('Maketok\Installer\Ddl\Mysql\Resource', [], [], '', false),
             new Directives(),
             null,
-            Site::getSC()->get('logger')
+            Site::getSC()->get('logger'),
+            Site::getSC()->get('ddl_client_table')
         );
     }
 

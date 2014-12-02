@@ -18,12 +18,10 @@ return [
                 'length' => 15,
             ],
             'active' => [
-                'type' => 'integer',
-                'length' => 1
+                'type' => 'boolean',
             ],
             'installed' => [
-                'type' => 'integer',
-                'length' => 1
+                'type' => 'boolean',
             ],
             'updated_at' => [
                 'type' => 'datetime',
@@ -32,7 +30,7 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => 'module_code',
+                'definition' => ['module_code'],
             ]
         ],
     ]

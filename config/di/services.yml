@@ -6,7 +6,12 @@
 services:
   adapter:
     class: Zend\Db\Adapter\Adapter
-    arguments: [{driver: "%db_driver%", hostname: "%db_host%", database: "%db_database%", username: "%db_user%", password: "%db_passw%"}]
+    arguments:
+      - driver: "%db_driver%"
+        hostname: "%db_host%"
+        database: "%db_database%"
+        username: "%db_user%"
+        password: "%db_passw%"
 
   template_engine:
     class: Maketok\Template\Twig
@@ -84,6 +89,7 @@ services:
       - "@installer_ddl_directives"
       - "@lock_stream_handler"
       - "@logger"
+      - "@ddl_client_table"
 
   router:
     class: Maketok\Mvc\Router\Stack

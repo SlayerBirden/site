@@ -8,7 +8,6 @@
 
 namespace Maketok\Installer\Ddl;
 
-use Maketok\App\Site;
 use Maketok\Installer\AbstractManager;
 use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 use Maketok\Installer\Ddl\Resource\Model\DdlClientType;
@@ -16,6 +15,7 @@ use Maketok\Installer\Exception;
 use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
+use Maketok\Util\AbstractTableMapper;
 use Maketok\Util\StreamHandlerInterface;
 use Monolog\Logger;
 
@@ -25,6 +25,10 @@ class Manager extends AbstractManager implements ManagerInterface
      * @var Logger
      */
     private $_logger;
+    /**
+     * @var DdlClientType
+     */
+    private $tableMapper;
 
     /**
      * Constructor
@@ -33,12 +37,14 @@ class Manager extends AbstractManager implements ManagerInterface
      * @param Directives $directives
      * @param StreamHandlerInterface|null $handler
      * @param Logger $logger
+     * @param AbstractTableMapper $tableMapper
      */
     public function __construct(ConfigReaderInterface $reader,
                                 ResourceInterface $resource,
                                 Directives $directives,
                                 StreamHandlerInterface $handler = null,
-                                Logger $logger)
+                                Logger $logger,
+                                AbstractTableMapper $tableMapper)
     {
         $this->_reader = $reader;
         $this->_streamHandler = $handler;
@@ -47,6 +53,7 @@ class Manager extends AbstractManager implements ManagerInterface
             $this->_resource = $resource;
         }
         $this->_logger = $logger;
+        $this->tableMapper = $tableMapper;
     }
 
     /**
@@ -74,9 +81,7 @@ class Manager extends AbstractManager implements ManagerInterface
     public function getClientModel(DdlClientInterface $client)
     {
         try {
-            /** @var DdlClientType $type */
-            $type = Site::getServiceContainer()->get('ddl_client_table');
-            $model = $type->getClientByCode($client->getDdlCode());
+            $model = $this->tableMapper->getClientByCode($client->getDdlCode());
         } catch (Exception $e) {
             // when there's no record for this client yet
             $model = new DdlClient();
@@ -121,10 +126,8 @@ class Manager extends AbstractManager implements ManagerInterface
             // run
             $this->_resource->runProcedures();
             // @TODO: create backup mechanism
-            /** @var DdlClientType $type */
-            $type = Site::getServiceContainer()->get('ddl_client_table');
             foreach ($this->_clients as $client) {
-                $type->save($client);
+                $this->tableMapper->save($client);
             }
             $this->_logger->info("All procedures have been completed.");
         } catch (\Exception $e) {
