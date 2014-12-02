@@ -20,9 +20,6 @@ use Maketok\Util\DirectoryHandlerInterface;
 use Maketok\Util\Exception\ModelException;
 use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Yaml\Yaml;
 
 class ModuleManager implements ClientInterface
@@ -85,7 +82,7 @@ class ModuleManager implements ClientInterface
             $module->active = 0;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
-            $this->logger->err($e->getMessage());
+            $this->logger->err($e->__toString());
             $this->session->getFlashBag()->add('error', 'Could not update disable.');
         }
     }
@@ -134,7 +131,7 @@ class ModuleManager implements ClientInterface
             $module->version = $version;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
-            $this->logger->err($e->getMessage());
+            $this->logger->err($e->__toString());
             $this->session->getFlashBag()->add('error', 'Could not update to version.');
         }
     }
@@ -149,7 +146,7 @@ class ModuleManager implements ClientInterface
             $module->active = 1;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
-            $this->logger->err($e->getMessage());
+            $this->logger->err($e->__toString());
             $this->session->getFlashBag()->add('error', 'Could not update activate.');
         }
     }
@@ -165,8 +162,9 @@ class ModuleManager implements ClientInterface
             foreach ($activeDbModulesResultSet as $module) {
                 $activeDbModuleCodes[] = $module->module_code;
             }
-            $this->_activeModules = array_filter($this->_modules, function($var) use ($activeDbModuleCodes) {
-                return in_array($var, $activeDbModuleCodes);
+            $this->_activeModules = array_filter($this->_modules, function($config) use ($activeDbModuleCodes) {
+                /** @var ConfigInterface $config */
+                return in_array($config, $activeDbModuleCodes);
             });
         }
         return $this->_activeModules;
@@ -240,7 +238,7 @@ class ModuleManager implements ClientInterface
                 /** @var ConfigInterface $config */
                 $config = new $className();
                 if ($config->isActive()) {
-                    array_push($this->_modules, $config);
+                    $this->_modules[$config->getCode()] = $config;
                 }
             }
         }
@@ -278,38 +276,42 @@ class ModuleManager implements ClientInterface
         if (empty($this->_modules)) {
             return;
         }
-        // work with db
-        // candidates for addition
-        foreach ($this->_modules as $mConfig) {
-            /** @var ConfigInterface $mConfig */
-            if (!$this->getModuleExistsInDb($mConfig)) {
-                $this->addDbModule($mConfig);
+        try {
+            // work with db
+            // candidates for addition
+            foreach ($this->_modules as $mConfig) {
+                /** @var ConfigInterface $mConfig */
+                if (!$this->getModuleExistsInDb($mConfig)) {
+                    $this->addDbModule($mConfig);
+                }
             }
-        }
-        // candidates for deletion
-        foreach ($this->getDbModules() as $module) {
-            /** @var Module $module */
-            $mConfig = $this->getModule($module->module_code);
-            if (is_null($mConfig)) {
-                $this->removeDbModule($module);
+            // candidates for deletion
+            foreach ($this->getDbModules() as $module) {
+                /** @var Module $module */
+                $mConfig = $this->getModule($module->module_code);
+                if (is_null($mConfig)) {
+                    $this->removeDbModule($module);
+                }
             }
+            // process active modules
+            $this->sm->notify('modulemanager_process_before',
+                new State(array('active_modules' => $this->getActiveModules())));
+            foreach ($this->getActiveModules() as $config) {
+                // events
+                /** @var ConfigInterface $config */
+                $config->initListeners();
+            }
+            $this->sm->notify('modulemanager_init_listeners_after',
+                new State(array('active_modules' => $this->getActiveModules())));
+            foreach ($this->getActiveModules() as $config) {
+                // routes
+                $config->initRoutes();
+            }
+            $this->sm->notify('modulemanager_process_after',
+                new State(array('active_modules' => $this->getActiveModules())));
+        } catch (\Exception $e) {
+            $this->logger->emerg($e->__toString());
         }
-        // process active modules
-        $this->sm->notify('modulemanager_process_before',
-            new State(array('active_modules' => $this->getActiveModules())));
-        foreach ($this->getActiveModules() as $config) {
-            // events
-            /** @var ConfigInterface $config */
-            $config->initListeners();
-        }
-        $this->sm->notify('modulemanager_init_listeners_after',
-            new State(array('active_modules' => $this->getActiveModules())));
-        foreach ($this->getActiveModules() as $config) {
-            // routes
-            $config->initRoutes();
-        }
-        $this->sm->notify('modulemanager_process_after',
-            new State(array('active_modules' => $this->getActiveModules())));
     }
 
     /**
@@ -353,8 +355,8 @@ class ModuleManager implements ClientInterface
                 $file = $locator->locate($version.'.php');
                 return include $file;
             } catch (\InvalidArgumentException $nextE) {
-                $this->logger->err($e->getMessage());
-                $this->logger->err($nextE->getMessage());
+                $this->logger->err($e->__toString());
+                $this->logger->err($nextE->__toString());
             }
         }
         return false;
