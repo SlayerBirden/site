@@ -38,7 +38,8 @@ return [
             ],
 
         ],
-        'config_after_process' => [
+        // only process modules if we have installer in place
+        'installer_ddl_after_add' => [
             [
                 'subscriber' => 'module_manager::processModules',
                 'type' => 'service',
