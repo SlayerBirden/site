@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace modules\modules\controller\admin;
+namespace Maketok\Module\Resource\controller\admin;
 
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;

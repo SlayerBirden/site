@@ -5,7 +5,7 @@
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
-namespace modules\modules\form;
+namespace Maketok\Module\Resource\form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

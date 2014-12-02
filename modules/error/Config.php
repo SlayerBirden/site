@@ -9,13 +9,11 @@
 namespace modules\error;
 
 
+use Maketok\App\Site;
 use Maketok\Module\ConfigInterface;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Maketok\Mvc\Router\Route\Http\Parameterized;
 
-class Config implements ConfigInterface, ExtensionInterface
+class Config implements ConfigInterface
 {
 
     /**
@@ -32,6 +30,18 @@ class Config implements ConfigInterface, ExtensionInterface
     public function initRoutes()
     {
         return;
+    }
+
+    /**
+     * @internal param StateInterface $state
+     */
+    public function initNoRoute()
+    {
+        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/{anything}', array(
+            'module' => $this->getCode(),
+            'controller' => 'modules\\error\\controller\\Index',
+            'action' => 'noroute',
+        ), [], []));
     }
 
     /**
@@ -60,67 +70,15 @@ class Config implements ConfigInterface, ExtensionInterface
     }
 
     /**
-     * Loads a specific configuration.
-     *
-     * @param array $config An array of configuration values
-     * @param ContainerBuilder $container A ContainerBuilder instance
-     *
-     * @throws \InvalidArgumentException When provided tag is not defined in this extension
-     *
-     * @api
-     */
-    public function load(array $config, ContainerBuilder $container)
-    {
-        $loader = new YamlFileLoader(
-            $container,
-            new FileLocator(__DIR__.'/config/di')
-        );
-        $loader->load('services.yml');
-    }
-
-    /**
-     * Returns the namespace to be used for this extension (XML namespace).
-     *
-     * @return string The XML namespace
-     *
-     * @api
-     */
-    public function getNamespace()
-    {
-        return 'http://www.example.com/symfony/schema/';
-    }
-
-    /**
-     * Returns the base path for the XSD files.
-     *
-     * @return string The XSD base path
-     *
-     * @api
-     */
-    public function getXsdValidationBasePath()
-    {
-        return __DIR__.'/config';
-    }
-
-    /**
-     * Returns the recommended alias to use in XML.
-     *
-     * This alias is also the mandatory prefix to use when using YAML.
-     *
-     * @return string The alias
-     *
-     * @api
-     */
-    public function getAlias()
-    {
-        return $this->getCode();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function initListeners()
     {
-        return;
+        // this is a special case;
+        // attaching routes after all other modules are processes
+        // we need to catch only unmatched ones
+        Site::getSC()->get('subject_manager')->attach(
+            'modulemanager_init_listeners_after',
+            array($this, 'initNoRoute'), 1);
     }
 }

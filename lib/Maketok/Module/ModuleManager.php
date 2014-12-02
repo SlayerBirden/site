@@ -35,6 +35,8 @@ class ModuleManager implements ClientInterface
     /** @var array */
     private $_activeModules;
     /** @var array */
+    private $_dbModules;
+    /** @var array */
     private $_moduleDirs;
     /**
      * @var SubjectManagerInterface
@@ -171,13 +173,29 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @param $code
-     * @return null|Module
+     * @return array|\Zend\Db\ResultSet\ResultSet
      */
-    public function getActiveModule($code)
+    public function getDbModules()
     {
-        $am = $this->getActiveModules();
-        return isset($am[$code]) ? $am[$code] : null;
+        if (is_null($this->_dbModules)) {
+            $result = $this->_tableType->fetchAll();
+            $this->_dbModules = [];
+            foreach ($result as $module) {
+                /** @var Module $module */
+                $this->_dbModules[$module->module_code] = $module;
+            }
+        }
+        return $this->_dbModules;
+    }
+
+    /**
+     * @param ConfigInterface $config
+     * @return bool
+     */
+    public function getModuleExistsInDb(ConfigInterface $config)
+    {
+        $db = $this->getDbModules();
+        return isset($db[$config->getCode()]);
     }
 
     /**
@@ -221,12 +239,35 @@ class ModuleManager implements ClientInterface
                 $className = "\\modules\\$dir\\$configName";
                 /** @var ConfigInterface $config */
                 $config = new $className();
-                array_push($this->_modules, $config);
+                if ($config->isActive()) {
+                    array_push($this->_modules, $config);
+                }
             }
         }
         $this->sm->notify('module_list_exists', new State(array(
             'modules' => $this->_modules
         )));
+    }
+
+    /**
+     * @param ConfigInterface $config
+     */
+    public function addDbModule(ConfigInterface $config)
+    {
+        /** @var Module $module */
+        $module = $this->_tableType->getGateway()->getResultSetPrototype()->getObjectPrototype();
+        $module->module_code = $config->getCode();
+        $module->active = $config->isActive();
+        $module->version = $config->getVersion();
+        $this->_tableType->save($module);
+    }
+
+    /**
+     * @param Module $module
+     */
+    public function removeDbModule(Module $module)
+    {
+        $this->_tableType->delete($module->module_code);
     }
 
     /**
@@ -236,6 +277,22 @@ class ModuleManager implements ClientInterface
     {
         if (empty($this->_modules)) {
             return;
+        }
+        // work with db
+        // candidates for addition
+        foreach ($this->_modules as $mConfig) {
+            /** @var ConfigInterface $mConfig */
+            if (!$this->getModuleExistsInDb($mConfig)) {
+                $this->addDbModule($mConfig);
+            }
+        }
+        // candidates for deletion
+        foreach ($this->getDbModules() as $module) {
+            /** @var Module $module */
+            $mConfig = $this->getModule($module->module_code);
+            if (is_null($mConfig)) {
+                $this->removeDbModule($module);
+            }
         }
         // process active modules
         $this->sm->notify('modulemanager_process_before',
@@ -273,7 +330,7 @@ class ModuleManager implements ClientInterface
      */
     public function getDdlVersion()
     {
-        return '0.2.1';
+        return '0.2.2';
     }
 
     /**

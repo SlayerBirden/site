@@ -22,9 +22,32 @@ return [
                 'priority' => 10, // greater means listener will be processed earlier
             ],
         ],
+        'installer_before_process' => [
+
+        ],
         'config_after_events_process' => [
             [
+                'subscriber' => 'module_manager::processModuleConfig',
+                'type' => 'service',
+                'priority' => 10,
+            ],
+            [
                 'subscriber' => 'Maketok\App\Site::scCompileAndDump',
+                'type' => 'static',
+                'priority' => 0,
+            ],
+
+        ],
+        'config_after_process' => [
+            [
+                'subscriber' => 'module_manager::processModules',
+                'type' => 'service',
+                'priority' => 0,
+            ],
+        ],
+        'module_list_exists' => [
+            [
+                'subscriber' => 'Maketok\App\Site::serviceContainerProcessModules',
                 'type' => 'static',
                 'priority' => 0,
             ],

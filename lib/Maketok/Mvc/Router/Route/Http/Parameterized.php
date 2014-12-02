@@ -60,10 +60,10 @@ class Parameterized extends AbstractRoute implements RouteInterface
     public function match(RequestInterface $request)
     {
         $this->_request = $request;
-        if ($variables = $this->_expressionParser->parse(
+        $variables = $this->_expressionParser->parse(
             $this->stripTrailingSlash($request->getPathInfo()),
-            $this->_restrictions
-        )) {
+            $this->_restrictions);
+        if ($variables !== FALSE) {
             $attributes = $request->getAttributes();
             // set defaults
             if (is_object($attributes) && ($attributes instanceof ParameterBag)) {

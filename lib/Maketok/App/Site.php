@@ -268,8 +268,9 @@ final class Site
         self::$_sc = $container;
         // now handle some registered lib extensions
         foreach (Config::getConfig('di_extensions') as $className) {
+            /** @var DependencyConfigExtensionInterface $ext */
             $ext = new $className();
-            self::_addDiExtension($ext);
+            $ext->loadConfig($loader);
         }
     }
 

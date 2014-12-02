@@ -18,7 +18,10 @@ return [
                 'length' => 15,
             ],
             'active' => [
-                'type' => 'integer',
+                'type' => 'boolean',
+            ],
+            'created_at' => [
+                'type' => 'datetime',
             ],
             'updated_at' => [
                 'type' => 'datetime',
