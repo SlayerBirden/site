@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace admin\controller;
+namespace Resource\admin\controller;
 
 use Maketok\App\Site;
 use Maketok\Util\Monolog\Handler\HttpStreamedHandler;
