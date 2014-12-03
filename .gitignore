@@ -13,3 +13,4 @@ var/
 vendor
 composer.phar
 tests/site
+public/cov

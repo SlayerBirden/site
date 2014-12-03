@@ -210,7 +210,7 @@ SQL;
 
     /**
      * @test
-     * @covers createProcedures
+     * @covers Maketok\Installer\Ddl\Mysql\Resource::createProcedures
      */
     public function testCreateProcedures()
     {
@@ -266,7 +266,7 @@ SQL;
 
     /**
      * @test
-     * @covers createProcedures
+     * @covers Maketok\Installer\Ddl\Mysql\Resource::createProcedures
      */
     public function testCreateProceduresTimestamp()
     {

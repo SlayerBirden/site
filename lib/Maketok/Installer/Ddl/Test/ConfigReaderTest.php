@@ -595,7 +595,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers getMergedConfig
+     * @covers Maketok\Installer\Ddl\ConfigReader::getMergedConfig
      */
     public function testGetMergedConfig()
     {
