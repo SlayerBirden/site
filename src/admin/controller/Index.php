@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Resource\admin\controller;
+namespace admin\controller;
 
 use Maketok\Util\RequestInterface;
 

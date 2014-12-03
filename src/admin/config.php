@@ -18,7 +18,7 @@ return [
                     $router->addRoute( new \Maketok\Mvc\Router\Route\Http\Literal(
                         '/',  array(
                             'module' => 'admin_manager',
-                            'controller' => 'Resource\\admin\\controller\\Index',
+                            'controller' => 'admin\\controller\\Index',
                             'action' => 'index',
                         )
                     ));
@@ -26,14 +26,14 @@ return [
                     $router->addRoute( new \Maketok\Mvc\Router\Route\Http\Literal(
                         '/install/run',  array(
                             'module' => 'admin_manager',
-                            'controller' => 'Resource\\admin\\controller\\Install',
+                            'controller' => 'admin\\controller\\Install',
                             'action' => 'run',
                         )
                     ));
                     $router->addRoute( new \Maketok\Mvc\Router\Route\Http\Literal(
                         '/install',  array(
                             'module' => 'admin_manager',
-                            'controller' => 'Resource\\admin\\controller\\Install',
+                            'controller' => 'admin\\controller\\Install',
                             'action' => 'index',
                         )
                     ));

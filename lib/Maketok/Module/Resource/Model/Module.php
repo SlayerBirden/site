@@ -6,7 +6,7 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Module\Model;
+namespace Maketok\Module\Resource\Model;
 
 use Maketok\App\Site;
 

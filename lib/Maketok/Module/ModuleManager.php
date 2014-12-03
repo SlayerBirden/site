@@ -11,8 +11,8 @@ namespace Maketok\Module;
 use Maketok\App\Site;
 use Maketok\Http\SessionInterface;
 use Maketok\Installer\Ddl\ClientInterface;
-use Maketok\Module\Model\Module;
-use Maketok\Module\Model\ModuleTable;
+use Maketok\Module\Resource\Model\Module;
+use Maketok\Module\Resource\Model\ModuleTable;
 use Maketok\Observer\State;
 use Maketok\Observer\SubjectManagerInterface;
 use Maketok\Util\AbstractTableMapper;
@@ -233,7 +233,7 @@ class ModuleManager implements ClientInterface
         $configName = Site::getSC()->getParameter('module_config_name');
         foreach ($this->getModuleDirectories() as $dir) {
             if (file_exists($this->getDir() . DS . $dir . DS . $configFileName)) {
-                include_once $this->getDir() . DS . $dir . DS . $configFileName;
+                include_once $this->getDir() . "/$dir/$configFileName";
                 $className = "\\modules\\$dir\\$configName";
                 /** @var ConfigInterface $config */
                 $config = new $className();

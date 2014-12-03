@@ -31,6 +31,14 @@ class AbstractAdminController extends AbstractController
         if (is_null($this->_template)) {
             throw new GenericException("Can't find template path, no template set.");
         }
-        return AR . DS . 'modules' . DS . $module . DS . 'view' . DS . 'admin' . DS . $template;
+        return AR . "/modules/$module/view/admin/$template";
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getBaseDependencyPaths()
+    {
+        return array(AR . '/src/admin/view');
     }
 }

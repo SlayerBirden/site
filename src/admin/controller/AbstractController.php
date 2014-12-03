@@ -6,9 +6,9 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Resource\admin\controller;
+namespace admin\controller;
 
-use Maketok\Mvc\Controller\AbstractController as BaseAbstractController;
+use Maketok\Mvc\Controller\AbstractAdminController as BaseAbstractController;
 
 class AbstractController extends BaseAbstractController
 {
@@ -21,6 +21,6 @@ class AbstractController extends BaseAbstractController
         if (is_null($template)) {
             $template = $this->_template;
         }
-        return AR . "/Resource/admin/view/$template";
+        return AR . "/src/admin/view/$template";
     }
-} 
+}

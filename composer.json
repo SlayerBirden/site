@@ -45,7 +45,9 @@
     "autoload": {
         "psr-0": {
             "Maketok\\": "lib/",
-            "Zend\\Db\\": "lib/"
+            "Zend\\Db\\": "lib/",
+            "admin\\": "src/",
+            "base\\": "src/"
         }
     }
 }

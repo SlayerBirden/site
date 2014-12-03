@@ -108,9 +108,7 @@ class AbstractController
         // get template Engine
         /** @var EngineInterface $engine */
         $engine = $this->getSC()->get('template_engine');
-        $dependencyPaths = array(
-            AR . '/Resource/base/view'
-        );
+        $dependencyPaths = $this->_getBaseDependencyPaths();
         foreach ($this->_viewDependency as $_dependencyModule) {
             $dependencyPaths[] = $this->_getTemplatePath('', $_dependencyModule);
         }
@@ -124,6 +122,14 @@ class AbstractController
         $engine->loadTemplate($path);
         $engine->setVariables($templateVars);
         $this->_body = $engine->render();
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getBaseDependencyPaths()
+    {
+        return array(AR . '/src/base/view');
     }
 
     /**
