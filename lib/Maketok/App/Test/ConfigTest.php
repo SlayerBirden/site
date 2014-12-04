@@ -24,6 +24,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @covers Maketok\App\Config::merge
      */
     public function testMerge()
     {
@@ -60,6 +61,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @covers Maketok\App\Config::add
      */
     public function testAdd()
     {
@@ -92,6 +94,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testAdd
+     * @covers Maketok\App\Config::getConfig
      */
     public function testGetConfig()
     {

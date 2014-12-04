@@ -198,6 +198,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException \LogicException
+     * @covers Maketok\Installer\Ddl\Manager::createDirectives
      */
     public function testCreateDirectivesException()
     {

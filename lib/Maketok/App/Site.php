@@ -96,8 +96,8 @@ final class Site
         if (!(self::$mode & self::MODE_DISPATCH)) {
             return;
         }
-        self::getServiceContainer()->get('subject_manager')->notify('dispatch', new State(array(
-            'request' => self::getServiceContainer()->get('request'),
+        self::getSC()->get('subject_manager')->notify('dispatch', new State(array(
+            'request' => self::getSC()->get('request'),
         )));
     }
 
@@ -106,8 +106,8 @@ final class Site
      */
     public static function getSession()
     {
-        if (self::getServiceContainer()->get('request')) {
-            return self::getServiceContainer()->get('request')->getSession();
+        if (self::getSC()->get('request')) {
+            return self::getSC()->get('request')->getSession();
         }
         return null;
     }
@@ -118,9 +118,9 @@ final class Site
     public static function setRequest(RequestInterface $request)
     {
         if (self::$mode & Config::SESSION) {
-            $request->setSession(self::getServiceContainer()->get('session_manager'));
+            $request->setSession(self::getSC()->get('session_manager'));
         }
-        self::getServiceContainer()->set('request', $request);
+        self::getSC()->set('request', $request);
     }
 
     /**
@@ -163,7 +163,7 @@ final class Site
     {
         try {
             /** @var Logger $logger */
-            $logger = self::getServiceContainer()->get('logger');
+            $logger = self::getSC()->get('logger');
             if ($e instanceof \ErrorException) {
                 $errno = $e->getSeverity();
                 if ($errno & E_NOTICE || $errno & E_USER_NOTICE) {
@@ -172,7 +172,7 @@ final class Site
                     $logger->warn($e->__toString());
                 } elseif ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
                     $logger->err($e->__toString());
-                    self::getServiceContainer()->get('subject_manager')->notify('application_error_triggered', new State(array(
+                    self::getSC()->get('subject_manager')->notify('application_error_triggered', new State(array(
                         'exception' => $e,
                         'message' => $e->__toString(),
                     )));
@@ -180,7 +180,7 @@ final class Site
             } else {
                 $message = sprintf("Unhandled exception\n%s", $e->__toString());
                 $logger->emergency($message);
-                self::getServiceContainer()->get('subject_manager')->notify('application_error_triggered', new State(array(
+                self::getSC()->get('subject_manager')->notify('application_error_triggered', new State(array(
                     'exception' => $e,
                     'message' => $message,
                 )));
@@ -307,7 +307,7 @@ final class Site
     public static function serviceContainerProcessModules(StateInterface $state)
     {
         // we may not need to
-        $container = self::getServiceContainer();
+        $container = self::getSC();
         $class = self::getSCClassName();
         if ($container instanceof $class) {
             return;
@@ -342,7 +342,7 @@ final class Site
     {
         $file = self::getContainerFileName();
         if (!file_exists($file) || Config::getConfig('di_parameters/debug')) {
-            $container = self::getServiceContainer();
+            $container = self::getSC();
             $container->compile();
 
             if (self::$mode & self::MODE_DUMP_SC) {
@@ -362,17 +362,21 @@ final class Site
      */
     public static function getBaseUrl()
     {
-        return self::getServiceContainer()->getParameter('base_url');
+        return self::getSC()->getParameter('base_url');
     }
 
     /**
      * @param string $path
      * @param array $config
+     * @param null $baseUrl
      * @return string
      */
-    public static function getUrl($path, array $config = null)
+    public static function getUrl($path, array $config = null, $baseUrl = null)
     {
-        $uri = UriFactory::factory(self::getServiceContainer()->getParameter('base_url'));
+        if (is_null($baseUrl)) {
+            $baseUrl = self::getSC()->getParameter('base_url');
+        }
+        $uri = UriFactory::factory($baseUrl);
         $path = '/' . ltrim($path, '/');
         $path = rtrim($path, '/');
         if (!isset($config['wts']) || !$config['wts']) { // config Without Trailing Slash

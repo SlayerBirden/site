@@ -14,6 +14,11 @@ use Maketok\Util\ExpressionParser;
 class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @test
+     * @throws \Maketok\Util\Exception\ParserException
+     * @covers Maketok\Util\ExpressionParser::evaluate
+     */
     public function testEvaluate()
     {
         $expr = new ExpressionParser('/blog/article/{article_id}');
@@ -23,8 +28,10 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @expectedException \Exception
      * @expectedExceptionMessage One of the parameters (article_id) failed to satisfy requirements.
+     * @covers Maketok\Util\ExpressionParser::evaluate
      */
     public function testEvaluateFail()
     {
@@ -36,6 +43,11 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
         )));
     }
 
+    /**
+     * @test
+     * @throws \Maketok\Util\Exception\ParserException
+     * @covers Maketok\Util\ExpressionParser::tokenize
+     */
     public function testTokenize()
     {
         $expr = new ExpressionParser('/blog/article/{article_id}');
@@ -53,8 +65,10 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @expectedException \Exception
      * @expectedExceptionMessage Can not end up in variable.
+     * @covers Maketok\Util\ExpressionParser::tokenize
      */
     public function testTokenizeError()
     {
@@ -62,6 +76,11 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
         $expr->tokenize();
     }
 
+    /**
+     * @test
+     * @throws \Maketok\Util\Exception\ParserException
+     * @covers Maketok\Util\ExpressionParser::parse
+     */
     public function testParse()
     {
         $expr = new ExpressionParser('/blog/article/{article_id}');

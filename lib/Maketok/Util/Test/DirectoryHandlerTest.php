@@ -29,6 +29,7 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
     }
     /**
      * @test
+     * @covers Maketok\Util\DirectoryHandler::mkdir
      */
     public function testMakeDir()
     {
@@ -39,6 +40,7 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testMakeDir
+     * @covers Maketok\Util\DirectoryHandler::rm
      */
     public function testRmDir()
     {
@@ -49,6 +51,7 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testRmDir
+     * @covers Maketok\Util\DirectoryHandler::ls
      */
     public function testLs()
     {

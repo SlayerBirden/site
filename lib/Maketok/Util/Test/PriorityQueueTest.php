@@ -23,6 +23,7 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @covers Maketok\Util\PriorityQueue::insert
      */
     public function insert()
     {
@@ -42,6 +43,7 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @covers Maketok\Util\PriorityQueue::remove
      */
     public function remove()
     {

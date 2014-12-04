@@ -12,7 +12,7 @@ use Maketok\App\Exception\ConfigException;
 use Maketok\Installer\ManagerInterface;
 use Maketok\Observer\State;
 
-class Config
+final class Config
 {
     private static $_config = [];
     private static $_isApplied = false;
