@@ -89,7 +89,7 @@ final class Site
             self::_initEnvironment();
         }
         // we've done our job to init system
-        // if safeRun is up, we don't need dispatcher
+        // now we may or may not apply configs/or run dispatcher
         if (self::$mode & self::MODE_APPLY_CONFIGS) {
             self::_applyConfigs();
         }
