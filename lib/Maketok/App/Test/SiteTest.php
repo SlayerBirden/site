@@ -15,20 +15,15 @@ class SiteTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @covers Maketok\App\Site::getUrl
      */
     public function testGetUrl()
     {
-        $containerMock = $this->getMock('Symfony\Component\DependencyInjection\ContainerBuilder');
-        $containerMock->expects($this->any())->method('getParameter')->will($this->returnValueMap(array(
-            array('base_url', 'http://example.com'),
-        )));
-        $prop = new \ReflectionProperty('Maketok\App\Site', '_sc');
-        $prop->setAccessible(true);
-        $prop->setValue($containerMock);
-        $this->assertEquals('http://example.com/home/url/', Site::getUrl('home/url'));
-        $this->assertEquals('http://example.com/home/url/', Site::getUrl('/home/url'));
-        $this->assertEquals('http://example.com/home/url/', Site::getUrl('home/url/'));
-        $this->assertEquals('http://example.com/home/url', Site::getUrl('home/url/', array('wts' => 1)));
-        $this->assertEquals('http://example.com/home/url/', Site::getUrl('home/url/', array('wts' => 0)));
+        $bUrl = 'http://example.com';
+        $this->assertEquals('http://example.com/home/url/', Site::getUrl('home/url', null, $bUrl));
+        $this->assertEquals('http://example.com/home/url/', Site::getUrl('/home/url', null, $bUrl));
+        $this->assertEquals('http://example.com/home/url/', Site::getUrl('home/url/', null, $bUrl));
+        $this->assertEquals('http://example.com/home/url', Site::getUrl('home/url/', array('wts' => 1), $bUrl));
+        $this->assertEquals('http://example.com/home/url/', Site::getUrl('home/url/', array('wts' => 0), $bUrl));
     }
 }

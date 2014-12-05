@@ -16,6 +16,7 @@ use Maketok\App\Exception\AppException;
  * Not sure why it's left here, but let it be
  * Maybe someone will take advantage of good old registry
  * @package Maketok\App
+ * @deprecated
  */
 final class Registry
 {

@@ -33,7 +33,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers addClient
+     * @covers Maketok\Installer\Ddl\Manager::addClient
      */
     public function testAddClient()
     {
@@ -82,7 +82,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers createDirectives
+     * @covers Maketok\Installer\Ddl\Manager::createDirectives
      */
     public function testCreateDirectives()
     {
@@ -198,6 +198,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException \LogicException
+     * @covers Maketok\Installer\Ddl\Manager::createDirectives
      */
     public function testCreateDirectivesException()
     {

@@ -12,5 +12,8 @@
         <testsuite name="app">
             <directory>../lib/Maketok/App/Test/</directory>
         </testsuite>
+        <testsuite name="maketok">
+            <directory>../lib/Maketok/</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
