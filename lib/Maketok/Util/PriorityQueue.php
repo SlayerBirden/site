@@ -21,7 +21,7 @@ class PriorityQueue
     protected $_serial = PHP_INT_MAX;
 
     /**
-     * @param mixed $data
+     * @param string $data
      * @param int $priority
      */
     public function insert($data, $priority = 1)
@@ -62,7 +62,7 @@ class PriorityQueue
 
     /**
      * remove item and dequeue it from internal queue
-     * @param $item
+     * @param string $item
      */
     public function remove($item)
     {

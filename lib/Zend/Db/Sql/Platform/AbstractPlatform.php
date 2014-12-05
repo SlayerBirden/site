@@ -67,7 +67,7 @@ class AbstractPlatform implements PlatformDecoratorInterface, PreparableSqlInter
     }
 
     /**
-     * @return array|PlatformDecoratorInterface[]
+     * @return PlatformDecoratorInterface[]
      */
     public function getDecorators()
     {

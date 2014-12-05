@@ -13,7 +13,14 @@ use Zend\Db\Sql\ExpressionInterface;
 
 interface ColumnInterface extends ExpressionInterface
 {
+    /**
+     * @return string
+     */
     public function getName();
+
+    /**
+     * @return boolean
+     */
     public function isNullable();
     public function getDefault();
     public function getOptions();

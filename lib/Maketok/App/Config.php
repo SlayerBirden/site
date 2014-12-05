@@ -166,7 +166,7 @@ final class Config
     }
 
     /**
-     * @param null $key
+     * @param string $key
      * @return mixed
      */
     public static function getConfig($key = null)

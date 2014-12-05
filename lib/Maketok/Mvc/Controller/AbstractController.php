@@ -124,7 +124,7 @@ class AbstractController
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     protected function getBaseDependencyPaths()
     {
@@ -132,7 +132,7 @@ class AbstractController
     }
 
     /**
-     * @param null $template
+     * @param string $template
      * @param string|null $module
      * @throws GenericException
      * @return string
@@ -170,7 +170,7 @@ class AbstractController
     }
 
     /**
-     * @param array $moduleNames
+     * @param string[] $moduleNames
      * @return $this
      */
     public function setViewDependency(array $moduleNames)

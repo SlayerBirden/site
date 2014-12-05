@@ -72,7 +72,7 @@ class Insert extends AbstractPreparableSql
     /**
      * Specify columns
      *
-     * @param  array $columns
+     * @param  string[] $columns
      * @return Insert
      */
     public function columns(array $columns)

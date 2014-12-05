@@ -315,7 +315,7 @@ class Select extends AbstractPreparableSql
     }
 
     /**
-     * @param string|array $order
+     * @param string $order
      * @return Select
      */
     public function order($order)
@@ -454,6 +454,9 @@ class Select extends AbstractPreparableSql
         return $this;
     }
 
+    /**
+     * @param string $key
+     */
     public function getRawState($key = null)
     {
         $rawState = array(
@@ -789,7 +792,7 @@ class Select extends AbstractPreparableSql
      * @param PlatformInterface $platform
      * @param DriverInterface $driver
      * @param ParameterContainer $parameterContainer
-     * @return string
+     * @return string[]
      */
     protected function resolveTable($table, PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
     {
