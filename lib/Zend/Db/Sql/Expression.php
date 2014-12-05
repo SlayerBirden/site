@@ -62,7 +62,7 @@ class Expression extends AbstractExpression
     }
 
     /**
-     * @param $expression
+     * @param string $expression
      * @return Expression
      * @throws Exception\InvalidArgumentException
      */

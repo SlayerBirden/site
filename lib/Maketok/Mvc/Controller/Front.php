@@ -16,7 +16,6 @@ use Maketok\Mvc\Router\Route\Success;
 use Maketok\Mvc\Router\RouterInterface;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\ResponseInterface;
-use Zend\Stdlib\ErrorHandler;
 
 class Front
 {

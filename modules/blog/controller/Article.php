@@ -33,7 +33,7 @@ class Article extends AbstractController
 
     /**
      * @param RequestInterface $request
-     * @return \modules\blog\model\Article
+     * @return RequestInterface
      * @throws RouteException
      */
     protected function initArticle(RequestInterface $request)

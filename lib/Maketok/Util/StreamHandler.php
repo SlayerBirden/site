@@ -21,7 +21,7 @@ class StreamHandler implements StreamHandlerInterface
     /**
      * @param null|string $path
      * @param string $data
-     * @return bool|null|int
+     * @return integer|null
      */
     public function writeWithLock($data, $path = null)
     {
@@ -55,7 +55,7 @@ class StreamHandler implements StreamHandlerInterface
     }
 
     /**
-     * @param null $path
+     * @param null|string $path
      * @param string $mode
      * @throws StreamException
      */
@@ -99,7 +99,7 @@ class StreamHandler implements StreamHandlerInterface
 
     /**
      * @param null|string $path
-     * @param bool|int $includeDirectories
+     * @param integer $includeDirectories
      * @return bool
      */
     public function delete($path = null, $includeDirectories = false)

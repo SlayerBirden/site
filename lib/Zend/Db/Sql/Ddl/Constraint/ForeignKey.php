@@ -98,7 +98,7 @@ class ForeignKey extends AbstractConstraint
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getReferenceColumn()
     {

@@ -378,7 +378,7 @@ final class Site
     /**
      * @param string $path
      * @param array $config
-     * @param null $baseUrl
+     * @param string $baseUrl
      * @return string
      */
     public static function getUrl($path, array $config = null, $baseUrl = null)

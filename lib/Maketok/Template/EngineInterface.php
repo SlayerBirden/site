@@ -34,7 +34,7 @@ interface EngineInterface
 
     /**
      * include required paths into loader
-     * @param array $paths
+     * @param string[] $paths
      * @return mixed
      */
     public function loadDependencies(array $paths);

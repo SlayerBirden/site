@@ -25,7 +25,7 @@ class Literal extends AbstractRoute implements RouteInterface
     protected $_defaults;
 
     /**
-     * @param $path
+     * @param string $path
      * @param array $parameters
      * @param array $defaults
      */

@@ -77,7 +77,7 @@ class SubjectManager implements SubjectManagerInterface
 
     /**
      * @param string $subject
-     * @return Subject|bool
+     * @return SubjectInterface
      */
     public function getSubject($subject)
     {

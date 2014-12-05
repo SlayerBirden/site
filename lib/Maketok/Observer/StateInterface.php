@@ -10,8 +10,14 @@ namespace Maketok\Observer;
 
 interface StateInterface
 {
+    /**
+     * @return void
+     */
     public function __construct($data = null);
 
+    /**
+     * @return void
+     */
     public function __set($key, $value);
 
     public function __get($key);

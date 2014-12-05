@@ -66,7 +66,7 @@ class TableIdentifier
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getSchema()
     {
