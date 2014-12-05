@@ -162,18 +162,18 @@ class Manager extends AbstractManager implements ManagerInterface
             } else {
                 $_newColumns = $definition['columns'];
                 $_oldColumns = $dbConfig['columns'];
-                $this->_intelligentCompareColumns($_oldColumns, $_newColumns, $table);
+                $this->intelligentCompareColumns($_oldColumns, $_newColumns, $table);
                 $_oldConstraints = isset($dbConfig['constraints']) ? $dbConfig['constraints'] : array();
                 $_newConstraints = isset($definition['constraints']) ? $definition['constraints'] : array();
-                $this->_intelligentCompareConstraints($_oldConstraints, $_newConstraints, $table);
+                $this->intelligentCompareConstraints($_oldConstraints, $_newConstraints, $table);
                 $_oldIndices = isset($dbConfig['indices']) ? $dbConfig['indices'] : array();
                 $_newIndices = isset($definition['indices']) ? $definition['indices'] : array();
-                $this->_intelligentCompareIndices($_oldIndices, $_newIndices, $table);
+                $this->intelligentCompareIndices($_oldIndices, $_newIndices, $table);
             }
         }
         // make them unique
         foreach ($this->_directives as &$type) {
-            $type = $this->_arrayUnique($type);
+            $type = $this->arrayUnique($type);
         }
     }
 
@@ -181,7 +181,7 @@ class Manager extends AbstractManager implements ManagerInterface
      * @param array $a
      * @return array
      */
-    private function _arrayUnique(array $a)
+    private function arrayUnique(array $a)
     {
         // kind of a hack to make it multi-dimensional
         return array_unique($a, SORT_REGULAR);
@@ -258,7 +258,7 @@ class Manager extends AbstractManager implements ManagerInterface
      * @param string $tableName
      * @return array
      */
-    protected function _intelligentCompareColumns(array $a, array $b, $tableName)
+    protected function intelligentCompareColumns(array $a, array $b, $tableName)
     {
         $_changeMap = [];
         foreach ($b as $columnName => $columnDefinition) {
@@ -303,7 +303,7 @@ class Manager extends AbstractManager implements ManagerInterface
      * @param string $tableName
      * @return array
      */
-    protected function _intelligentCompareConstraints(array $a, array $b, $tableName)
+    protected function intelligentCompareConstraints(array $a, array $b, $tableName)
     {
         foreach ($b as $constraintName => $constraintDefinition) {
             if (!array_key_exists($constraintName, $a)) {
@@ -352,7 +352,7 @@ class Manager extends AbstractManager implements ManagerInterface
      * @param string $tableName
      * @return array
      */
-    protected function _intelligentCompareIndices(array $a, array $b, $tableName)
+    protected function intelligentCompareIndices(array $a, array $b, $tableName)
     {
         foreach ($b as $indexName => $indexDefinition) {
             if (!array_key_exists($indexName, $a)) {

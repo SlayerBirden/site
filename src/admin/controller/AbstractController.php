@@ -16,7 +16,7 @@ class AbstractController extends BaseAbstractController
     /**
      * {@inheritdoc}
      */
-    protected function _getTemplatePath($template = null, $module = null)
+    protected function getTemplatePath($template = null, $module = null)
     {
         if (is_null($template)) {
             $template = $this->_template;

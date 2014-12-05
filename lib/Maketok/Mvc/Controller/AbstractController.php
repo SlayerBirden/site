@@ -14,7 +14,6 @@ use Maketok\Mvc\GenericException;
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Template\EngineInterface;
 use Maketok\Util\RequestInterface;
-use Maketok\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class AbstractController
@@ -57,7 +56,7 @@ class AbstractController
     public function getResponse($content = null, $code = 200, array $headers = null)
     {
         if (is_null($this->_response)) {
-            $this->_initResponse($content, $code, $headers);
+            $this->initResponse($content, $code, $headers);
         }
         return $this->_response;
     }
@@ -68,7 +67,7 @@ class AbstractController
      * @param array|null $headers
      * @throws GenericException
      */
-    protected function _initResponse($content, $code, $headers)
+    protected function initResponse($content, $code, $headers)
     {
         if (is_null($content) && !is_null($this->_body)) {
             $content = $this->_body;
@@ -92,7 +91,7 @@ class AbstractController
     {
         if (is_null($this->_response)) {
             $this->prepareContent($templateVars, $params);
-            $this->_initResponse($this->getContent(), $httpCode, array());
+            $this->initResponse($this->getContent(), $httpCode, array());
         }
         return $this->_response->prepare($request);
     }
@@ -104,13 +103,13 @@ class AbstractController
      */
     public function prepareContent(array $templateVars, array $params = null)
     {
-        $path = $this->_getTemplatePath();
+        $path = $this->getTemplatePath();
         // get template Engine
         /** @var EngineInterface $engine */
         $engine = $this->getSC()->get('template_engine');
-        $dependencyPaths = $this->_getBaseDependencyPaths();
+        $dependencyPaths = $this->getBaseDependencyPaths();
         foreach ($this->_viewDependency as $_dependencyModule) {
-            $dependencyPaths[] = $this->_getTemplatePath('', $_dependencyModule);
+            $dependencyPaths[] = $this->getTemplatePath('', $_dependencyModule);
         }
         // now add general variables
         $templateVars['css_url'] = Site::getUrl('/css/');
@@ -127,7 +126,7 @@ class AbstractController
     /**
      * @return array
      */
-    protected function _getBaseDependencyPaths()
+    protected function getBaseDependencyPaths()
     {
         return array(AR . '/src/base/view');
     }
@@ -138,7 +137,7 @@ class AbstractController
      * @throws GenericException
      * @return string
      */
-    protected function _getTemplatePath($template = null, $module = null)
+    protected function getTemplatePath($template = null, $module = null)
     {
         if (is_null($module)) {
             $module = $this->_module;
@@ -217,7 +216,7 @@ class AbstractController
      * @param string $url
      * @return RedirectResponse
      */
-    protected function _redirectUrl($url)
+    protected function redirectUrl($url)
     {
        return new RedirectResponse($url);
     }
@@ -226,19 +225,19 @@ class AbstractController
      * @param string $path
      * @return RedirectResponse
      */
-    protected function _redirect($path)
+    protected function redirect($path)
     {
         $url = Site::getUrl($path);
-        return $this->_redirectUrl($url);
+        return $this->redirectUrl($url);
     }
 
     /**
      * @return RedirectResponse
      */
-    protected function _returnBack()
+    protected function returnBack()
     {
         $referer = Site::getServiceContainer()->get('request')->headers->get('referer');
-        return $this->_redirectUrl($referer);
+        return $this->redirectUrl($referer);
     }
 
     /**

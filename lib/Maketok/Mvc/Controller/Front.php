@@ -33,10 +33,11 @@ class Front
     {
         set_exception_handler(array($this, 'exceptionHandler'));
         /** @var Success $success */
-        if ($success = $this->_getRouter()->match($state->request)) {
+        if ($success = $this->_router->match($state->request)) {
             $this->launch($success);
+        } else {
+            throw new RouteException("Could not match any route.");
         }
-        throw new RouteException("Could not match any route.");
     }
 
     /**
@@ -46,14 +47,11 @@ class Front
     {
         $params = $success->getParameters();
         ob_start();
-        $response = $this->_launchAction($params, $success->getMatchedRoute());
+        $response = $this->launchAction($params, $success->getMatchedRoute());
         $content = ob_get_contents();
         // TODO figure out what to do with buffered content
         ob_end_clean();
         $response->send();
-        restore_exception_handler();
-        ErrorHandler::stop(true);
-        exit;
     }
 
     /**
@@ -117,20 +115,12 @@ class Front
     }
 
     /**
-     * @return RouteInterface
-     */
-    protected function _getRouter()
-    {
-        return $this->_router;
-    }
-
-    /**
      * @param array $parameters
      * @param \Maketok\Mvc\Router\Route\RouteInterface $route
      * @throws RouteException
      * @return ResponseInterface
      */
-    protected function _launchAction(array $parameters, RouteInterface $route)
+    protected function launchAction(array $parameters, RouteInterface $route)
     {
         if (!isset($parameters['controller']) || !isset($parameters['action'])) {
             throw new RouteException("Missing controller or action for a matched route.");
