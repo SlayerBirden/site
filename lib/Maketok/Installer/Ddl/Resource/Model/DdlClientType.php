@@ -89,10 +89,10 @@ class DdlClientType extends AbstractTableMapper
      * @return array
      * @throws ModelException
      */
-    protected function _getModelData($model)
+    protected function getModelData($model)
     {
         // hardcoded exclude columns
-        $data = parent::_getModelData($model);
+        $data = parent::getModelData($model);
         if (array_key_exists('config', $data)) {
             unset($data['config']);
         }

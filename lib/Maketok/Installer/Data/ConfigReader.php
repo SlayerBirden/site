@@ -29,14 +29,14 @@ class ConfigReader implements ConfigReaderInterface
             /** @var DataClient $client */
             $configsToMerge = $client->config;
         }
-        $this->_mergeConfigs($configsToMerge);
+        $this->mergeConfigs($configsToMerge);
     }
 
     /**
      * simple data merging
      * @param array $configs
      */
-    protected function _mergeConfigs(array $configs)
+    protected function mergeConfigs(array $configs)
     {
         foreach ($configs as $table => $data) {
             $_config[$table][] = $data;

@@ -157,7 +157,7 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function getDependencyTree()
     {
-        return $this->_getTree();
+        return $this->getTree();
     }
 
     /**
@@ -173,7 +173,7 @@ class ConfigReader implements ConfigReaderInterface
      * @param null|string $table
      * @return array|null
      */
-    private function _getTree($table = null)
+    private function getTree($table = null)
     {
         if (!isset($this->_tree)) {
             return [];
@@ -197,7 +197,7 @@ class ConfigReader implements ConfigReaderInterface
             $this->mergeDependencyTree();
         }
         $config = [];
-        foreach ($this->_getTree() as $table => $branch) {
+        foreach ($this->getTree() as $table => $branch) {
             $config[$table] = $branch['definition'];
         }
         return $config;

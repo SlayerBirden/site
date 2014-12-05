@@ -161,7 +161,8 @@ class ExpressionParser implements ExpressionParserInterface
         $var = '';
         $res = array();
         $isVar = false;
-        for ($i = 0; $i < strlen($string); ++$i) {
+        $len = strlen($string);
+        for ($i = 0; $i < $len; ++$i) {
             if ($string{$i} == $this->_variableCharBegin) {
                 // dump constant
                 if (!empty($const)) {

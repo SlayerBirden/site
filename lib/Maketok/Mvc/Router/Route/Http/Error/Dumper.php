@@ -8,7 +8,6 @@
 
 namespace Maketok\Mvc\Router\Route\Http\Error;
 
-use Maketok\Util\RequestInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class Dumper

@@ -114,7 +114,7 @@ abstract class AbstractTableMapper
     public function save($model)
     {
         try {
-            $data = $this->_getModelData($model);
+            $data = $this->getModelData($model);
             // possible update
             if (array_key_exists('updated_at', $data)) {
                 $data['updated_at'] = date("Y-m-d H:i:s");
@@ -152,11 +152,11 @@ abstract class AbstractTableMapper
     }
 
     /**
-     * @param $model
+     * @param object $model
      * @return array
      * @throws ModelException
      */
-    protected function _getModelData($model)
+    protected function getModelData($model)
     {
         $resultSet = $this->getGateway()->getResultSetPrototype();
         if ($resultSet instanceof HydratingResultSet) {

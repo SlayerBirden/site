@@ -25,7 +25,7 @@ interface RequestInterface extends MessageInterface
     public function getSession();
 
     /**
-     * @return array|\IteratorAggregate
+     * @return array|\IteratorAggregate|\Symfony\Component\HttpFoundation\ParameterBag
      */
     public function getAttributes();
 

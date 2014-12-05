@@ -51,7 +51,7 @@ class Resource implements ResourceInterface
      */
     public function getTable($table)
     {
-        $data = $this->_getTableArray($table);
+        $data = $this->getTableArray($table);
         if (empty($data)) {
             return [];
         }
@@ -69,24 +69,24 @@ class Resource implements ResourceInterface
             if ((strpos($row, ' PRIMARY ') !== false) ||
                 (strpos($row, ' UNIQUE ') !== false) ||
                 (strpos($row, ' CONSTRAINT ') !== false)) {
-                $constraint = $this->_parseConstraint($row);
+                $constraint = $this->parseConstraint($row);
                 if (isset($constraint['name'])) {
-                    $tableInfo['constraints'][$constraint['name']] = $this->_parseConstraint($row);
+                    $tableInfo['constraints'][$constraint['name']] = $this->parseConstraint($row);
                 } elseif($constraint['type'] == 'primary') {
-                    $tableInfo['constraints']['primary'] = $this->_parseConstraint($row);
+                    $tableInfo['constraints']['primary'] = $this->parseConstraint($row);
                 } else {
-                    $tableInfo['constraints'][$this->getRandomName()] = $this->_parseConstraint($row);
+                    $tableInfo['constraints'][$this->getRandomName()] = $this->parseConstraint($row);
                 }
             } elseif ((strpos($row, '  KEY') !== false) ||
                 (strpos($row, '  INDEX') !== false)) {
-                $index = $this->_parseIndex($row);
+                $index = $this->parseIndex($row);
                 if (isset($index['name'])) {
-                    $tableInfo['indices'][$index['name']] = $this->_parseIndex($row);
+                    $tableInfo['indices'][$index['name']] = $this->parseIndex($row);
                 } else {
-                    $tableInfo['indices'][$index['type']] = $this->_parseIndex($row);
+                    $tableInfo['indices'][$index['type']] = $this->parseIndex($row);
                 }
             } else {
-                $column = $this->_parseColumn($row);
+                $column = $this->parseColumn($row);
                 $name = $column['name'];
                 unset($column['name']);
                 $tableInfo['columns'][$name] = $column;
@@ -107,7 +107,7 @@ class Resource implements ResourceInterface
      * @param string $table
      * @return array
      */
-    protected function _getTableArray($table)
+    protected function getTableArray($table)
     {
         try {
             $result = $this->_adapter->query(
@@ -126,9 +126,9 @@ class Resource implements ResourceInterface
      * @param string $table
      * @return array
      */
-    protected function _getStrippedTableArray($table)
+    protected function getStrippedTableArray($table)
     {
-        $data = $this->_getTableArray($table);
+        $data = $this->getTableArray($table);
         array_shift($data);
         array_pop($data);
         return $data;
@@ -139,9 +139,9 @@ class Resource implements ResourceInterface
      */
     public function getColumn($table, $column)
     {
-        $data = $this->_getStrippedTableArray($table);
+        $data = $this->getStrippedTableArray($table);
         foreach ($data as $row) {
-            $res = $this->_parseColumn($row, $column);
+            $res = $this->parseColumn($row, $column);
             if (!empty($res)) {
                 return $res;
             }
@@ -154,9 +154,9 @@ class Resource implements ResourceInterface
      */
     public function getConstraint($table, $constraint)
     {
-        $data = $this->_getStrippedTableArray($table);
+        $data = $this->getStrippedTableArray($table);
         foreach ($data as $row) {
-            $res = $this->_parseConstraint($row, $constraint);
+            $res = $this->parseConstraint($row, $constraint);
             if (!empty($res)) {
                 return $res;
             }
@@ -169,9 +169,9 @@ class Resource implements ResourceInterface
      */
     public function getIndex($table, $index)
     {
-        $data = $this->_getStrippedTableArray($table);
+        $data = $this->getStrippedTableArray($table);
         foreach ($data as $row) {
-            $res = $this->_parseIndex($row, $index);
+            $res = $this->parseIndex($row, $index);
             if (!empty($res)) {
                 return $res;
             }
@@ -184,7 +184,7 @@ class Resource implements ResourceInterface
      * @param null|string $name
      * @return array
      */
-    protected function _parseColumn($row, $name = null)
+    protected function parseColumn($row, $name = null)
     {
         $columnInfo = array();
         if (preg_match('/`(\S+)` (\w+)\((\d+)\) (.*)/', $row, $matches)) {
@@ -209,7 +209,7 @@ class Resource implements ResourceInterface
                 $columnInfo['unsigned'] = true;
             }
             if (strpos($other, 'DEFAULT') !== false) {
-                $columnInfo['default'] = $this->_getDefault($other);
+                $columnInfo['default'] = $this->getDefault($other);
             }
         } elseif (preg_match('/`(\S+)` (\w+) (.*)/', $row, $matches)) {
             $columnInfo['name'] = $matches[1];
@@ -226,10 +226,10 @@ class Resource implements ResourceInterface
             if (strpos($other, 'unsigned') !== false) {
                 $columnInfo['unsigned'] = true;
             }
-            if (($pos = strpos($other, 'DEFAULT')) !== false) {
-                $columnInfo['default'] = $this->_getDefault($other);
+            if (strpos($other, 'DEFAULT') !== false) {
+                $columnInfo['default'] = $this->getDefault($other);
             }
-            if (($pos = strpos($other, 'ON UPDATE')) !== false) {
+            if (strpos($other, 'ON UPDATE') !== false) {
                 $columnInfo['on_update'] = 1;
             }
         }
@@ -243,7 +243,7 @@ class Resource implements ResourceInterface
      * @param $string
      * @return null|string
      */
-    protected function _getDefault($string)
+    protected function getDefault($string)
     {
         // trim comma from the end of a row
         $tok = strtok(trim($string, ','), " \n\t");
@@ -286,7 +286,7 @@ class Resource implements ResourceInterface
      * @param null|string $name
      * @return array
      */
-    protected function _parseIndex($row, $name = null)
+    protected function parseIndex($row, $name = null)
     {
         $indexInfo = [];
         preg_match('/^(?:KEY|INDEX) `(\S+)` \((\S+)\)/', trim($row), $matches);
@@ -311,7 +311,7 @@ class Resource implements ResourceInterface
      * @param null|string $name
      * @return array
      */
-    protected function _parseConstraint($row, $name = null)
+    protected function parseConstraint($row, $name = null)
     {
         $row = trim($row);
         $constraintInfo = [];
@@ -367,7 +367,7 @@ class Resource implements ResourceInterface
                         if (!isset($item[0]) || !isset($item[1])) {
                             throw new \InvalidArgumentException("Not enough parameter to add table.");
                         }
-                        $this->_procedures[] = $this->_addTable($item[0], $item[1]);
+                        $this->_procedures[] = $this->addTable($item[0], $item[1]);
                     }
                     break;
                 case 'dropTables':
@@ -375,7 +375,7 @@ class Resource implements ResourceInterface
                         if (!isset($item[0])) {
                             throw new \InvalidArgumentException("Not enough parameter to drop table.");
                         }
-                        $this->_procedures[] = $this->_dropTable($item[0]);
+                        $this->_procedures[] = $this->dropTable($item[0]);
                     }
                     break;
                 case 'addColumns':
@@ -383,7 +383,7 @@ class Resource implements ResourceInterface
                         if (!isset($item[0]) || !isset($item[1]) || !isset($item[2])) {
                             throw new \InvalidArgumentException("Not enough parameter to add columns.");
                         }
-                        $this->_procedures[] = $this->_addColumn($item[0], $item[1], $item[2]);
+                        $this->_procedures[] = $this->addColumn($item[0], $item[1], $item[2]);
                     }
                     break;
                 case 'changeColumns':
@@ -391,7 +391,7 @@ class Resource implements ResourceInterface
                         if (!isset($item[0]) || !isset($item[1]) || !isset($item[2]) || !isset($item[3])) {
                             throw new \InvalidArgumentException("Not enough parameter to change column.");
                         }
-                        $this->_procedures[] = $this->_changeColumn($item[0], $item[1], $item[2], $item[3]);
+                        $this->_procedures[] = $this->changeColumn($item[0], $item[1], $item[2], $item[3]);
                     }
                     break;
                 case 'dropColumns':
@@ -399,7 +399,7 @@ class Resource implements ResourceInterface
                         if (!isset($item[0]) || !isset($item[1])) {
                             throw new \InvalidArgumentException("Not enough parameter to drop table.");
                         }
-                        $this->_procedures[] = $this->_dropColumn($item[0], $item[1]);
+                        $this->_procedures[] = $this->dropColumn($item[0], $item[1]);
                     }
                     break;
                 case 'addConstraints':
@@ -407,7 +407,7 @@ class Resource implements ResourceInterface
                         if (!isset($item[0]) || !isset($item[1]) || !isset($item[2])) {
                             throw new \InvalidArgumentException("Not enough parameter to add constraints.");
                         }
-                        $this->_procedures[] = $this->_addConstraint($item[0], $item[1], $item[2]);
+                        $this->_procedures[] = $this->addConstraint($item[0], $item[1], $item[2]);
                     }
                     break;
                 case 'dropConstraints':
@@ -415,7 +415,7 @@ class Resource implements ResourceInterface
                         if (!isset($item[0]) || !isset($item[1]) || !isset($item[2])) {
                             throw new \InvalidArgumentException("Not enough parameter to drop constraint.");
                         }
-                        $this->_procedures[] = $this->_dropConstraint($item[0], $item[1], $item[2]);
+                        $this->_procedures[] = $this->dropConstraint($item[0], $item[1], $item[2]);
                     }
                     break;
                 case 'addIndices':
@@ -423,7 +423,7 @@ class Resource implements ResourceInterface
                         if (!isset($item[0]) || !isset($item[1]) || !isset($item[2])) {
                             throw new \InvalidArgumentException("Not enough parameter to add index.");
                         }
-                        $this->_procedures[] = $this->_addConstraint($item[0], $item[1], $item[2]);
+                        $this->_procedures[] = $this->addConstraint($item[0], $item[1], $item[2]);
                     }
                     break;
                 case 'dropIndices':
@@ -431,7 +431,7 @@ class Resource implements ResourceInterface
                         if (!isset($item[0]) || !isset($item[1])) {
                             throw new \InvalidArgumentException("Not enough parameter to drop index.");
                         }
-                        $this->_procedures[] = $this->_dropConstraint($item[0], $item[1], 'index');
+                        $this->_procedures[] = $this->dropConstraint($item[0], $item[1], 'index');
                     }
                     break;
             }
@@ -452,7 +452,7 @@ class Resource implements ResourceInterface
             throw new \LogicException("Unknown type of procedures.");
         }
         foreach ($this->_procedures as $query) {
-            $this->_commit($query);
+            $this->commit($query);
         }
     }
 
@@ -462,7 +462,7 @@ class Resource implements ResourceInterface
      * @return mixed
      * @throws Exception
      */
-    private function _addTable($tableName, array $tableDefinition)
+    private function addTable($tableName, array $tableDefinition)
     {
         $table = new CreateTable($tableName);
         if (!isset($tableDefinition['columns']) || !is_array($tableDefinition['columns'])) {
@@ -471,12 +471,12 @@ class Resource implements ResourceInterface
         $_columns = $tableDefinition['columns'];
         $_constraints = isset($tableDefinition['constraints']) ? $tableDefinition['constraints'] : array();
         foreach ($_columns as $columnName => $columnDefinition) {
-            $this->_addColumn($tableName, $columnName, $columnDefinition, $table);
+            $this->addColumn($tableName, $columnName, $columnDefinition, $table);
         }
         foreach ($_constraints as $constraintName => $constraintDefinition) {
-            $this->_addConstraint($tableName, $constraintName, $constraintDefinition, $table);
+            $this->addConstraint($tableName, $constraintName, $constraintDefinition, $table);
         }
-        return $this->_getQuery($table);
+        return $this->getQuery($table);
     }
 
     /**
@@ -486,14 +486,14 @@ class Resource implements ResourceInterface
      * @param null|CreateTable|AlterTable $table
      * @return mixed
      */
-    private function _addColumn($tableName, $columnName, array $columnDefinition, $table = null)
+    private function addColumn($tableName, $columnName, array $columnDefinition, $table = null)
     {
         if (is_null($table)) {
             $table = new AlterTable($tableName);
         }
-        $column = $this->_getInitColumn($columnName, $columnDefinition);
+        $column = $this->getInitColumn($columnName, $columnDefinition);
         $table->addColumn($column);
-        return $this->_getQuery($table);
+        return $this->getQuery($table);
     }
 
     /**
@@ -504,7 +504,7 @@ class Resource implements ResourceInterface
      * @return mixed
      * @throws Exception
      */
-    private function _addConstraint($tableName, $constraintName, array $constraintDefinition, $table = null)
+    private function addConstraint($tableName, $constraintName, array $constraintDefinition, $table = null)
     {
         if (is_null($table)) {
             $table = new AlterTable($tableName);
@@ -534,13 +534,13 @@ class Resource implements ResourceInterface
         }
 
         $table->addConstraint($constraint);
-        return $this->_getQuery($table);
+        return $this->getQuery($table);
     }
 
     /**
      * @param string $query
      */
-    private function _commit($query)
+    private function commit($query)
     {
         $adapter = $this->_adapter;
         $this->_adapter->query(
@@ -553,10 +553,10 @@ class Resource implements ResourceInterface
      * @param string $tableName
      * @return mixed
      */
-    private function _dropTable($tableName)
+    private function dropTable($tableName)
     {
         $table = new DropTable($tableName);
-        return $this->_getQuery($table);
+        return $this->getQuery($table);
     }
 
     /**
@@ -564,11 +564,11 @@ class Resource implements ResourceInterface
      * @param string $columnName
      * @return mixed
      */
-    private function _dropColumn($tableName, $columnName)
+    private function dropColumn($tableName, $columnName)
     {
         $table = new AlterTable($tableName);
         $table->dropColumn($columnName);
-        return $this->_getQuery($table);
+        return $this->getQuery($table);
     }
 
     /**
@@ -577,11 +577,11 @@ class Resource implements ResourceInterface
      * @param string $type
      * @return mixed
      */
-    private function _dropConstraint($tableName, $constraintName, $type)
+    private function dropConstraint($tableName, $constraintName, $type)
     {
         $table = new AlterTable($tableName);
         $table->dropConstraint($constraintName);
-        $query = $this->_getQuery($table);
+        $query = $this->getQuery($table);
         // big thanks to MySQL for this hack!!
         if ($type == 'foreign_key') {
             $query = str_replace('CONSTRAINT', 'FOREIGN KEY', $query);
@@ -597,7 +597,7 @@ class Resource implements ResourceInterface
      * @param SqlInterface $table
      * @return mixed
      */
-    private function _getQuery(SqlInterface $table)
+    private function getQuery(SqlInterface $table)
     {
         return $this->sql->getSqlStringForSqlObject($table);
     }
@@ -609,12 +609,12 @@ class Resource implements ResourceInterface
      * @param array $newDefinition
      * @return mixed
      */
-    private function _changeColumn($tableName, $oldName, $newName, array $newDefinition)
+    private function changeColumn($tableName, $oldName, $newName, array $newDefinition)
     {
         $table = new AlterTable($tableName);
-        $column = $this->_getInitColumn($newName, $newDefinition);
+        $column = $this->getInitColumn($newName, $newDefinition);
         $table->changeColumn($oldName, $column);
-        return $this->_getQuery($table);
+        return $this->getQuery($table);
     }
 
     /**
@@ -622,7 +622,7 @@ class Resource implements ResourceInterface
      * @param array $definition
      * @return bool|ColumnInterface
      */
-    private function _getInitColumn($name, array $definition) {
+    private function getInitColumn($name, array $definition) {
         if (!isset($definition['type']) || is_int($name)) {
             // can't create column without type or name
             return false;

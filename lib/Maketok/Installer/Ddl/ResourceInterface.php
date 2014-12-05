@@ -8,7 +8,6 @@
 
 namespace Maketok\Installer\Ddl;
 
-use Maketok\Installer\DirectivesInterface;
 use Maketok\Installer\ResourceInterface as BaseResource;
 
 interface ResourceInterface extends BaseResource

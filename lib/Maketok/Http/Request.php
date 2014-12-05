@@ -33,7 +33,7 @@ class Request extends HttpRequest implements RequestInterface
     }
 
     /**
-     * @return array
+     * @return \Symfony\Component\HttpFoundation\ParameterBag
      */
     public function getAttributes()
     {

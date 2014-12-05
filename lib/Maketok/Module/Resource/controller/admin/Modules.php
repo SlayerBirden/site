@@ -8,12 +8,14 @@
 
 namespace Maketok\Module\Resource\controller\admin;
 
+use Maketok\App\Site;
+use Maketok\Module\Resource\Model\Module;
+use Maketok\Module\Resource\Model\ModuleTable;
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\RequestInterface;
-use modules\modules\model\ModuleTable;
 
 class Modules extends AbstractAdminController
 {
@@ -44,7 +46,7 @@ class Modules extends AbstractAdminController
     {
         $this->setViewDependency(array('admin'));
         $this->setTemplate('module.html.twig');
-        $module = $this->_initModule($request);
+        $module = $this->initModule($request);
         $form = $this->getFormFactory()->create('module', $module, array(
             'action' => $this->getCurrentUrl(),
             'method' => 'POST',
@@ -56,24 +58,24 @@ class Modules extends AbstractAdminController
             $moduleTable = $this->getSC()->get('module_table');
             try {
                 $moduleTable->save($form->getData());
-                $request->getSession()->getFlashBag()->add(
+                Site::getSession()->getFlashBag()->add(
                     'success',
                     'The module was updated successfully!'
                 );
             } catch (ModelInfoException $e) {
-                $request->getSession()->getFlashBag()->add(
+                Site::getSession()->getFlashBag()->add(
                     'notice',
                     $e->getMessage()
                 );
             } catch (\Exception $e) {
                 $this->getSC()->get('logger')->err($e);
-                $request->getSession()->getFlashBag()->add(
+                Site::getSession()->getFlashBag()->add(
                     'error',
                     'There was an error processing your request. Our specialists will be looking into it.'
                 );
-                return $this->_returnBack();
+                return $this->returnBack();
             }
-            return $this->_redirect('modules');
+            return $this->redirect('modules');
         }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - View Module ' . $module->module_code,
@@ -85,12 +87,12 @@ class Modules extends AbstractAdminController
 
     /**
      * @param RequestInterface $request
-     * @return \modules\modules\model\Module
+     * @return Module
      * @throws RouteException
      */
-    protected function _initModule(RequestInterface $request)
+    protected function initModule(RequestInterface $request)
     {
-        $code = $request->attributes->get('code');
+        $code = $request->getAttributes()->get('code');
         if ($code === null) {
             throw new RouteException("Can not process module without code.");
         }

@@ -1,0 +1,24 @@
+services:
+  article_model:
+    class: "%article_model.class%"
+
+  article_result_set:
+    class: "%article_result_set.class%"
+    arguments: ["@object_prop_hydrator", "@article_model"]
+
+  article_table_gateway:
+    class: "%article_table_gateway.class%"
+    arguments:
+      - blog_article
+      - "@adapter"
+      - []
+      - "@article_result_set"
+
+  article_table:
+    class: "%article_table.class%"
+    arguments: ["@article_table_gateway", id]
+
+  article.form.type:
+          class: modules\blog\form\ArticleType
+          tags:
+              - { name: form.type, alias: article }

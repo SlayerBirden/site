@@ -78,7 +78,7 @@ class ModuleManager implements ClientInterface
     public function disableModule($code)
     {
         try {
-            $module = $this->_initModule($code);
+            $module = $this->initModule($code);
             $module->active = 0;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
@@ -92,7 +92,7 @@ class ModuleManager implements ClientInterface
      * @return Module
      * @throws ModelException
      */
-    protected function _initModule($code)
+    protected function initModule($code)
     {
         return $this->_tableType->find($code);
     }
@@ -127,7 +127,7 @@ class ModuleManager implements ClientInterface
     public function updateToVersion($code, $version)
     {
         try {
-            $module = $this->_initModule($code);
+            $module = $this->initModule($code);
             $module->version = $version;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
@@ -142,7 +142,7 @@ class ModuleManager implements ClientInterface
     public function activateModule($code)
     {
         try {
-            $module = $this->_initModule($code);
+            $module = $this->initModule($code);
             $module->active = 1;
             $this->_tableType->save($module);
         } catch (ModelException $e) {

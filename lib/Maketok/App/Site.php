@@ -84,14 +84,14 @@ final class Site
         $loader = new Autoload();
         $loader->register();
 
-        self::_loadConfigs();
+        self::loadConfigs();
         if (self::$mode & self::MODE_LOAD_ENVIRONMENT) {
-            self::_initEnvironment();
+            self::initEnvironment();
         }
         // we've done our job to init system
         // now we may or may not apply configs/or run dispatcher
         if (self::$mode & self::MODE_APPLY_CONFIGS) {
-            self::_applyConfigs();
+            self::applyConfigs();
         }
         if (!(self::$mode & self::MODE_DISPATCH)) {
             return;
@@ -99,6 +99,16 @@ final class Site
         self::getSC()->get('subject_manager')->notify('dispatch', new State(array(
             'request' => self::getSC()->get('request'),
         )));
+        self::terminate();
+    }
+
+    /**
+     * @throws mixed
+     */
+    public static function terminate()
+    {
+        restore_exception_handler();
+        ErrorHandler::stop(true);
     }
 
     /**
@@ -126,7 +136,7 @@ final class Site
     /**
      * load configs
      */
-    private static function _loadConfigs()
+    private static function loadConfigs()
     {
         Config::loadConfig();
     }
@@ -134,7 +144,7 @@ final class Site
     /**
      * apply configs
      */
-    private static function _applyConfigs()
+    private static function applyConfigs()
     {
         Config::applyConfig(self::$mode);
     }
@@ -142,7 +152,7 @@ final class Site
     /**
      * init evn
      */
-    private static function _initEnvironment()
+    private static function initEnvironment()
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         self::setRequest(Request::createFromGlobals());
@@ -208,7 +218,7 @@ final class Site
                 $class = self::getSCClassName();
                 self::$_sc = new $class();
             } else {
-                self::_createSC();
+                self::createSC();
             }
         }
         return self::$_sc;
@@ -226,7 +236,7 @@ final class Site
     /**
      * Init Service Container
      */
-    private static function _createSC()
+    private static function createSC()
     {
         $container = new ContainerBuilder();
         foreach (Config::getConfig('di_compiler_passes') as $compilerPassName) {
@@ -277,7 +287,7 @@ final class Site
     /**
      * @param ExtensionInterface $extension
      */
-    protected static function _addDiExtension(ExtensionInterface $extension)
+    protected static function addDiExtension(ExtensionInterface $extension)
     {
         self::$_sc->registerExtension($extension);
         self::$_sc->loadFromExtension($extension->getAlias());
@@ -317,7 +327,7 @@ final class Site
             // include each module into sc
             // only the ones that work :)
             if ($moduleConfig instanceof ExtensionInterface) {
-                self::_addDiExtension($moduleConfig);
+                self::addDiExtension($moduleConfig);
             }
         }
     }

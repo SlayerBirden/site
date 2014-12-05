@@ -9,7 +9,6 @@
 namespace Maketok\Mvc\Controller;
 
 use Maketok\Mvc\GenericException;
-use Maketok\Template;
 
 class AbstractAdminController extends AbstractController
 {
@@ -20,7 +19,7 @@ class AbstractAdminController extends AbstractController
      * @throws GenericException
      * @return string
      */
-    protected function _getTemplatePath($template = null, $module = null)
+    protected function getTemplatePath($template = null, $module = null)
     {
         if (is_null($module)) {
             $module = $this->_module;
@@ -37,7 +36,7 @@ class AbstractAdminController extends AbstractController
     /**
      * @return array
      */
-    protected function _getBaseDependencyPaths()
+    protected function getBaseDependencyPaths()
     {
         return array(AR . '/src/admin/view');
     }

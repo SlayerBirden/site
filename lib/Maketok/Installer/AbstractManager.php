@@ -107,19 +107,22 @@ abstract class AbstractManager implements ManagerInterface
         }
         $aA = explode('.', $a);
         $aB = explode('.', $b);
-        if (count($aA) > count($aB)) {
-            for ($i = count($aB); $i < count($aA); $i++){
+        $countAA = count($aA);
+        $countAB = count($aB);
+        if ($countAA > $countAB) {
+
+            for ($i = $countAB; $i < $countAA; $i++){
                 $aB[] = 0;
             }
-        } elseif(count($aB) > count($aA)) {
-            for ($i = count($aA); $i < count($aB); $i++){
+        } elseif($countAB > $countAA) {
+            for ($i = $countAA; $i < $countAB; $i++){
                 $aA[] = 0;
             }
         }
         // cast all versions to int
         foreach ($aA as &$v) {$v = (int) $v;}
         foreach ($aB as &$v) {$v = (int) $v;}
-        for ($i = 0; $i < count($aA); $i++) {
+        for ($i = 0; $i < $countAA; $i++) {
             if ($aA[$i] > $aB[$i]) {
                 return 1;
             } elseif ($aB[$i] > $aA[$i]) {
