@@ -7,13 +7,6 @@
  */
 
 return [
-    'php_config' => [
-        'display_errors' => 0,
-        'error_reporting' => E_ALL & ~E_DEPRECATED,
-        'date_timezone' => 'GMT',
-        'max_memory_limit' => '512M',
-        'max_execution_time' => 60,
-    ],
     'subject_config' => [
         'dispatch' => [
             [

@@ -88,11 +88,6 @@ final class Config
         if (self::$_isApplied) {
             return;
         }
-        if  ($mode & self::PHP) {
-            foreach (self::getConfig('php_config') as $key => $value) {
-                @ini_set($key, $value);
-            }
-        }
         if  ($mode & self::EVENTS) {
             foreach (self::getConfig('subject_config') as $subjectName => $subjectData) {
                 foreach ($subjectData as $data) {
