@@ -17,7 +17,7 @@ return [
             ],
             'title' => [
                 'type' => 'varchar',
-                'length' => 200,
+                'length' => 55,
                 'nullable' => false,
             ],
             'code' => [
@@ -46,19 +46,19 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => 'id',
+                'def' => ['id'],
             ],
             'UNQ_KEY_CODE' => [
                 'type' => 'uniqueKey',
-                'def' => 'code',
+                'def' => ['code'],
             ],
             'KEY_AUTHOR' => array(
                 'type' => 'index',
-                'def' => 'author',
+                'def' => ['author'],
             ),
             'KEY_DATE' => array(
                 'type' => 'index',
-                'def' => 'created_at',
+                'def' => ['created_at'],
             ),
         ],
     ],
@@ -98,11 +98,11 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => 'id',
+                'def' => ['id'],
             ],
             'UNQ_KEY_CODE' => [
                 'type' => 'uniqueKey',
-                'def' => 'code',
+                'def' => ['code'],
             ]
         ],
     ],
@@ -131,7 +131,7 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => 'id',
+                'def' => ['id'],
             ],
             'FK_KEY_ARTICLE_ID' => array(
                 'type' => 'foreignKey',

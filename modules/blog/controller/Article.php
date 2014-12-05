@@ -23,7 +23,7 @@ class Article extends AbstractController
      */
     public function indexAction(RequestInterface $request)
     {
-        $article = $this->_initArticle($request);
+        $article = $this->initArticle($request);
         $this->setViewDependency(array('base'));
         $this->setTemplate('article.html.twig');
         return $this->prepareResponse($request, array(
@@ -36,10 +36,10 @@ class Article extends AbstractController
      * @return \modules\blog\model\Article
      * @throws RouteException
      */
-    protected function _initArticle(RequestInterface $request)
+    protected function initArticle(RequestInterface $request)
     {
-        $id = $request->attributes->get('id');
-        $code = $request->attributes->get('code');
+        $id = $request->getAttributes()->get('id');
+        $code = $request->getAttributes()->get('code');
         if ($id === null && $code === null) {
             throw new RouteException("Can not process article without id or code.");
         }

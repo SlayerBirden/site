@@ -9,8 +9,8 @@
 namespace modules\blog;
 
 
-use Maketok\Ddl\InstallerApplicableInterface;
 use Maketok\App\Site;
+use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\ConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
@@ -19,16 +19,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class Config implements ConfigInterface, InstallerApplicableInterface, ExtensionInterface
+class Config implements ConfigInterface, ExtensionInterface, ClientInterface
 {
-
-    /**
-     * @return array
-     */
-    public function getDdlConfig()
-    {
-        return include __DIR__ . '/config/ddl/' . $this->getDdlConfigVersion() . '.php';
-    }
 
     /**
      * @return string
@@ -114,6 +106,7 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
             $container,
             new FileLocator(__DIR__.'/config')
         );
+        $loader->load('parameters.yml');
         $loader->load('services.yml');
         // validator config files
         $validatorYmlConfigPaths = [];
@@ -153,13 +146,7 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
     }
 
     /**
-     * Returns the recommended alias to use in XML.
-     *
-     * This alias is also the mandatory prefix to use when using YAML.
-     *
-     * @return string The alias
-     *
-     * @api
+     * {@inheritdoc}
      */
     public function getAlias()
     {
@@ -167,19 +154,53 @@ class Config implements ConfigInterface, InstallerApplicableInterface, Extension
     }
 
     /**
-     * some init work before other init processes (events and routes)
-     * @return mixed
+     * @return bool
      */
-    public function initBefore()
+    public function isActive()
     {
-        return;
+        return false;
     }
 
     /**
-     * @return int
+     * client register dependencies (parents)
+     * it must register dependencies to change resources that were created by other clients
+     *
+     * @return array
      */
-    public function getInstallProcessType()
+    public function getDependencies()
     {
-        return self::INSTALL_PROCESS_TYPE_ONDEMAND;
+        return [];
+    }
+
+    /**
+     * get client version to install
+     *
+     * @return string
+     */
+    public function getDdlVersion()
+    {
+        return $this->getVersion();
+    }
+
+    /**
+     * get client identifier
+     * must be unique
+     *
+     * @return string
+     */
+    public function getDdlCode()
+    {
+        return $this->getCode();
+    }
+
+    /**
+     * get client config to install
+     *
+     * @param string $version
+     * @return array|bool
+     */
+    public function getDdlConfig($version)
+    {
+        return include __DIR__ . "/config/ddl/$version.php";
     }
 }

@@ -8,6 +8,7 @@
 
 namespace modules\blog\controller\admin;
 
+use Maketok\App\Site;
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
@@ -38,24 +39,24 @@ class Article extends AbstractAdminController
             $articleTable = $this->getSC()->get('article_table');
             try {
                 $articleTable->save($form->getData());
-                $request->getSession()->getFlashBag()->add(
+                Site::getSession()->getFlashBag()->add(
                     'success',
                     'The article was saved successfully!'
                 );
             } catch (ModelInfoException $e) {
-                $request->getSession()->getFlashBag()->add(
+                Site::getSession()->getFlashBag()->add(
                     'notice',
                     $e->getMessage()
                 );
             } catch (\Exception $e) {
                 $this->getSC()->get('logger')->err($e);
-                $request->getSession()->getFlashBag()->add(
+                Site::getSession()->getFlashBag()->add(
                     'error',
                     'There was an error processing your request. Our specialists will be looking into it.'
                 );
-                return $this->_returnBack();
+                return $this->returnBack();
             }
-            return $this->_redirect('blog');
+            return $this->redirect('blog');
         }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Edit Article ' . $article->title,
@@ -78,7 +79,7 @@ class Article extends AbstractAdminController
         } catch (\Exception $e) {
             $this->getSC()->get('logger')->error(sprintf("Could not remove article #%d", $article->id));
         }
-        return $this->_redirect('/blog');
+        return $this->redirect('/blog');
     }
 
     /**
@@ -88,7 +89,7 @@ class Article extends AbstractAdminController
      */
     protected function _initArticle(RequestInterface $request)
     {
-        $id = $request->attributes->get('id');
+        $id = $request->getAttributes()->get('id');
         if ($id === null) {
             // route exception will lead to 404
             throw new RouteException("Can not process article without id.");
@@ -121,24 +122,24 @@ class Article extends AbstractAdminController
             $articleTable = $this->getSC()->get('article_table');
             try {
                 $articleTable->save($form->getData());
-                $request->getSession()->getFlashBag()->add(
+                Site::getSession()->getFlashBag()->add(
                     'success',
                     'The article was saved successfully!'
                 );
             } catch (ModelInfoException $e) {
-                $request->getSession()->getFlashBag()->add(
+                Site::getSession()->getFlashBag()->add(
                     'notice',
                     $e->getMessage()
                 );
             } catch (\Exception $e) {
                 $this->getSC()->get('logger')->err($e);
-                $request->getSession()->getFlashBag()->add(
+                Site::getSession()->getFlashBag()->add(
                     'error',
                     'There was an error processing your request. Our specialists will be looking into it.'
                 );
-                return $this->_returnBack();
+                return $this->returnBack();
             }
-            return $this->_redirect('blog');
+            return $this->redirect('blog');
         }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Add New Article ',

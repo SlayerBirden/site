@@ -1,0 +1,5 @@
+parameters:
+  article_model.class: modules\blog\model\Article
+  article_result_set.class: Zend\Db\ResultSet\HydratingResultSet
+  article_table_gateway.class: Zend\Db\TableGateway\TableGateway
+  article_table.class: modules\blog\model\ArticleTable

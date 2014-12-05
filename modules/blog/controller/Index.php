@@ -6,10 +6,11 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace modules\base\controller;
+namespace modules\blog\controller;
 
 use Maketok\Mvc\Controller\AbstractController;
 use Maketok\Util\RequestInterface;
+use modules\blog\model\ArticleTable;
 
 class Index extends AbstractController
 {
@@ -20,8 +21,15 @@ class Index extends AbstractController
      */
     public function indexAction(RequestInterface $request)
     {
-
-        $this->setTemplate('base.html.twig');
-        return $this->prepareResponse($request, array('title' => 'Home page'));
+        $this->setTemplate('blog.html.twig');
+        /** @var ArticleTable $articleTable */
+        $articleTable = $this->getSC()->get('article_table');
+        $articles = $articleTable->getTenMostRecent();
+        return $this->prepareResponse($request, array(
+            'title' => 'Blog',
+            'description' => '10 Most Recent Articles:',
+            'articles' => $articles
+        ));
     }
+
 }

@@ -41,15 +41,15 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => 'id',
+                'def' => ['id'],
             ],
             'KEY_AUTHOR' => array(
                 'type' => 'index',
-                'def' => 'author',
+                'def' => ['author'],
             ),
             'KEY_DATE' => array(
                 'type' => 'index',
-                'def' => 'created_at',
+                'def' => ['created_at'],
             ),
         ],
     ],
@@ -84,7 +84,7 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => 'id',
+                'def' => ['id'],
             ]
         ],
     ],
@@ -113,7 +113,7 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => 'id',
+                'def' => ['id'],
             ],
             'FK_KEY_ARTICLE_ID' => array(
                 'type' => 'foreignKey',
