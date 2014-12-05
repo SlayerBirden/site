@@ -101,28 +101,25 @@ class ModuleManager implements ClientInterface
      * to uninstall module you need to move it out of "modules" directory
      *
      * @param string $code
-     * @return bool
      */
     public function uninstallModule($code)
     {
-        // @TODO implement move
+        // may not be needed
     }
 
     /**
      * to install module you need to add it to "modules" directory
      *
      * @param string $code
-     * @return bool
      */
     public function installModule($code)
     {
-        // @TODO implement add
+        // may not be needed
     }
 
     /**
      * @param string $code
      * @param string $version
-     * @return bool
      */
     public function updateToVersion($code, $version)
     {
@@ -197,7 +194,7 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @param $code
+     * @param string $code
      * @return null|Module
      */
     public function getModule($code)

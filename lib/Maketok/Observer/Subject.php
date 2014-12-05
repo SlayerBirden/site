@@ -15,6 +15,9 @@ class Subject implements SubjectInterface
 
     protected $_code;
 
+    /**
+     * @param string $code
+     */
     public function __construct($code)
     {
         $this->_code = $code;
