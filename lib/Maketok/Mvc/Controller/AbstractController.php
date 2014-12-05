@@ -2,7 +2,7 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
@@ -12,6 +12,7 @@ use Maketok\App\Site;
 use Maketok\Http\Response;
 use Maketok\Mvc\GenericException;
 use Maketok\Mvc\Router\Route\RouteInterface;
+use Maketok\Template\EngineInterface;
 use Maketok\Util\RequestInterface;
 use Maketok\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -105,8 +106,9 @@ class AbstractController
     {
         $path = $this->_getTemplatePath();
         // get template Engine
+        /** @var EngineInterface $engine */
         $engine = $this->getSC()->get('template_engine');
-        $dependencyPaths = array();
+        $dependencyPaths = $this->_getBaseDependencyPaths();
         foreach ($this->_viewDependency as $_dependencyModule) {
             $dependencyPaths[] = $this->_getTemplatePath('', $_dependencyModule);
         }
@@ -120,6 +122,14 @@ class AbstractController
         $engine->loadTemplate($path);
         $engine->setVariables($templateVars);
         $this->_body = $engine->render();
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getBaseDependencyPaths()
+    {
+        return array(AR . '/src/base/view');
     }
 
     /**
@@ -227,7 +237,7 @@ class AbstractController
      */
     protected function _returnBack()
     {
-        $referer = Site::getRequest()->headers->get('referer');
+        $referer = Site::getServiceContainer()->get('request')->headers->get('referer');
         return $this->_redirectUrl($referer);
     }
 
@@ -247,7 +257,7 @@ class AbstractController
     public function getCurrentUrl()
     {
         /** @var RouteInterface $route */
-        $route = Site::getRequest()->attributes->get('_route');
+        $route = Site::getServiceContainer()->get('request')->attributes->get('_route');
         return $this->getUrl($route->assemble());
     }
 }

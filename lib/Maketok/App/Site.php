@@ -3,26 +3,23 @@
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
  * @project site
- * @developer Slayer
+ * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\App;
 
 use Maketok\Loader\Autoload;
 use Maketok\Observer\State;
 use Maketok\Observer\StateInterface;
-use Maketok\Observer\SubjectManager;
 use Maketok\Http\Request;
-use Maketok\Template\TemplateCompilerPass;
-use Maketok\Util\FormExtensionCompilerPass;
-use Maketok\Util\FormTypeCompilerPass;
 use Maketok\Util\RequestInterface;
+use Maketok\Util\StreamHandler;
 use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Zend\Db\Adapter\Adapter;
 use Zend\Stdlib\ErrorHandler;
 use Zend\Uri\UriFactory;
 
@@ -36,8 +33,8 @@ final class Site
     const MODE_FRONTEND = 0b110001111111111;
     /** load base+admin */
     const MODE_ADMIN = 0b111001111111111;
-    /** load base + test, not load session,ddl configs */
-    const MODE_TEST = 0b010011111110011;
+    /** load base + test, not load session,ddl configs, not load env */
+    const MODE_TEST = 0b010011100110011;
     /** load base + dev, all configs */
     const MODE_DEVELOPMENT = 0b110101111111111;
 
@@ -47,8 +44,9 @@ final class Site
      * const PHP = 0b1;
      * const EVENTS = 0b10;
      * const SESSION = 0b100;
-     * const DDL = 0b1000;
+     * const INSTALLER = 0b1000;
      */
+    const MODE_DUMP_SC = 0b1000000;
     const MODE_LOAD_ENVIRONMENT = 0b10000000;
     const MODE_LOAD_SC = 0b100000000;
     const MODE_LOAD_BASE_CONFIGS = 0b1000000000;
@@ -66,6 +64,7 @@ final class Site
     private function __construct()
     {
         // we can't create an object of Site
+        return;
     }
 
     /**
@@ -90,33 +89,25 @@ final class Site
             self::_initEnvironment();
         }
         // we've done our job to init system
-        // if safeRun is up, we don't need dispatcher
+        // now we may or may not apply configs/or run dispatcher
         if (self::$mode & self::MODE_APPLY_CONFIGS) {
             self::_applyConfigs();
         }
         if (!(self::$mode & self::MODE_DISPATCH)) {
             return;
         }
-        self::getSubjectManager()->notify('dispatch', new State(array(
-            'request' => self::getRequest()
+        self::getSC()->get('subject_manager')->notify('dispatch', new State(array(
+            'request' => self::getSC()->get('request'),
         )));
     }
 
     /**
-     * @return RequestInterface|null
-     */
-    public static function getRequest()
-    {
-        return self::registry()->request;
-    }
-
-    /**
-     * @return null|\Symfony\Component\HttpFoundation\Session\SessionInterface
+     * @return null|\Maketok\Http\SessionInterface
      */
     public static function getSession()
     {
-        if (self::getRequest()) {
-            return self::getRequest()->getSession();
+        if (self::getSC()->get('request')) {
+            return self::getSC()->get('request')->getSession();
         }
         return null;
     }
@@ -127,9 +118,9 @@ final class Site
     public static function setRequest(RequestInterface $request)
     {
         if (self::$mode & Config::SESSION) {
-            $request->setSession(self::getServiceContainer()->get('session_manager'));
+            $request->setSession(self::getSC()->get('session_manager'));
         }
-        self::registry()->request = $request;
+        self::getSC()->set('request', $request);
     }
 
     /**
@@ -172,7 +163,7 @@ final class Site
     {
         try {
             /** @var Logger $logger */
-            $logger = self::getServiceContainer()->get('logger');
+            $logger = self::getSC()->get('logger');
             if ($e instanceof \ErrorException) {
                 $errno = $e->getSeverity();
                 if ($errno & E_NOTICE || $errno & E_USER_NOTICE) {
@@ -181,7 +172,7 @@ final class Site
                     $logger->warn($e->__toString());
                 } elseif ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
                     $logger->err($e->__toString());
-                    self::getSubjectManager()->notify('application_error_triggered', new State(array(
+                    self::getSC()->get('subject_manager')->notify('application_error_triggered', new State(array(
                         'exception' => $e,
                         'message' => $e->__toString(),
                     )));
@@ -189,7 +180,7 @@ final class Site
             } else {
                 $message = sprintf("Unhandled exception\n%s", $e->__toString());
                 $logger->emergency($message);
-                self::getSubjectManager()->notify('application_error_triggered', new State(array(
+                self::getSC()->get('subject_manager')->notify('application_error_triggered', new State(array(
                     'exception' => $e,
                     'message' => $message,
                 )));
@@ -212,43 +203,84 @@ final class Site
         if (is_null(self::$_sc)) {
             // get cached file
             $file = self::getContainerFileName();
-            if (file_exists($file) && !Config::getConfig('debug')) {
+            if (file_exists($file) && !Config::getConfig('di_parameters/debug')) {
                 require_once $file;
                 $class = self::getSCClassName();
                 self::$_sc = new $class();
             } else {
-                $container = new ContainerBuilder();
-                $container->addCompilerPass(new TemplateCompilerPass);
-                $container->addCompilerPass(new FormExtensionCompilerPass);
-                $container->addCompilerPass(new FormTypeCompilerPass);
-                $container->setParameter('AR', AR);
-                $container->setParameter('DS', DS);
-                $container->setParameter('debug', Config::getConfig('debug'));
-                $container->setParameter('log_dir', AR . DS . 'var' . DS . 'logs' . DS);
-                $container->setParameter('cache_dir', AR . DS . 'var' . DS . 'cache' . DS);
-                $loader = new YamlFileLoader($container, new FileLocator(AR . DS . 'config'));
-                if (self::$mode & self::MODE_LOAD_BASE_CONFIGS) {
-                    $loader->load('services.yml');
-                    if (file_exists(AR . DS . 'config' . DS . 'local.services.yml')) {
-                        $loader->load('local.services.yml');
-                    }
-                }
-                if ((self::$mode & self::MODE_LOAD_DEV_CONFIGS) &&
-                    file_exists(AR . DS . 'config' . DS . 'dev.services.yml')) {
-                    $loader->load('dev.services.yml');
-                }
-                if ((self::$mode & self::MODE_LOAD_TEST_CONFIGS) &&
-                    file_exists(AR . DS . 'config' . DS . 'test.services.yml')) {
-                    $loader->load('test.services.yml');
-                }
-                if ((self::$mode & self::MODE_LOAD_ADMIN_CONFIGS) &&
-                    file_exists(AR . DS . 'config' . DS . 'admin.services.yml')) {
-                    $loader->load('admin.services.yml');
-                }
-                self::$_sc = $container;
+                self::_createSC();
             }
         }
         return self::$_sc;
+    }
+
+    /**
+     * alias
+     * @return ContainerBuilder
+     */
+    public static function getSC()
+    {
+        return self::getServiceContainer();
+    }
+
+    /**
+     * Init Service Container
+     */
+    private static function _createSC()
+    {
+        $container = new ContainerBuilder();
+        foreach (Config::getConfig('di_compiler_passes') as $compilerPassName) {
+            $container->addCompilerPass(new $compilerPassName());
+        }
+        foreach (Config::getConfig('di_parameters') as $k => $v) {
+            $container->setParameter($k, $v);
+        }
+        $loader = new YamlFileLoader($container, new FileLocator(AR . '/config/di'));
+        $fileList = ['services', 'parameters'];
+        $envList = [
+            'base' => '',
+            'dev' => 'dev',
+            'test' => 'test',
+            'admin' => 'admin'
+        ];
+        foreach ($fileList as $fileName) {
+            foreach ($envList as $envCode => $envFileCode) {
+                $constantCode = strtoupper("mode_load_{$envCode}_configs");
+                $const = @constant("self::$constantCode");
+                if (is_null($const)) {
+                    continue;
+                }
+                $finalFileName = (empty($envFileCode) ? "$fileName.yml" : "$envFileCode.$fileName.yml");
+                if (self::$mode & $const) {
+                    // load config file if it exists
+                    if (file_exists(AR . "/config/di/$finalFileName")) {
+                        $loader->load($finalFileName);
+                    }
+                    // load "local" version of each file on top of the "normal" one
+                    // if it exists
+                    $finalLocalFileName = 'local.' . $finalFileName;
+                    if (file_exists(AR . "/config/di/$finalLocalFileName")) {
+                        $loader->load($finalLocalFileName);
+                    }
+                }
+            }
+        }
+        self::$_sc = $container;
+        // now handle some registered lib extensions
+        foreach (Config::getConfig('di_extensions') as $className) {
+            /** @var DependencyConfigExtensionInterface $ext */
+            $ext = new $className();
+            $ext->loadConfig($loader);
+        }
+    }
+
+    /**
+     * @param ExtensionInterface $extension
+     */
+    protected static function _addDiExtension(ExtensionInterface $extension)
+    {
+        self::$_sc->registerExtension($extension);
+        self::$_sc->loadFromExtension($extension->getAlias());
     }
 
     /**
@@ -275,7 +307,7 @@ final class Site
     public static function serviceContainerProcessModules(StateInterface $state)
     {
         // we may not need to
-        $container = self::getServiceContainer();
+        $container = self::getSC();
         $class = self::getSCClassName();
         if ($container instanceof $class) {
             return;
@@ -285,8 +317,7 @@ final class Site
             // include each module into sc
             // only the ones that work :)
             if ($moduleConfig instanceof ExtensionInterface) {
-                $container->registerExtension($moduleConfig);
-                $container->loadFromExtension($moduleConfig->getAlias());
+                self::_addDiExtension($moduleConfig);
             }
         }
     }
@@ -301,53 +332,29 @@ final class Site
         } else {
             $fn = 'container.php';
         }
-        return AR . DS . 'var' . DS . 'cache' . DS . $fn;
+        return AR . '/var/cache/' . $fn;
     }
 
     /**
-     * @param StateInterface $state
+     * @observe config_after_process
      */
-    public static function scCompileAndDump(StateInterface $state)
+    public static function scCompileAndDump()
     {
-        $container = self::getServiceContainer();
-        $class = self::getSCClassName();
-        if ($container instanceof $class) {
-            return;
+        $file = self::getContainerFileName();
+        if (!file_exists($file) || Config::getConfig('di_parameters/debug')) {
+            $container = self::getSC();
+            $container->compile();
+
+            if (self::$mode & self::MODE_DUMP_SC) {
+                $dumper = new PhpDumper($container);
+                /** @var StreamHandler $writer */
+                $writer = $container->get('lock_stream_handler');
+                $writer->writeWithLock(
+                    $dumper->dump(array('class' => self::getSCClassName(false))),
+                    self::getContainerFileName()
+                );
+            }
         }
-        $container->compile();
-        // add necessary params if no found
-        if (!$container->hasParameter('validator_builder.yml.config.paths')) {
-            $container->setParameter('validator_builder.yml.config.paths', []);
-        }
-
-        if (!Config::getConfig('debug')) {
-            $dumper = new PhpDumper($container);
-            file_put_contents(
-                self::getContainerFileName(),
-                $dumper->dump(array('class' => self::getSCClassName(false)))
-            );
-        }
-    }
-
-    /**
-     * @return Adapter
-     */
-    public static function getAdapter()
-    {
-        return self::getServiceContainer()->get('adapter');
-    }
-
-    public static function registry()
-    {
-        return self::getServiceContainer()->get('registry');
-    }
-
-    /**
-     * @return SubjectManager
-     */
-    public static function getSubjectManager()
-    {
-        return self::getServiceContainer()->get('subject_manager');
     }
 
     /**
@@ -355,20 +362,24 @@ final class Site
      */
     public static function getBaseUrl()
     {
-        return self::getServiceContainer()->getParameter('base_url');
+        return self::getSC()->getParameter('base_url');
     }
 
     /**
      * @param string $path
      * @param array $config
+     * @param null $baseUrl
      * @return string
      */
-    public static function getUrl($path, array $config = null)
+    public static function getUrl($path, array $config = null, $baseUrl = null)
     {
-        $uri = UriFactory::factory(Site::getBaseUrl());
+        if (is_null($baseUrl)) {
+            $baseUrl = self::getSC()->getParameter('base_url');
+        }
+        $uri = UriFactory::factory($baseUrl);
         $path = '/' . ltrim($path, '/');
         $path = rtrim($path, '/');
-        if (!isset($config['wts'])) { // config Without Trailing Slash
+        if (!isset($config['wts']) || !$config['wts']) { // config Without Trailing Slash
             $path  = $path . '/';
         }
         $uri->setPath($path);

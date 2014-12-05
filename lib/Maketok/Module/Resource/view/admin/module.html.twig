@@ -1,0 +1,12 @@
+{% extends "base-manager.html.twig" %}
+{% form_theme form 'maketok-form_table_layout.html.twig' %}
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ css_url }}form.css">
+{% endblock %}
+{% block content %}
+    <div id="info" class="info">
+        <span class="important">{% trans %}%description%{% endtrans %}</span>
+    </div>
+    {{ form(form) }}
+{% endblock %}

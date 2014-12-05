@@ -1,0 +1,65 @@
+# This is a part of Maketok Site. Licensed under GPL 3.0
+# Please do not use for your own profit.
+# @project site
+# @developer Slayer slayer.birden@gmail.com maketok.com
+
+services:
+  ddl_client_model:
+    class: Maketok\Installer\Ddl\Resource\Model\DdlClient
+    scope: prototype
+
+  ddl_client_result_set:
+    class: %hydrating_resultset%
+    arguments: ["@object_prop_hydrator", "@ddl_client_model="]
+
+  ddl_client_table_gateway:
+    class: Zend\Db\TableGateway\TableGateway
+    arguments:
+      - installer_ddl_client
+      - "@adapter"
+      - []
+      - "@ddl_client_result_set"
+
+  ddl_client_table:
+    class: Maketok\Installer\Ddl\Resource\Model\DdlClientType
+    arguments: ["@ddl_client_table_gateway", id]
+
+  ddl_client_dependency_model:
+    class: Maketok\Installer\Ddl\Resource\Model\DdlClientDependency
+    scope: prototype
+
+  ddl_client_dependency_result_set:
+    class: %hydrating_resultset%
+    arguments: ["@object_prop_hydrator", "@ddl_client_dependency_model="]
+
+  ddl_client_dependency_table_gateway:
+    class: Zend\Db\TableGateway\TableGateway
+    arguments:
+      - installer_ddl_client_config
+      - "@adapter"
+      - []
+      - "@ddl_client_dependency_result_set"
+
+  ddl_client_dependency_table:
+    class: Maketok\Installer\Ddl\Resource\Model\DdlClientDependencyType
+    arguments: ["@ddl_client_dependency_table_gateway", id]
+
+  ddl_client_history_model:
+    class: Maketok\Installer\Ddl\Resource\Model\DdlClientHistory
+    scope: prototype
+
+  ddl_client_history_result_set:
+    class: %hydrating_resultset%
+    arguments: ["@object_prop_hydrator", "@ddl_client_history_model="]
+
+  ddl_client_history_table_gateway:
+    class: Zend\Db\TableGateway\TableGateway
+    arguments:
+      - installer_ddl_client_history
+      - "@adapter"
+      - []
+      - "@ddl_client_history_result_set"
+
+  ddl_client_history_table:
+    class: Maketok\Installer\Ddl\Resource\Model\DdlClientHistoryType
+    arguments: ["@ddl_client_history_table_gateway", id]

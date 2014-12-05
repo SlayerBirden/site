@@ -1,2 +1,0 @@
-parameters:
-  front_controller_error_dumper: modules\error\controller\Index

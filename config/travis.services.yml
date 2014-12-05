@@ -1,7 +1,0 @@
-parameters:
-  db_user: travis
-  db_passw:
-  db_host: localhost
-  db_database: site_test
-  db_driver: pdo_mysql
-  dll_lock_path: "%AR%%DS%var%DS%locks%DS%test_ddl_installer.lock"

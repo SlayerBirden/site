@@ -2,21 +2,22 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
- * @developer Slayer
+ * @project site
+ * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\Http\Session;
 
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
-use Maketok\Ddl\InstallerApplicableInterface;
+use Maketok\Installer\Ddl\ClientInterface;
 
 /**
  * Class DbHandler
  * @package Maketok\Http\Session
  */
-class DbHandler implements \SessionHandlerInterface, InstallerApplicableInterface
+class DbHandler implements \SessionHandlerInterface, ClientInterface
 {
 
     /** @var Sql */
@@ -30,7 +31,7 @@ class DbHandler implements \SessionHandlerInterface, InstallerApplicableInterfac
     public function __construct(Adapter $adapter)
     {
         $this->_adapter = $adapter;
-        $this->_sql = new Sql($this->_adapter, self::getDdlConfigName());
+        $this->_sql = new Sql($this->_adapter, $this->getDdlCode());
     }
 
     /**
@@ -132,46 +133,33 @@ class DbHandler implements \SessionHandlerInterface, InstallerApplicableInterfac
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
-    public static function getDdlConfig()
+    public function getDdlConfig($version)
     {
-        return array(
-            self::getDdlConfigName() => array(
-                'columns' => array(
-                    'session_id' => array(
-                        'type' => 'varchar',
-                        'length' => 32,
-                    ),
-                    'data' => array(
-                        'type' => 'text',
-                    ),
-                    'updated_at' => array(
-                        'type' => 'datetime',
-                    ),
-                ),
-                'constraints' => array(
-                    'primary' => array(
-                        'type' => 'primaryKey',
-                        'def' => 'session_id',
-                    )
-                ),
-            )
-        );
+        return include __DIR__ . '/Resource/config/ddl/' . $version . '.php';
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public static function getDdlConfigVersion()
+    public function getDependencies()
+    {
+        // TODO: Implement getDependencies() method.
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDdlVersion()
     {
         return '0.1.0';
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public static function getDdlConfigName()
+    public function getDdlCode()
     {
         return 'session_storage';
     }

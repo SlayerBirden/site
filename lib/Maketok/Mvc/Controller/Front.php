@@ -2,9 +2,10 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\Mvc\Controller;
 
 use Maketok\App\Site;
@@ -71,17 +72,14 @@ class Front
     public function exceptionHandler(\Exception $e)
     {
         try {
-            $dumperClass = 'Maketok\Mvc\Router\Route\Http\Error\Dumper';
-            if (Site::getServiceContainer()->hasParameter('front_controller_error_dumper')) {
-                $dumperClass = Site::getServiceContainer()->getParameter('front_controller_error_dumper');
-            }
+            $dumper = Site::getSC()->get('front_controller_error_dumper');
             if ($e instanceof RouteException) {
                 // not found
                 $errorRoute = new Error(array(
-                    'controller' => $dumperClass,
+                    'controller' => $dumper,
                     'action' => 'noroute',
                 ));
-                $this->launch($errorRoute->match(Site::getRequest()));
+                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
             } elseif ($e instanceof \ErrorException) {
                 $errno = $e->getSeverity();
                 if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
@@ -89,11 +87,11 @@ class Front
                         ->get('logger')
                         ->err(sprintf("Front Controller dispatch error exception\n%s", $e->__toString()));
                     $errorRoute = new Error(array(
-                        'controller' => $dumperClass,
+                        'controller' => $dumper,
                         'action' => 'error',
                         'exception' => $e,
                     ));
-                    $this->launch($errorRoute->match(Site::getRequest()));
+                    $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
                 }
 
             } else {
@@ -101,17 +99,18 @@ class Front
                     ->get('logger')
                     ->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
                 $errorRoute = new Error(array(
-                    'controller' => $dumperClass,
+                    'controller' => $dumper,
                     'action' => 'error',
                     'exception' => $e,
                 ));
-                $this->launch($errorRoute->match(Site::getRequest()));
+                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
             }
         } catch (\Exception $ex) {
-            printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Previous exception: %s",
+            printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Trace: %s. Previous exception: %s",
                 $ex->getMessage(),
                 $ex->getFile(),
                 $ex->getLine(),
+                $ex->getTraceAsString(),
                 $e->__toString()
             );
         }
@@ -137,7 +136,12 @@ class Front
             throw new RouteException("Missing controller or action for a matched route.");
         }
 
-        $controller = new $parameters['controller'];
+        if (is_object($parameters['controller'])) {
+            $controller = $parameters['controller'];
+        } else {
+            $controllerClass = (string) $parameters['controller'];
+            $controller = new $controllerClass();
+         }
         $actionName = $parameters['action'] . 'Action';
         return $controller->$actionName($route->getRequest());
     }

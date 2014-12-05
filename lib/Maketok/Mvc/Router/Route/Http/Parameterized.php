@@ -2,7 +2,7 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
@@ -60,25 +60,33 @@ class Parameterized extends AbstractRoute implements RouteInterface
     public function match(RequestInterface $request)
     {
         $this->_request = $request;
-        if ($variables = $this->_expressionParser->parse(
+        $variables = $this->_expressionParser->parse(
             $this->stripTrailingSlash($request->getPathInfo()),
-            $this->_restrictions
-        )) {
+            $this->_restrictions);
+        if ($variables !== FALSE) {
+            $attributes = $request->getAttributes();
             // set defaults
-            if (is_object($request->attributes) && ($request->attributes instanceof ParameterBag)) {
-                $request->attributes->add(array(
+            if (is_object($attributes) && ($attributes instanceof ParameterBag)) {
+                $attributes->add(array(
                     '_route' => $this,
                 ));
                 if (!empty($this->_defaults)) {
-                    $request->attributes->add($this->_defaults);
+                    $attributes->add($this->_defaults);
+                }
+            } elseif (is_array($attributes)) {
+                $attributes[] = ['_route' => $this];
+                if (!empty($this->_defaults)) {
+                    $attributes[] = $this->_defaults;
                 }
             }
             // set variables
             $this->_variables = $variables;
-            if (is_object($request->attributes) &&
-                ($request->attributes instanceof ParameterBag) &&
+            if (is_object($attributes) &&
+                ($attributes instanceof ParameterBag) &&
                 !empty($variables)) {
-                $request->attributes->add($variables);
+                $attributes->add($variables);
+            } elseif (is_array($attributes)) {
+                $attributes[] = $variables;
             }
             return new Success($this);
         }

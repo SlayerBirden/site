@@ -2,9 +2,10 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\Util\Test;
 
 use Maketok\Util\DirectoryHandler;
@@ -28,6 +29,7 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
     }
     /**
      * @test
+     * @covers Maketok\Util\DirectoryHandler::mkdir
      */
     public function testMakeDir()
     {
@@ -38,6 +40,7 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testMakeDir
+     * @covers Maketok\Util\DirectoryHandler::rm
      */
     public function testRmDir()
     {
@@ -48,6 +51,7 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testRmDir
+     * @covers Maketok\Util\DirectoryHandler::ls
      */
     public function testLs()
     {

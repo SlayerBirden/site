@@ -1,0 +1,44 @@
+# This is a part of Maketok Site. Licensed under GPL 3.0
+# Please do not use for your own profit.
+# @project site
+# @developer Slayer slayer.birden@gmail.com maketok.com
+
+services:
+
+  data_client_model:
+    class: Maketok\Installer\Data\Resource\Model\DataClient
+
+  data_client_result_set:
+    class: Zend\Db\ResultSet\HydratingResultSet
+    arguments: ["@object_prop_hydrator", "@data_client_model"]
+
+  data_client_table_gateway:
+    class: Zend\Db\TableGateway\TableGateway
+    arguments:
+      - installer_data_client
+      - "@adapter"
+      - []
+      - "@data_client_result_set"
+
+  data_client_table:
+    class: Maketok\Installer\Data\Resource\Model\DataClientType
+    arguments: ["@data_client_table_gateway", id]
+
+  data_client_history_model:
+    class: Maketok\Installer\Data\Resource\Model\DataClientHistory
+
+  data_client_history_result_set:
+    class: Zend\Db\ResultSet\HydratingResultSet
+    arguments: ["@object_prop_hydrator", "@data_client_history_model"]
+
+  data_client_history_table_gateway:
+    class: Zend\Db\TableGateway\TableGateway
+    arguments:
+      - installer_data_client_history
+      - "@adapter"
+      - []
+      - "@data_client_history_result_set"
+
+  data_client_history_table:
+    class: Maketok\Installer\Data\Resource\Model\DataClientHistoryType
+    arguments: ["@data_client_history_table_gateway", id]

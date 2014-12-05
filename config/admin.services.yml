@@ -1,4 +1,0 @@
-parameters:
-  module_config_file_name: AdminConfig.php
-  module_config_name: AdminConfig
-  base_url: http://mysite.com:8888

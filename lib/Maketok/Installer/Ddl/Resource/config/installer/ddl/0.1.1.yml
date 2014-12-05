@@ -1,0 +1,79 @@
+# This is a part of Maketok Site. Licensed under GPL 3.0
+# Please do not use for your own profit.
+# @project site
+# @developer Slayer slayer.birden@gmail.com maketok.com
+
+installer_ddl_client:
+  columns:
+    id:
+      type: integer
+      length: 10
+      auto_increment: 1
+    code:
+      type: varchar
+      length: 55
+    version:
+      type: varchar
+      length: 25
+  constraints:
+    primary:
+      type: primaryKey
+      definition: [id]
+    UNQ_KEY_CODE:
+      type: uniqueKey
+      definition: [code]
+
+installer_ddl_client_dependency:
+  columns:
+    id:
+      type: integer
+      length: 10
+      auto_increment: 1
+    client_id:
+      type: integer
+      length: 10
+    dependency_code:
+      type: varchar
+      length: 55
+  constraints:
+    primary:
+      type: primaryKey
+      definition: [id]
+    UNQ_KEY_CLIENT_DEPENDENCY:
+      type: uniqueKey
+      definition: [client_id, dependency_code]
+    FK_CLIENT_ID:
+      type: foreignKey
+      column: client_id
+      reference_table: installer_ddl_client
+      reference_column: id
+
+installer_ddl_client_history:
+  columns:
+    id:
+      type: integer
+      length: 10
+      auto_increment: 1
+    client_id:
+      type: integer
+      length: 10
+    prev_version:
+      type: varchar
+      length: 15
+    version:
+      type: varchar
+      length: 15
+    initializer:
+      type: varchar
+      length: 255
+    created_at:
+      type: datetime
+  constraints:
+    primary:
+      type: primaryKey
+      definition: [id]
+    FK_KEY_CLIENT_ID:
+      type: foreignKey
+      column: client_id
+      reference_table: installer_ddl_client
+      reference_column: id

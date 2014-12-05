@@ -1,0 +1,52 @@
+# This is a part of Maketok Site. Licensed under GPL 3.0
+# Please do not use for your own profit.
+# @project site
+# @developer Slayer slayer.birden@gmail.com maketok.com
+
+installer_data_client:
+  columns:
+    id:
+      type: integer
+      length: 10
+    code:
+      type: varchar
+      length: 55
+    version:
+      type: varchar
+      length: 25
+  constraints:
+    primary:
+      type: primaryKey
+      def: id
+    UNQ_KEY_CODE:
+      type: uniqueKey
+      def: code
+
+installer_data_client_history:
+  columns:
+    id:
+      type: integer
+      length: 10
+    client_id:
+      type: integer
+      length: 10
+    prev_version:
+      type: varchar
+      length: 15
+    version:
+      type: varchar
+      length: 15
+    initializer:
+      type: varchar
+      length: 255
+    config:
+      type: text
+  constraints:
+    primary:
+      type: primaryKey
+      def: id
+    FK_KEY_CLIENT_ID:
+      type: foreignKey
+      def: client_id
+      referenceTable: data_client
+      referenceColumn: id

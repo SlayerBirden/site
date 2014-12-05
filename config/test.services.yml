@@ -1,2 +1,0 @@
-parameters:
-  dll_lock_path: "%AR%%DS%var%DS%locks%DS%test_ddl_installer.lock"

@@ -2,9 +2,10 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\Template;
 
 use Maketok\App\Site;
@@ -65,7 +66,7 @@ class Twig extends AbstractEngine
      */
     public function setVariables(array $variables)
     {
-        $this->_variables = $variables;
+        $this->_variables = array_merge($this->_variables, $variables);
     }
 
     /**

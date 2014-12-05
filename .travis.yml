@@ -1,6 +1,7 @@
 language: php
 
 php:
+  - "5.6"
   - "5.5"
   - "5.4"
 
@@ -9,11 +10,13 @@ install: composer install --dev
 before_script:
   - cp config/local.php.sample config/local.php
   - mysql -e 'create database site_test;'
-  - yes | \cp -rf config/travis.services.yml config/test.services.yml
+#  - yes | \cp -f config/di/travis.services.yml config/di/test.services.yml
+  - yes | \cp -f config/di/travis.parameters.yml config/di/test.parameters.yml
 
 script:
-  - cd tests; ../vendor/bin/phpunit --testsuite "Util Test Suite"
-  - ../vendor/bin/phpunit --testsuite "Installer Test Suite"
+  - cd tests; ../vendor/bin/phpunit --testsuite "util"
+  - ../vendor/bin/phpunit --testsuite "installer"
+  - ../vendor/bin/phpunit --testsuite "app"
 
 notifications:
   email: true

@@ -2,32 +2,207 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Module;
 
-use Maketok\Ddl\Installer;
-use Maketok\Ddl\InstallerApplicableInterface;
 use Maketok\App\Site;
+use Maketok\Http\SessionInterface;
+use Maketok\Installer\Ddl\ClientInterface;
+use Maketok\Module\Resource\Model\Module;
+use Maketok\Module\Resource\Model\ModuleTable;
 use Maketok\Observer\State;
-use Maketok\Observer\StateInterface;
-use Zend\Db\Sql\Where;
-use Zend\Db\Sql\Predicate;
-use Zend\Db\TableGateway\Feature\RowGatewayFeature;
-use Zend\Db\TableGateway\TableGateway;
+use Maketok\Observer\SubjectManagerInterface;
+use Maketok\Util\AbstractTableMapper;
+use Maketok\Util\DirectoryHandlerInterface;
+use Maketok\Util\Exception\ModelException;
+use Monolog\Logger;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Yaml\Yaml;
 
-class ModuleManager extends TableGateway implements InstallerApplicableInterface
+class ModuleManager implements ClientInterface
 {
 
+    /** @var ModuleTable */
+    protected $_tableType;
+    /** @var array */
+    private $_modules = [];
+    /** @var array */
+    private $_activeModules;
+    /** @var array */
+    private $_dbModules;
+    /** @var array */
     private $_moduleDirs;
-    private $_activeModules = [];
-//    private $_disabledModules = [];
+    /**
+     * @var SubjectManagerInterface
+     */
+    private $sm;
+    /**
+     * @var DirectoryHandlerInterface
+     */
+    private $dh;
+    /**
+     * @var Logger
+     */
+    private $logger;
+    /**
+     * @var SessionInterface
+     */
+    private $session;
 
-    public function __construct($adapter)
+    /**
+     * @param AbstractTableMapper $tableType
+     * @param DirectoryHandlerInterface $dh
+     * @param SubjectManagerInterface $sm
+     * @param Logger $logger
+     * @param SessionInterface $session
+     */
+    public function __construct(AbstractTableMapper $tableType,
+                                DirectoryHandlerInterface $dh,
+                                SubjectManagerInterface $sm,
+                                Logger $logger,
+                                SessionInterface $session)
     {
-        parent::__construct('modules', $adapter, new RowGatewayFeature('module_code'));
+        $this->_tableType = $tableType;
+        $this->dh = $dh;
+        $this->sm = $sm;
+        $this->logger = $logger;
+        $this->session = $session;
+    }
+
+    /**
+     * @param string $code
+     */
+    public function disableModule($code)
+    {
+        try {
+            $module = $this->_initModule($code);
+            $module->active = 0;
+            $this->_tableType->save($module);
+        } catch (ModelException $e) {
+            $this->logger->err($e->__toString());
+            $this->session->getFlashBag()->add('error', 'Could not update disable.');
+        }
+    }
+
+    /**
+     * @param string $code
+     * @return Module
+     * @throws ModelException
+     */
+    protected function _initModule($code)
+    {
+        return $this->_tableType->find($code);
+    }
+
+    /**
+     * to uninstall module you need to move it out of "modules" directory
+     *
+     * @param string $code
+     * @return bool
+     */
+    public function uninstallModule($code)
+    {
+        // @TODO implement move
+    }
+
+    /**
+     * to install module you need to add it to "modules" directory
+     *
+     * @param string $code
+     * @return bool
+     */
+    public function installModule($code)
+    {
+        // @TODO implement add
+    }
+
+    /**
+     * @param string $code
+     * @param string $version
+     * @return bool
+     */
+    public function updateToVersion($code, $version)
+    {
+        try {
+            $module = $this->_initModule($code);
+            $module->version = $version;
+            $this->_tableType->save($module);
+        } catch (ModelException $e) {
+            $this->logger->err($e->__toString());
+            $this->session->getFlashBag()->add('error', 'Could not update to version.');
+        }
+    }
+
+    /**
+     * @param string $code
+     */
+    public function activateModule($code)
+    {
+        try {
+            $module = $this->_initModule($code);
+            $module->active = 1;
+            $this->_tableType->save($module);
+        } catch (ModelException $e) {
+            $this->logger->err($e->__toString());
+            $this->session->getFlashBag()->add('error', 'Could not update activate.');
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getActiveModules()
+    {
+        if (is_null($this->_activeModules)) {
+            $activeDbModulesResultSet = $this->_tableType->fetchFilter(array('active' => 1));
+            $activeDbModuleCodes = [];
+            foreach ($activeDbModulesResultSet as $module) {
+                $activeDbModuleCodes[] = $module->module_code;
+            }
+            $this->_activeModules = array_filter($this->_modules, function($config) use ($activeDbModuleCodes) {
+                /** @var ConfigInterface $config */
+                return in_array($config, $activeDbModuleCodes);
+            });
+        }
+        return $this->_activeModules;
+    }
+
+    /**
+     * @return array|\Zend\Db\ResultSet\ResultSet
+     */
+    public function getDbModules()
+    {
+        if (is_null($this->_dbModules)) {
+            $result = $this->_tableType->fetchAll();
+            $this->_dbModules = [];
+            foreach ($result as $module) {
+                /** @var Module $module */
+                $this->_dbModules[$module->module_code] = $module;
+            }
+        }
+        return $this->_dbModules;
+    }
+
+    /**
+     * @param ConfigInterface $config
+     * @return bool
+     */
+    public function getModuleExistsInDb(ConfigInterface $config)
+    {
+        $db = $this->getDbModules();
+        return isset($db[$config->getCode()]);
+    }
+
+    /**
+     * @param $code
+     * @return null|Module
+     */
+    public function getModule($code)
+    {
+        return isset($this->_modules[$code]) ? $this->_modules[$code] : null;
     }
 
     /**
@@ -36,8 +211,7 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
     public function getModuleDirectories()
     {
         if (is_null($this->_moduleDirs)) {
-            $handler = Site::getServiceContainer()->get('directory_handler');
-            $this->_moduleDirs = $handler->ls($this->_getDir());
+            $this->_moduleDirs = $this->dh->ls($this->getDir());
         }
         return $this->_moduleDirs;
     }
@@ -45,219 +219,158 @@ class ModuleManager extends TableGateway implements InstallerApplicableInterface
     /**
      * @return string
      */
-    protected function _getDir()
+    protected function getDir()
     {
         return AR . DS . 'modules';
     }
 
     /**
-     * @return array
+     * @internal param StateInterface $state
      */
-    public static function getDdlConfig()
+    public function processModuleConfig()
     {
-        return [
-            'modules' => [
-                'columns' => [
-                    'module_code' => [
-                        'type' => 'varchar',
-                        'length' => 32,
-                    ],
-                    'version' => [
-                        'type' => 'varchar',
-                        'length' => 15,
-                    ],
-                    'active' => [
-                        'type' => 'integer',
-                    ],
-                    'updated_at' => [
-                        'type' => 'datetime',
-                    ],
-                ],
-                'constraints' => [
-                    'primary' => [
-                        'type' => 'primaryKey',
-                        'def' => 'module_code',
-                    ]
-                ],
-            ]
-        ];
-    }
-
-    /**
-     * @return string
-     */
-    public static function getDdlConfigVersion()
-    {
-        return '0.2.0';
-    }
-
-    /**
-     * @return string
-     */
-    public static function getDdlConfigName()
-    {
-        return 'module_manager';
-    }
-
-    /**
-     * @param string $code
-     */
-    public function disableModule($code)
-    {
-        $this->update(array(
-            array('active' => 0)
-        ), array('module_code' => $code));
-    }
-
-    /**
-     * @param string $code
-     */
-    public function uninstallModule($code)
-    {
-        // TODO implement; depends on Installer
-    }
-
-    /**
-     * @param string $code
-     */
-    public function activateModule($code)
-    {
-        $resultSet = $this->select(array('module_code' => $code));
-        $row = $resultSet->current();
-        if (is_object($row)) {
-            $row->active = true;
-            $row->save();
-        }
-    }
-
-    /**
-     * @param string $code
-     * @param ConfigInterface $config
-     */
-    public function insertModule($code, ConfigInterface $config)
-    {
-        $resultSet = $this->select(array('module_code' => $code));
-        $row = $resultSet->current();
-        if (is_object($row)) {
-            return;
-        }
-        $now = new \DateTime();
-        $this->insert(array(
-            'module_code' => $code,
-            'version' => $config->getVersion(),
-            'active' => $config->isActive(),
-            'updated_at' => $now->format('Y-m-d H:i:s'),
-        ));
-    }
-
-    /**
-     * @param string $code
-     * @param ConfigInterface $config
-     */
-    public function updateModule($code, ConfigInterface $config)
-    {
-        $resultSet = $this->select(array('module_code' => $code));
-        $row = $resultSet->current();
-        if (!is_object($row)) {
-            return;
-        }
-
-        $now = new \DateTime();
-        $this->update(array(
-            'version' => $config->getVersion(),
-            'active' => $config->isActive(),
-            'updated_at' => $now->format('Y-m-d H:i:s'),
-        ), array('module_code' => $code));
-    }
-
-    /**
-     * @param StateInterface $state
-     */
-    public function processModuleConfig(StateInterface $state)
-    {
-        /** @var Installer $installer */
-        $installer = $state->installer;
-        $configFileName = Site::getServiceContainer()->getParameter('module_config_file_name');
-        $configName = Site::getServiceContainer()->getParameter('module_config_name');
+        $configFileName = Site::getSC()->getParameter('module_config_file_name');
+        $configName = Site::getSC()->getParameter('module_config_name');
         foreach ($this->getModuleDirectories() as $dir) {
-            if (file_exists($this->_getDir() . DS . $dir . DS . $configFileName)) {
-                include_once $this->_getDir() . DS . $dir . DS . $configFileName;
+            if (file_exists($this->getDir() . DS . $dir . DS . $configFileName)) {
+                include_once $this->getDir() . "/$dir/$configFileName";
                 $className = "\\modules\\$dir\\$configName";
                 /** @var ConfigInterface $config */
                 $config = new $className();
-                array_push($this->_activeModules, $config);
+                if ($config->isActive()) {
+                    $this->_modules[$config->getCode()] = $config;
+                }
             }
         }
-        // use site registry to store active modules
-        // this is ugly solution; I hate it
-        Site::registry()->activeModuleConfig = $this->_activeModules;
-        Site::getSubjectManager()->notify('module_list_exists', new State(array(
-            'modules' => $this->_activeModules
+        $this->sm->notify('module_list_exists', new State(array(
+            'modules' => $this->_modules
         )));
-        // insert new modules
-        foreach ($this->_activeModules as $config) {
-            // ddl
-            if ($config instanceof InstallerApplicableInterface) {
-                $installer->addClient($config);
+    }
+
+    /**
+     * @param ConfigInterface $config
+     */
+    public function addDbModule(ConfigInterface $config)
+    {
+        /** @var Module $module */
+        $module = $this->_tableType->getGateway()->getResultSetPrototype()->getObjectPrototype();
+        $module->module_code = $config->getCode();
+        $module->active = $config->isActive();
+        $module->version = $config->getVersion();
+        $this->_tableType->save($module);
+    }
+
+    /**
+     * @param Module $module
+     */
+    public function removeDbModule(Module $module)
+    {
+        $this->_tableType->delete($module->module_code);
+    }
+
+    /**
+     * @param StateInterface
+     */
+    public function processModules()
+    {
+        if (empty($this->_modules)) {
+            return;
+        }
+        try {
+            // work with db
+            // candidates for addition
+            foreach ($this->_modules as $mConfig) {
+                /** @var ConfigInterface $mConfig */
+                if (!$this->getModuleExistsInDb($mConfig)) {
+                    $this->addDbModule($mConfig);
+                }
             }
+            // candidates for deletion
+            foreach ($this->getDbModules() as $module) {
+                /** @var Module $module */
+                $mConfig = $this->getModule($module->module_code);
+                if (is_null($mConfig)) {
+                    $this->removeDbModule($module);
+                }
+            }
+            // process active modules
+            $this->sm->notify('modulemanager_process_before',
+                new State(array('active_modules' => $this->getActiveModules())));
+            foreach ($this->getActiveModules() as $config) {
+                // events
+                /** @var ConfigInterface $config */
+                $config->initListeners();
+            }
+            $this->sm->notify('modulemanager_init_listeners_after',
+                new State(array('active_modules' => $this->getActiveModules())));
+            foreach ($this->getActiveModules() as $config) {
+                // routes
+                $config->initRoutes();
+            }
+            $this->sm->notify('modulemanager_process_after',
+                new State(array('active_modules' => $this->getActiveModules())));
+        } catch (\Exception $e) {
+            $this->logger->emerg($e->__toString());
         }
     }
 
     /**
-     * @param StateInterface $state
+     * client register dependencies (parents)
+     * it must register dependencies to change resources that were created by other clients
+     *
+     * @return array
      */
-    public function processModules(StateInterface $state)
+    public function getDependencies()
     {
-        // insert new modules
-        $activeModules = Site::registry()->activeModuleConfig;
-        if (empty($activeModules)) {
-            return;
-        }
-        // get existing modules that needed to be updated
-        $toUpdate = array_filter($activeModules, function($var) {
-            /** @var ConfigInterface $var */
-            $conditionCombination = [];
-            $conditionCombination[0] = new Where();
-            $conditionCombination[0]->equalTo('module_code', $var->getCode());
-            $conditionCombination[1] = new Where();
-            $conditionCombination[1]->equalTo('active', 1);
-            $conditionCombination[2] = new Where();
-            $conditionCombination[2]->notEqualTo('version', $var->getVersion());
-            $set = $this->select(new Where($conditionCombination));
-            return $set->count() > 0;
-        });
-        /** @var ConfigInterface $config */
-        foreach ($toUpdate as $config) {
-            $this->updateModule($config->getCode(), $config);
-        }
-        // get to insert
-        // the thing with array_diff is - it tries to cast anything in array to a string
-        // to compare if those are identical
-        // so config interface should include toString method
-        $_diff = array_diff($activeModules, $toUpdate);
-        foreach ($_diff as $config) {
-            // insert module
-            $this->insertModule($config->getCode(), $config);
-        }
-        // get real active ones
-        $activeModules = array_filter($activeModules, function($var) {
-            /** @var ConfigInterface $var */
-            $set = $this->select(array('module_code' => $var->getCode(), 'active' => 1));
-            return $set->count() > 0;
-        });
-        // process active modules
-        Site::getSubjectManager()->notify('modulemanager_process_before', new State(array('active_modules' => $activeModules)));
-        $config->initBefore();
-        foreach ($activeModules as $config) {
-            // events
-            $config->initListeners();
-        }
-        Site::getSubjectManager()->notify('modulemanager_init_listeners_after', new State(array('active_modules' => $activeModules)));
-        foreach ($activeModules as $config) {
-            // routes
-            $config->initRoutes();
-        }
-        Site::getSubjectManager()->notify('modulemanager_process_after', new State(array('active_modules' => $activeModules)));
+        return [];
     }
 
+    /**
+     * get client version to install
+     *
+     * @return string
+     */
+    public function getDdlVersion()
+    {
+        return '0.2.2';
+    }
+
+    /**
+     * get client config to install
+     *
+     * @param string $version
+     * @throws Exception
+     * @return array|bool
+     */
+    public function getDdlConfig($version)
+    {
+        $locator = new FileLocator(__DIR__.'/Resource/config/ddl');
+        try {
+            $file = $locator->locate($version.'.yml');
+            $reader = new Yaml();
+            return $reader->parse($file);
+        } catch (\InvalidArgumentException $e) {
+            // nested try
+            try {
+                $file = $locator->locate($version.'.php');
+                return include $file;
+            } catch (\InvalidArgumentException $nextE) {
+                $this->logger->err($e->__toString());
+                $this->logger->err($nextE->__toString());
+            }
+        }
+        return false;
+
+    }
+
+    /**
+     * get client identifier
+     * must be unique
+     *
+     * @return string
+     */
+    public function getDdlCode()
+    {
+        return 'module_manager';
+    }
 }

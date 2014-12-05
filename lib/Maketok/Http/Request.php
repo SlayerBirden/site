@@ -2,7 +2,7 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
@@ -17,6 +17,11 @@ class Request extends HttpRequest implements RequestInterface
 {
 
     /**
+     * {@inheritdoc}
+     */
+    public $attributes;
+
+    /**
      * currently not in use
      * @param $content
      * @return $this
@@ -25,5 +30,13 @@ class Request extends HttpRequest implements RequestInterface
     {
         $this->content = $content;
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
     }
 }

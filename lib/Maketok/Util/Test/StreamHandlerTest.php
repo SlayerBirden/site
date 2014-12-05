@@ -2,9 +2,10 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\Util\Test;
 
 use Maketok\Util\StreamHandler;
@@ -27,7 +28,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
         self::$root = vfsStream::setup('root');
     }
 
-
     public function tearDown()
     {
         self::$_streamHandler->close();
@@ -35,6 +35,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @covers Maketok\Util\StreamHandler::write
      */
     public function testWriteSingleFile()
     {
@@ -44,6 +45,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @covers Maketok\Util\StreamHandler::write
      */
     public function testWriteDirFile()
     {
@@ -56,6 +58,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends testWriteSingleFile
      * @depends testWriteDirFile
+     * @covers Maketok\Util\StreamHandler::read
      */
     public function testRead()
     {
@@ -70,6 +73,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @covers Maketok\Util\StreamHandler::read
      */
     public function testEof()
     {
@@ -83,6 +87,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testWriteSingleFile
+     * @covers Maketok\Util\StreamHandler::delete
      */
     public function testDeleteSingleFile()
     {
@@ -93,6 +98,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testDeleteSingleFile
+     * @covers Maketok\Util\StreamHandler::delete
      */
     public function testDeleteDir()
     {
@@ -104,6 +110,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testWriteDirFile
+     * @covers Maketok\Util\StreamHandler::lock
      */
     public function testLock()
     {
@@ -119,6 +126,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testLock
+     * @covers Maketok\Util\StreamHandler::unLock
      */
     public function testUnlock()
     {
@@ -134,6 +142,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends testLock
      * @depends testUnlock
+     * @covers Maketok\Util\StreamHandler::delete
      */
     public function testDelete()
     {

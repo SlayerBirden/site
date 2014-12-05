@@ -1,0 +1,24 @@
+services:
+  module_model:
+    class: Maketok\Module\Resource\Model\Module
+
+  module_result_set:
+    class: %hydrating_resultset%
+    arguments: ["@object_prop_hydrator", "@module_model"]
+
+  module_table_gateway:
+    class: Zend\Db\TableGateway\TableGateway
+    arguments:
+      - modules
+      - "@adapter"
+      - []
+      - "@module_result_set"
+
+  module_table:
+    class: Maketok\Module\Resource\Model\ModuleTable
+    arguments: ["@module_table_gateway", module_code]
+
+  module.form.type:
+            class: Maketok\Module\Resource\form\ModuleType
+            tags:
+                - { name: form.type, alias: module }

@@ -2,22 +2,19 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\Util;
 
 use Maketok\Util\Exception\DirectoryException;
 
-class DirectoryHandler
+class DirectoryHandler implements DirectoryHandlerInterface
 {
 
-    const PERMISSIONS = 0755;
-
-
     /**
-     * @param string $path
-     * @return bool
+     * {@inheritdoc}
      */
     public function rm($path)
     {
@@ -44,12 +41,9 @@ class DirectoryHandler
     }
 
     /**
-     * @param string $path
-     * @param int $permissions
-     * @param bool $recursive
-     * @return bool
+     * {@inheritdoc}
      */
-    public function mkdir($path, $permissions = self::PERMISSIONS, $recursive = true)
+    public function mkdir($path, $permissions = 0755, $recursive = true)
     {
         $res = mkdir($path, $permissions, $recursive);
         return $res;
@@ -57,10 +51,7 @@ class DirectoryHandler
 
 
     /**
-     * @param null|string $path
-     * @param bool $namesOnly
-     * @return array
-     * @throws DirectoryException
+     * {@inheritdoc}
      */
     public function ls($path, $namesOnly = true)
     {

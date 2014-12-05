@@ -2,23 +2,26 @@
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
  * Please do not use for your own profit.
- * @project store
+ * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
+
 namespace Maketok\App;
 
 use Maketok\App\Exception\ConfigException;
+use Maketok\Installer\ManagerInterface;
 use Maketok\Observer\State;
 
-class Config
+final class Config
 {
-    static protected $_config = array();
+    private static $_config = [];
+    private static $_isApplied = false;
 
     const ALL = 0b111111;
     const PHP = 0b1;
     const EVENTS = 0b10;
     const SESSION = 0b100;
-    const DDL = 0b1000;
+    const INSTALLER = 0b1000;
 
     /**
      * @param array $config1
@@ -28,10 +31,15 @@ class Config
     public static function merge(array $config1, array $config2)
     {
         // recursive merge distinct implementation
+        // credits: http://php.net/manual/en/function.array-merge-recursive.php#92195
         $_merged = $config1;
         foreach ($config2 as $key => &$value) {
-            if (isset($_merged[$key]) && is_array($_merged[$key]) && is_array($value)) {
+            if (isset($_merged[$key]) &&
+                is_array($_merged[$key]) &&
+                is_array($value) && !is_numeric($key)) {
                 $_merged[$key] = self::merge($_merged[$key], $value);
+            } elseif (is_numeric($key)) {
+                $_merged[] = $value;
             } else {
                 $_merged[$key] = $value;
             }
@@ -77,6 +85,9 @@ class Config
      */
     public static function applyConfig($mode = self::ALL)
     {
+        if (self::$_isApplied) {
+            return;
+        }
         if  ($mode & self::PHP) {
             foreach (self::getConfig('php_config') as $key => $value) {
                 @ini_set($key, $value);
@@ -88,19 +99,20 @@ class Config
                     switch ($data['type']) {
                         case 'class':
                             list($subClass, $subMethod) = explode('::', $data['subscriber']);
-                            $subcriber = self::classFactory($subClass);
+                            $subscriber = self::classFactory($subClass);
                             $priority = (isset($data['priority']) ? $data['priority'] : null);
-                            Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
+                            Site::getServiceContainer()->get('subject_manager')->attach($subjectName, array($subscriber, $subMethod), $priority);
                             break;
                         case 'static':
+                        case 'closure':
                             $priority = (isset($data['priority']) ? $data['priority'] : null);
-                            Site::getSubjectManager()->attach($subjectName, $data['subscriber'], $priority);
+                            Site::getServiceContainer()->get('subject_manager')->attach($subjectName, $data['subscriber'], $priority);
                             break;
                         case 'service':
                             list($subService, $subMethod) = explode('::', $data['subscriber']);
-                            $subcriber = self::serviceFactory($subService);
+                            $subscriber = self::serviceFactory($subService);
                             $priority = (isset($data['priority']) ? $data['priority'] : null);
-                            Site::getSubjectManager()->attach($subjectName, array($subcriber, $subMethod), $priority);
+                            Site::getServiceContainer()->get('subject_manager')->attach($subjectName, array($subscriber, $subMethod), $priority);
                             break;
                         default:
                             throw new ConfigException("Unrecognized subscriber type");
@@ -108,33 +120,45 @@ class Config
                 }
             }
         }
-        if  ($mode & self::DDL) {
-            $installer = Site::getServiceContainer()->get('ddl_installer');
-            foreach (self::getConfig('db_ddl') as $client) {
-                $installer->addClient($client);
+        Site::getServiceContainer()->get('subject_manager')->notify('config_after_events_process', new State([]));
+        if  ($mode & self::INSTALLER) {
+            Site::getServiceContainer()->get('subject_manager')->notify('installer_ddl_before_add', new State([]));
+            foreach (self::getConfig('ddl_client') as $clientCode => $client) {
+                /** @var ManagerInterface $manager */
+                $manager = Site::getServiceContainer()->get('installer_ddl_manager');
+                switch ($client['type']) {
+                    case 'class':
+                        $clientModel = self::classFactory($client['key']);
+                        $manager->addClient($clientModel);
+                        break;
+                    case 'service':
+                        $clientModel = self::serviceFactory($client['key']);
+                        $manager->addClient($clientModel);
+                        break;
+                    default:
+                        throw new ConfigException("Unrecognized installer client type");
+                }
             }
-            Site::getSubjectManager()->notify('installer_before_process', new State(array('installer' => $installer)));
-            if ($installer->hasClients()) {
-                $installer->processClients();
-            }
-            Site::getSubjectManager()->notify('installer_after_process', new State(array('installer' => $installer)));
+            Site::getServiceContainer()->get('subject_manager')->notify('installer_ddl_after_add', new State([]));
         }
+        self::$_isApplied = true;
+        Site::getServiceContainer()->get('subject_manager')->notify('config_after_process', new State([]));
     }
 
     /**
      * Factory Method
      * @param string $className
-     * @return mixed
+     * @return object
      */
     public static function classFactory($className)
     {
-        return new $className;
+        return new $className();
     }
 
     /**
      * Factory Method
      * @param string $serviceName
-     * @return mixed
+     * @return object
      */
     public static function serviceFactory($serviceName)
     {
@@ -153,6 +177,20 @@ class Config
         if (isset(self::$_config[$key])) {
             return self::$_config[$key];
         }
-        return array();
+        if (is_string($key) && (strpos($key, '/') !== false)) {
+            // complex key
+            $keys = explode('/', $key);
+            $_conf = self::$_config;
+            foreach ($keys as $key) {
+                if (array_key_exists($key, $_conf)) {
+                    $_conf = $_conf[$key];
+                } else {
+                    $_conf = [];
+                    break;
+                }
+            }
+            return $_conf;
+        }
+        return [];
     }
 }

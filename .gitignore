@@ -1,6 +1,10 @@
 config/local.php
-config/local.services.yml
-config/dev.services.yml
+config/di/local.services.yml
+config/di/local.parameters.yml
+config/di/dev.services.yml
+config/di/dev.parameters.yml
+config/di/local.admin.services.yml
+config/di/local.admin.parameters.yml
 .idea
 mysql-connector-java-5.1.26-bin.jar
 mysql-connector-java-5.1.31-bin.jar
@@ -9,3 +13,4 @@ var/
 vendor
 composer.phar
 tests/site
+public/cov
