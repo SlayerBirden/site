@@ -34,7 +34,7 @@ class AbstractAdminController extends AbstractController
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     protected function getBaseDependencyPaths()
     {

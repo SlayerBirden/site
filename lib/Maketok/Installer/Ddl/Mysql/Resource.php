@@ -240,7 +240,7 @@ class Resource implements ResourceInterface
     }
 
     /**
-     * @param $string
+     * @param string $string
      * @return null|string
      */
     protected function getDefault($string)
@@ -501,7 +501,7 @@ class Resource implements ResourceInterface
      * @param string $constraintName
      * @param array $constraintDefinition
      * @param null|CreateTable|AlterTable $table
-     * @return mixed
+     * @return string
      * @throws Exception
      */
     private function addConstraint($tableName, $constraintName, array $constraintDefinition, $table = null)
@@ -551,7 +551,7 @@ class Resource implements ResourceInterface
 
     /**
      * @param string $tableName
-     * @return mixed
+     * @return string
      */
     private function dropTable($tableName)
     {
@@ -562,7 +562,7 @@ class Resource implements ResourceInterface
     /**
      * @param string $tableName
      * @param string $columnName
-     * @return mixed
+     * @return string
      */
     private function dropColumn($tableName, $columnName)
     {
@@ -575,7 +575,7 @@ class Resource implements ResourceInterface
      * @param string $tableName
      * @param string $constraintName
      * @param string $type
-     * @return mixed
+     * @return string
      */
     private function dropConstraint($tableName, $constraintName, $type)
     {
@@ -595,7 +595,7 @@ class Resource implements ResourceInterface
 
     /**
      * @param SqlInterface $table
-     * @return mixed
+     * @return string
      */
     private function getQuery(SqlInterface $table)
     {
@@ -607,7 +607,7 @@ class Resource implements ResourceInterface
      * @param string $oldName
      * @param string $newName
      * @param array $newDefinition
-     * @return mixed
+     * @return string
      */
     private function changeColumn($tableName, $oldName, $newName, array $newDefinition)
     {

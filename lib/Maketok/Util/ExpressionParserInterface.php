@@ -15,7 +15,7 @@ interface ExpressionParserInterface
     /**
      * @param null|array $parameters
      * @param null|array $restrictions
-     * @return mixed|string
+     * @return string
      */
     public function evaluate($parameters = null, $restrictions = null);
 

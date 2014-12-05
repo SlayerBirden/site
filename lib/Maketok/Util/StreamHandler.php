@@ -55,7 +55,7 @@ class StreamHandler implements StreamHandlerInterface
     }
 
     /**
-     * @param null $path
+     * @param null|string $path
      * @param string $mode
      * @throws StreamException
      */

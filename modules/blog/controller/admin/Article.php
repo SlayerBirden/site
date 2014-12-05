@@ -71,7 +71,7 @@ class Article extends AbstractAdminController
      */
     public function deleteAction(RequestInterface $request)
     {
-        $article = $this->_initArticle($request);
+        $article = $this->initArticle($request);
         /** @var ArticleTable $articleTable */
         $articleTable = $this->getSC()->get('article_table');
         try {
@@ -87,7 +87,7 @@ class Article extends AbstractAdminController
      * @return \modules\blog\model\Article
      * @throws RouteException
      */
-    protected function _initArticle(RequestInterface $request)
+    protected function initArticle(RequestInterface $request)
     {
         $id = $request->getAttributes()->get('id');
         if ($id === null) {

@@ -35,7 +35,7 @@ class Parameterized extends AbstractRoute implements RouteInterface
     protected $_restrictions;
 
     /**
-     * @param $path
+     * @param string $path
      * @param array $parameters
      * @param array $defaults
      * @param array $restrictions

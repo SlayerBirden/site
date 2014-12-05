@@ -34,7 +34,7 @@ class ExpressionParser implements ExpressionParserInterface
     protected $_variableCharEnd = '}';
 
     /**
-     * @param $expression
+     * @param string $expression
      * @param null|array $parameters
      * @param null|array $restrictions
      */
@@ -46,10 +46,7 @@ class ExpressionParser implements ExpressionParserInterface
     }
 
     /**
-     * @param null|array $parameters
-     * @param null|array $restrictions
-     * @return mixed|string
-     * @throws ParserException
+     * {@inheritdoc}
      */
     public function evaluate($parameters = null, $restrictions = null)
     {

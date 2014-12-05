@@ -12,5 +12,8 @@ namespace Maketok\Util;
 interface ResponseInterface extends MessageInterface
 {
 
+    /**
+     * @return mixed|\Symfony\Component\HttpFoundation\Response
+     */
     public function send();
 }

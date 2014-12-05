@@ -1,8 +1,12 @@
 ### Maketok site application
 
-master [![Build Status](https://travis-ci.org/SlayerBirden/site.svg?branch=master)](https://travis-ci.org/SlayerBirden/site)
+master
+[![Build Status](https://travis-ci.org/SlayerBirden/site.svg?branch=master)](https://travis-ci.org/SlayerBirden/site)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/4edbf1c9-a4ff-4e8f-868f-05a22af434d8/mini.png)](https://insight.sensiolabs.com/projects/4edbf1c9-a4ff-4e8f-868f-05a22af434d8)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/SlayerBirden/site/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/SlayerBirden/site/?branch=master)
 
-dev [![Build Status](https://travis-ci.org/SlayerBirden/site.svg?branch=dev)](https://travis-ci.org/SlayerBirden/site)
+dev
+[![Build Status](https://travis-ci.org/SlayerBirden/site.svg?branch=dev)](https://travis-ci.org/SlayerBirden/site)
 
 About
 ---------
