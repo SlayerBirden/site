@@ -61,6 +61,9 @@ final class Site
     /** @var int */
     private static $mode;
 
+    /** @var bool */
+    private static $terminated;
+
     private function __construct()
     {
         // we can't create an object of Site
@@ -103,12 +106,16 @@ final class Site
     }
 
     /**
+     * @internal param StateInterface
      * @throws mixed
      */
     public static function terminate()
     {
-        restore_exception_handler();
-        ErrorHandler::stop(true);
+        if (!self::$terminated) {
+            ErrorHandler::stop(true);
+            restore_exception_handler();
+            self::$terminated = true;
+        }
     }
 
     /**

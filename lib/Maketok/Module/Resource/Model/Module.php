@@ -31,6 +31,6 @@ class Module
      */
     public function getUrl()
     {
-        return Site::getBaseUrl() . '/modules/' . $this->module_code;
+        return Site::getBaseUrl() . '/modules/' . $this->area . '/' . $this->module_code;
     }
 }

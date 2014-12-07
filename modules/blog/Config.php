@@ -30,22 +30,6 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
         return '0.1.3';
     }
 
-    /**
-     * @return string
-     */
-    public function getDdlConfigVersion()
-    {
-        return $this->getVersion();
-    }
-
-    /**
-     * @return string
-     */
-    public function getDdlConfigName()
-    {
-        return 'blog';
-    }
-
     public function initRoutes()
     {
         Site::getServiceContainer()->get('router')->addRoute(new Literal('/blog', array(

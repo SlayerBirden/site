@@ -28,8 +28,6 @@ class ArticleType extends AbstractType
             ->add('created_at', 'text', array('required' => false))
             ->add('updated_at', 'text', array('read_only' => true, 'required' => false))
             ->add('author', 'text')
-            ->add('reset', 'reset', array('attr' => array('class' => 'button')))
-            ->add('save', 'submit', array('label' => 'Save', 'attr' => array('class' => 'button')))
         ;
     }
 

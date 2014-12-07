@@ -98,10 +98,9 @@ class AbstractController
 
     /**
      * @param array $templateVars
-     * @param array $params
      * @return void
      */
-    public function prepareContent(array $templateVars, array $params = null)
+    public function prepareContent(array $templateVars)
     {
         $path = $this->getTemplatePath();
         // get template Engine
@@ -116,11 +115,23 @@ class AbstractController
         $templateVars['js_url'] = Site::getUrl('/js/');
         $templateVars['images_url'] = Site::getUrl('/images/');
         $templateVars['base_url'] = Site::getBaseUrl();
+        $templateVars['current_url'] = $this->getCurrentUrl();
         $templateVars['session'] = Site::getSession();
+        $templateVars['links'] = [];
         $engine->loadDependencies($dependencyPaths);
         $engine->loadTemplate($path);
         $engine->setVariables($templateVars);
         $this->_body = $engine->render();
+    }
+
+    /**
+     * @param array $templateVars
+     * @return string
+     */
+    public function render(array $templateVars)
+    {
+        $this->prepareContent($templateVars, $params);
+        return $this->getContent();
     }
 
     /**

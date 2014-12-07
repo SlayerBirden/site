@@ -21,7 +21,6 @@ class Index extends AbstractAdminController
      */
     public function indexAction(RequestInterface $request)
     {
-        $this->setViewDependency(array('admin'));
         $this->setTemplate('blog.html.twig');
         /** @var ArticleTable $articleTable */
         $articleTable = $this->getSC()->get('article_table');

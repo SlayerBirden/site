@@ -37,6 +37,20 @@ return [
                             'action' => 'index',
                         )
                     ));
+                    $router->addRoute( new \Maketok\Mvc\Router\Route\Http\Literal(
+                        '/modules',  array(
+                            'module' => 'admin_manager',
+                            'controller' => 'Maketok\Module\Resource\controller\admin\Modules',
+                            'action' => 'index',
+                        )
+                    ));
+                    $router->addRoute( new \Maketok\Mvc\Router\Route\Http\Parameterized(
+                        '/modules/{area}/{module_code}',  array(
+                            'module' => 'admin_manager',
+                            'controller' => 'Maketok\Module\Resource\controller\admin\Modules',
+                            'action' => 'view',
+                        ), [], []
+                    ));
                 },
                 'type' => 'closure',
                 'priority' => 100,

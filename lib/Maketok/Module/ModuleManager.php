@@ -8,6 +8,7 @@
 
 namespace Maketok\Module;
 
+use Maketok\App\Site;
 use Maketok\Http\SessionInterface;
 use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\Resource\Model\Module;
@@ -19,6 +20,7 @@ use Maketok\Util\Exception\ModelException;
 use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
+use Maketok\Installer;
 
 class ModuleManager implements ClientInterface
 {
@@ -313,6 +315,19 @@ class ModuleManager implements ClientInterface
                 new State(array('active_modules' => $this->getActiveModules())));
         } catch (\Exception $e) {
             $this->logger->emerg($e->__toString());
+        }
+    }
+
+    /**
+     * add installer subscribers
+     * @internal param StateInterface
+     */
+    public function addInstallerSubscribers()
+    {
+        foreach ($this->getActiveModules() as $config) {
+            if ($config instanceof Installer\Ddl\ClientInterface) {
+                Site::getSC()->get('installer_ddl_manager')->addClient($config);
+            }
         }
     }
 

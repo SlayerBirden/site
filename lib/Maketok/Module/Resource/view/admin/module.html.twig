@@ -8,5 +8,11 @@
     <div id="info" class="info">
         <span class="important">{% trans %}%description%{% endtrans %}</span>
     </div>
-    {{ form(form) }}
+    <form method="post" action="{{ current_url }}">
+        {{ form_widget(form) }}
+        <button type="reset">{% trans %}Reset{% endtrans %}</button>
+        <button type="submit">{% trans %}Submit{% endtrans %}</button>
+        <a href="{{ base_url }}/modules">{% trans %}Back{% endtrans %}</a>
+    </form>
+
 {% endblock %}

@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>{{ title }}</title>
     {% block head %}
-        <link rel="stylesheet" href="{{ css_url }}style.css">
+        {#<link rel="stylesheet" href="{{ css_url }}style.css">#}
     {% endblock %}
 </head>
 <body>
@@ -15,14 +15,7 @@
         {% block customer_area %}{% endblock %}
     </header>
     <nav>
-        {% block menu %}
-            <ul>
-                <li><a href="{{ base_url }}/graphs">{% trans %}Graphs{% endtrans %}</a></li>
-                <li><a href="{{ base_url }}/system">{% trans %}System Management{% endtrans %}</a></li>
-                <li><a href="{{ base_url }}/health">{% trans %}Health check{% endtrans %}</a></li>
-                <li><a href="{{ base_url }}/install">{% trans %}Installer{% endtrans %}</a></li>
-            </ul>
-        {% endblock %}
+        {% include 'navigation.html.twig' with {'links': links} %}
     </nav>
     <section id="content">
         {% block content %}{% endblock %}

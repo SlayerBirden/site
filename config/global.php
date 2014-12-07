@@ -13,10 +13,7 @@ return [
                 'subscriber' => 'front_controller::dispatch', // class name (or service alias) and method name
                 'type' => 'service', // enum: service, static (in case static method), class, closure
                 'priority' => 10, // greater means listener will be processed earlier
-            ],
-        ],
-        'installer_before_process' => [
-
+            ]
         ],
         'config_after_events_process' => [
             [
@@ -28,7 +25,7 @@ return [
                 'subscriber' => 'Maketok\App\Site::scCompileAndDump',
                 'type' => 'static',
                 'priority' => 0,
-            ],
+            ]
 
         ],
         // only process modules if we have installer in place
@@ -43,14 +40,27 @@ return [
                 'type' => 'service',
                 'priority' => 9,
             ],
+            [
+                'subscriber' => 'module_manager::addInstallerSubscribers',
+                'type' => 'service',
+                'priority' => 8,
+            ]
+
         ],
         'module_list_exists' => [
             [
                 'subscriber' => 'Maketok\App\Site::serviceContainerProcessModules',
                 'type' => 'static',
                 'priority' => 0,
-            ],
+            ]
         ],
+        'response_send_before' => [
+            [
+                'subscriber' => 'Maketok\App\Site::terminate',
+                'type' => 'static',
+                'priority' => 0,
+            ]
+        ]
     ],
     'di_extensions' => ['\Maketok\Installer\Ddl\DI', '\Maketok\Module\DI'],
     'di_compiler_passes' => [
@@ -75,6 +85,6 @@ return [
         'module_manager' => [
             'type' => 'service',
             'key' => 'module_manager',
-        ],
-    ],
+        ]
+    ]
 ];
