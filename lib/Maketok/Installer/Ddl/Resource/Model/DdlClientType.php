@@ -9,11 +9,11 @@
 namespace Maketok\Installer\Ddl\Resource\Model;
 
 use Maketok\Installer\Exception;
-use Maketok\Util\AbstractTableMapper;
+use Maketok\Util\TableMapper;
 use Maketok\App\Site;
 use Maketok\Util\Exception\ModelException;
 
-class DdlClientType extends AbstractTableMapper
+class DdlClientType extends TableMapper
 {
 
     /**

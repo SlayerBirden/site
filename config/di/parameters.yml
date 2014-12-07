@@ -4,8 +4,8 @@
 # @developer Slayer slayer.birden@gmail.com maketok.com
 
 parameters:
-  module_config_file_name: Config.php
   module_config_name: Config
+  module_area: frontend
   defaultFormTheme: form_div_layout.html.twig
   translation_locale: en
   log_dir: "%AR%/var/log/"

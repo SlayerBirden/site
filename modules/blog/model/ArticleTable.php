@@ -8,11 +8,11 @@
 
 namespace modules\blog\model;
 
-use Maketok\Util\AbstractTableMapper;
+use Maketok\Util\TableMapper;
 use Maketok\Util\Exception\ModelException;
 use Zend\Db\Sql\Select;
 
-class ArticleTable extends AbstractTableMapper
+class ArticleTable extends TableMapper
 {
 
     /**
@@ -21,7 +21,7 @@ class ArticleTable extends AbstractTableMapper
      */
     public function getTenMostRecent()
     {
-        return $this->_tableGateway->select(function (Select $select) {
+        return $this->getGateway()->select(function (Select $select) {
             $select
                 ->order('created_at DESC')
                 ->limit(10);

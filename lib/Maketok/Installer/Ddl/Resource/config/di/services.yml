@@ -22,7 +22,7 @@ services:
 
   ddl_client_table:
     class: Maketok\Installer\Ddl\Resource\Model\DdlClientType
-    arguments: ["@ddl_client_table_gateway", id]
+    arguments: ["@ddl_client_table_gateway", id, id]
 
   ddl_client_dependency_model:
     class: Maketok\Installer\Ddl\Resource\Model\DdlClientDependency
@@ -42,7 +42,7 @@ services:
 
   ddl_client_dependency_table:
     class: Maketok\Installer\Ddl\Resource\Model\DdlClientDependencyType
-    arguments: ["@ddl_client_dependency_table_gateway", id]
+    arguments: ["@ddl_client_dependency_table_gateway", id, id]
 
   ddl_client_history_model:
     class: Maketok\Installer\Ddl\Resource\Model\DdlClientHistory
@@ -61,5 +61,5 @@ services:
       - "@ddl_client_history_result_set"
 
   ddl_client_history_table:
-    class: Maketok\Installer\Ddl\Resource\Model\DdlClientHistoryType
-    arguments: ["@ddl_client_history_table_gateway", id]
+    class: Maketok\Util\TableMapper
+    arguments: ["@ddl_client_history_table_gateway", id, id]

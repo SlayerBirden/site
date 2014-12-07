@@ -40,5 +40,5 @@ services:
       - "@data_client_history_result_set"
 
   data_client_history_table:
-    class: Maketok\Installer\Data\Resource\Model\DataClientHistoryType
+    class: Maketok\Util\TableMapper
     arguments: ["@data_client_history_table_gateway", id]

@@ -24,7 +24,7 @@ class Resource implements ResourceInterface
 {
 
     /** @var array */
-    protected  $_availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey'];
+    protected  $_availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey', 'index'];
 
     /** @var \Zend\Db\Adapter\Adapter  */
     protected $_adapter;
@@ -529,12 +529,27 @@ class Resource implements ResourceInterface
             $constraint = new $type($constraintName, $column, $refTable, $refColumn, $onDelete, $onUpdate);
         } elseif($constraintDefinition['type'] == 'index') {
             $constraint = new Index($constraintDefinition['definition'], $constraintName);
+        } elseif($constraintDefinition['type'] == 'primaryKey') {
+            $constraint = new $type($constraintDefinition['definition'], $this->getPKName($constraintDefinition['definition']));
         } else {
             $constraint = new $type($constraintDefinition['definition'], $constraintName);
         }
 
         $table->addConstraint($constraint);
         return $this->getQuery($table);
+    }
+
+    /**
+     * @param string[] $def
+     * @return string
+     */
+    public function getPKName($def)
+    {
+        $name = [];
+        foreach ($def as $colName) {
+            $name[] = $colName;
+        }
+        return implode('_', $name);
     }
 
     /**
@@ -586,7 +601,7 @@ class Resource implements ResourceInterface
         if ($type == 'foreign_key') {
             $query = str_replace('CONSTRAINT', 'FOREIGN KEY', $query);
         } elseif ($type == 'primary') {
-            $query = "DROP FOREIGN KEY";
+            $query = str_replace('CONSTRAINT `primary`', 'PRIMARY KEY', $query);
         } elseif ($type == 'unique' || $type == 'index') {
             $query = str_replace('CONSTRAINT', 'INDEX', $query);
         }

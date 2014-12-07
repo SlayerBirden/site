@@ -19,7 +19,14 @@ services:
 
   module_manager:
     class: Maketok\Module\ModuleManager
-    arguments: ["@module_table", "@directory_handler", "@subject_manager", "@logger", "@session_manager"]
+    arguments:
+      - "@module_table"
+      - "@directory_handler"
+      - "@subject_manager"
+      - "@logger"
+      - "@session_manager"
+      - "%module_config_name%"
+      - "%module_area%"
 
   session_save_handler:
     class: Maketok\Http\Session\DbHandler

@@ -15,8 +15,8 @@ services:
       - "@module_result_set"
 
   module_table:
-    class: Maketok\Module\Resource\Model\ModuleTable
-    arguments: ["@module_table_gateway", module_code]
+    class: Maketok\Util\TableMapper
+    arguments: ["@module_table_gateway", [module_code, area]]
 
   module.form.type:
             class: Maketok\Module\Resource\form\ModuleType

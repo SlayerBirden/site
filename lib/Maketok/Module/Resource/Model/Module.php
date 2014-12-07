@@ -21,6 +21,10 @@ class Module
     public $active;
     /** @var  string data */
     public $updated_at;
+    /** @var  string data */
+    public $created_at;
+    /** @var  string $area */
+    public $area;
 
     /**
      * @return string
