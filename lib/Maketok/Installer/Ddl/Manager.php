@@ -15,7 +15,7 @@ use Maketok\Installer\Exception;
 use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
-use Maketok\Util\AbstractTableMapper;
+use Maketok\Util\TableMapper;
 use Maketok\Util\StreamHandlerInterface;
 use Monolog\Logger;
 
@@ -37,14 +37,14 @@ class Manager extends AbstractManager implements ManagerInterface
      * @param Directives $directives
      * @param StreamHandlerInterface|null $handler
      * @param Logger $logger
-     * @param AbstractTableMapper $tableMapper
+     * @param TableMapper $tableMapper
      */
     public function __construct(ConfigReaderInterface $reader,
                                 ResourceInterface $resource,
                                 Directives $directives,
                                 StreamHandlerInterface $handler = null,
                                 Logger $logger,
-                                AbstractTableMapper $tableMapper)
+                                TableMapper $tableMapper)
     {
         $this->_reader = $reader;
         $this->_streamHandler = $handler;

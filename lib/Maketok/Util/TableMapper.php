@@ -13,99 +13,133 @@ use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\Zend\Db\Sql\InsertIgnore;
 use Zend\Db\ResultSet\HydratingResultSet;
-use Zend\Db\TableGateway\TableGateway;
+use Zend\Db\TableGateway\AbstractTableGateway;
 
-abstract class AbstractTableMapper
+class TableMapper
 {
 
     /**
-     * @var \Zend\Db\TableGateway\TableGateway
+     * @var \Zend\Db\TableGateway\AbstractTableGateway
      */
-    protected $_tableGateway;
+    protected $tableGateway;
 
-    /** @var  string */
-    protected $_idFieldName;
+    /** @var  string|string[] */
+    protected $idField;
+
+    /** @var null  */
+    protected $autoIncrement;
 
     /**
-     * @param TableGateway $tableGateway
-     * @param string $idFieldName
+     * @param AbstractTableGateway $tableGateway
+     * @param string|string[] $idField
+     * @param null $autoIncrement
      */
-    public function __construct(TableGateway $tableGateway, $idFieldName)
+    public function __construct(AbstractTableGateway $tableGateway, $idField, $autoIncrement = null)
     {
-        $this->_tableGateway = $tableGateway;
-        $this->_idFieldName = $idFieldName;
+        $this->tableGateway = $tableGateway;
+        $this->idField = $idField;
+        $this->autoIncrement = $autoIncrement;
     }
 
     /**
-     * @return string
+     * @return string|string[]
      * @throws ModelException
      */
-    public function getIdFieldName()
+    public function getIdField()
     {
-        if (is_null($this->_idFieldName)) {
+        if (is_null($this->idField)) {
             throw new ModelException("Id Field Name not set.");
         }
-        return $this->_idFieldName;
+        return $this->idField;
     }
 
     /**
      * alias
-     * @return string
+     * @return string|string[]
+     * @throws ModelException
      */
-    public function ifn()
+    public function idf()
     {
-        return $this->getIdFieldName();
+        return $this->getIdField();
     }
 
     /**
-     * @return \Zend\Db\ResultSet\ResultSet
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function fetchAll()
     {
-        $resultSet = $this->_tableGateway->select();
+        $resultSet = $this->tableGateway->select();
         return $resultSet;
     }
 
     /**
-     * @param array|\Closure|\Zend\Db\Sql\Where $filter
-     * @return \Zend\Db\ResultSet\ResultSet
+     * @param array|\Closure|\Zend\Db\Sql\Predicate\PredicateInterface $filter
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function fetchFilter($filter)
     {
-        $resultSet = $this->_tableGateway->select($filter);
+        $resultSet = $this->tableGateway->select($filter);
         return $resultSet;
     }
 
     /**
-     * @return TableGateway
+     * @return AbstractTableGateway
      */
     public function getGateway()
     {
-        return $this->_tableGateway;
+        return $this->tableGateway;
     }
 
     /**
-     * @param int|string $id
+     * @param int|string|string[] $id
      * @return array|\ArrayObject|null
      * @throws ModelException
      */
     public function find($id)
     {
-        $resultSet = $this->getGateway()->select(array($this->ifn() => $id));
+        $resultSet = $this->getGateway()->select($this->getIdFilter($id));
         $row = $resultSet->current();
         if (!$row) {
-            throw new ModelException(sprintf("Could not find row with identifier %s", $id));
+            throw new ModelException(sprintf("Could not find row with identifier %s", json_encode($id)));
         }
         return $row;
     }
 
     /**
      * delete entry by identifier
-     * @param string|int $id
+     * @param string|int|string[] $id
      */
     public function delete($id)
     {
-        $this->getGateway()->delete(array($this->ifn() => $id));
+        $this->getGateway()->delete($this->getIdFilter($id));
+    }
+
+    /**
+     * get Filter
+     * @param int|string|string[] $data
+     * @return string[]
+     */
+    protected function getIdFilter($data)
+    {
+        $id = $this->idf();
+        if (!is_array($id)) {
+            $id = array($id);
+            if (!is_array($data)) {
+                $data = array($this->idf() => $data);
+            }
+        }
+        if (!is_array($data) && is_array($this->idf()) && (count($this->idf()) > 1)) {
+            throw new \LogicException("Not enough data to get Filter.");
+        }
+        $filter = [];
+        foreach ($id as $fieldName) {
+            if (!isset($data[$fieldName])) {
+                throw new \LogicException(sprintf("Missing data for id field %s", $fieldName));
+            } else {
+                $filter[$fieldName] = $data[$fieldName];
+            }
+        }
+        return $filter;
     }
 
     /**
@@ -124,8 +158,8 @@ abstract class AbstractTableMapper
                 $data['created_at'] = date("Y-m-d H:i:s");
             }
             // now determine update or insert
-            if (isset($data[$this->ifn()])) {
-                $rowsAffected = $this->getGateway()->update($data, array($this->ifn() => $data[$this->ifn()]));
+            if (is_null($this->autoIncrement) || (isset($data[$this->autoIncrement]))) {
+                $rowsAffected = $this->getGateway()->update($data, $this->getIdFilter($data));
                 if ($rowsAffected === 0) {
                     // either no corresponding rows exist, so we need to insert
                     // or data set is not updated compared to db entry
@@ -138,16 +172,28 @@ abstract class AbstractTableMapper
                         throw new ModelInfoException(sprintf("Model %s wasn't changed during save process.",
                             get_class($model)));
                     } else {
-                        $model->id = $this->getGateway()->getLastInsertValue();
+                        $this->assignIncrement($model);
                     }
                 }
             } else {
                 $this->getGateway()->insert($data);
-                $model->id = $this->getGateway()->getLastInsertValue();
+                $this->assignIncrement($model);
             }
         } catch (ModelInfoException $e) {
             // Informative exceptions; for flow regulation
             Site::getSC()->get('logger')->debug($e->getMessage());
+        }
+    }
+
+    /**
+     * assign increment id if suitable
+     * @param object $model
+     */
+    protected function assignIncrement($model)
+    {
+        $lastInsertedId = $this->getGateway()->getLastInsertValue();
+        if ($lastInsertedId && ($increment = $this->autoIncrement)) {
+            $model->$increment = $lastInsertedId;
         }
     }
 

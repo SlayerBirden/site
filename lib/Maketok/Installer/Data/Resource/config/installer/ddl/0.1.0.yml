@@ -17,10 +17,10 @@ installer_data_client:
   constraints:
     primary:
       type: primaryKey
-      def: id
+      def: [id]
     UNQ_KEY_CODE:
       type: uniqueKey
-      def: code
+      def: [code]
 
 installer_data_client_history:
   columns:
@@ -44,7 +44,7 @@ installer_data_client_history:
   constraints:
     primary:
       type: primaryKey
-      def: id
+      def: [id]
     FK_KEY_CLIENT_ID:
       type: foreignKey
       def: client_id

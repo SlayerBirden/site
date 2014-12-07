@@ -9,9 +9,9 @@
 namespace Maketok\Installer\Data\Resource\Model;
 
 use Maketok\Installer\Exception;
-use Maketok\Util\AbstractTableMapper;
+use Maketok\Util\TableMapper;
 
-class DataClientType extends AbstractTableMapper
+class DataClientType extends TableMapper
 {
 
     /**

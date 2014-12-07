@@ -8,14 +8,12 @@
 
 namespace Maketok\Module;
 
-use Maketok\App\Site;
 use Maketok\Http\SessionInterface;
 use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\Resource\Model\Module;
-use Maketok\Module\Resource\Model\ModuleTable;
 use Maketok\Observer\State;
 use Maketok\Observer\SubjectManagerInterface;
-use Maketok\Util\AbstractTableMapper;
+use Maketok\Util\TableMapper;
 use Maketok\Util\DirectoryHandlerInterface;
 use Maketok\Util\Exception\ModelException;
 use Monolog\Logger;
@@ -25,7 +23,7 @@ use Symfony\Component\Yaml\Yaml;
 class ModuleManager implements ClientInterface
 {
 
-    /** @var ModuleTable */
+    /** @var TableMapper */
     protected $_tableType;
     /** @var array */
     private $_modules = [];
@@ -51,25 +49,39 @@ class ModuleManager implements ClientInterface
      * @var SessionInterface
      */
     private $session;
+    /**
+     * @var string
+     */
+    private $configName;
+    /**
+     * @var string
+     */
+    private $area;
 
     /**
-     * @param AbstractTableMapper $tableType
+     * @param TableMapper $tableType
      * @param DirectoryHandlerInterface $dh
      * @param SubjectManagerInterface $sm
      * @param Logger $logger
      * @param SessionInterface $session
+     * @param string $configName
+     * @param string $area
      */
-    public function __construct(AbstractTableMapper $tableType,
+    public function __construct(TableMapper $tableType,
                                 DirectoryHandlerInterface $dh,
                                 SubjectManagerInterface $sm,
                                 Logger $logger,
-                                SessionInterface $session)
+                                SessionInterface $session,
+                                $configName,
+                                $area)
     {
         $this->_tableType = $tableType;
         $this->dh = $dh;
         $this->sm = $sm;
         $this->logger = $logger;
         $this->session = $session;
+        $this->configName = $configName;
+        $this->area = $area;
     }
 
     /**
@@ -78,7 +90,7 @@ class ModuleManager implements ClientInterface
     public function disableModule($code)
     {
         try {
-            $module = $this->initModule($code);
+            $module = $this->initModule(array($code, $this->area));
             $module->active = 0;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
@@ -88,13 +100,13 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @param string $code
+     * @param int|string|string[] $id
      * @return Module
      * @throws ModelException
      */
-    protected function initModule($code)
+    protected function initModule($id)
     {
-        return $this->_tableType->find($code);
+        return $this->_tableType->find($id);
     }
 
     /**
@@ -124,7 +136,7 @@ class ModuleManager implements ClientInterface
     public function updateToVersion($code, $version)
     {
         try {
-            $module = $this->initModule($code);
+            $module = $this->initModule(array($code, $this->area));
             $module->version = $version;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
@@ -139,7 +151,7 @@ class ModuleManager implements ClientInterface
     public function activateModule($code)
     {
         try {
-            $module = $this->initModule($code);
+            $module = $this->initModule(array($code, $this->area));
             $module->active = 1;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
@@ -154,9 +166,10 @@ class ModuleManager implements ClientInterface
     public function getActiveModules()
     {
         if (is_null($this->_activeModules)) {
-            $activeDbModulesResultSet = $this->_tableType->fetchFilter(array('active' => 1));
+            $activeDbModulesResultSet = $this->_tableType->fetchFilter(array('active' => 1, 'area' => $this->getArea()));
             $activeDbModuleCodes = [];
             foreach ($activeDbModulesResultSet as $module) {
+                /** @var Module $module */
                 $activeDbModuleCodes[] = $module->module_code;
             }
             $this->_activeModules = array_filter($this->_modules, function($config) use ($activeDbModuleCodes) {
@@ -168,12 +181,20 @@ class ModuleManager implements ClientInterface
     }
 
     /**
+     * @return string
+     */
+    public function getArea()
+    {
+        return $this->area;
+    }
+
+    /**
      * @return array|\Zend\Db\ResultSet\ResultSet
      */
     public function getDbModules()
     {
         if (is_null($this->_dbModules)) {
-            $result = $this->_tableType->fetchAll();
+            $result = $this->_tableType->fetchFilter(array('area' => $this->area));
             $this->_dbModules = [];
             foreach ($result as $module) {
                 /** @var Module $module */
@@ -226,17 +247,14 @@ class ModuleManager implements ClientInterface
      */
     public function processModuleConfig()
     {
-        $configFileName = Site::getSC()->getParameter('module_config_file_name');
-        $configName = Site::getSC()->getParameter('module_config_name');
+        $configName = $this->configName;
         foreach ($this->getModuleDirectories() as $dir) {
-            if (file_exists($this->getDir() . DS . $dir . DS . $configFileName)) {
-                include_once $this->getDir() . "/$dir/$configFileName";
+            if (file_exists($this->getDir() . "/$dir/$configName.php")) {
+                include_once $this->getDir() . "/$dir/$configName.php";
                 $className = "\\modules\\$dir\\$configName";
                 /** @var ConfigInterface $config */
                 $config = new $className();
-                if ($config->isActive()) {
-                    $this->_modules[$config->getCode()] = $config;
-                }
+                $this->_modules[$config->getCode()] = $config;
             }
         }
         $this->sm->notify('module_list_exists', new State(array(
@@ -254,6 +272,7 @@ class ModuleManager implements ClientInterface
         $module->module_code = $config->getCode();
         $module->active = $config->isActive();
         $module->version = $config->getVersion();
+        $module->area = $this->getArea();
         $this->_tableType->save($module);
     }
 
@@ -266,15 +285,15 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @param StateInterface
+     * update Modules in current storage
+     * @internal param StateInterface
      */
-    public function processModules()
+    public function updateModules()
     {
         if (empty($this->_modules)) {
             return;
         }
         try {
-            // work with db
             // candidates for addition
             foreach ($this->_modules as $mConfig) {
                 /** @var ConfigInterface $mConfig */
@@ -290,6 +309,22 @@ class ModuleManager implements ClientInterface
                     $this->removeDbModule($module);
                 }
             }
+            $this->sm->notify('modulemanager_updates_after',
+                new State(array('active_modules' => $this->getActiveModules())));
+        } catch (\Exception $e) {
+            $this->logger->emerg($e->__toString());
+        }
+    }
+
+    /**
+     * @internal param StateInterface
+     */
+    public function processModules()
+    {
+        if (empty($this->_modules)) {
+            return;
+        }
+        try {
             // process active modules
             $this->sm->notify('modulemanager_process_before',
                 new State(array('active_modules' => $this->getActiveModules())));
@@ -329,7 +364,7 @@ class ModuleManager implements ClientInterface
      */
     public function getDdlVersion()
     {
-        return '0.2.2';
+        return '0.2.3';
     }
 
     /**

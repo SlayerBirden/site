@@ -16,7 +16,7 @@ services:
 
   article_table:
     class: "%article_table.class%"
-    arguments: ["@article_table_gateway", id]
+    arguments: ["@article_table_gateway", id, id]
 
   article.form.type:
           class: modules\blog\form\ArticleType

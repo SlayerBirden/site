@@ -4,5 +4,5 @@
 # @developer Slayer slayer.birden@gmail.com maketok.com
 
 parameters:
-  module_config_file_name: AdminConfig.php
   module_config_name: AdminConfig
+  module_area: admin

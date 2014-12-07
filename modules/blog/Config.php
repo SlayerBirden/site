@@ -104,7 +104,7 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
     {
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__.'/config')
+            new FileLocator(__DIR__.'/config/di')
         );
         $loader->load('parameters.yml');
         $loader->load('services.yml');

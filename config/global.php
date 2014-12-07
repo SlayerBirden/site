@@ -34,9 +34,14 @@ return [
         // only process modules if we have installer in place
         'installer_ddl_after_add' => [
             [
+                'subscriber' => 'module_manager::updateModules',
+                'type' => 'service',
+                'priority' => 10,
+            ],
+            [
                 'subscriber' => 'module_manager::processModules',
                 'type' => 'service',
-                'priority' => 0,
+                'priority' => 9,
             ],
         ],
         'module_list_exists' => [
