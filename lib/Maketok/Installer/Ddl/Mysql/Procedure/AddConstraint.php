@@ -10,6 +10,7 @@ namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
 use Maketok\Installer\Exception;
 use Zend\Db\Sql\Ddl\AlterTable;
+use Zend\Db\Sql\Ddl\Constraint\ConstraintInterface;
 use Zend\Db\Sql\Ddl\Index\Index;
 
 class AddConstraint extends AbstractProcedure implements ProcedureInterface
@@ -40,6 +41,18 @@ class AddConstraint extends AbstractProcedure implements ProcedureInterface
                     $tableName)
             );
         }
+
+        $table->addConstraint($this->getConstraint($constraintName, $constraintDefinition));
+        return $this->query($table);
+    }
+
+    /**
+     * @param string $constraintName
+     * @param array $constraintDefinition
+     * @return ConstraintInterface
+     */
+    public function getConstraint($constraintName, $constraintDefinition)
+    {
         /** @var \Zend\Db\Sql\Ddl\Constraint\ConstraintInterface $type */
         $type = '\\Zend\\Db\\Sql\\Ddl\\Constraint\\' . ucfirst($constraintDefinition['type']);
         if ($constraintDefinition['type'] == 'foreignKey') {
@@ -56,9 +69,7 @@ class AddConstraint extends AbstractProcedure implements ProcedureInterface
         } else {
             $constraint = new $type($constraintDefinition['definition'], $constraintName);
         }
-
-        $table->addConstraint($constraint);
-        return $this->query($table);
+        return $constraint;
     }
 
     /**

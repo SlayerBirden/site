@@ -9,6 +9,8 @@
 namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
 use Zend\Db\Sql\Ddl\AlterTable;
+use Zend\Db\Sql\Ddl\Column\AbstractLengthColumn;
+use Zend\Db\Sql\Ddl\Column\AbstractPrecisionColumn;
 use Zend\Db\Sql\Ddl\Column\ColumnInterface;
 
 class AddColumn extends AbstractProcedure implements ProcedureInterface
@@ -42,69 +44,33 @@ class AddColumn extends AbstractProcedure implements ProcedureInterface
         }
         /** @var ColumnInterface $type */
         $type = '\\Zend\\Db\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
-        switch ($definition['type']) {
-            case 'char':
-            case 'varchar':
-                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
-                $default = isset($definition['default']) ? $definition['default'] : null;
-                $length = isset($definition['length']) ? $definition['length'] : null;
-                $column = new $type($name, $length, $nullable, $default);
-                break;
-            case 'bigInteger':
-            case 'integer':
-                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
-                $default = isset($definition['default']) ? $definition['default'] : null;
-                $options = array();
-                if (isset($definition['length'])) {
-                    $options['length'] = $definition['length'];
-                }
-                if (isset($definition['unsigned'])) {
-                    $options['unsigned'] = $definition['unsigned'];
-                }
-                if (isset($definition['zero_fill'])) {
-                    $options['zero_fill'] = $definition['zero_fill'];
-                }
-                if (isset($definition['auto_increment'])) {
-                    $options['auto_increment'] = $definition['auto_increment'];
-                }
-                $column = new $type($name, $nullable, $default, $options);
-                break;
-            case 'decimal':
-            case 'float':
-                $digits = isset($definition['digits']) ? $definition['digits'] : null;
-                $decimal = isset($definition['decimal']) ? $definition['decimal'] : null;
-                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
-                $default = isset($definition['default']) ? $definition['default'] : null;
-                $options = array();
-                if (isset($definition['unsigned'])) {
-                    $options['unsigned'] = $definition['unsigned'];
-                }
-                if (isset($definition['zero_fill'])) {
-                    $options['zero_fill'] = $definition['zero_fill'];
-                }
-                $column = new $type($name, $digits, $decimal, $nullable, $default, $options);
-                break;
-            case 'blob':
-            case 'text':
-                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
-                $length = isset($definition['length']) ? $definition['length'] : null;
-                $column = new $type($name, $length, $nullable);
-                break;
-            case 'datetime':
-            case 'timestamp':
-                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
-                $default = isset($definition['default']) ? $definition['default'] : null;
-                $options = array();
-                if (isset($definition['on_update'])) {
-                    $options['on_update'] = $definition['on_update'];
-                }
-                $column = new $type($name, $nullable, $default, $options);
-                break;
-            default:
-                $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
-                $default = isset($definition['default']) ? $definition['default'] : null;
-                $column = new $type($name, $nullable, $default);
-                break;
+        $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
+        $default = isset($definition['default']) ? $definition['default'] : null;
+        $length = isset($definition['length']) ? $definition['length'] : null;
+        $digits = isset($definition['digits']) ? $definition['digits'] : null;
+        $decimal = isset($definition['decimal']) ? $definition['decimal'] : null;
+        $options = array();
+        if (isset($definition['length'])) {
+            $options['length'] = $definition['length'];
+        }
+        if (isset($definition['unsigned'])) {
+            $options['unsigned'] = $definition['unsigned'];
+        }
+        if (isset($definition['zero_fill'])) {
+            $options['zero_fill'] = $definition['zero_fill'];
+        }
+        if (isset($definition['auto_increment'])) {
+            $options['auto_increment'] = $definition['auto_increment'];
+        }
+        if (isset($definition['on_update'])) {
+            $options['on_update'] = $definition['on_update'];
+        }
+        if (is_subclass_of($type, 'Zend\Db\Sql\Ddl\Column\AbstractLengthColumn')) {
+            $column = new $type($name, $length, $nullable, $default, $options);
+        } elseif (is_subclass_of($type, 'Zend\Db\Sql\Ddl\Column\AbstractPrecisionColumn')) {
+            $column = new $type($name, $digits, $decimal, $nullable, $default, $options);
+        } else {
+            $column = new $type($name, $nullable, $default, $options);
         }
         return $column;
     }

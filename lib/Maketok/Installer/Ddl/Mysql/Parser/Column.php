@@ -23,50 +23,9 @@ class Column extends AbstractParser implements ParserInterface
     {
         $columnInfo = array();
         if (preg_match('/`(\S+)` (\w+)\((\d+)\) (.*)/', $this->row, $matches)) {
-            $columnInfo['name'] = $matches[1];
-            $columnInfo['type'] = $this->convertType($matches[2]);
-            $columnInfo['length'] = $matches[3];
-            // hardcode for boolean type
-            // which is fictional type, alias for tinyint(1)
-            if ($columnInfo['type'] == 'tinyint' && $columnInfo['length'] == 1) {
-                $columnInfo['type'] = 'boolean';
-            }
-            $other = $matches[4];
-            if (strpos($other, 'NOT NULL') !== false) {
-                $columnInfo['nullable'] = false;
-            } else {
-                $columnInfo['nullable'] = true;
-            }
-            if (strpos($other, 'AUTO_INCREMENT') !== false) {
-                $columnInfo['auto_increment'] = true;
-            }
-            if (strpos($other, 'unsigned') !== false) {
-                $columnInfo['unsigned'] = true;
-            }
-            if (strpos($other, 'DEFAULT') !== false) {
-                $columnInfo['default'] = $this->getDefault($other);
-            }
+            $columnInfo = $this->parseLengthColumns($matches);
         } elseif (preg_match('/`(\S+)` (\w+) (.*)/', $this->row, $matches)) {
-            $columnInfo['name'] = $matches[1];
-            $columnInfo['type'] = $this->convertType($matches[2]);
-            $other = $matches[3];
-            if (strpos($other, 'NOT NULL') !== false) {
-                $columnInfo['nullable'] = false;
-            } else {
-                $columnInfo['nullable'] = true;
-            }
-            if (strpos($other, 'AUTO_INCREMENT') !== false) {
-                $columnInfo['auto_increment'] = true;
-            }
-            if (strpos($other, 'unsigned') !== false) {
-                $columnInfo['unsigned'] = true;
-            }
-            if (strpos($other, 'DEFAULT') !== false) {
-                $columnInfo['default'] = $this->getDefault($other);
-            }
-            if (strpos($other, 'ON UPDATE') !== false) {
-                $columnInfo['on_update'] = 1;
-            }
+            $columnInfo = $this->parseNoLengthColumns($matches);
         }
         if (is_string($this->name) && ($columnInfo['name'] == $this->name) || is_null($this->name)) {
             return $columnInfo;
@@ -74,6 +33,68 @@ class Column extends AbstractParser implements ParserInterface
         return [];
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function parseLengthColumns($data)
+    {
+        $columnInfo = array();
+        $columnInfo['name'] = $data[1];
+        $columnInfo['type'] = $this->convertType($data[2]);
+        $columnInfo['length'] = $data[3];
+        // hardcode for boolean type
+        // which is fictional type, alias for tinyint(1)
+        if ($columnInfo['type'] == 'tinyint' && $columnInfo['length'] == 1) {
+            $columnInfo['type'] = 'boolean';
+        }
+        $other = $data[4];
+        if (strpos($other, 'NOT NULL') !== false) {
+            $columnInfo['nullable'] = false;
+        } else {
+            $columnInfo['nullable'] = true;
+        }
+        if (strpos($other, 'AUTO_INCREMENT') !== false) {
+            $columnInfo['auto_increment'] = true;
+        }
+        if (strpos($other, 'unsigned') !== false) {
+            $columnInfo['unsigned'] = true;
+        }
+        if (strpos($other, 'DEFAULT') !== false) {
+            $columnInfo['default'] = $this->getDefault($other);
+        }
+        return $columnInfo;
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function parseNoLengthColumns($data)
+    {
+        $columnInfo = array();
+        $columnInfo['name'] = $data[1];
+        $columnInfo['type'] = $this->convertType($data[2]);
+        $other = $data[3];
+        if (strpos($other, 'NOT NULL') !== false) {
+            $columnInfo['nullable'] = false;
+        } else {
+            $columnInfo['nullable'] = true;
+        }
+        if (strpos($other, 'AUTO_INCREMENT') !== false) {
+            $columnInfo['auto_increment'] = true;
+        }
+        if (strpos($other, 'unsigned') !== false) {
+            $columnInfo['unsigned'] = true;
+        }
+        if (strpos($other, 'DEFAULT') !== false) {
+            $columnInfo['default'] = $this->getDefault($other);
+        }
+        if (strpos($other, 'ON UPDATE') !== false) {
+            $columnInfo['on_update'] = 1;
+        }
+        return $columnInfo;
+    }
 
     /**
      * @param string $string

@@ -8,10 +8,8 @@
 
 namespace Maketok\Installer\Ddl\Mysql;
 
-use Maketok\Installer\Ddl\Mysql\Parser\Column;
-use Maketok\Installer\Ddl\Mysql\Parser\Constraint;
-use Maketok\Installer\Ddl\Mysql\Parser\Index as IndexParser;
 use Maketok\Installer\Ddl\Mysql\Parser\ParserInterface;
+use Maketok\Installer\Ddl\Mysql\Parser\Table;
 use Maketok\Installer\Ddl\Mysql\Procedure\ProcedureInterface;
 use Maketok\Installer\Ddl\ResourceInterface;
 use Maketok\Installer\DirectivesInterface;
@@ -42,58 +40,8 @@ class Resource implements ResourceInterface
     public function getTable($table)
     {
         $data = $this->getTableArray($table);
-        if (empty($data)) {
-            return [];
-        }
-        $fLine = array_shift($data);
-        $lLine = array_pop($data);
-        $tableInfo = array();
-        $fLine = str_replace('CREATE TABLE `', '', $fLine);
-        preg_match('/(\S+)`/', $fLine, $matches);
-        $tableInfo['name'] = $matches[1];
-        preg_match('/ENGINE=([a-zA-Z0-9]+)/', $lLine, $matches);
-        $tableInfo['engine'] = $matches[1];
-        preg_match('/DEFAULT CHARSET=([a-z0-9]+)/', $lLine, $matches);
-        $tableInfo['default_charset'] = $matches[1];
-        foreach ($data as $row) {
-            if ((strpos($row, ' PRIMARY ') !== false) ||
-                (strpos($row, ' UNIQUE ') !== false) ||
-                (strpos($row, ' CONSTRAINT ') !== false)) {
-                $conParser = new Constraint($row);
-                $constraint = $conParser->parse();
-                if (isset($constraint['name'])) {
-                    $tableInfo['constraints'][$constraint['name']] = $constraint;
-                } elseif($constraint['type'] == 'primary') {
-                    $tableInfo['constraints']['primary'] = $constraint;
-                } else {
-                    $tableInfo['constraints'][$this->getRandomName()] = $constraint;
-                }
-            } elseif ((strpos($row, '  KEY') !== false) ||
-                (strpos($row, '  INDEX') !== false)) {
-                $idxParser = new IndexParser($row);
-                $index = $idxParser->parse();
-                if (isset($index['name'])) {
-                    $tableInfo['indices'][$index['name']] = $index;
-                } else {
-                    $tableInfo['indices'][$index['type']] = $index;
-                }
-            } else {
-                $colParser = new Column($row);
-                $column = $colParser->parse();
-                $name = $column['name'];
-                unset($column['name']);
-                $tableInfo['columns'][$name] = $column;
-            }
-        }
-        return $tableInfo;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRandomName()
-    {
-        return substr(uniqid('', true), -5);
+        $parser = new Table($data);
+        return $parser->parse();
     }
 
     /**
