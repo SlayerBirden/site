@@ -35,7 +35,7 @@ class AddColumn extends AbstractProcedure implements ProcedureInterface
     /**
      * @param string $name
      * @param array $definition
-     * @return bool|ColumnInterface
+     * @return ColumnInterface
      */
     protected function getInitColumn($name, array $definition) {
         if (!isset($definition['type']) || is_int($name)) {
