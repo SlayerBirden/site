@@ -69,7 +69,7 @@ class AddColumn extends AbstractProcedure implements ProcedureInterface
      * @param string $key
      * @param array $data
      * @param null|mixed $default
-     * @return null
+     * @return mixed|null
      */
     public function getIfExists($key, $data, $default = null)
     {
