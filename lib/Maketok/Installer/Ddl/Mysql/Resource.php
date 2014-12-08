@@ -11,6 +11,7 @@ namespace Maketok\Installer\Ddl\Mysql;
 use Maketok\Installer\Ddl\Mysql\Parser\Column;
 use Maketok\Installer\Ddl\Mysql\Parser\Constraint;
 use Maketok\Installer\Ddl\Mysql\Parser\Index as IndexParser;
+use Maketok\Installer\Ddl\Mysql\Parser\ParserInterface;
 use Maketok\Installer\Ddl\Mysql\Procedure\ProcedureInterface;
 use Maketok\Installer\Ddl\ResourceInterface;
 use Maketok\Installer\DirectivesInterface;
@@ -131,15 +132,7 @@ class Resource implements ResourceInterface
      */
     public function getColumn($table, $column)
     {
-        $data = $this->getStrippedTableArray($table);
-        foreach ($data as $row) {
-            $parser = new Column($row, $column);
-            $res = $parser->parse();
-            if (!empty($res)) {
-                return $res;
-            }
-        }
-        return [];
+        return $this->getTablePart('column', $table, $column);
     }
 
     /**
@@ -147,9 +140,22 @@ class Resource implements ResourceInterface
      */
     public function getConstraint($table, $constraint)
     {
+        return $this->getTablePart('constraint', $table, $constraint);
+    }
+
+    /**
+     * @param string $type
+     * @param string $table
+     * @param string $part
+     * @return array
+     */
+    public function getTablePart($type, $table, $part)
+    {
         $data = $this->getStrippedTableArray($table);
         foreach ($data as $row) {
-            $parser = new Constraint($row, $constraint);
+            /** @var ParserInterface $parser */
+            $parserClass = $this->getParserClass($type);
+            $parser = new $parserClass($row, $part);
             $res = $parser->parse();
             if (!empty($res)) {
                 return $res;
@@ -159,19 +165,20 @@ class Resource implements ResourceInterface
     }
 
     /**
+     * @param string $type
+     * @return string
+     */
+    public function getParserClass($type)
+    {
+        return 'Maketok\Installer\Ddl\Mysql\Parser\\' . ucfirst($type);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getIndex($table, $index)
     {
-        $data = $this->getStrippedTableArray($table);
-        foreach ($data as $row) {
-            $parser = new IndexParser($row, $index);
-            $res = $parser->parse();
-            if (!empty($res)) {
-                return $res;
-            }
-        }
-        return [];
+        return $this->getTablePart('index', $table, $index);
     }
 
     /**
