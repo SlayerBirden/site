@@ -86,7 +86,6 @@ class Modules extends AbstractAdminController
      */
     protected function initModule(RequestInterface $request)
     {
-        trigger_error('sdfsdf', E_USER_ERROR);
         $area = $request->getAttributes()->get('area');
         $code = $request->getAttributes()->get('module_code');
         if ($area === null) {
