@@ -26,7 +26,6 @@ class Modules extends AbstractAdminController
      */
     public function indexAction(RequestInterface $request)
     {
-        trigger_error('sdfsdf', E_USER_ERROR);
         $this->setTemplate('modules.html.twig');
         /** @var TableMapper $moduleTable */
         $moduleTable = $this->getSC()->get('module_table');

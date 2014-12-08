@@ -10,8 +10,9 @@ namespace modules\error\controller;
 
 use Maketok\Mvc\Controller\AbstractController;
 use Maketok\Util\RequestInterface;
+use Maketok\Mvc\Error\DumperInterface;
 
-class Index extends AbstractController
+class Index extends AbstractController implements DumperInterface
 {
 
     /**

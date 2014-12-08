@@ -6,11 +6,12 @@
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Mvc\Router\Route\Http\Error;
+namespace Maketok\Mvc\Error;
 
+use Maketok\Util\RequestInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-class Dumper
+class Dumper implements DumperInterface
 {
 
     /**
@@ -18,7 +19,7 @@ class Dumper
      * @internal param RequestInterface $request
      * @return Response
      */
-    public function errorAction()
+    public function errorAction(RequestInterface $request)
     {
         $text = 'Oops! We are really sorry, but there was an error!';
         return new Response($text, 500);
@@ -28,7 +29,7 @@ class Dumper
      * @internal param RequestInterface $request
      * @return Response
      */
-    public function norouteAction()
+    public function norouteAction(RequestInterface $request)
     {
         return new Response("Oops! We couldn't find the page you searched for. Looks like it doesn't exist anymore.", 404);
     }

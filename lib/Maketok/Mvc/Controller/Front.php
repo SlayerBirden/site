@@ -9,6 +9,7 @@
 namespace Maketok\Mvc\Controller;
 
 use Maketok\App\Site;
+use Maketok\Mvc\Error\Dumper;
 use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\Http\Error;
 use Maketok\Mvc\Router\Route\RouteInterface;
@@ -17,7 +18,7 @@ use Maketok\Mvc\Router\RouterInterface;
 use Maketok\Observer\State;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\ResponseInterface;
-use Zend\Stdlib\ErrorHandler;
+use Maketok\Mvc\Error\DumperInterface;
 
 class Front
 {
@@ -25,6 +26,9 @@ class Front
 
     /** @var  RouteInterface */
     private $_router;
+
+    /** @var \SplStack */
+    private $dumpers;
 
     /**
      * @param StateInterface $state
@@ -66,6 +70,8 @@ class Front
     public function __construct(RouterInterface $router)
     {
         $this->_router = $router;
+        $this->dumpers = new \SplStack();
+        $this->dumpers->push(new Dumper());
     }
 
     /**
@@ -76,7 +82,7 @@ class Front
     public function exceptionHandler(\Exception $e)
     {
         try {
-            $dumper = Site::getSC()->get('front_controller_error_dumper');
+            $dumper = $this->dumpers->pop();
             if ($e instanceof RouteException) {
                 // not found
                 $errorRoute = new Error(array(
@@ -146,5 +152,13 @@ class Front
             throw new RouteException("Non existing action name.");
         }
         return $controller->$actionName($route->getRequest());
+    }
+
+    /**
+     * @param DumperInterface $dumper
+     */
+    public function addDumper(DumperInterface $dumper)
+    {
+        $this->dumpers->push($dumper);
     }
 }
