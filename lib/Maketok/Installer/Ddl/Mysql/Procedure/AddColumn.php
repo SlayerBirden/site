@@ -44,27 +44,17 @@ class AddColumn extends AbstractProcedure implements ProcedureInterface
         }
         /** @var ColumnInterface $type */
         $type = '\\Zend\\Db\\Sql\\Ddl\\Column\\' . ucfirst($definition['type']);
-        $nullable = isset($definition['nullable']) ? $definition['nullable'] : false;
-        $default = isset($definition['default']) ? $definition['default'] : null;
-        $length = isset($definition['length']) ? $definition['length'] : null;
-        $digits = isset($definition['digits']) ? $definition['digits'] : null;
-        $decimal = isset($definition['decimal']) ? $definition['decimal'] : null;
+        $nullable = $this->getIfExists('nullable', $definition, false);
+        $default = $this->getIfExists('default', $definition);
+        $length = $this->getIfExists('length', $definition);
+        $digits = $this->getIfExists('digits', $definition);
+        $decimal = $this->getIfExists('decimal', $definition);
         $options = array();
-        if (isset($definition['length'])) {
-            $options['length'] = $definition['length'];
-        }
-        if (isset($definition['unsigned'])) {
-            $options['unsigned'] = $definition['unsigned'];
-        }
-        if (isset($definition['zero_fill'])) {
-            $options['zero_fill'] = $definition['zero_fill'];
-        }
-        if (isset($definition['auto_increment'])) {
-            $options['auto_increment'] = $definition['auto_increment'];
-        }
-        if (isset($definition['on_update'])) {
-            $options['on_update'] = $definition['on_update'];
-        }
+        $options['length'] = $this->getIfExists('length', $definition);
+        $options['unsigned'] = $this->getIfExists('unsigned', $definition);
+        $options['zero_fill'] = $this->getIfExists('zero_fill', $definition);
+        $options['auto_increment'] = $this->getIfExists('auto_increment', $definition);
+        $options['on_update'] = $this->getIfExists('on_update', $definition);
         if (is_subclass_of($type, 'Zend\Db\Sql\Ddl\Column\AbstractLengthColumn')) {
             $column = new $type($name, $length, $nullable, $default, $options);
         } elseif (is_subclass_of($type, 'Zend\Db\Sql\Ddl\Column\AbstractPrecisionColumn')) {
@@ -73,5 +63,19 @@ class AddColumn extends AbstractProcedure implements ProcedureInterface
             $column = new $type($name, $nullable, $default, $options);
         }
         return $column;
+    }
+
+    /**
+     * @param string $key
+     * @param array $data
+     * @param null|mixed $default
+     * @return null
+     */
+    public function getIfExists($key, $data, $default = null)
+    {
+        if (array_key_exists($key, $data)) {
+            return $data[$key];
+        }
+        return $default;
     }
 }
