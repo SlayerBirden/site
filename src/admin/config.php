@@ -53,8 +53,8 @@ return [
                     ));
                 },
                 'type' => 'closure',
-                'priority' => 100,
-            ],
-        ],
-    ],
+                'priority' => 100
+            ]
+        ]
+    ]
 ];

@@ -1,5 +1,10 @@
-<ul>
 {% for link in links %}
-<li><a href="{{ link.url }}" title="">{{ link.title }}</a></li>
+    <li>
+        <a href="{{ link.url }}" title="">{{ link.title }}</a>
+        {% if link.children %}
+            <ul>
+                {% include "navigation.html.twig" with {'links': link.children} %}
+            </ul>
+        {% endif %}
+    </li>
 {% endfor %}
-</ul>

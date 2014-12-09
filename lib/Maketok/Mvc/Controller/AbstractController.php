@@ -130,7 +130,7 @@ class AbstractController
      */
     public function render(array $templateVars)
     {
-        $this->prepareContent($templateVars, $params);
+        $this->prepareContent($templateVars);
         return $this->getContent();
     }
 

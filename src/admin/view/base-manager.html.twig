@@ -15,7 +15,7 @@
         {% block customer_area %}{% endblock %}
     </header>
     <nav>
-        {% include 'navigation.html.twig' with {'links': links} %}
+        <ul>{% include 'navigation.html.twig' with {'links': links} %}</ul>
     </nav>
     <section id="content">
         {% block content %}{% endblock %}
