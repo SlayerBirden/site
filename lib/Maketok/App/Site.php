@@ -1,7 +1,7 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
@@ -57,12 +57,25 @@ final class Site
     const MODE_DISPATCH = 0b100000000000000;
 
     /** @var  ContainerBuilder */
-    private static $_sc;
+    private static $sc;
     /** @var int */
     private static $mode;
 
     /** @var bool */
     private static $terminated;
+
+    /** @var array  */
+    private static $fileList = ['services', 'parameters'];
+
+    /**
+     * @var array
+     */
+    private static $envList = [
+        'base',
+        'dev',
+        'test',
+        'admin'
+    ];
 
     private function __construct()
     {
@@ -217,18 +230,18 @@ final class Site
      */
     public static function getServiceContainer()
     {
-        if (is_null(self::$_sc)) {
+        if (is_null(self::$sc)) {
             // get cached file
             $file = self::getContainerFileName();
             if (file_exists($file) && !Config::getConfig('di_parameters/debug')) {
                 require_once $file;
                 $class = self::getSCClassName();
-                self::$_sc = new $class();
+                self::$sc = new $class();
             } else {
                 self::createSC();
             }
         }
-        return self::$_sc;
+        return self::$sc;
     }
 
     /**
@@ -245,44 +258,42 @@ final class Site
      */
     private static function createSC()
     {
-        $container = new ContainerBuilder();
+        self::$sc = new ContainerBuilder();
         foreach (Config::getConfig('di_compiler_passes') as $compilerPassName) {
-            $container->addCompilerPass(new $compilerPassName());
+            self::$sc->addCompilerPass(new $compilerPassName());
         }
         foreach (Config::getConfig('di_parameters') as $k => $v) {
-            $container->setParameter($k, $v);
+            self::$sc->setParameter($k, $v);
         }
-        $loader = new YamlFileLoader($container, new FileLocator(AR . '/config/di'));
-        $fileList = ['services', 'parameters'];
-        $envList = [
-            'base' => '',
-            'dev' => 'dev',
-            'test' => 'test',
-            'admin' => 'admin'
-        ];
-        foreach ($fileList as $fileName) {
-            foreach ($envList as $envCode => $envFileCode) {
+        self::loadSCConfig();
+    }
+
+    /**
+     * load SC configs
+     */
+    private static function loadSCConfig()
+    {
+        $loader = new YamlFileLoader(self::$sc, new FileLocator(AR . '/config/di'));
+        // load base configs
+        foreach (self::$fileList as $fileName) {
+            foreach (self::$envList as $envCode) {
                 $constantCode = strtoupper("mode_load_{$envCode}_configs");
-                $const = @constant("self::$constantCode");
-                if (is_null($const)) {
+                if (defined("self::$constantCode")) {
+                    $const = constant("self::$constantCode");
+                } else {
                     continue;
                 }
-                $finalFileName = (empty($envFileCode) ? "$fileName.yml" : "$envFileCode.$fileName.yml");
                 if (self::$mode & $const) {
-                    // load config file if it exists
-                    if (file_exists(AR . "/config/di/$finalFileName")) {
-                        $loader->load($finalFileName);
-                    }
-                    // load "local" version of each file on top of the "normal" one
-                    // if it exists
-                    $finalLocalFileName = 'local.' . $finalFileName;
-                    if (file_exists(AR . "/config/di/$finalLocalFileName")) {
-                        $loader->load($finalLocalFileName);
+                    try {
+                        $loader->load(self::getSCFilePrefix($envCode) . $fileName . '.yml');
+                        $loader->load(self::getSCFilePrefix(['local', $envCode]) . $fileName . '.yml');
+                    } catch (\InvalidArgumentException $e) {
+                        // non existing files
+                        // mute exception
                     }
                 }
             }
         }
-        self::$_sc = $container;
         // now handle some registered lib extensions
         foreach (Config::getConfig('di_extensions') as $className) {
             /** @var DependencyConfigExtensionInterface $ext */
@@ -292,12 +303,29 @@ final class Site
     }
 
     /**
+     * @param string|string[] $code
+     * @return string
+     */
+    public static function getSCFilePrefix($code)
+    {
+        $fn = '';
+        if (is_array($code)) {
+            foreach ($code as $singleCode) {
+                $fn .= self::getSCFilePrefix($singleCode);
+            }
+        } elseif ($code != 'base') {
+            $fn .= $code . '.';
+        }
+        return $fn;
+    }
+
+    /**
      * @param ExtensionInterface $extension
      */
     protected static function addDiExtension(ExtensionInterface $extension)
     {
-        self::$_sc->registerExtension($extension);
-        self::$_sc->loadFromExtension($extension->getAlias());
+        self::$sc->registerExtension($extension);
+        self::$sc->loadFromExtension($extension->getAlias());
     }
 
     /**

@@ -1,13 +1,14 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
+use Maketok\Util\ArrayValue;
 use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Ddl\Column\AbstractLengthColumn;
 use Zend\Db\Sql\Ddl\Column\AbstractPrecisionColumn;
@@ -15,6 +16,7 @@ use Zend\Db\Sql\Ddl\Column\ColumnInterface;
 
 class AddColumn extends AbstractProcedure implements ProcedureInterface
 {
+    use ArrayValue;
     /**
      * {@inheritdoc}
      */
@@ -63,19 +65,5 @@ class AddColumn extends AbstractProcedure implements ProcedureInterface
             $column = new $type($name, $nullable, $default, $options);
         }
         return $column;
-    }
-
-    /**
-     * @param string $key
-     * @param array $data
-     * @param null|mixed $default
-     * @return mixed|null
-     */
-    public function getIfExists($key, $data, $default = null)
-    {
-        if (array_key_exists($key, $data)) {
-            return $data[$key];
-        }
-        return $default;
     }
 }

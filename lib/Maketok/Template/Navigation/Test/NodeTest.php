@@ -1,7 +1,7 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
@@ -25,9 +25,8 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $node->addChild($nodeB);
         $node->addChild($nodeC);
 
-        $expected = [$node, $nodeB, $nodeC];
-        $this->assertEquals($expected, $nodeC->traverse());
-        $this->assertEquals($expected, $node->traverse());
+        $this->assertEquals([$nodeC], $nodeC->traverse());
+        $this->assertEquals([$node, $nodeB, $nodeC], $node->traverse());
     }
 
     /**
@@ -171,5 +170,21 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $nodeB->addChild($nodeC);
 
         $this->assertEquals($node, $nodeC->getRoot());
+
+        $node = new Node('A');
+        $this->assertEquals($node, $node->getRoot());
+    }
+
+    /**
+     * @test
+     * @covers Maketok\Template\Navigation\Node::setParent
+     */
+    public function setParent()
+    {
+        $node = new Node('A');
+        $nodeB = new Node('B');
+        $node->addChild($nodeB);
+
+        $this->assertEquals($node, $nodeB->getParent());
     }
 }

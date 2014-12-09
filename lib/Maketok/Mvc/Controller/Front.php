@@ -1,7 +1,7 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
@@ -77,7 +77,7 @@ class Front
     /**
      * Custom exception handler
      * @param \Exception $e
-     * @return \Maketok\Mvc\Router\Route\Success
+     * @return void
      */
     public function exceptionHandler(\Exception $e)
     {
@@ -103,7 +103,6 @@ class Front
                     ));
                     $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')), true);
                 }
-
             } else {
                 Site::getServiceContainer()
                     ->get('logger')

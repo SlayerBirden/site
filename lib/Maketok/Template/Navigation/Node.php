@@ -1,7 +1,7 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
@@ -33,102 +33,140 @@ class Node implements NodeInterface
     }
 
     /**
-     * pre-order traverse from the root
-     * @return NodeInterface[]
+     * {@inheritdoc}
      */
-    public function traverse()
+    public function traverse(NodeInterface $node = null)
     {
-        // TODO: Implement traverse() method.
+        if (is_null($node)) {
+            $node = $this;
+        }
+        if ($this->isLeaf($node)) {
+            return [$node];
+        }
+        $return = [$node];
+        foreach ($node->getChildren() as $child)
+        {
+            $return = array_merge($return, $this->traverse($child));
+        }
+        return $return;
     }
 
     /**
-     * detach current node from parent
-     * @return self
+     * {@inheritdoc}
      */
     public function detach()
     {
-        // TODO: Implement detach() method.
+        $this->parent = null;
+        return $this;
     }
 
     /**
-     * check if current node is a branch
-     * @return bool
+     * {@inheritdoc}
      */
     public function isBranch()
     {
-        // TODO: Implement isBranch() method.
+        $children = $this->getChildren();
+        return count($children) > 0;
     }
 
     /**
-     * check if current node is root
-     * @return bool
+     * {@inheritdoc}
      */
     public function isRoot()
     {
-        // TODO: Implement isRoot() method.
+        return $this->getParent() === null;
     }
 
     /**
-     * check if current node is leaf
-     * @return bool
+     * {@inheritdoc}
      */
     public function isLeaf()
     {
-        // TODO: Implement isLeaf() method.
+        $children = $this->getChildren();
+        return count($children) == 0;
     }
 
     /**
-     * add Child Node
-     * @param NodeInterface $link
-     * @return self
+     * {@inheritdoc}
      */
-    public function addChild(NodeInterface $link)
+    public function addChild(NodeInterface $node)
     {
-        // TODO: Implement addChild() method.
+        array_push($this->children, $node);
+        $node->setParent($this);
+        return $this;
     }
 
     /**
-     * get Children
-     * @return NodeInterface[]
+     * {@inheritdoc}
      */
     public function getChildren()
     {
-        // TODO: Implement getChildren() method.
+        return $this->children;
     }
 
     /**
-     * get Siblings of current node
-     * not including current node
-     * @return NodeInterface[]
+     * {@inheritdoc}
      */
     public function getSiblings()
     {
-        // TODO: Implement getSiblings() method.
+        if ($this->isRoot()) {
+            return [];
+        }
+        $includingSelf = $this->getParent()->getChildren();
+        $current = $this;
+        return array_values(array_filter($includingSelf, function($node) use ($current) {
+            return $node != $current;
+        }));
     }
 
     /**
-     * get Parent
-     * @return NodeInterface
+     * {@inheritdoc}
      */
     public function getParent()
     {
-        // TODO: Implement getParent() method.
+        return $this->parent;
     }
 
     /**
-     * get Ancestors In descending order
-     * @return NodeInterface[]
+     * {@inheritdoc}
      */
     public function getAncestors()
     {
-        // TODO: Implement getAncestors() method.
+        $ancestors = [];
+        $node = $this;
+        while (!$node->isRoot()) {
+            $node = $node->getParent();
+            $ancestors[] = $node;
+        }
+        return $ancestors;
     }
 
     /**
-     * @return NodeInterface
+     * {@inheritdoc}
      */
     public function getRoot()
     {
-        // TODO: Implement getRoot() method.
+        $node = $this;
+        while (!$node->isRoot()) {
+            $node = $node->getParent();
+        }
+        return $node;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @return self
+     */
+    public function setParent(NodeInterface $node)
+    {
+        $this->parent = $node;
     }
 }

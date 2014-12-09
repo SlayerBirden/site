@@ -1,7 +1,7 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
@@ -26,36 +26,14 @@ abstract class AbstractManager implements ManagerInterface
     protected $_messages;
     /** @var \Maketok\Util\Zend\Db\Sql\Sql  */
     protected $_sql;
-    /** @var \Maketok\Util\AbstractTableMapper  */
-    protected $_tableMapper;
     /** @var string */
     protected $_type;
     /** @var DirectivesInterface */
-    protected $_directives;
+    protected $directives;
     /**
      * @var ResourceInterface
      */
     protected $_resource;
-
-    /**
-     * Constructor
-     * @param ConfigReaderInterface $reader
-     * @param ResourceInterface $resource
-     * @param DirectivesInterface $directives
-     * @param StreamHandlerInterface|null $handler
-     */
-    public function __construct(ConfigReaderInterface $reader,
-                                ResourceInterface $resource,
-                                DirectivesInterface $directives,
-                                StreamHandlerInterface $handler = null)
-    {
-        $this->_reader = $reader;
-        $this->_streamHandler = $handler;
-        $this->_directives = $directives;
-        if ($handler) {
-            $this->_resource = $resource;
-        }
-    }
 
     /**
      * {@inheritdoc}
@@ -140,6 +118,6 @@ abstract class AbstractManager implements ManagerInterface
      */
     public function getDirectives()
     {
-        return $this->_directives;
+        return $this->directives;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
@@ -13,9 +13,10 @@ interface NodeInterface
 
     /**
      * pre-order traverse
+     * @param NodeInterface $node
      * @return NodeInterface[]
      */
-    public function traverse();
+    public function traverse(NodeInterface $node = null);
 
     /**
      * detach current node from parent
@@ -43,10 +44,10 @@ interface NodeInterface
 
     /**
      * add Child Node
-     * @param NodeInterface $link
+     * @param NodeInterface $node
      * @return self
      */
-    public function addChild(NodeInterface $link);
+    public function addChild(NodeInterface $node);
 
     /**
      * get Children
@@ -63,9 +64,15 @@ interface NodeInterface
 
     /**
      * get Parent
-     * @return NodeInterface
+     * @return NodeInterface|null
      */
     public function getParent();
+
+    /**
+     * @param NodeInterface $node
+     * @return self
+     */
+    public function setParent(NodeInterface $node);
 
     /**
      * get Ancestors In descending order

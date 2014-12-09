@@ -1,7 +1,7 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
  * @developer Slayer slayer.birden@gmail.com maketok.com
  */
@@ -9,18 +9,23 @@
 namespace Maketok\Installer\Ddl;
 
 use Maketok\Installer\AbstractManager;
+use Maketok\Installer\Ddl\Manager\Columns;
+use Maketok\Installer\Ddl\Manager\Constraints;
+use Maketok\Installer\Ddl\Manager\Indices;
 use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 use Maketok\Installer\Ddl\Resource\Model\DdlClientType;
 use Maketok\Installer\Exception;
 use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
+use Maketok\Util\ArrayValue;
 use Maketok\Util\TableMapper;
 use Maketok\Util\StreamHandlerInterface;
 use Monolog\Logger;
 
 class Manager extends AbstractManager implements ManagerInterface
 {
+    use ArrayValue;
     /**
      * @var Logger
      */
@@ -48,7 +53,7 @@ class Manager extends AbstractManager implements ManagerInterface
     {
         $this->_reader = $reader;
         $this->_streamHandler = $handler;
-        $this->_directives = $directives;
+        $this->directives = $directives;
         if ($handler) {
             $this->_resource = $resource;
         }
@@ -114,10 +119,10 @@ class Manager extends AbstractManager implements ManagerInterface
             // create directives
             $this->createDirectives();
             $this->_logger->info("Directives", array(
-                'directives' => $this->_directives->asArray(),
+                'directives' => $this->directives->asArray(),
             ));
             // create db procedures
-            $this->_resource->createProcedures($this->_directives);
+            $this->_resource->createProcedures($this->directives);
 
             $this->_logger->info("Procedures", array(
                 'procedures' => $this->_resource->getProcedures(),
@@ -151,40 +156,27 @@ class Manager extends AbstractManager implements ManagerInterface
         ));
         foreach ($config as $table => $definition) {
             if (!isset($definition['columns']) || !is_array($definition['columns'])) {
-                throw new \LogicException(sprintf('Can not have a table `%s` without columns definition.'
-                    , $table));
+                throw new \LogicException(sprintf('Can not have a table `%s` without columns definition.', $table));
             }
             $dbConfig = $this->_resource->getTable($table);
             // compare def with db
             if (empty($dbConfig)) {
                 // add table
-                $this->_directives->addProp('addTables', [$table, $definition]);
+                $this->directives->addProp('addTables', [$table, $definition]);
             } else {
-                $_newColumns = $definition['columns'];
-                $_oldColumns = $dbConfig['columns'];
-                $this->intelligentCompareColumns($_oldColumns, $_newColumns, $table);
-                $_oldConstraints = isset($dbConfig['constraints']) ? $dbConfig['constraints'] : array();
-                $_newConstraints = isset($definition['constraints']) ? $definition['constraints'] : array();
-                $this->intelligentCompareConstraints($_oldConstraints, $_newConstraints, $table);
-                $_oldIndices = isset($dbConfig['indices']) ? $dbConfig['indices'] : array();
-                $_newIndices = isset($definition['indices']) ? $definition['indices'] : array();
-                $this->intelligentCompareIndices($_oldIndices, $_newIndices, $table);
+                $colCompare = new Columns();
+                $colCompare->intlCompare($dbConfig['columns'], $definition['columns'], $table, $this->directives);
+                $_oldConstraints = $this->getIfExists('constraints', $dbConfig, array());
+                $_newConstraints = $this->getIfExists('constraints', $definition, array());
+                $conCompare = new Constraints();
+                $conCompare->intlCompare($_oldConstraints, $_newConstraints, $table, $this->directives);
+                $_oldIndices = $this->getIfExists('indices', $dbConfig, array());
+                $_newIndices = $this->getIfExists('indices', $definition, array());
+                $idxCompare = new Indices();
+                $idxCompare->intlCompare($_oldIndices, $_newIndices, $table, $this->directives);
             }
         }
-        // make them unique
-        foreach ($this->_directives as &$type) {
-            $type = $this->arrayUnique($type);
-        }
-    }
-
-    /**
-     * @param array $a
-     * @return array
-     */
-    private function arrayUnique(array $a)
-    {
-        // kind of a hack to make it multi-dimensional
-        return array_unique($a, SORT_REGULAR);
+        $this->directives->unique();
     }
 
     /**
@@ -194,7 +186,7 @@ class Manager extends AbstractManager implements ManagerInterface
      * see more at http://dev.mysql.com/doc/refman/5.6/en/innodb-foreign-key-constraints.html
      *
      * @param array $config
-     * @return array
+     * @return void
      * @throws Exception
      */
     public function processValidateMergedConfig(array &$config)
@@ -248,126 +240,6 @@ class Manager extends AbstractManager implements ManagerInterface
                         ];
                     }
                 }
-            }
-        }
-    }
-
-    /**
-     * @param array $a old
-     * @param array $b new
-     * @param string $tableName
-     * @return array
-     */
-    protected function intelligentCompareColumns(array $a, array $b, $tableName)
-    {
-        $_changeMap = [];
-        foreach ($b as $columnName => $columnDefinition) {
-            if (!array_key_exists($columnName, $a) && !isset($columnDefinition['old_name'])) {
-                $this->_directives->addProp('addColumns', [$tableName, $columnName, $columnDefinition]);
-            } elseif (isset($columnDefinition['old_name']) && is_string($columnDefinition['old_name'])) {
-                $this->_directives->addProp('changeColumns', [
-                    $tableName,
-                    $columnDefinition['old_name'],
-                    $columnName,
-                    $columnDefinition,
-                ]);
-                $_changeMap[$columnDefinition['old_name']] = $tableName;
-            } elseif ($columnDefinition == $a[$columnName]) { // not strict compare because scalar types may differ
-                continue;
-            } else {
-                // now we need to make sure new definitions contain same keys as old ones
-                $newDefinition = $columnDefinition;
-                $oldDefinition = $a[$columnName];
-                foreach ($oldDefinition as $key => $value) {
-                    if (!isset($newDefinition[$key])) {
-                        unset($oldDefinition[$key]);
-                    }
-                }
-                // not strict compare because scalar types may differ
-                if (!($oldDefinition == $newDefinition)) {
-                    $this->_directives->addProp('changeColumns',
-                        [$tableName, $columnName, $columnName, $newDefinition]);
-                }
-            }
-        }
-        foreach ($a as $columnName => $columnDefinition) {
-            if (!array_key_exists($columnName, $b) && !isset($_changeMap[$columnName])) {
-                $this->_directives->addProp('dropColumns', [$tableName, $columnName]);
-            }
-        }
-    }
-
-    /**
-     * @param array $a old
-     * @param array $b new
-     * @param string $tableName
-     * @return array
-     */
-    protected function intelligentCompareConstraints(array $a, array $b, $tableName)
-    {
-        foreach ($b as $constraintName => $constraintDefinition) {
-            if (!array_key_exists($constraintName, $a)) {
-                $this->_directives->addProp('addConstraints',
-                    [$tableName, $constraintName, $constraintDefinition]);
-            } elseif ((isset($constraintDefinition['definition']) &&
-                $constraintDefinition['definition'] === $a[$constraintName]['definition']) || (
-                isset($constraintDefinition['column']) &&
-                $constraintDefinition['column'] == $a[$constraintName]['column'] &&
-                isset($constraintDefinition['reference_table']) &&
-                $constraintDefinition['reference_table'] == $a[$constraintName]['reference_table'] &&
-                isset($constraintDefinition['reference_column']) &&
-                $constraintDefinition['reference_column'] == $a[$constraintName]['reference_column'] &&
-                (!isset($constraintDefinition['on_delete']) ||
-                    $constraintDefinition['on_delete'] == $a[$constraintName]['on_delete']) &&
-                (!isset($constraintDefinition['on_update']) ||
-                    $constraintDefinition['on_update'] == $a[$constraintName]['on_update'])
-                )) {
-                // now we need to check if in fact the reference column got changed
-                foreach ($this->_directives->changeColumns as $columnDirective) {
-                    if (isset($constraintDefinition['column']) &&
-                        isset($columnDirective[1]) && // key 1 is old name
-                        $columnDirective[1] == $constraintDefinition['reference_column']) {
-                        $this->_directives->addProp('dropConstraints', [$tableName, $constraintName, $a[$constraintName]['type']]);
-                        $this->_directives->addProp('addConstraints',
-                            [$tableName, $constraintName, $constraintDefinition]);
-                    }
-                }
-                continue;
-            } else {
-                $this->_directives->addProp('dropConstraints', [$tableName, $constraintName, $a[$constraintName]['type']]);
-                $this->_directives->addProp('addConstraints',
-                    [$tableName, $constraintName, $constraintDefinition]);
-            }
-        }
-        foreach ($a as $constraintName => $constraintDefinition) {
-            if (!array_key_exists($constraintName, $b)) {
-                $this->_directives->addProp('dropConstraints', [$tableName, $constraintName, $constraintDefinition['type']]);
-            }
-        }
-    }
-
-    /**
-     * @param array $a old
-     * @param array $b new
-     * @param string $tableName
-     * @return array
-     */
-    protected function intelligentCompareIndices(array $a, array $b, $tableName)
-    {
-        foreach ($b as $indexName => $indexDefinition) {
-            if (!array_key_exists($indexName, $a)) {
-                $this->_directives->addProp('addIndices', [$tableName, $indexName, $indexDefinition]);
-            } elseif ($indexDefinition['definition'] === $a[$indexName]['definition']) {
-                continue;
-            } else {
-                $this->_directives->addProp('dropIndices', [$tableName, $indexDefinition]);
-                $this->_directives->addProp('addIndices',
-                    [$tableName, $indexName, $indexDefinition]);
-            }
-        }
-        foreach ($a as $indexName => $indexDefinition) {
-            if (!array_key_exists($indexName, $b)) {
-                $this->_directives->addProp('dropIndices', [$tableName, $indexName]);
             }
         }
     }
