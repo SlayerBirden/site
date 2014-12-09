@@ -19,7 +19,7 @@
             <td>{{ module.active }}</td>
             <td>{{ module.updated_at }}</td>
             <td>{{ module.area }}</td>
-            <td><a href="{{ module.url }}">{% trans %}Edit{% endtrans %}</a></td>
+            <td><a href="{{ base_url }}/{{ module.area }}/{{ module.module_code }}">{% trans %}Edit{% endtrans %}</a></td>
         </tr>
     {% else %}
         <tr><td colspan="5">No modules found in the system! Very strange, how is this message displayed than??</td></tr>

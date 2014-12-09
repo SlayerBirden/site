@@ -8,8 +8,6 @@
 
 namespace Maketok\Module\Resource\Model;
 
-use Maketok\App\Site;
-
 class Module
 {
 
@@ -25,12 +23,4 @@ class Module
     public $created_at;
     /** @var  string $area */
     public $area;
-
-    /**
-     * @return string
-     */
-    public function getUrl()
-    {
-        return Site::getBaseUrl() . '/modules/' . $this->area . '/' . $this->module_code;
-    }
 }

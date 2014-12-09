@@ -404,6 +404,7 @@ final class Site
 
     /**
      * @return string
+     * @deprecated
      */
     public static function getBaseUrl()
     {
@@ -422,7 +423,9 @@ final class Site
             $baseUrl = self::getSC()->getParameter('base_url');
         }
         $uri = UriFactory::factory($baseUrl);
+        // add left path delimiter even if there was one
         $path = '/' . ltrim($path, '/');
+        // remove right path delimiter
         $path = rtrim($path, '/');
         if (!isset($config['wts']) || !$config['wts']) { // config Without Trailing Slash
             $path  = $path . '/';
