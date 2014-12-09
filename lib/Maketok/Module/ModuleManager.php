@@ -324,10 +324,14 @@ class ModuleManager implements ClientInterface
      */
     public function addInstallerSubscribers()
     {
-        foreach ($this->getActiveModules() as $config) {
-            if ($config instanceof Installer\Ddl\ClientInterface) {
-                Site::getSC()->get('installer_ddl_manager')->addClient($config);
+        try {
+            foreach ($this->getActiveModules() as $config) {
+                if ($config instanceof Installer\Ddl\ClientInterface) {
+                    Site::getSC()->get('installer_ddl_manager')->addClient($config);
+                }
             }
+        } catch (\Exception $e) {
+            $this->logger->emerg($e->__toString());
         }
     }
 
