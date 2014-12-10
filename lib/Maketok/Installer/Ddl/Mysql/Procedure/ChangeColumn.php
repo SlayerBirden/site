@@ -9,7 +9,6 @@
 namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
 use Zend\Db\Sql\Ddl\AlterTable;
-use Zend\Db\Sql\Ddl\Column\ColumnInterface;
 
 class ChangeColumn extends AddColumn implements ProcedureInterface
 {

@@ -15,6 +15,7 @@ use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
+use Symfony\Component\Form\FormInterface;
 
 class Article extends AbstractAdminController
 {
@@ -30,28 +31,7 @@ class Article extends AbstractAdminController
         $form = $this->getFormFactory()->create('article', $article);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            /** @var ArticleTable $articleTable */
-            $articleTable = $this->getSC()->get('article_table');
-            try {
-                $articleTable->save($form->getData());
-                Site::getSession()->getFlashBag()->add(
-                    'success',
-                    'The article was saved successfully!'
-                );
-            } catch (ModelInfoException $e) {
-                Site::getSession()->getFlashBag()->add(
-                    'notice',
-                    $e->getMessage()
-                );
-            } catch (\Exception $e) {
-                $this->getSC()->get('logger')->err($e);
-                Site::getSession()->getFlashBag()->add(
-                    'error',
-                    'There was an error processing your request. Our specialists will be looking into it.'
-                );
-                return $this->returnBack();
-            }
-            return $this->redirect('blog');
+            $this->handleArticle($form);
         }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Edit Article ' . $article->title,
@@ -108,28 +88,7 @@ class Article extends AbstractAdminController
         $form = $this->getFormFactory()->create('article', null);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            /** @var ArticleTable $articleTable */
-            $articleTable = $this->getSC()->get('article_table');
-            try {
-                $articleTable->save($form->getData());
-                Site::getSession()->getFlashBag()->add(
-                    'success',
-                    'The article was saved successfully!'
-                );
-            } catch (ModelInfoException $e) {
-                Site::getSession()->getFlashBag()->add(
-                    'notice',
-                    $e->getMessage()
-                );
-            } catch (\Exception $e) {
-                $this->getSC()->get('logger')->err($e);
-                Site::getSession()->getFlashBag()->add(
-                    'error',
-                    'There was an error processing your request. Our specialists will be looking into it.'
-                );
-                return $this->returnBack();
-            }
-            return $this->redirect('blog');
+            $this->handleArticle($form);
         }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Add New Article ',
@@ -138,4 +97,34 @@ class Article extends AbstractAdminController
         ));
     }
 
+    /**
+     * handle form request
+     * @param FormInterface $form
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    protected function handleArticle(FormInterface $form)
+    {
+        /** @var ArticleTable $articleTable */
+        $articleTable = $this->getSC()->get('article_table');
+        try {
+            $articleTable->save($form->getData());
+            Site::getSession()->getFlashBag()->add(
+                'success',
+                'The article was saved successfully!'
+            );
+        } catch (ModelInfoException $e) {
+            Site::getSession()->getFlashBag()->add(
+                'notice',
+                $e->getMessage()
+            );
+        } catch (\Exception $e) {
+            $this->getSC()->get('logger')->err($e);
+            Site::getSession()->getFlashBag()->add(
+                'error',
+                'There was an error processing your request. Our specialists will be looking into it.'
+            );
+            return $this->returnBack();
+        }
+        return $this->redirect('blog');
+    }
 }

@@ -38,9 +38,7 @@ class ConfigReader implements ConfigReaderInterface
      */
     protected function mergeConfigs(array $configs)
     {
-        foreach ($configs as $table => $data) {
-            $_config[$table][] = $data;
-        }
+        //@TODO: implement
     }
 
     /**
