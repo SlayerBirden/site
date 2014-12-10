@@ -15,14 +15,13 @@ before_script:
 
 script:
   - cd tests
-  - ../vendor/bin/phpunit --testsuite "util" --report-useless-tests --strict --exclude-group=Coverage
-  - ../vendor/bin/phpunit --testsuite "installer" --report-useless-tests --strict --exclude-group=Coverage
-  - ../vendor/bin/phpunit --testsuite "app" --report-useless-tests --strict --exclude-group=Coverage
-  - ../vendor/bin/phpunit --testsuite "nav" --report-useless-tests --strict --exclude-group=Coverage
-  - ../vendor/bin/phpunit --report-useless-tests --coverage-clover ./coverage.clover --group=Coverage
+  - ../vendor/bin/phpunit --testsuite "util" --report-useless-tests --strict
+  - ../vendor/bin/phpunit --testsuite "installer" --report-useless-tests --strict
+  - ../vendor/bin/phpunit --testsuite "app" --report-useless-tests --strict
+  - ../vendor/bin/phpunit --testsuite "nav" --report-useless-tests --strict
+  - ../vendor/bin/phpunit --report-useless-tests --coverage-clover ./coverage.clover
 
 after_script:
-  - pwd
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover ./coverage.clover
 
