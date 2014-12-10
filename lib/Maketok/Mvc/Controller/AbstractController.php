@@ -1,9 +1,9 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
- * @developer Slayer slayer.birden@gmail.com maketok.com
+ * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Mvc\Controller;
@@ -98,10 +98,9 @@ class AbstractController
 
     /**
      * @param array $templateVars
-     * @param array $params
      * @return void
      */
-    public function prepareContent(array $templateVars, array $params = null)
+    public function prepareContent(array $templateVars)
     {
         $path = $this->getTemplatePath();
         // get template Engine
@@ -111,16 +110,37 @@ class AbstractController
         foreach ($this->_viewDependency as $_dependencyModule) {
             $dependencyPaths[] = $this->getTemplatePath('', $_dependencyModule);
         }
-        // now add general variables
-        $templateVars['css_url'] = Site::getUrl('/css/');
-        $templateVars['js_url'] = Site::getUrl('/js/');
-        $templateVars['images_url'] = Site::getUrl('/images/');
-        $templateVars['base_url'] = Site::getBaseUrl();
-        $templateVars['session'] = Site::getSession();
+        $templateVars = array_merge($this->getDefaults(), $templateVars);
         $engine->loadDependencies($dependencyPaths);
         $engine->loadTemplate($path);
         $engine->setVariables($templateVars);
         $this->_body = $engine->render();
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaults()
+    {
+        return [
+            'css_url' => Site::getUrl('/css/'),
+            'js_url' => Site::getUrl('/js/'),
+            'images_url' => Site::getUrl('/images/'),
+            'base_url' => Site::getUrl('/', ['wts' => 1]),
+            'current_url' => $this->getCurrentUrl(),
+            'session' => Site::getSession(),
+            'links' => [],
+        ];
+    }
+
+    /**
+     * @param array $templateVars
+     * @return string
+     */
+    public function render(array $templateVars)
+    {
+        $this->prepareContent($templateVars);
+        return $this->getContent();
     }
 
     /**

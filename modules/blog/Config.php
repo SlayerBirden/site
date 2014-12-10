@@ -1,9 +1,9 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
- * @developer Slayer slayer.birden@gmail.com maketok.com
+ * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace modules\blog;
@@ -28,22 +28,6 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
     public function getVersion()
     {
         return '0.1.3';
-    }
-
-    /**
-     * @return string
-     */
-    public function getDdlConfigVersion()
-    {
-        return $this->getVersion();
-    }
-
-    /**
-     * @return string
-     */
-    public function getDdlConfigName()
-    {
-        return 'blog';
     }
 
     public function initRoutes()

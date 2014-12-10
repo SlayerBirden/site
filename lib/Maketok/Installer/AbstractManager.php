@@ -1,9 +1,9 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
- * @developer Slayer slayer.birden@gmail.com maketok.com
+ * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Installer;
@@ -26,36 +26,14 @@ abstract class AbstractManager implements ManagerInterface
     protected $_messages;
     /** @var \Maketok\Util\Zend\Db\Sql\Sql  */
     protected $_sql;
-    /** @var \Maketok\Util\AbstractTableMapper  */
-    protected $_tableMapper;
     /** @var string */
     protected $_type;
     /** @var DirectivesInterface */
-    protected $_directives;
+    protected $directives;
     /**
      * @var ResourceInterface
      */
     protected $_resource;
-
-    /**
-     * Constructor
-     * @param ConfigReaderInterface $reader
-     * @param ResourceInterface $resource
-     * @param DirectivesInterface $directives
-     * @param StreamHandlerInterface|null $handler
-     */
-    public function __construct(ConfigReaderInterface $reader,
-                                ResourceInterface $resource,
-                                DirectivesInterface $directives,
-                                StreamHandlerInterface $handler = null)
-    {
-        $this->_reader = $reader;
-        $this->_streamHandler = $handler;
-        $this->_directives = $directives;
-        if ($handler) {
-            $this->_resource = $resource;
-        }
-    }
 
     /**
      * {@inheritdoc}
@@ -105,34 +83,45 @@ abstract class AbstractManager implements ManagerInterface
         if (!is_string($a) || !is_string($b)) {
             throw new \InvalidArgumentException("Compared arguments must be strings.");
         }
-        $aA = explode('.', $a);
-        $aB = explode('.', $b);
-        $countAA = count($aA);
-        $countAB = count($aB);
-        if ($countAA > $countAB) {
-
-            for ($i = $countAB; $i < $countAA; $i++){
-                $aB[] = 0;
-            }
-        } elseif($countAB > $countAA) {
-            for ($i = $countAA; $i < $countAB; $i++){
-                $aA[] = 0;
-            }
-        }
-        // cast all versions to int
-        foreach ($aA as &$v) {$v = (int) $v;}
-        foreach ($aB as &$v) {$v = (int) $v;}
-        for ($i = 0; $i < $countAA; $i++) {
-            if ($aA[$i] > $aB[$i]) {
+        if (strpos($a, '.') || strpos($b, '.')) {
+            $aA = explode('.', $a);
+            $aB = explode('.', $b);
+            $this->castEqualLength($aA, $aB);
+            do {
+                $a = array_shift($aA);
+                $b = array_shift($aB);
+            } while ($a == $b && !is_null($a) && !is_null($b));
+            return $this->natRecursiveCompare((string) $a, (string) $b);
+        } else {
+            if ((int) $a > (int) $b) {
                 return 1;
-            } elseif ($aB[$i] > $aA[$i]) {
+            } elseif ((int) $b > (int) $a) {
                 return -1;
-            } elseif ($aA[$i] === $aB[$i]) {
-                continue;
+            } else {
+                return 0;
             }
         }
-        // identical
-        return 0;
+    }
+
+    /**
+     * cast both array to equal length
+     * @param array $a
+     * @param array $b
+     * @param mixed $placeholder
+     */
+    public function castEqualLength(array &$a, array &$b, $placeholder = '0')
+    {
+        $countA = count($a);
+        $countB = count($b);
+        if ($countA > $countB) {
+            for ($i = $countB; $i < $countA; $i++){
+                $b[] = $placeholder;
+            }
+        } elseif($countB > $countA) {
+            for ($i = $countA; $i < $countB; $i++){
+                $a[] = $placeholder;
+            }
+        }
     }
 
     /**
@@ -140,6 +129,6 @@ abstract class AbstractManager implements ManagerInterface
      */
     public function getDirectives()
     {
-        return $this->_directives;
+        return $this->directives;
     }
 }

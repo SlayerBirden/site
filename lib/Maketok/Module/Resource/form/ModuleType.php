@@ -1,9 +1,9 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
- * @developer Slayer slayer.birden@gmail.com maketok.com
+ * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 namespace Maketok\Module\Resource\form;
 
@@ -25,8 +25,7 @@ class ModuleType extends AbstractType
                 'choices'   => array('0' => 'Disabled', '1' => 'Enabled'),
             ))
             ->add('updated_at', 'text', array('read_only' => true))
-            ->add('reset', 'reset', array('attr' => array('class' => 'button')))
-            ->add('save', 'submit', array('label' => 'Save', 'attr' => array('class' => 'button')))
+            ->add('area', 'text', array('read_only' => true))
         ;
     }
     /**
@@ -35,7 +34,7 @@ class ModuleType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'modules\modules\model\Module',
+            'data_class' => 'Maketok\Module\Resource\Model\Module',
         ));
     }
     /**

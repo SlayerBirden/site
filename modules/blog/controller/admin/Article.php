@@ -1,9 +1,9 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
- * @developer Slayer slayer.birden@gmail.com maketok.com
+ * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace modules\blog\controller\admin;
@@ -25,14 +25,9 @@ class Article extends AbstractAdminController
      */
     public function editAction(RequestInterface $request)
     {
-        $this->setViewDependency(array('admin'));
         $this->setTemplate('article.html.twig');
-        $article = $this->_initArticle($request);
-        $form = $this->getFormFactory()->create('article', $article, array(
-            'action' => $this->getCurrentUrl(),
-            'method' => 'POST',
-            'attr' => array('back_url' => $this->getUrl('/blog')),
-        ));
+        $article = $this->initArticle($request);
+        $form = $this->getFormFactory()->create('article', $article);
         $form->handleRequest($request);
         if ($form->isValid()) {
             /** @var ArticleTable $articleTable */
@@ -109,13 +104,8 @@ class Article extends AbstractAdminController
      */
     public function newAction(RequestInterface $request)
     {
-        $this->setViewDependency(array('admin'));
         $this->setTemplate('article.html.twig');
-        $form = $this->getFormFactory()->create('article', null, array(
-            'action' => $this->getUrl('blog/article/new'),
-            'method' => 'POST',
-            'attr' => array('back_url' => $this->getUrl('/blog')),
-        ));
+        $form = $this->getFormFactory()->create('article', null);
         $form->handleRequest($request);
         if ($form->isValid()) {
             /** @var ArticleTable $articleTable */

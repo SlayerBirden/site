@@ -3,6 +3,7 @@
 <phpunit bootstrap="bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="installer">
+            <directory>../lib/Maketok/Installer/Test/</directory>
             <directory>../lib/Maketok/Installer/Ddl/Test/</directory>
             <directory>../lib/Maketok/Installer/Data/Test/</directory>
         </testsuite>
@@ -14,6 +15,9 @@
         </testsuite>
         <testsuite name="maketok">
             <directory>../lib/Maketok/</directory>
+        </testsuite>
+        <testsuite name="nav">
+            <directory>../lib/Maketok/Template/Navigation/Test</directory>
         </testsuite>
     </testsuites>
 </phpunit>

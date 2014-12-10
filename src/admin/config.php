@@ -1,9 +1,9 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
- * @developer Slayer slayer.birden@gmail.com maketok.com
+ * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 use Maketok\Mvc\Router\RouterInterface;
 
@@ -37,10 +37,24 @@ return [
                             'action' => 'index',
                         )
                     ));
+                    $router->addRoute( new \Maketok\Mvc\Router\Route\Http\Literal(
+                        '/modules',  array(
+                            'module' => 'admin_manager',
+                            'controller' => 'Maketok\Module\Resource\controller\admin\Modules',
+                            'action' => 'index',
+                        )
+                    ));
+                    $router->addRoute( new \Maketok\Mvc\Router\Route\Http\Parameterized(
+                        '/modules/{area}/{module_code}',  array(
+                            'module' => 'admin_manager',
+                            'controller' => 'Maketok\Module\Resource\controller\admin\Modules',
+                            'action' => 'view',
+                        ), [], []
+                    ));
                 },
                 'type' => 'closure',
-                'priority' => 100,
-            ],
-        ],
-    ],
+                'priority' => 100
+            ]
+        ]
+    ]
 ];

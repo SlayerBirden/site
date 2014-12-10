@@ -1,9 +1,9 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
- * @developer Slayer slayer.birden@gmail.com maketok.com
+ * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 return [
     'blog_article' => [
@@ -41,26 +41,28 @@ return [
             'content' => [
                 'type' => 'text',
                 'nullable' => false,
-            ],
+            ]
         ],
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => ['id'],
+                'definition' => ['id'],
             ],
             'UNQ_KEY_CODE' => [
                 'type' => 'uniqueKey',
-                'def' => ['code'],
-            ],
+                'definition' => ['code'],
+            ]
+        ],
+        'indices' => [
             'KEY_AUTHOR' => array(
                 'type' => 'index',
-                'def' => ['author'],
+                'definition' => ['author'],
             ),
             'KEY_DATE' => array(
                 'type' => 'index',
-                'def' => ['created_at'],
-            ),
-        ],
+                'definition' => ['created_at'],
+            )
+        ]
     ],
     'blog_category' => [
         'columns' => [
@@ -91,20 +93,20 @@ return [
             ],
             'image' => [
                 'type' => 'varchar',
-                'length' => 55,
+                'length' => 255,
                 'nullable' => true,
             ]
         ],
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => ['id'],
+                'definition' => ['id'],
             ],
             'UNQ_KEY_CODE' => [
                 'type' => 'uniqueKey',
-                'def' => ['code'],
+                'definition' => ['code'],
             ]
-        ],
+        ]
     ],
     'blog_category_article' => [
         'columns' => [
@@ -131,20 +133,20 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => ['id'],
+                'definition' => ['id'],
             ],
             'FK_KEY_ARTICLE_ID' => array(
                 'type' => 'foreignKey',
-                'def' => 'article_id',
-                'referenceTable' => 'blog_article',
-                'referenceColumn' => 'id',
+                'column' => 'article_id',
+                'reference_table' => 'blog_article',
+                'reference_column' => 'id',
             ),
             'FK_KEY_CATEGORY_ID' => array(
                 'type' => 'foreignKey',
-                'def' => 'category_id',
-                'referenceTable' => 'blog_category',
-                'referenceColumn' => 'id',
-            ),
-        ],
+                'column' => 'category_id',
+                'reference_table' => 'blog_category',
+                'reference_column' => 'id',
+            )
+        ]
     ]
 ];

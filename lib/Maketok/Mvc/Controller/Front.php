@@ -1,22 +1,24 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
- * @developer Slayer slayer.birden@gmail.com maketok.com
+ * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Mvc\Controller;
 
 use Maketok\App\Site;
+use Maketok\Mvc\Error\Dumper;
 use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\Http\Error;
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Mvc\Router\Route\Success;
 use Maketok\Mvc\Router\RouterInterface;
+use Maketok\Observer\State;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\ResponseInterface;
-use Zend\Stdlib\ErrorHandler;
+use Maketok\Mvc\Error\DumperInterface;
 
 class Front
 {
@@ -24,6 +26,9 @@ class Front
 
     /** @var  RouteInterface */
     private $_router;
+
+    /** @var \SplStack */
+    private $dumpers;
 
     /**
      * @param StateInterface $state
@@ -42,8 +47,10 @@ class Front
 
     /**
      * @param Success $success
+     * @param bool $silent
+     * @throws RouteException
      */
-    public function launch(Success $success)
+    public function launch(Success $success, $silent = false)
     {
         $params = $success->getParameters();
         ob_start();
@@ -51,6 +58,9 @@ class Front
         $content = ob_get_contents();
         // TODO figure out what to do with buffered content
         ob_end_clean();
+        if (!$silent) {
+            Site::getSC()->get('subject_manager')->notify('response_send_before', new State());
+        }
         $response->send();
     }
 
@@ -60,24 +70,26 @@ class Front
     public function __construct(RouterInterface $router)
     {
         $this->_router = $router;
+        $this->dumpers = new \SplStack();
+        $this->dumpers->push(new Dumper());
     }
 
     /**
      * Custom exception handler
      * @param \Exception $e
-     * @return \Maketok\Mvc\Router\Route\Success
+     * @return void
      */
     public function exceptionHandler(\Exception $e)
     {
         try {
-            $dumper = Site::getSC()->get('front_controller_error_dumper');
+            $dumper = $this->dumpers->pop();
             if ($e instanceof RouteException) {
                 // not found
                 $errorRoute = new Error(array(
                     'controller' => $dumper,
                     'action' => 'noroute',
                 ));
-                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
+                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')), true);
             } elseif ($e instanceof \ErrorException) {
                 $errno = $e->getSeverity();
                 if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
@@ -89,9 +101,8 @@ class Front
                         'action' => 'error',
                         'exception' => $e,
                     ));
-                    $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
+                    $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')), true);
                 }
-
             } else {
                 Site::getServiceContainer()
                     ->get('logger')
@@ -101,7 +112,7 @@ class Front
                     'action' => 'error',
                     'exception' => $e,
                 ));
-                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')));
+                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')), true);
             }
         } catch (\Exception $ex) {
             printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Trace: %s. Previous exception: %s",
@@ -132,7 +143,21 @@ class Front
             $controllerClass = (string) $parameters['controller'];
             $controller = new $controllerClass();
          }
-        $actionName = $parameters['action'] . 'Action';
+        $actionName = $parameters['action'];
+        if (!method_exists($controller, $actionName)) {
+            $actionName .= 'Action';
+        }
+        if (!method_exists($controller, $actionName)) {
+            throw new RouteException("Non existing action name.");
+        }
         return $controller->$actionName($route->getRequest());
+    }
+
+    /**
+     * @param DumperInterface $dumper
+     */
+    public function addDumper(DumperInterface $dumper)
+    {
+        $this->dumpers->push($dumper);
     }
 }

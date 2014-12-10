@@ -1,21 +1,21 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
- * @developer Slayer slayer.birden@gmail.com maketok.com
+ * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Module\Resource\controller\admin;
 
 use Maketok\App\Site;
 use Maketok\Module\Resource\Model\Module;
-use Maketok\Module\Resource\Model\ModuleTable;
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\RequestInterface;
+use Maketok\Util\TableMapper;
 
 class Modules extends AbstractAdminController
 {
@@ -26,9 +26,8 @@ class Modules extends AbstractAdminController
      */
     public function indexAction(RequestInterface $request)
     {
-        $this->setViewDependency(array('admin'));
         $this->setTemplate('modules.html.twig');
-        /** @var ModuleTable $articleTable */
+        /** @var TableMapper $moduleTable */
         $moduleTable = $this->getSC()->get('module_table');
         $modules = $moduleTable->fetchAll();
         return $this->prepareResponse($request, array(
@@ -44,17 +43,12 @@ class Modules extends AbstractAdminController
      */
     public function viewAction(RequestInterface $request)
     {
-        $this->setViewDependency(array('admin'));
         $this->setTemplate('module.html.twig');
         $module = $this->initModule($request);
-        $form = $this->getFormFactory()->create('module', $module, array(
-            'action' => $this->getCurrentUrl(),
-            'method' => 'POST',
-            'attr' => array('back_url' => $this->getUrl('/modules')),
-        ));
+        $form = $this->getFormFactory()->create('module', $module);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            /** @var ModuleTable $moduleTable */
+            /** @var TableMapper $moduleTable */
             $moduleTable = $this->getSC()->get('module_table');
             try {
                 $moduleTable->save($form->getData());
@@ -92,16 +86,31 @@ class Modules extends AbstractAdminController
      */
     protected function initModule(RequestInterface $request)
     {
-        $code = $request->getAttributes()->get('code');
+        $area = $request->getAttributes()->get('area');
+        $code = $request->getAttributes()->get('module_code');
+        if ($area === null) {
+            throw new RouteException("Can not process module without area.");
+        }
         if ($code === null) {
             throw new RouteException("Can not process module without code.");
         }
-        /** @var ModuleTable $articleTable */
+        /** @var TableMapper $moduleTable */
         $moduleTable = $this->getSC()->get('module_table');
         try {
-            return $moduleTable->find($code);
+            return $moduleTable->find(array('area' => $area, 'module_code' => $code));
         } catch (ModelException $e) {
             throw new RouteException("Could not find model by id.");
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getTemplatePath($template = null, $module = null)
+    {
+        if (is_null($template)) {
+            $template = $this->_template;
+        }
+        return AR . "/lib/Maketok/Module/Resource/view/admin/$template";
     }
 }

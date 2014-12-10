@@ -17,6 +17,7 @@ script:
   - cd tests; ../vendor/bin/phpunit --testsuite "util"
   - ../vendor/bin/phpunit --testsuite "installer"
   - ../vendor/bin/phpunit --testsuite "app"
+  - ../vendor/bin/phpunit --testsuite "nav"
 
 notifications:
   email: true

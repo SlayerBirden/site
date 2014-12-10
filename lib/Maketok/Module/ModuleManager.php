@@ -1,13 +1,14 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- * Please do not use for your own profit.
+ *
  * @project site
- * @developer Slayer slayer.birden@gmail.com maketok.com
+ * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Module;
 
+use Maketok\App\Site;
 use Maketok\Http\SessionInterface;
 use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\Resource\Model\Module;
@@ -19,6 +20,7 @@ use Maketok\Util\Exception\ModelException;
 use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
+use Maketok\Installer;
 
 class ModuleManager implements ClientInterface
 {
@@ -101,7 +103,7 @@ class ModuleManager implements ClientInterface
 
     /**
      * @param int|string|string[] $id
-     * @return Module
+     * @return Module|array|\ArrayObject|null
      * @throws ModelException
      */
     protected function initModule($id)
@@ -311,6 +313,23 @@ class ModuleManager implements ClientInterface
             }
             $this->sm->notify('modulemanager_updates_after',
                 new State(array('active_modules' => $this->getActiveModules())));
+        } catch (\Exception $e) {
+            $this->logger->emerg($e->__toString());
+        }
+    }
+
+    /**
+     * add installer subscribers
+     * @internal param StateInterface
+     */
+    public function addInstallerSubscribers()
+    {
+        try {
+            foreach ($this->getActiveModules() as $config) {
+                if ($config instanceof Installer\Ddl\ClientInterface) {
+                    Site::getSC()->get('installer_ddl_manager')->addClient($config);
+                }
+            }
         } catch (\Exception $e) {
             $this->logger->emerg($e->__toString());
         }
