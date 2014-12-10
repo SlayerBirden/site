@@ -91,7 +91,7 @@ abstract class AbstractManager implements ManagerInterface
                 $a = array_shift($aA);
                 $b = array_shift($aB);
             } while ($a == $b && !is_null($a) && !is_null($b));
-            return $this->natRecursiveCompare((string) $a,(string) $b);
+            return $this->natRecursiveCompare((string) $a, (string) $b);
         } else {
             if ((int) $a > (int) $b) {
                 return 1;
