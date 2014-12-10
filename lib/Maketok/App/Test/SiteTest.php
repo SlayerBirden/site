@@ -10,40 +10,60 @@ namespace Maketok\App\Test;
 
 use Maketok\App\Site;
 
+/**
+ * @coversDefaultClass \Maketok\App\Site
+ */
 class SiteTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @covers Maketok\App\Site::getUrl
+     * @covers ::getUrl
+     * @dataProvider urlProvider
+     * @param string $path
+     * @param array|null $config
+     * @param string $base
+     * @param string $expected
      */
-    public function testGetUrl()
+    public function testGetUrl($path, $config, $base, $expected)
     {
-        $bUrl = 'http://example.com';
-        $this->assertEquals('http://example.com/home/url/', Site::getUrl('home/url', null, $bUrl));
-        $this->assertEquals('http://example.com/home/url/', Site::getUrl('/home/url', null, $bUrl));
-        $this->assertEquals('http://example.com/home/url/', Site::getUrl('home/url/', null, $bUrl));
-        $this->assertEquals('http://example.com/home/url', Site::getUrl('home/url/', array('wts' => 1), $bUrl));
-        $this->assertEquals('http://example.com/home/url/', Site::getUrl('home/url/', array('wts' => 0), $bUrl));
+        $this->assertEquals($expected, Site::getUrl($path, $config, $base));
     }
 
     /**
      * @test
-     * @covers Maketok\App\Site::getSCFilePrefix
+     * @covers ::getSCFilePrefix
      * @param string|string[] $code
      * @param string $expected
      * @dataProvider prefixProvider
      */
-    public function getSCFilePrefix($code, $expected)
+    public function getContainerFileName($code, $expected)
     {
         $this->assertEquals($expected, Site::getSCFilePrefix($code));
     }
 
+    /**
+     * @return array
+     */
     public function prefixProvider()
     {
         return [
             ['env', 'env.'],
             [['local', 'env'], 'local.env.']
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function urlProvider()
+    {
+        return [
+            ['home/url', null, 'http://example.com', 'http://example.com/home/url/'],
+            ['/home/url', null, 'http://example.com', 'http://example.com/home/url/'],
+            ['home/url/', null, 'http://example.com', 'http://example.com/home/url/'],
+            ['home/url/', ['wts' => 1], 'http://example.com', 'http://example.com/home/url'],
+            ['home/url/', ['wts' => 0], 'http://example.com', 'http://example.com/home/url/']
         ];
     }
 }

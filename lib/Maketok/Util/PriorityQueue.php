@@ -32,6 +32,7 @@ class PriorityQueue
     }
 
     /**
+     * @codeCoverageIgnore
      * @return \SplPriorityQueue
      */
     public function getQueue()

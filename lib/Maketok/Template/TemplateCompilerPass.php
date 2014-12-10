@@ -15,6 +15,10 @@ use Symfony\Component\DependencyInjection\Reference;
 class TemplateCompilerPass implements CompilerPassInterface
 {
 
+    /**
+     * @codeCoverageIgnore
+     * {@inheritdoc}
+     */
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition('template_engine')) {

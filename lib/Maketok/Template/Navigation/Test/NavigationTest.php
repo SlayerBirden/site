@@ -11,12 +11,15 @@ namespace Maketok\Template\Navigation\Test;
 use Maketok\Template\Navigation\Link;
 use Maketok\Template\Navigation\Navigation;
 
+/**
+ * @coversDefaultClass \Maketok\Template\Navigation\Navigation
+ */
 class NavigationTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Navigation::addLink
+     * @covers ::addLink
      */
     public function addLink()
     {
@@ -55,7 +58,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Navigation::addLink
+     * @covers ::addLink
      * @expectedException \Maketok\Template\Navigation\Exception
      * @expectedExceptionMessage Provided parent is not within current context.
      * @dataProvider wrongParentsProvider
@@ -71,7 +74,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Navigation::addLink
+     * @covers ::addLink
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid parent provided:
      * @dataProvider invalidArgumentsProvider
@@ -108,7 +111,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Navigation::getNavigation
+     * @covers ::getNavigation
      */
     public function getNavigation()
     {
@@ -125,7 +128,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Navigation::addDumper
+     * @covers ::addDumper
      */
     public function addDumper()
     {

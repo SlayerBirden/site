@@ -27,6 +27,7 @@ class Navigation implements NavigationInterface
 
     /**
      * init tree
+     * @codeCoverageIgnore
      */
     public function __construct()
     {

@@ -25,6 +25,7 @@ class Node implements NodeInterface
     protected $value;
 
     /**
+     * @codeCoverageIgnore
      * @param mixed $value
      */
     public function __construct($value)
@@ -155,6 +156,7 @@ class Node implements NodeInterface
 
     /**
      * @return mixed
+     * @codeCoverageIgnore
      */
     public function __toString()
     {

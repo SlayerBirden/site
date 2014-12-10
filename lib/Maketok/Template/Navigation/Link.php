@@ -35,6 +35,7 @@ class Link extends Node implements LinkInterface
     private $title;
 
     /**
+     * @codeCoverageIgnore
      * {@inheritdoc}
      */
     public function __construct($code, $reference = null, $order = null, $title = null, LinkInterface $parent = null)
@@ -49,6 +50,7 @@ class Link extends Node implements LinkInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @return string
      */
     public function __toString()
@@ -152,6 +154,7 @@ class Link extends Node implements LinkInterface
     public function getChildren()
     {
         $children = parent::getChildren();
+        // @codeCoverageIgnoreStart
         usort($children, function(LinkInterface $a, LinkInterface $b) {
             if ($a->getOrder() > $b->getOrder()) {
                 return 1;
@@ -160,6 +163,7 @@ class Link extends Node implements LinkInterface
             }
             return 0;
         });
+        // @codeCoverageIgnoreEnd
         return $children;
     }
 

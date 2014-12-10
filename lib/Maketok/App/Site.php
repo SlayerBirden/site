@@ -77,9 +77,12 @@ final class Site
         'admin'
     ];
 
+    /**
+     * we can't create an object of Site
+     * @codeCoverageIgnore
+     */
     private function __construct()
     {
-        // we can't create an object of Site
         return;
     }
 
@@ -88,6 +91,7 @@ final class Site
      * this accepts integer mode flag, which specifies the logic of app
      * default mode is MODE_FRONTEND
      *
+     * @codeCoverageIgnore
      * @param int $mode
      */
     public static function run($mode = self::MODE_FRONTEND)
@@ -119,6 +123,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @internal param StateInterface
      * @throws mixed
      */
@@ -132,17 +137,19 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @return null|\Maketok\Http\SessionInterface
      */
     public static function getSession()
     {
-        if (self::getSC()->get('request')) {
+        if ((self::$mode & Config::SESSION) && self::getSC()->get('request')) {
             return self::getSC()->get('request')->getSession();
         }
         return null;
     }
 
     /**
+     * @codeCoverageIgnore
      * @param RequestInterface $request
      */
     public static function setRequest(RequestInterface $request)
@@ -155,6 +162,7 @@ final class Site
 
     /**
      * load configs
+     * @codeCoverageIgnore
      */
     private static function loadConfigs()
     {
@@ -163,6 +171,7 @@ final class Site
 
     /**
      * apply configs
+     * @codeCoverageIgnore
      */
     private static function applyConfigs()
     {
@@ -171,6 +180,7 @@ final class Site
 
     /**
      * init evn
+     * @codeCoverageIgnore
      */
     private static function initEnvironment()
     {
@@ -187,6 +197,7 @@ final class Site
 
     /**
      * Custom exception handler
+     * @codeCoverageIgnore
      * @param \Exception $e
      */
     public static function maketokExceptionHandler( \Exception $e)
@@ -226,6 +237,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @return ContainerBuilder
      */
     public static function getServiceContainer()
@@ -246,6 +258,7 @@ final class Site
 
     /**
      * alias
+     * @codeCoverageIgnore
      * @return ContainerBuilder
      */
     public static function getSC()
@@ -255,6 +268,7 @@ final class Site
 
     /**
      * Init Service Container
+     * @codeCoverageIgnore
      */
     private static function createSC()
     {
@@ -270,6 +284,7 @@ final class Site
 
     /**
      * load SC configs
+     * @codeCoverageIgnore
      */
     private static function loadSCConfig()
     {
@@ -320,6 +335,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @param ExtensionInterface $extension
      */
     protected static function addDiExtension(ExtensionInterface $extension)
@@ -329,6 +345,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @param bool $withNS
      * @return string
      */
@@ -347,6 +364,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @param StateInterface $state
      */
     public static function serviceContainerProcessModules(StateInterface $state)
@@ -368,6 +386,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @return string
      */
     protected static function getContainerFileName()
@@ -381,6 +400,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @observe config_after_process
      */
     public static function scCompileAndDump()
@@ -403,6 +423,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @return string
      * @deprecated
      */
@@ -419,9 +440,11 @@ final class Site
      */
     public static function getUrl($path, array $config = null, $baseUrl = null)
     {
+        // @codeCoverageIgnoreStart
         if (is_null($baseUrl)) {
             $baseUrl = self::getSC()->getParameter('base_url');
         }
+        // @codeCoverageIgnoreEnd
         $uri = UriFactory::factory($baseUrl);
         // add left path delimiter even if there was one
         $path = '/' . ltrim($path, '/');

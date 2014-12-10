@@ -10,6 +10,9 @@ namespace Maketok\App\Test;
 
 use Maketok\App\Config;
 
+/**
+ * @coversDefaultClass \Maketok\App\Config
+ */
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -17,14 +20,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         // funny activity: reset static property of Config for every test :)
         // oh those statics
-        $refProp = new \ReflectionProperty('Maketok\App\Config', '_config');
+        $refProp = new \ReflectionProperty('Maketok\App\Config', 'config');
         $refProp->setAccessible(true);
         $refProp->setValue([]);
     }
 
     /**
      * @test
-     * @covers Maketok\App\Config::merge
+     * @covers ::merge
      */
     public function testMerge()
     {
@@ -36,6 +39,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'movies' => [
                 'actor' => 'JC',
                 'title' => 'F',
+                2 => 'What'
             ],
         ];
         $conf2 = [
@@ -44,6 +48,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             ],
             'movies' => [
                 'title' => 'Batman & Robin',
+                1 => 'Coolio'
             ],
         ];
         $expected = [
@@ -54,6 +59,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'movies' => [
                 'actor' => 'JC',
                 'title' => 'Batman & Robin',
+                2 => 'What',
+                3 => 'Coolio'
             ],
         ];
         $this->assertEquals($expected, Config::merge($conf1, $conf2));
@@ -61,7 +68,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\App\Config::add
+     * @covers ::add
      */
     public function testAdd()
     {
@@ -94,7 +101,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testAdd
-     * @covers Maketok\App\Config::getConfig
+     * @covers ::getConfig
      */
     public function testGetConfig()
     {
@@ -119,5 +126,6 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'title' => 'F',
         ], Config::getConfig('articles'));
         $this->assertEquals('F', Config::getConfig('articles/title'));
+        $this->assertEquals([], Config::getConfig('articles/title/movie'));
     }
 }

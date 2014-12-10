@@ -14,8 +14,14 @@ use Maketok\Observer\State;
 
 final class Config
 {
-    private static $_config = [];
-    private static $_isApplied = false;
+    /**
+     * @var array
+     */
+    private static $config = [];
+    /**
+     * @var bool
+     */
+    private static $applied = false;
 
     const ALL = 0b111111;
     const PHP = 0b1;
@@ -52,18 +58,19 @@ final class Config
      */
     public static function add(array $config)
     {
-        self::$_config = self::merge(self::$_config, $config);
+        self::$config = self::merge(self::$config, $config);
     }
 
     /**
+     * @codeCoverageIgnore
      * @param array|string $paths
      */
     public static function loadConfig($paths = null)
     {
         if (is_null($paths)) {
-            $_configDir = AR . DS .  'config';
-            $paths = array($_configDir . DS . 'global.php',
-                $_configDir . DS . 'local.php');
+            $configDir = AR . DS .  'config';
+            $paths = array($configDir . DS . 'global.php',
+                $configDir . DS . 'local.php');
         }
         if (is_string($paths)) {
             $paths = array($paths);
@@ -81,11 +88,12 @@ final class Config
 
     /**
      * basic Service Manager
+     * @codeCoverageIgnore
      * @throws ConfigException
      */
     public static function applyConfig($mode = self::ALL)
     {
-        if (self::$_isApplied) {
+        if (self::$applied) {
             return;
         }
         if  ($mode & self::EVENTS) {
@@ -136,12 +144,13 @@ final class Config
             }
             Site::getServiceContainer()->get('subject_manager')->notify('installer_ddl_after_add', new State([]));
         }
-        self::$_isApplied = true;
+        self::$applied = true;
         Site::getServiceContainer()->get('subject_manager')->notify('config_after_process', new State([]));
     }
 
     /**
      * Factory Method
+     * @codeCoverageIgnore
      * @param string $className
      * @return object
      */
@@ -152,6 +161,7 @@ final class Config
 
     /**
      * Factory Method
+     * @codeCoverageIgnore
      * @param string $serviceName
      * @return object
      */
@@ -167,24 +177,24 @@ final class Config
     public static function getConfig($key = null)
     {
         if (is_null($key)) {
-            return self::$_config;
+            return self::$config;
         }
-        if (isset(self::$_config[$key])) {
-            return self::$_config[$key];
+        if (isset(self::$config[$key])) {
+            return self::$config[$key];
         }
         if (is_string($key) && (strpos($key, '/') !== false)) {
             // complex key
             $keys = explode('/', $key);
-            $_conf = self::$_config;
+            $conf = self::$config;
             foreach ($keys as $key) {
-                if (array_key_exists($key, $_conf)) {
-                    $_conf = $_conf[$key];
+                if (is_array($conf) && array_key_exists($key, $conf)) {
+                    $conf = $conf[$key];
                 } else {
-                    $_conf = [];
+                    $conf = [];
                     break;
                 }
             }
-            return $_conf;
+            return $conf;
         }
         return [];
     }

@@ -10,12 +10,15 @@ namespace Maketok\Template\Navigation\Test;
 
 use Maketok\Template\Navigation\Link;
 
+/**
+ * @coversDefaultClass \Maketok\Template\Navigation\Link
+ */
 class LinkTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::setOrder
+     * @covers ::setOrder
      */
     public function setOrder()
     {
@@ -27,7 +30,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::getOrder
+     * @covers ::getOrder
      */
     public function getOrder()
     {
@@ -39,7 +42,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::setTitle
+     * @covers ::setTitle
      */
     public function setTitle()
     {
@@ -51,7 +54,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::getTitle
+     * @covers ::getTitle
      */
     public function getTitle()
     {
@@ -63,7 +66,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::setCode
+     * @covers ::setCode
      */
     public function setCode()
     {
@@ -75,7 +78,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::getCode
+     * @covers ::getCode
      */
     public function getCode()
     {
@@ -86,7 +89,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::setReference
+     * @covers ::setReference
      */
     public function setReference()
     {
@@ -98,7 +101,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::getReference
+     * @covers ::getReference
      */
     public function getReference()
     {
@@ -110,7 +113,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::getChildren
+     * @covers ::getChildren
      */
     public function getChildren()
     {
@@ -124,7 +127,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::findLink
+     * @covers ::findLink
      */
     public function findLink()
     {
@@ -140,7 +143,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::find
+     * @covers ::find
      */
     public function find()
     {
@@ -156,7 +159,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Link::asArray
+     * @covers ::asArray
      */
     public function asArray()
     {

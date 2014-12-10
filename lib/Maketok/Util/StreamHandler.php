@@ -150,6 +150,9 @@ class StreamHandler implements StreamHandlerInterface
         $this->_handle = null;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function __destruct()
     {
         $this->close();
