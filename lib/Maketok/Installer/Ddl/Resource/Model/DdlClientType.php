@@ -49,7 +49,7 @@ class DdlClientType extends TableMapper
             try {
                 $dModel = $dependencyType->findByClientDependency($model->id, $dependencyCode);
             } catch (ModelException $e) {
-                $dModel = $this->ioc()->get('ddl_client_dependency_model');
+                $dModel = $dependencyType->getObjectPrototype();
             }
             /** @var DdlClientDependency $dModel */
             $dModel->client_id = $model->id;
@@ -75,7 +75,7 @@ class DdlClientType extends TableMapper
             /** @var TableMapper $historyType */
             $historyType = $this->ioc()->get('ddl_client_history_table');
             /** @var DdlClientHistory $historyModel */
-            $historyModel = $this->ioc()->get('ddl_client_history_model');
+            $historyModel = $historyType->getObjectPrototype();
             $historyModel->client_id = $model->id;
             $historyModel->prev_version = (is_null($oldVersion) ? '' : $oldVersion);
             $historyModel->version = $model->version;

@@ -8,7 +8,7 @@
 namespace Maketok\App\Test;
 
 /**
- * @coversDefaultClass \MMaketok\App\Helper\UtilityHelperTrait
+ * @coversDefaultClass \Maketok\App\Helper\UtilityHelperTrait
  */
 class UtilityHelperTraitTest extends \PHPUnit_Framework_TestCase
 {

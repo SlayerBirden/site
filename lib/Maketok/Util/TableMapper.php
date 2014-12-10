@@ -13,6 +13,7 @@ use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\Zend\Db\Sql\InsertIgnore;
 use Zend\Db\ResultSet\HydratingResultSet;
 use Zend\Db\TableGateway\AbstractTableGateway;
+use Maketok\Util\Zend\Db\ResultSet\HydratingResultSet as ExtendedHydratingResultSet;
 
 class TableMapper
 {
@@ -233,4 +234,16 @@ class TableMapper
         return $data;
     }
 
+    /**
+     * @throws ModelException
+     * @return \ArrayObject|bool|mixed|null
+     */
+    public function getObjectPrototype()
+    {
+        $resultSet = $this->getGateway()->getResultSetPrototype();
+        if ($resultSet instanceof ExtendedHydratingResultSet) {
+            return clone $resultSet->getObjectPrototype();
+        }
+        throw new ModelException("Can't retrieve Object Prototype. Different Result Set is used.");
+    }
 }

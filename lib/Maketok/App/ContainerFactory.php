@@ -17,6 +17,10 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
+/**
+ * IoC Container Factory
+ * @codeCoverageIgnore
+ */
 class ContainerFactory
 {
     /** @var array  */
@@ -29,7 +33,6 @@ class ContainerFactory
     private static $env;
 
     /**
-     * @codeCoverageIgnore
      * @return ContainerBuilder
      */
     public static function getServiceContainer()
@@ -63,7 +66,8 @@ class ContainerFactory
     {
         return [
             new \Maketok\Installer\Ddl\DI(),
-            new \Maketok\Module\DI()
+            new \Maketok\Module\DI(),
+            new \Maketok\Http\Session\DI()
         ];
     }
 
@@ -81,7 +85,6 @@ class ContainerFactory
 
     /**
      * yet another alias
-     * @codeCoverageIgnore
      * @return ContainerBuilder
      */
     public static function ioc()
@@ -91,7 +94,6 @@ class ContainerFactory
 
     /**
      * Init Service Container
-     * @codeCoverageIgnore
      */
     private static function createSC()
     {
@@ -133,7 +135,6 @@ class ContainerFactory
 
     /**
      * load SC configs
-     * @codeCoverageIgnore
      */
     private static function loadSCConfig()
     {
@@ -161,7 +162,6 @@ class ContainerFactory
     }
 
     /**
-     * @codeCoverageIgnore
      * @param ExtensionInterface $extension
      */
     protected static function addDiExtension(ExtensionInterface $extension)
@@ -171,7 +171,6 @@ class ContainerFactory
     }
 
     /**
-     * @codeCoverageIgnore
      * @param bool $withNS
      * @return string
      */
@@ -189,7 +188,6 @@ class ContainerFactory
     }
 
     /**
-     * @codeCoverageIgnore
      * @param StateInterface $state
      */
     public static function serviceContainerProcessModules(StateInterface $state)
@@ -211,7 +209,6 @@ class ContainerFactory
     }
 
     /**
-     * @codeCoverageIgnore
      * @return string
      */
     protected static function getContainerFileName()
@@ -224,8 +221,7 @@ class ContainerFactory
     }
 
     /**
-     * @codeCoverageIgnore
-     * @observe config_after_process
+     * dump compile container
      */
     public static function scCompile()
     {
@@ -238,8 +234,7 @@ class ContainerFactory
     }
 
     /**
-     * @codeCoverageIgnore
-     * @observe config_after_process
+     * dump ioc container
      */
     public static function scDump()
     {

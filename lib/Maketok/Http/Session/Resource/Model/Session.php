@@ -5,9 +5,12 @@
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\App\Exception;
+namespace Maketok\Http\Session\Resource\Model;
 
-class AppException extends \Exception
+class Session
 {
 
+    public $session_id;
+    public $data;
+    public $updated_at;
 }

@@ -27,18 +27,6 @@ services:
       - "%module_config_name%"
       - "%module_area%"
 
-  session_save_handler:
-    class: Maketok\Http\Session\DbHandler
-    arguments: ["@adapter"]
-
-  session_storage:
-    class: Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage
-    arguments: [[], "@session_save_handler"]
-
-  session_manager:
-    class: Maketok\Http\Session
-    arguments: ["@session_storage"]
-
   directory_handler:
     class: Maketok\Util\DirectoryHandler
 
@@ -83,7 +71,7 @@ services:
 
   zend_db_sql:
     class: Maketok\Util\Zend\Db\Sql\Sql
-    arguments: ["@adapter", [], "@zend_sql_platform"]
+    arguments: ["@adapter", ~, "@zend_sql_platform"]
 
   router:
     class: Maketok\Mvc\Router\Stack

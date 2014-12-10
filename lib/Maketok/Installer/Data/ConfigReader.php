@@ -9,6 +9,11 @@ namespace Maketok\Installer\Data;
 
 use Maketok\Installer\Data\Resource\Model\DataClient;
 
+/**
+ * Class ConfigReader
+ * @package Maketok\Installer\Data
+ * @codeCoverageIgnore
+ */
 class ConfigReader implements ConfigReaderInterface
 {
 
@@ -26,7 +31,7 @@ class ConfigReader implements ConfigReaderInterface
         $configsToMerge = [];
         foreach ($clients as $client) {
             /** @var DataClient $client */
-            $configsToMerge = $client->config;
+            $configsToMerge[] = $client->config;
         }
         $this->mergeConfigs($configsToMerge);
     }

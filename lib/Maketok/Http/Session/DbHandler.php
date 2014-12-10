@@ -7,7 +7,9 @@
 
 namespace Maketok\Http\Session;
 
-use Zend\Db\Adapter\Adapter;
+use Maketok\App\Helper\UtilityHelperTrait;
+use Maketok\Http\Session\Resource\Model\Session;
+use Maketok\Util\TableMapper;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Maketok\Installer\Ddl\ClientInterface;
@@ -15,22 +17,25 @@ use Maketok\Installer\Ddl\ClientInterface;
 /**
  * Class DbHandler
  * @package Maketok\Http\Session
+ * @codeCoverageIgnore
  */
 class DbHandler implements \SessionHandlerInterface, ClientInterface
 {
 
-    /** @var Sql */
-    protected $_sql;
-    /** @var Adapter */
-    protected $_adapter;
+    use UtilityHelperTrait;
 
     /**
-     * @param Adapter $adapter
+     * @var TableMapper
      */
-    public function __construct(Adapter $adapter)
+    private $tableMapper;
+
+    /**
+     * init
+     * @param TableMapper $tableMapper
+     */
+    public function __construct(TableMapper $tableMapper)
     {
-        $this->_adapter = $adapter;
-        $this->_sql = new Sql($this->_adapter, $this->getDdlCode());
+        $this->tableMapper = $tableMapper;
     }
 
     /**
@@ -46,11 +51,11 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function destroy($session_id)
     {
-        $delete = $this->_sql->delete()->where(array('session_id' => $session_id));
-        $statement = $this->_sql->prepareStatementForSqlObject($delete);
-        $result = $statement->execute();
-        if ($result->getAffectedRows() > 0) {
+        try {
+            $this->tableMapper->delete($session_id);
             return true;
+        } catch (\Exception $e) {
+            $this->getLogger()->err($e->__toString());
         }
         return false;
     }
@@ -66,9 +71,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
 
         $where = new Where();
         $where->lessThan('updated_at', $expirationDate->format('Y-m-d H:i:s'));
-        $delete = $this->_sql->delete()->where($where);
-        $statement = $this->_sql->prepareStatementForSqlObject($delete);
-        $statement->execute();
+        $this->tableMapper->getGateway()->delete($where);
         return true;
     }
 
@@ -85,11 +88,9 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function read($session_id)
     {
-        $select = $this->_sql->select()->columns(array('data'))->where(array('session_id' => $session_id));
-        $statement = $this->_sql->prepareStatementForSqlObject($select);
-        $result = $statement->execute();
-        foreach ($result as $row) {
-            return $row['data'];
+        /** @var Session $model */
+        if ($model = $this->tableMapper->find($session_id)) {
+            return $model->session_id;
         }
         return '';
     }
@@ -99,27 +100,11 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function write($session_id, $session_data)
     {
-        $now = new \DateTime();
-        // try update first, and if failed, insert instead
-        $update = $this->_sql->update()
-            ->set(array('data' => $session_data, 'updated_at' => $now->format('Y-m-d H:i:s')))
-            ->where(array('session_id' => $session_id));
-        $statement = $this->_sql->prepareStatementForSqlObject($update);
-        $result = $statement->execute();
-        if ($result->getAffectedRows() <= 0) {
-            $insert = $this->_sql->insert()
-                ->columns(array('session_id', 'data', 'updated_at'))
-                ->values(array(
-                    'session_id' => $session_id,
-                    'data' => $session_data,
-                    'updated_at' => $now->format('Y-m-d H:i:s'),
-                ));
-            $statement = $this->_sql->prepareStatementForSqlObject($insert);
-            $result = $statement->execute();
-            if ($result->getAffectedRows() <= 0) {
-                return false;
-            }
-        }
+        /** @var Session $model */
+        $model = $this->tableMapper->getObjectPrototype();
+        $model->session_id = $session_id;
+        $model->data = $session_data;
+        $this->tableMapper->save($model);
         return true;
     }
 
@@ -141,10 +126,11 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
 
     /**
      * {@inheritdoc}
+     * @pass
      */
     public function getDependencies()
     {
-        // TODO: Implement getDependencies() method.
+        return;
     }
 
     /**

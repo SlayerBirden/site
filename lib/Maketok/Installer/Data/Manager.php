@@ -13,6 +13,11 @@ use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Util\StreamHandlerInterface;
 
+/**
+ * Class Manager
+ * @package Maketok\Installer\Data
+ * @codeCoverageIgnore
+ */
 class Manager extends AbstractManager implements ManagerInterface
 {
 
@@ -28,11 +33,11 @@ class Manager extends AbstractManager implements ManagerInterface
                                 Directives $directives,
                                 StreamHandlerInterface $handler = null)
     {
-        $this->_reader = $reader;
-        $this->_streamHandler = $handler;
+        $this->reader = $reader;
+        $this->streamHandler = $handler;
         $this->directives = $directives;
         if ($handler) {
-            $this->_resource = $resource;
+            $this->resource = $resource;
         }
     }
 
@@ -52,10 +57,10 @@ class Manager extends AbstractManager implements ManagerInterface
         if (!($client instanceof ClientInterface)) {
             throw new Exception("Wrong client type.");
         }
-        if (is_null($this->_clients)) {
-            $this->_clients = [];
+        if (is_null($this->clients)) {
+            $this->clients = [];
         }
-        $this->_clients[$client->getDataCode()] = $client;
+        $this->clients[$client->getDataCode()] = $client;
     }
 
     /**

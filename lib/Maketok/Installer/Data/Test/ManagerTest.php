@@ -7,12 +7,15 @@
 
 namespace Maketok\Installer\Data\Test;
 
+/**
+ * @coversDefaultClass \Maketok\Installer\Data\Manager
+ */
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @covers Maketok\Installer\Data\Manager::process
+     * @covers ::process
      */
     public function testProcess()
     {

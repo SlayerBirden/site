@@ -10,11 +10,14 @@ namespace Maketok\App\Helper;
 use Maketok\App\ContainerFactory;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
+/**
+ * Trait that adds IoC getter
+ * @codeCoverageIgnore
+ */
 trait ContainerTrait
 {
 
     /**
-     * @codeCoverageIgnore
      * @return ContainerBuilder
      */
     public function getServiceContainer()
@@ -24,7 +27,6 @@ trait ContainerTrait
 
     /**
      * alias
-     * @codeCoverageIgnore
      * @return ContainerBuilder
      */
     public function getSC()
@@ -34,7 +36,6 @@ trait ContainerTrait
 
     /**
      * yet another alias
-     * @codeCoverageIgnore
      * @return ContainerBuilder
      */
     public function ioc()

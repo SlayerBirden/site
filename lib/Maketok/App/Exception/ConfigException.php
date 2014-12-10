@@ -7,7 +7,6 @@
 
 namespace Maketok\App\Exception;
 
-
 class ConfigException extends \Exception
 {
 

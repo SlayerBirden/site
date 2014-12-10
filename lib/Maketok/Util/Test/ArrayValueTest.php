@@ -7,12 +7,17 @@
 
 namespace Maketok\Util\Test;
 
+/**
+ * Class ArrayValueTraitTest
+ * @package Maketok\Util\Test
+ * @coversDefaultClass \Maketok\Util\ArrayValueTrait
+ */
 class ArrayValueTraitTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @covers \Maketok\Util\ArrayValue::getIfExists
+     * @covers ::getIfExists
      * @dataProvider provider
      * @param string|string[] $key
      * @param array $data

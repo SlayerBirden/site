@@ -7,12 +7,15 @@
 
 namespace Maketok\Installer\Data\Test;
 
+/**
+ * @coversDefaultClass \Maketok\Installer\Data\ConfigReader
+ */
 class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @covers Maketok\Installer\Data\ConfigReader::getMergedConfig
+     * @covers ::getMergedConfig
      */
     public function testGetMergedConfig()
     {

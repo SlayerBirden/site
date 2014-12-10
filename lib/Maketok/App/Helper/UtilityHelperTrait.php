@@ -15,6 +15,10 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
 use Zend\Uri\UriFactory;
 
+/**
+ * Utility belt (R)
+ * @package Maketok\App\Helper
+ */
 trait UtilityHelperTrait
 {
     use ContainerTrait;
@@ -83,6 +87,7 @@ trait UtilityHelperTrait
     }
 
     /**
+     * @codeCoverageIgnore
      * @param string $path
      * @return array
      */

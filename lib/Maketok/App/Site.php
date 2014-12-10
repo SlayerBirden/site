@@ -15,6 +15,10 @@ use Maketok\Util\RequestInterface;
 use Monolog\Logger;
 use Zend\Stdlib\ErrorHandler;
 
+/**
+ * Application entry point
+ * @codeCoverageIgnore
+ */
 final class Site
 {
     use UtilityHelperTrait;
@@ -32,7 +36,6 @@ final class Site
 
     /**
      * launch app process
-     * @codeCoverageIgnore
      * @param string $env
      * @param int $context
      */
@@ -61,7 +64,6 @@ final class Site
     }
 
     /**
-     * @codeCoverageIgnore
      * @internal param StateInterface
      * @throws mixed
      */
@@ -77,7 +79,6 @@ final class Site
     }
 
     /**
-     * @codeCoverageIgnore
      * @param RequestInterface $request
      */
     public function setRequest(RequestInterface $request)
@@ -88,7 +89,6 @@ final class Site
 
     /**
      * init evn
-     * @codeCoverageIgnore
      */
     private function initEnvironment()
     {
@@ -101,7 +101,6 @@ final class Site
 
     /**
      * Custom exception handler
-     * @codeCoverageIgnore
      * @param \Exception $e
      */
     public function maketokExceptionHandler( \Exception $e)
