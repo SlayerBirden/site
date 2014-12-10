@@ -83,34 +83,45 @@ abstract class AbstractManager implements ManagerInterface
         if (!is_string($a) || !is_string($b)) {
             throw new \InvalidArgumentException("Compared arguments must be strings.");
         }
-        $aA = explode('.', $a);
-        $aB = explode('.', $b);
-        $countAA = count($aA);
-        $countAB = count($aB);
-        if ($countAA > $countAB) {
-
-            for ($i = $countAB; $i < $countAA; $i++){
-                $aB[] = 0;
-            }
-        } elseif($countAB > $countAA) {
-            for ($i = $countAA; $i < $countAB; $i++){
-                $aA[] = 0;
-            }
-        }
-        // cast all versions to int
-        foreach ($aA as &$v) {$v = (int) $v;}
-        foreach ($aB as &$v) {$v = (int) $v;}
-        for ($i = 0; $i < $countAA; $i++) {
-            if ($aA[$i] > $aB[$i]) {
+        if (strpos($a, '.') || strpos($b, '.')) {
+            $aA = explode('.', $a);
+            $aB = explode('.', $b);
+            $this->castEqualLength($aA, $aB);
+            do {
+                $a = array_shift($aA);
+                $b = array_shift($aB);
+            } while ($a == $b && !is_null($a) && !is_null($b));
+            return $this->natRecursiveCompare((string) $a,(string) $b);
+        } else {
+            if ((int) $a > (int) $b) {
                 return 1;
-            } elseif ($aB[$i] > $aA[$i]) {
+            } elseif ((int) $b > (int) $a) {
                 return -1;
-            } elseif ($aA[$i] === $aB[$i]) {
-                continue;
+            } else {
+                return 0;
             }
         }
-        // identical
-        return 0;
+    }
+
+    /**
+     * cast both array to equal length
+     * @param array $a
+     * @param array $b
+     * @param mixed $placeholder
+     */
+    public function castEqualLength(array &$a, array &$b, $placeholder = '0')
+    {
+        $countA = count($a);
+        $countB = count($b);
+        if ($countA > $countB) {
+            for ($i = $countB; $i < $countA; $i++){
+                $b[] = $placeholder;
+            }
+        } elseif($countB > $countA) {
+            for ($i = $countA; $i < $countB; $i++){
+                $a[] = $placeholder;
+            }
+        }
     }
 
     /**

@@ -33,6 +33,6 @@ class Article
      */
     public function getUrl()
     {
-        return Site::getBaseUrl() . '/blog/' . $this->code;
+        return Site::getUrl('/blog/' . $this->code);
     }
 }
