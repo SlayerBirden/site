@@ -13,16 +13,23 @@ trait ArrayValue
 {
 
     /**
-     * @param string $key
+     * @param string|string[] $key
      * @param array $data
      * @param null|mixed $default
      * @return mixed|null
      */
     public function getIfExists($key, array $data, $default = null)
     {
-        if (array_key_exists($key, $data)) {
-            return $data[$key];
+        if (is_array($key)) {
+            while (!is_null($simpleKey = array_shift($key)) && is_array($data)) {
+                $data = $this->getIfExists($simpleKey, $data, $default);
+            }
+            return $data;
+        } else {
+            if (array_key_exists($key, $data)) {
+                return $data[$key];
+            }
+            return $default;
         }
-        return $default;
     }
 } 

@@ -15,7 +15,7 @@ interface NavigationInterface
 
     /**
      * @param LinkInterface $link
-     * @param string $parent
+     * @param mixed $parent
      * @return mixed
      */
     public function addLink(LinkInterface $link, $parent = null);

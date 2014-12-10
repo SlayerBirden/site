@@ -22,8 +22,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $node = new Node('A');
         $nodeB = new Node('B');
         $nodeC = new Node('C');
-        $node->addChild($nodeB);
-        $node->addChild($nodeC);
+        $node->addChildren([$nodeB, $nodeC]);
 
         $this->assertEquals([$nodeC], $nodeC->traverse());
         $this->assertEquals([$node, $nodeB, $nodeC], $node->traverse());
@@ -121,8 +120,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $node = new Node('A');
         $nodeB = new Node('B');
         $nodeC = new Node('C');
-        $node->addChild($nodeB);
-        $node->addChild($nodeC);
+        $node->addChildren([$nodeB, $nodeC]);
 
         $this->assertEquals([$nodeB], $nodeC->getSiblings());
         $this->assertEquals([$nodeC], $nodeB->getSiblings());
@@ -151,8 +149,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $node = new Node('A');
         $nodeB = new Node('B');
         $nodeC = new Node('C');
-        $node->addChild($nodeB);
-        $nodeB->addChild($nodeC);
+        $node->addChild($nodeB)->addChild($nodeC);
 
         $this->assertEquals([$nodeB, $node], $nodeC->getAncestors());
     }
@@ -166,8 +163,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $node = new Node('A');
         $nodeB = new Node('B');
         $nodeC = new Node('C');
-        $node->addChild($nodeB);
-        $nodeB->addChild($nodeC);
+        $node->addChild($nodeB)->addChild($nodeC);
 
         $this->assertEquals($node, $nodeC->getRoot());
 
@@ -186,5 +182,19 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $node->addChild($nodeB);
 
         $this->assertEquals($node, $nodeB->getParent());
+    }
+
+    /**
+     * @test
+     * @covers Maketok\Template\Navigation\Node::addChildren
+     */
+    public function addChildren()
+    {
+        $node = new Node('A');
+        $nodeB = new Node('B');
+        $nodeC = new Node('C');
+        $node->addChildren([$nodeB, $nodeC]);
+
+        $this->assertEquals([$nodeB, $nodeC], $node->getChildren());
     }
 }

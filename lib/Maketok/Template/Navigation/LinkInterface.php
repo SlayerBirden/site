@@ -12,6 +12,16 @@ interface LinkInterface extends NodeInterface
 {
 
     /**
+     * create new link
+     * @param string $code
+     * @param string $reference
+     * @param int $order
+     * @param string $title
+     * @param LinkInterface $parent
+     */
+    public function __construct($code, $reference = null, $order = null, $title = null, LinkInterface $parent = null);
+
+    /**
      * set link order
      * @param int $order
      * @return self
@@ -64,25 +74,23 @@ interface LinkInterface extends NodeInterface
     public function getReference();
 
     /**
-     * create new link
-     * @param string $code
-     * @param string $reference
-     * @param int $order
-     * @param LinkInterface $parent
-     */
-    public function __construct($code, $reference = null, $order = null, LinkInterface $parent = null);
-
-    /**
-     * add child with order
+     * find a link within current tree
      * @param LinkInterface $link
-     * @return self
+     * @return LinkInterface|null
      */
-    public function addOrderedChild(LinkInterface $link);
+    public function findLink(LinkInterface $link);
 
     /**
      * find a link by code within current tree
      * @param string $code
-     * @return LinkInterface
+     * @return LinkInterface|null
      */
-    public function findLink($code);
+    public function find($code);
+
+    /**
+     * get Tree representation in array form
+     * @param LinkInterface $link
+     * @return array
+     */
+    public function asArray(LinkInterface $link = null);
 }

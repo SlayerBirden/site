@@ -9,16 +9,51 @@
 namespace Maketok\Template\Navigation;
 
 use Maketok\Template\Navigation\Dumper\DumperInterface;
+use Maketok\Util\ArrayValue;
 
 class Navigation implements NavigationInterface
 {
+    use ArrayValue;
+
+    /**
+     * @var LinkInterface
+     */
+    protected $tree;
+
+    /**
+     * @var \SplStack
+     */
+    protected $dumpers;
+
+    /**
+     * init tree
+     */
+    public function __construct()
+    {
+        $this->tree = new Link('root');
+        $this->dumpers = new \SplStack();
+    }
 
     /**
      * {@inheritdoc}
      */
     public function addLink(LinkInterface $link, $parent = null)
     {
-        // TODO: Implement addLink() method.
+        if (!is_null($parent)) {
+            if (is_object($parent) && ($parent instanceof LinkInterface)) {
+                $parent = $this->tree->findLink($parent);
+            } elseif (is_string($parent)) {
+                $parent = $this->tree->find($parent);
+            } else {
+                throw new \InvalidArgumentException(sprintf("Invalid parent provided: %s", gettype($parent)));
+            }
+            if (is_null($parent)) {
+                throw new Exception("Provided parent is not within current context.");
+            }
+        } else {
+            $parent = $this->tree->getRoot();
+        }
+        $parent->addChild($link);
     }
 
     /**
@@ -26,7 +61,8 @@ class Navigation implements NavigationInterface
      */
     public function getNavigation()
     {
-        // TODO: Implement getNavigation() method.
+        $fullTree = $this->tree->asArray();
+        return $this->getIfExists(array('root', 'children'), $fullTree, []);
     }
 
     /**
@@ -34,6 +70,6 @@ class Navigation implements NavigationInterface
      */
     public function addDumper(DumperInterface $dumper)
     {
-        // TODO: Implement addDumper() method.
+        $this->dumpers->push($dumper);
     }
 }

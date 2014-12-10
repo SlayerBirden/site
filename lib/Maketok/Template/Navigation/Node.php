@@ -46,7 +46,7 @@ class Node implements NodeInterface
         $return = [$node];
         foreach ($node->getChildren() as $child)
         {
-            $return = array_merge($return, $this->traverse($child));
+            $return = array_merge($return, $child->traverse());
         }
         return $return;
     }
@@ -93,7 +93,7 @@ class Node implements NodeInterface
     {
         array_push($this->children, $node);
         $node->setParent($this);
-        return $this;
+        return $node;
     }
 
     /**
@@ -168,5 +168,16 @@ class Node implements NodeInterface
     public function setParent(NodeInterface $node)
     {
         $this->parent = $node;
+    }
+
+    /**
+     * @param NodeInterface[] $nodes
+     * @return mixed
+     */
+    public function addChildren(array $nodes)
+    {
+        foreach ($nodes as $node) {
+            $this->addChild($node);
+        }
     }
 }

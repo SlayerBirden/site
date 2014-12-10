@@ -45,7 +45,7 @@ interface NodeInterface
     /**
      * add Child Node
      * @param NodeInterface $node
-     * @return self
+     * @return NodeInterface child
      */
     public function addChild(NodeInterface $node);
 
@@ -84,4 +84,10 @@ interface NodeInterface
      * @return NodeInterface
      */
     public function getRoot();
+
+    /**
+     * @param NodeInterface[] $nodes
+     * @return mixed
+     */
+    public function addChildren(array $nodes);
 }
