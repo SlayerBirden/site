@@ -19,9 +19,10 @@ script:
   - ../vendor/bin/phpunit --testsuite "installer" --report-useless-tests --strict --exclude-group=Coverage
   - ../vendor/bin/phpunit --testsuite "app" --report-useless-tests --strict --exclude-group=Coverage
   - ../vendor/bin/phpunit --testsuite "nav" --report-useless-tests --strict --exclude-group=Coverage
-  - ../vendor/bin/phpunit --report-useless-tests --coverage-clover=coverage.clover --group=Coverage
+  - ../vendor/bin/phpunit --report-useless-tests --coverage-clover ./coverage.clover --group=Coverage
 
 after_script:
+  - pwd
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover ./coverage.clover
 
