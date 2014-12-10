@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!-- This is a part of Maketok Site. Licensed under GPL 3.0 -->
+<!-- @project site -->
+<!-- @developer Oleg Kulik slayer.birden@gmail.com maketok.com -->
 <phpunit bootstrap="bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="installer">

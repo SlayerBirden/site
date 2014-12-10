@@ -1,11 +1,11 @@
-### About
-=========
+About
+-----
 
-This is Util component from Maketok lib. Includes StreamHandler which performs simple write/read operations.
+This is Util component from Maketok lib. Includes few useful classes.
 
 
-### Tech
---------
+Tech
+----
 
 StreamHandlerInterface:
 
@@ -22,8 +22,8 @@ StreamHandlerInterface:
 ```
 
 
-### License
----------
+License
+-------
 
 [GPL 3.0](https://www.gnu.org/licenses/gpl-faq.html)
 

@@ -140,17 +140,19 @@ class ContainerFactory
         $loader = new YamlFileLoader(self::$ioc, new FileLocator(AR . '/config/di'));
         // load base configs
         foreach (self::$serviceContainerFileList as $fileName) {
-            try {
-                $loader->load("$fileName.yml");
-                $loader->load("local.$fileName.yml");
-                if ($env = self::getEnv()) {
-                    $loader->load("$env.$fileName.yml");
-                    $loader->load("local.$env.$fileName.yml");
-                }
-            } catch (\InvalidArgumentException $e) {
-                // non existing files
-                // mute exception
+            $toLoad = ["$fileName.yml", "local.$fileName.yml"];
+            if ($env = self::getEnv()) {
+                $toLoad[] = "$env.$fileName.yml";
+                $toLoad[] = "local.$env.$fileName.yml";
             }
+            array_walk($toLoad, function($value) use ($loader) {
+                try {
+                    $loader->load($value);
+                } catch (\InvalidArgumentException $e) {
+                    // non existing files
+                    // mute exception
+                }
+            });
         }
         // now handle some registered lib extensions
         foreach (self::getConfigExtensions() as $ext) {

@@ -1,3 +1,7 @@
+# This is a part of Maketok Site. Licensed under GPL 3.0
+# @project site
+# @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+
 parameters:
   article_model.class: modules\blog\model\Article
   article_result_set.class: Zend\Db\ResultSet\HydratingResultSet

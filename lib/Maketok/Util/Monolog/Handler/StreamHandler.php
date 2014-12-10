@@ -12,7 +12,7 @@ use Monolog\Handler\StreamHandler as BaseStreamHandler;
 class StreamHandler extends BaseStreamHandler
 {
     /**
-     * @{inerhitDoc}
+     * {@inheritdoc}
      */
     public function write(array $record)
     {
@@ -22,7 +22,7 @@ class StreamHandler extends BaseStreamHandler
             }
             $dir = dirname($this->url);
             if (!is_dir($dir)) {
-                @mkdir($dir, 0777, TRUE);
+                @mkdir($dir, 0755, TRUE);
             }
         }
         parent::write($record);
