@@ -1,7 +1,6 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
@@ -12,11 +11,18 @@ class Autoload
 {
     const NS_SEPARATOR = '\\';
 
+    /**
+     * register autoloader
+     */
     public function register()
     {
         spl_autoload_register(array($this, 'autoload'));
     }
 
+    /**
+     * @param string $class
+     * @return mixed|string
+     */
     public function autoload($class)
     {
         // get base dir

@@ -11,3 +11,4 @@ parameters:
   log_dir: "%AR%/var/log/"
   cache_dir: "%AR%/var/cache/"
   hydrating_resultset: Maketok\Util\Zend\Db\ResultSet\HydratingResultSet
+  debug: false

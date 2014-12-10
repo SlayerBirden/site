@@ -1,17 +1,17 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Template;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\ContainerTrait;
 
 class Twig extends AbstractEngine
 {
+    use ContainerTrait;
 
     const CACHE_FOLDER = 'var/cache';
 
@@ -29,7 +29,7 @@ class Twig extends AbstractEngine
      */
     public function __construct($debug = false)
     {
-        $this->_engine = Site::getServiceContainer()->get('twig_env');
+        $this->_engine = $this->ioc()->get('twig_env');
     }
 
     /**

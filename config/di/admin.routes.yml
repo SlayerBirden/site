@@ -1,0 +1,36 @@
+# This is a part of Maketok Site. Licensed under GPL 3.0
+#
+# @project site
+# @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+
+routes:
+  - type: literal
+    path: /
+    parameters:
+        module: admin_manager
+        controller: admin\controller\Index
+        action: index
+  - type: literal
+    path: /install/run
+    parameters:
+        module: admin_manager
+        controller: admin\controller\Install
+        action: run
+  - type: literal
+    path: /install
+    parameters:
+        module: admin_manager
+        controller: admin\controller\Install
+        action: index
+  - type: literal
+    path: /modules
+    parameters:
+        module: admin_manager
+        controller: Maketok\Module\Resource\controller\admin\Modules
+        action: index
+  - type: parameterized
+    path: /modules/{area}/{module_code}
+    parameters:
+        module: admin_manager
+        controller: Maketok\Module\Resource\controller\admin\Modules
+        action: view

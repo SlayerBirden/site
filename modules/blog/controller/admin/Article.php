@@ -1,14 +1,12 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace modules\blog\controller\admin;
 
-use Maketok\App\Site;
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
@@ -108,18 +106,18 @@ class Article extends AbstractAdminController
         $articleTable = $this->getSC()->get('article_table');
         try {
             $articleTable->save($form->getData());
-            Site::getSession()->getFlashBag()->add(
+            $this->getSession()->getFlashBag()->add(
                 'success',
                 'The article was saved successfully!'
             );
         } catch (ModelInfoException $e) {
-            Site::getSession()->getFlashBag()->add(
+            $this->getSession()->getFlashBag()->add(
                 'notice',
                 $e->getMessage()
             );
         } catch (\Exception $e) {
-            $this->getSC()->get('logger')->err($e);
-            Site::getSession()->getFlashBag()->add(
+            $this->getLogger()->err($e);
+            $this->getSession()->getFlashBag()->add(
                 'error',
                 'There was an error processing your request. Our specialists will be looking into it.'
             );

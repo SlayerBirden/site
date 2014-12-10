@@ -1,14 +1,13 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Module\Resource\controller\admin;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Module\Resource\Model\Module;
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;
@@ -19,6 +18,7 @@ use Maketok\Util\TableMapper;
 
 class Modules extends AbstractAdminController
 {
+    use UtilityHelperTrait;
 
     /**
      * @param RequestInterface $request
@@ -52,18 +52,18 @@ class Modules extends AbstractAdminController
             $moduleTable = $this->getSC()->get('module_table');
             try {
                 $moduleTable->save($form->getData());
-                Site::getSession()->getFlashBag()->add(
+                $this->getSession()->getFlashBag()->add(
                     'success',
                     'The module was updated successfully!'
                 );
             } catch (ModelInfoException $e) {
-                Site::getSession()->getFlashBag()->add(
+                $this->getSession()->getFlashBag()->add(
                     'notice',
                     $e->getMessage()
                 );
             } catch (\Exception $e) {
                 $this->getSC()->get('logger')->err($e);
-                Site::getSession()->getFlashBag()->add(
+                $this->getSession()->getFlashBag()->add(
                     'error',
                     'There was an error processing your request. Our specialists will be looking into it.'
                 );

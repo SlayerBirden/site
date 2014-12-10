@@ -1,14 +1,13 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Util;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\Zend\Db\Sql\InsertIgnore;
@@ -17,6 +16,7 @@ use Zend\Db\TableGateway\AbstractTableGateway;
 
 class TableMapper
 {
+    use UtilityHelperTrait;
 
     /**
      * @var \Zend\Db\TableGateway\AbstractTableGateway
@@ -181,7 +181,7 @@ class TableMapper
             }
         } catch (ModelInfoException $e) {
             // Informative exceptions; for flow regulation
-            Site::getSC()->get('logger')->debug($e->getMessage());
+            $this->getLogger()->debug($e->getMessage());
         }
     }
 

@@ -1,14 +1,13 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Module;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\Http\SessionInterface;
 use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\Resource\Model\Module;
@@ -24,6 +23,7 @@ use Maketok\Installer;
 
 class ModuleManager implements ClientInterface
 {
+    use ContainerTrait;
 
     /** @var TableMapper */
     protected $_tableType;
@@ -327,7 +327,7 @@ class ModuleManager implements ClientInterface
         try {
             foreach ($this->getActiveModules() as $config) {
                 if ($config instanceof Installer\Ddl\ClientInterface) {
-                    Site::getSC()->get('installer_ddl_manager')->addClient($config);
+                    $this->ioc()->get('installer_ddl_manager')->addClient($config);
                 }
             }
         } catch (\Exception $e) {

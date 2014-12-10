@@ -1,14 +1,13 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Mvc\Controller;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Http\Response;
 use Maketok\Mvc\GenericException;
 use Maketok\Mvc\Router\Route\RouteInterface;
@@ -18,6 +17,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class AbstractController
 {
+    use UtilityHelperTrait;
 
     /** @var  Response */
     protected $_response;
@@ -123,12 +123,12 @@ class AbstractController
     public function getDefaults()
     {
         return [
-            'css_url' => Site::getUrl('/css/'),
-            'js_url' => Site::getUrl('/js/'),
-            'images_url' => Site::getUrl('/images/'),
-            'base_url' => Site::getUrl('/', ['wts' => 1]),
+            'css_url' => $this->getUrl('/css/'),
+            'js_url' => $this->getUrl('/js/'),
+            'images_url' => $this->getUrl('/images/'),
+            'base_url' => $this->getUrl('/', ['wts' => 1]),
             'current_url' => $this->getCurrentUrl(),
-            'session' => Site::getSession(),
+            'session' => $this->getSession(),
             'links' => [],
         ];
     }
@@ -216,14 +216,6 @@ class AbstractController
     }
 
     /**
-     * @return \Symfony\Component\DependencyInjection\ContainerBuilder
-     */
-    public function getSC()
-    {
-        return Site::getServiceContainer();
-    }
-
-    /**
      * @return \Symfony\Component\Form\FormFactoryInterface
      */
     public function getFormFactory()
@@ -247,7 +239,7 @@ class AbstractController
      */
     protected function redirect($path)
     {
-        $url = Site::getUrl($path);
+        $url = $this->getUrl($path);
         return $this->redirectUrl($url);
     }
 
@@ -256,17 +248,8 @@ class AbstractController
      */
     protected function returnBack()
     {
-        $referer = Site::getServiceContainer()->get('request')->headers->get('referer');
+        $referer = $this->ioc()->get('request')->headers->get('referer');
         return $this->redirectUrl($referer);
-    }
-
-    /**
-     * @param string $path
-     * @return string
-     */
-    public function getUrl($path)
-    {
-        return Site::getUrl($path);
     }
 
     /**
@@ -276,7 +259,7 @@ class AbstractController
     public function getCurrentUrl()
     {
         /** @var RouteInterface $route */
-        $route = Site::getServiceContainer()->get('request')->attributes->get('_route');
+        $route = $this->ioc()->get('request')->attributes->get('_route');
         return $this->getUrl($route->assemble());
     }
 }

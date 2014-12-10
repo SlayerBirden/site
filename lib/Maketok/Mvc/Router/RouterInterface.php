@@ -1,7 +1,6 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
@@ -9,8 +8,9 @@
 namespace Maketok\Mvc\Router;
 
 use Maketok\Mvc\Router\Route\RouteInterface;
+use Maketok\Util\ConfigReaderInterface;
 
-interface RouterInterface extends RouteInterface
+interface RouterInterface extends RouteInterface, ConfigReaderInterface
 {
 
     const STACK_MODE_APPEND = 1;

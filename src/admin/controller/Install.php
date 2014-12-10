@@ -1,7 +1,6 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
@@ -43,7 +42,7 @@ class Install extends AbstractController
     {
         $this->setTemplate('install-manager.html.twig');
         return $this->prepareResponse($request, array(
-            'install_url' => Site::getUrl('install/run'),
+            'install_url' => $this->getUrl('install/run'),
             'title' => 'Installer - Admin Management Area'
         ));
     }

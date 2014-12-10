@@ -1,20 +1,20 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Installer\Ddl\Resource\Model;
 
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\Installer\Exception;
 use Maketok\Util\TableMapper;
-use Maketok\App\Site;
 use Maketok\Util\Exception\ModelException;
 
 class DdlClientType extends TableMapper
 {
+    use ContainerTrait;
 
     /**
      * @param string $code
@@ -44,12 +44,12 @@ class DdlClientType extends TableMapper
             $dependencies = [];
         }
         /** @var DdlClientDependencyType $dependencyType */
-        $dependencyType = Site::getServiceContainer()->get('ddl_client_dependency_table');
+        $dependencyType = $this->ioc()->get('ddl_client_dependency_table');
         foreach ($dependencies as $dependencyCode) {
             try {
                 $dModel = $dependencyType->findByClientDependency($model->id, $dependencyCode);
             } catch (ModelException $e) {
-                $dModel = Site::getServiceContainer()->get('ddl_client_dependency_model');
+                $dModel = $this->ioc()->get('ddl_client_dependency_model');
             }
             /** @var DdlClientDependency $dModel */
             $dModel->client_id = $model->id;
@@ -61,7 +61,7 @@ class DdlClientType extends TableMapper
             // unfortunately for history we need old model version
             // to do that load model
             /** @var DdlClientType $clientType */
-            $clientType = Site::getServiceContainer()->get('ddl_client_table');
+            $clientType = $this->ioc()->get('ddl_client_table');
             try {
                 /** @var DdlClient $oldModel */
                 $oldModel = $clientType->find($model->id);
@@ -72,10 +72,10 @@ class DdlClientType extends TableMapper
         }
         parent::save($model);
         if ($oldVersion != $model->version) {
-            /** @var DdlClientHistoryType $historyType */
-            $historyType = Site::getServiceContainer()->get('ddl_client_history_table');
+            /** @var TableMapper $historyType */
+            $historyType = $this->ioc()->get('ddl_client_history_table');
             /** @var DdlClientHistory $historyModel */
-            $historyModel = Site::getServiceContainer()->get('ddl_client_history_model');
+            $historyModel = $this->ioc()->get('ddl_client_history_model');
             $historyModel->client_id = $model->id;
             $historyModel->prev_version = (is_null($oldVersion) ? '' : $oldVersion);
             $historyModel->version = $model->version;

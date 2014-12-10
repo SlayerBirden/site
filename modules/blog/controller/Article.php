@@ -1,7 +1,6 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
@@ -24,7 +23,6 @@ class Article extends AbstractController
     public function indexAction(RequestInterface $request)
     {
         $article = $this->initArticle($request);
-        $this->setViewDependency(array('base'));
         $this->setTemplate('article.html.twig');
         return $this->prepareResponse($request, array(
             'article' => $article,

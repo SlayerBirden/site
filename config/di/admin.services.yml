@@ -1,0 +1,10 @@
+# This is a part of Maketok Site. Licensed under GPL 3.0
+#
+# @project site
+# @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+
+services:
+  router:
+      class: Maketok\Mvc\Router\Stack
+      calls:
+        - [source, [%AR%/config/di/admin.routes.yml]]

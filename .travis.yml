@@ -8,18 +8,15 @@ php:
 install: composer install --dev
 
 before_script:
-  - cp config/local.php.sample config/local.php
   - mysql -e 'create database site_test;'
-#  - yes | \cp -f config/di/travis.services.yml config/di/test.services.yml
-  - yes | \cp -f config/di/travis.parameters.yml config/di/test.parameters.yml
 
 script:
   - cd tests
-  - ../vendor/bin/phpunit --testsuite "util" --report-useless-tests --strict
-  - ../vendor/bin/phpunit --testsuite "installer" --report-useless-tests --strict
-  - ../vendor/bin/phpunit --testsuite "app" --report-useless-tests --strict
-  - ../vendor/bin/phpunit --testsuite "nav" --report-useless-tests --strict
-  - ../vendor/bin/phpunit --report-useless-tests --coverage-clover ./coverage.clover
+  - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --testsuite "util" --report-useless-tests --strict
+  - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --testsuite "installer" --report-useless-tests --strict
+  - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --testsuite "app" --report-useless-tests --strict
+  - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --testsuite "nav" --report-useless-tests --strict
+  - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --report-useless-tests --coverage-clover ./coverage.clover
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar

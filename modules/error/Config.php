@@ -1,7 +1,6 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
@@ -9,12 +8,13 @@
 namespace modules\error;
 
 
-use Maketok\App\Site;
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\Module\ConfigInterface;
 use modules\error\controller\Index;
 
 class Config implements ConfigInterface
 {
+    use ContainerTrait;
 
     /**
      * @return string
@@ -29,7 +29,7 @@ class Config implements ConfigInterface
      */
     public function initRoutes()
     {
-        return;
+        $this->ioc()->get('front_controller')->addDumper(new Index);
     }
 
     /**
@@ -62,6 +62,6 @@ class Config implements ConfigInterface
      */
     public function initListeners()
     {
-        Site::getSC()->get('front_controller')->addDumper(new Index);
+        return;
     }
 }

@@ -1,19 +1,16 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\App\Test;
 
-use Maketok\App\Site;
-
 /**
- * @coversDefaultClass \Maketok\App\Site
+ * @coversDefaultClass \MMaketok\App\Helper\UtilityHelperTrait
  */
-class SiteTest extends \PHPUnit_Framework_TestCase
+class UtilityHelperTraitTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -27,30 +24,8 @@ class SiteTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetUrl($path, $config, $base, $expected)
     {
-        $this->assertEquals($expected, Site::getUrl($path, $config, $base));
-    }
-
-    /**
-     * @test
-     * @covers ::getSCFilePrefix
-     * @param string|string[] $code
-     * @param string $expected
-     * @dataProvider prefixProvider
-     */
-    public function getContainerFileName($code, $expected)
-    {
-        $this->assertEquals($expected, Site::getSCFilePrefix($code));
-    }
-
-    /**
-     * @return array
-     */
-    public function prefixProvider()
-    {
-        return [
-            ['env', 'env.'],
-            [['local', 'env'], 'local.env.']
-        ];
+        $trait = $this->getMockForTrait('Maketok\App\Helper\UtilityHelperTrait');
+        $this->assertEquals($expected, $trait->getUrl($path, $config, $base));
     }
 
     /**

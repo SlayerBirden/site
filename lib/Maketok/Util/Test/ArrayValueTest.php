@@ -1,14 +1,13 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Util\Test;
 
-class ArrayValueTest extends \PHPUnit_Framework_TestCase
+class ArrayValueTraitTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -22,8 +21,8 @@ class ArrayValueTest extends \PHPUnit_Framework_TestCase
      */
     public function getIfExists($key, $data, $default, $expected)
     {
-        /** @var \Maketok\Util\ArrayValue $trait */
-        $trait = $this->getMockForTrait('Maketok\Util\ArrayValue');
+        /** @var \Maketok\Util\ArrayValueTrait $trait */
+        $trait = $this->getMockForTrait('Maketok\Util\ArrayValueTrait');
 
         $this->assertEquals($expected, $trait->getIfExists($key, $data, $default));
     }

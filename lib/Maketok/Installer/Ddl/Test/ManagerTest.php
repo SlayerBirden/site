@@ -1,14 +1,12 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Installer\Ddl\Test;
 
-use Maketok\App\Site;
 use Maketok\Installer\Ddl\Directives;
 use Maketok\Installer\Ddl\Manager;
 use Maketok\Installer\Ddl\Resource\Model\DdlClient;
@@ -21,13 +19,16 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $tableMapper = $this->getMock('Maketok\Installer\Ddl\Resource\Model\DdlClientType', [], [], '', false);
+        // simply throw exception, let's pretend there's no client available yet
+        $tableMapper->expects($this->any())->method('getClientByCode')->will($this->throwException(new \Exception('')));
         self::$_manager = new Manager(
             $this->getMock('Maketok\Installer\Ddl\ConfigReader'),
             $this->getMock('Maketok\Installer\Ddl\Mysql\Resource', [], [], '', false),
             new Directives(),
             null,
-            Site::getSC()->get('logger'),
-            Site::getSC()->get('ddl_client_table')
+            $this->getMock('\Monolog\Logger', [], [], '', false),
+            $tableMapper
         );
     }
 
@@ -37,7 +38,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddClient()
     {
-        $client = $this->getMock('Maketok\Installer\Ddl\ClientInterface');
+        $client = $this->getMock('Maketok\Installer\Ddl\ClientInterface', [], [], '', false);
         $client->expects($this->any())->method('getDdlVersion')->will($this->returnValue('0.1.0'));
         $client->expects($this->any())->method('getDdlConfig')->will($this->returnValue([]));
         $client->expects($this->any())->method('getDdlCode')->will($this->returnValue('t1'));

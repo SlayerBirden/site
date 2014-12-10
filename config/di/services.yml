@@ -50,6 +50,17 @@ services:
     class: Maketok\Observer\SubjectManager
     factory_class: Maketok\Observer\SubjectManager
     factory_method: getInstance
+    calls:
+          - [attach, [dispatch, ["@front_controller", dispatch], 10]]
+          - [attach, [ioc_container_initialized, ["@module_manager", processModuleConfig], 10]]
+          - [attach, [module_list_exists, "\Maketok\App\ContainerFactory::serviceContainerProcessModules", 0]]
+          - [attach, [ioc_container_initialized, "\Maketok\App\ContainerFactory::scCompile", 10]]
+          - [attach, [ioc_container_initialized, "\Maketok\App\ContainerFactory::scDump", 5]]
+          - [attach, [ioc_container_compiled, ["@module_manager", updateModules], 20]]
+          - [attach, [ioc_container_compiled, ["@module_manager", processModules], 15]]
+          - [attach, [ioc_container_compiled, ["@module_manager", addInstallerSubscribers], 10]]
+          - [attach, [response_send_before, ["@site", terminate], 0]]
+          - [attach, [noroute_action, ["@site", terminate], 0]]
 
   registry:
     class: Maketok\App\Registry
@@ -59,16 +70,13 @@ services:
   object_prop_hydrator:
     class: Maketok\Util\Hydrator\Hybrid
 
-  default_logger_handler:
+  logger_handler:
     class: Maketok\Util\Monolog\Handler\StreamHandler
     arguments: ["%log_dir%site.log", 100]
 
-  debug_logger_handler:
-    class: Monolog\Handler\ChromePHPHandler
-
   logger:
     class: Monolog\Logger
-    arguments: ["application_logger", ["@=parameter('debug') == true ? service('debug_logger_handler') : service('default_logger_handler')"]]
+    arguments: ["application_logger", ["@logger_handler"]]
 
   zend_sql_platform:
     class: Zend\Db\Sql\Platform\Platform
@@ -77,26 +85,6 @@ services:
   zend_db_sql:
     class: Maketok\Util\Zend\Db\Sql\Sql
     arguments: ["@adapter", [], "@zend_sql_platform"]
-
-  installer_ddl_resource:
-    class: Maketok\Installer\Ddl\Mysql\Resource
-    arguments: ["@adapter", "@zend_db_sql"]
-
-  installer_ddl_reader:
-    class: Maketok\Installer\Ddl\ConfigReader
-
-  installer_ddl_directives:
-    class: Maketok\Installer\Ddl\Directives
-
-  installer_ddl_manager:
-    class: Maketok\Installer\Ddl\Manager
-    arguments:
-      - "@installer_ddl_reader"
-      - "@installer_ddl_resource"
-      - "@installer_ddl_directives"
-      - "@lock_stream_handler"
-      - "@logger"
-      - "@ddl_client_table"
 
   router:
     class: Maketok\Mvc\Router\Stack
@@ -186,4 +174,12 @@ services:
       - { cache: "%AR%/var/cache", debug: "%debug%" }
 
   request:
+    synthetic: true
+
+  #main app service
+  site:
+    synthetic: true
+
+  #config service
+  config:
     synthetic: true

@@ -1,14 +1,13 @@
 <?php
 /**
  * This is a part of Maketok Site. Licensed under GPL 3.0
- *
  * @project site
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
 namespace Maketok\Mvc\Controller;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Mvc\Error\Dumper;
 use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\Http\Error;
@@ -22,6 +21,7 @@ use Maketok\Mvc\Error\DumperInterface;
 
 class Front
 {
+    use UtilityHelperTrait;
 
 
     /** @var  RouteInterface */
@@ -55,11 +55,8 @@ class Front
         $params = $success->getParameters();
         ob_start();
         $response = $this->launchAction($params, $success->getMatchedRoute());
-        $content = ob_get_contents();
-        // TODO figure out what to do with buffered content
-        ob_end_clean();
         if (!$silent) {
-            Site::getSC()->get('subject_manager')->notify('response_send_before', new State());
+            $this->getDispatcher()->notify('response_send_before', new State());
         }
         $response->send();
     }
@@ -89,30 +86,27 @@ class Front
                     'controller' => $dumper,
                     'action' => 'noroute',
                 ));
-                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')), true);
+                $this->getDispatcher()->notify('noroute_action', new State(['front' => $this, 'dumper' => $dumper]));
+                $this->launch($errorRoute->match($this->ioc()->get('request')), true);
             } elseif ($e instanceof \ErrorException) {
                 $errno = $e->getSeverity();
                 if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
-                    Site::getServiceContainer()
-                        ->get('logger')
-                        ->err(sprintf("Front Controller dispatch error exception\n%s", $e->__toString()));
+                    $this->getLogger()->err(sprintf("Front Controller dispatch error exception\n%s", $e->__toString()));
                     $errorRoute = new Error(array(
                         'controller' => $dumper,
                         'action' => 'error',
                         'exception' => $e,
                     ));
-                    $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')), true);
+                    $this->launch($errorRoute->match($this->ioc()->get('request')), true);
                 }
             } else {
-                Site::getServiceContainer()
-                    ->get('logger')
-                    ->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
+                $this->getLogger()->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
                 $errorRoute = new Error(array(
                     'controller' => $dumper,
                     'action' => 'error',
                     'exception' => $e,
                 ));
-                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')), true);
+                $this->launch($errorRoute->match($this->ioc()->get('request')), true);
             }
         } catch (\Exception $ex) {
             printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Trace: %s. Previous exception: %s",
