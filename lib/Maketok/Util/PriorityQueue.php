@@ -68,7 +68,12 @@ class PriorityQueue
     {
         $shouldRebuildQueue = false;
         foreach ($this->_items as $key => $data) {
-            if ($item === $data['item']) {
+            $comparer = new ClosureComparer();
+            if ($item == $data['item'] ||
+                ($comparer->isClosure($data['item']) &&
+                    $comparer->isClosure($item) &&
+                    $comparer->compare($item, $data['item']) === 0
+                )) {
                 unset($this->_items[$key]);
                 $this->_queue = null;
                 $shouldRebuildQueue = true;

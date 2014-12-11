@@ -9,6 +9,7 @@ install: composer install --dev
 
 before_script:
   - mysql -e 'create database site_test;'
+  - cp -f config/di/test.services.yml config/di/travis.services.yml
 
 script:
   - cd tests
