@@ -165,7 +165,3 @@ services:
   #main app service
   site:
     synthetic: true
-
-  #config service
-  config:
-    synthetic: true
