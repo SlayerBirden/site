@@ -25,9 +25,8 @@ class Twig extends AbstractEngine
 
     /**
      * set loader, env
-     * @param bool $debug
      */
-    public function __construct($debug = false)
+    public function __construct()
     {
         $this->_engine = $this->ioc()->get('twig_env');
     }

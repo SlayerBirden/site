@@ -14,7 +14,6 @@ services:
 
   template_engine:
     class: Maketok\Template\Twig
-    arguments: ["%debug%"]
 
   module_manager:
     class: Maketok\Module\ModuleManager
