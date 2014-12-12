@@ -14,33 +14,36 @@ class ClosureComparer
      * returns 0 if equal
      * 1 in all other cases
      *
-     * @param mixed $a
-     * @param mixed $b
+     * @param mixed $cl1
+     * @param mixed $cl2
      * @return int
      */
-    public function compare($a, $b)
+    public function compare($cl1, $cl2)
     {
-        if (!$this->isClosure($a) || !$this->isClosure($b)) {
+        if (!$this->isClosure($cl1) || !$this->isClosure($cl2)) {
             return 1;
         }
-        $r1 = new \ReflectionFunction($a);
-        $r2 = new \ReflectionFunction($b);
+        $reflectedClosure1 = new \ReflectionFunction($cl1);
+        $reflectedClosure2 = new \ReflectionFunction($cl2);
 
-        if ($r1->getParameters() != $r2->getParameters()) {
+        if ($reflectedClosure1->getParameters() != $reflectedClosure2->getParameters()) {
             return 1;
         }
-
         $a = $this->parseClosure(
-            implode(array_slice(file($r1->getFileName()),
-            $r1->getStartLine() - 1,
-            ($r1->getEndLine() - $r1->getStartLine() + 1)
-        )));
+            implode(array_slice(
+                file($reflectedClosure1->getFileName()),
+                $reflectedClosure1->getStartLine() - 1,
+                ($reflectedClosure1->getEndLine() - $reflectedClosure1->getStartLine() + 1)
+            ))
+        );
         $b = $this->parseClosure(
-            implode(array_slice(file($r2->getFileName()),
-            $r2->getStartLine() - 1,
-            ($r2->getEndLine() - $r2->getStartLine() + 1)
-        )));
-        return (int) !($a == $b);
+            implode(array_slice(
+                file($reflectedClosure2->getFileName()),
+                $reflectedClosure2->getStartLine() - 1,
+                ($reflectedClosure2->getEndLine() - $reflectedClosure2->getStartLine() + 1)
+            ))
+        );
+        return (int)!($a == $b);
     }
 
     /**
