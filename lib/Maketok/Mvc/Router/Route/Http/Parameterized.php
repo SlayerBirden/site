@@ -13,6 +13,7 @@ use Maketok\Mvc\Router\Route\Success;
 use Maketok\Util\RequestInterface;
 use Maketok\Util\ExpressionParser;
 use Maketok\Util\ExpressionParserInterface;
+use Maketok\Util\Tokenizer;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class Parameterized extends AbstractRoute implements RouteInterface
@@ -46,7 +47,7 @@ class Parameterized extends AbstractRoute implements RouteInterface
         $this->_defaults = $defaults;
         $this->_restrictions = $restrictions;
         if (is_null($parser)) {
-            $this->_expressionParser = new ExpressionParser($this->_matchPath);
+            $this->_expressionParser = new ExpressionParser($this->_matchPath, new Tokenizer($this->_matchPath));
         } else {
             $this->_expressionParser = $parser;
         }

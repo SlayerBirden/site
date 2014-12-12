@@ -7,7 +7,6 @@
 
 namespace Maketok\Util;
 
-
 interface ConfigReaderInterface
 {
 

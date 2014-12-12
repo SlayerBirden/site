@@ -7,7 +7,6 @@
 
 namespace Maketok\Util;
 
-
 use Maketok\Util\Exception\ParserException;
 
 class ExpressionParser implements ExpressionParserInterface
@@ -16,197 +15,164 @@ class ExpressionParser implements ExpressionParserInterface
     /**
      * @var string
      */
-    protected $_expression;
-
+    protected $expression;
     /**
      * @var array
      */
-    protected $_parameters;
+    protected $parameters;
     /**
      * @var array
      */
-    protected $_restrictions;
-
-    /** @var string  */
-    protected $_variableCharBegin = '{';
-    /** @var string  */
-    protected $_variableCharEnd = '}';
+    protected $restrictions;
+    /**
+     * @var TokenizerInterface
+     */
+    private $tokenizer;
 
     /**
-     * @param string $expression
-     * @param null|array $parameters
-     * @param null|array $restrictions
+     * {@inheritdoc}
      */
-    public function __construct($expression, $parameters = null, $restrictions = null)
+    public function __construct($expression, TokenizerInterface $tokenizer, array $parameters = [], array $restrictions = [])
     {
-        $this->_expression = $expression;
-        $this->_parameters = $parameters;
-        $this->_restrictions = $restrictions;
+        $this->expression = $expression;
+        $this->parameters = $parameters;
+        $this->restrictions = $restrictions;
+        $this->tokenizer = $tokenizer;
+    }
+
+    /**
+     * {@inheritdoc}
+     * @throws ParserException
+     */
+    public function evaluate()
+    {
+        $this->validate($this->parameters);
+        $result = [];
+        foreach ($this->tokenizer->tokenize() as $part) {
+            switch ($part->type) {
+                case 'const':
+                    $result[] = $part->value;
+                    break;
+                case 'var':
+                    if (isset($this->parameters[$part->value])) {
+                        $result[] = $this->parameters[$part->value];
+                    } else {
+                        $result[] = $part->value;
+                    }
+            }
+        }
+        return implode($result);
+    }
+
+    /**
+     * @throws ParserException
+     */
+    protected function validate($params)
+    {
+        foreach ($params as $key => $value) {
+            if (isset($this->restrictions[$key])) {
+                $res = preg_match('#' . $this->restrictions[$key] . '#', $value);
+                if (!$res) {
+                    throw new ParserException(sprintf("One of the parameters (%s) failed to satisfy requirements.", $key));
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     * @throws ParserException
+     */
+    public function parse($newString)
+    {
+        // first of all compare strings
+        // if no variables exist
+        if (strcmp($this->expression, $newString) === 0) {
+            return [];
+        }
+        try {
+            $tokenized = $this->tokenize($newString);
+            $this->validate($tokenized);
+            return $tokenized;
+        } catch (ParserException $e) {
+            // flow control exception
+            return false;
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function evaluate($parameters = null, $restrictions = null)
+    public function tokenize($string)
     {
-        if (is_null($this->_parameters) && is_null($parameters)) {
-            throw new ParserException("No Params to evaluate.");
-        }
-        $parameters = (is_null($parameters)) ? $this->_parameters : $parameters;
-        $restrictions = (is_null($restrictions)) ? $this->_restrictions : $restrictions;
-        if (is_array($restrictions)) {
-            foreach ($parameters as $key => $value) {
-                if (isset($restrictions[$key])) {
-                    $res = preg_match('#' . $restrictions[$key] . '#', $value);
-                    if (!$res) {
-                        throw new ParserException(sprintf("One of the parameters (%s) failed to satisfy requirements.", $key));
-                    }
-                }
+        $tokenizedExpression = $this->tokenizer->tokenize();
+        $constants = [];
+        $variables = [];
+        $i = 0;
+        foreach ($tokenizedExpression as $part) {
+            if ($i == 0) {
+                $firstPart = $part;
             }
-        }
-        $returnString = $this->_expression;
-        foreach ($parameters as $key => $param) {
-            $returnString = str_replace($this->_variableCharBegin . $key . $this->_variableCharEnd, $param, $returnString);
-        }
-        return $returnString;
-    }
-
-    /**
-     * Check if $newString satisfies the Expression
-     * If it does, set the parameters
-     *
-     * @param string $newString
-     * @param null|array $restrictions
-     * @throws ParserException
-     * @return bool|array
-     */
-    public function parse($newString, $restrictions = null)
-    {
-        $restrictions = (is_null($restrictions)) ? $this->_restrictions : $restrictions;
-        $returnVar = array();
-        // first of all compare strings
-        // if no variables exist
-        if (strcmp($this->_expression, $newString) === 0) {
-            return $returnVar;
-        }
-        $tokenized = $this->tokenize();
-        // parse new string against tokenized
-        $lastVar = '';
-        foreach ($tokenized as $part) {
-            if ($part['type'] == 'const' && (strpos($newString, $part['val']) === false)) {
-                return false;
-            } elseif ($part['type'] == 'const') {
-                $pos = strpos($newString, $part['val']);
-                if ($pos === 0) {
-                    $newString = substr($newString, strlen($part['val']));
-                } else {
-                    if (strlen($lastVar) == 0) {
-                        throw new ParserException("Wrong logic of parsing.");
-                    }
-                    $varString = substr($newString, 0, $pos);
-                    if (isset($restrictions[$lastVar])) {
-                        $res = preg_match('#' . $restrictions[$lastVar] . '#', $varString);
-                        if (!$res) {
-                            return $res;
-                        }
-                    }
-                    $returnVar[$lastVar] = $varString;
-                    // now clean up string
-                    $newString = substr($newString, strlen($varString));
-                    $newString = substr($newString, strlen($part['val']));
-                    // if string ended
-                    if ($newString === false) {
-                        $newString = '';
-                    }
-                    $lastVar = '';
-                }
-            } elseif ($part['type'] == 'var') {
-                $lastVar = $part['val'];
-            }
-        }
-        // we need to account for last var
-        if (strlen($lastVar) != 0 && strlen($newString) != 0) {
-            if (isset($restrictions[$lastVar])) {
-                $res = preg_match('#' . $restrictions[$lastVar] . '#', $newString);
-                if ($res === 0) {
-                    return false;
-                } elseif ($res === false) {
-                    throw new ParserException(sprintf("Error in Restriction regexp for '%s'.", $lastVar));
-                }
-            }
-            $returnVar[$lastVar] = $newString;
-        } elseif (strlen($lastVar) != 0) {
-            // empty variable placeholder
-            return false;
-        }
-        return $returnVar;
-    }
-
-    /**
-     * tries to tokenize the expression
-     * @param null|string $string
-     * @throws ParserException
-     * @return array
-     */
-    public function tokenize($string = null)
-    {
-        if (is_null($string)) {
-            $string = $this->_expression;
-        }
-        $const = '';
-        $var = '';
-        $res = array();
-        $isVar = false;
-        $len = strlen($string);
-        for ($i = 0; $i < $len; ++$i) {
-            if ($string{$i} == $this->_variableCharBegin) {
-                // dump constant
-                if (!empty($const)) {
-                    $res[] = array(
-                        'val' => $const,
-                        'type' => 'const',
-                    );
-                    $const = '';
-                }
-                if ($isVar) {
-                    throw new ParserException("Does not allow nested variables.");
-                } else {
-                    $isVar = true;
-                    continue;
-                }
-            }
-            if ($string{$i} == $this->_variableCharEnd) {
-                // dump var
-                if (!empty($var)) {
-                    $res[] = array(
-                        'val' => $var,
-                        'type' => 'var',
-                    );
-                    $var = '';
-                }
-                if (!$isVar) {
-                    throw new ParserException("Error in expression syntax.");
-                } else {
-                    $isVar = false;
-                    continue;
-                }
-            }
-            if ($isVar) {
-                $var .= $string{$i};
+            if ($part->type == 'const') {
+                $constants[] = $part->value;
             } else {
-                $const .= $string{$i};
+                $variables[] = $part->value;
             }
+            ++$i;
         }
-        // dump what's left
-        if ($isVar) {
-            throw new ParserException("Can not end up in variable.");
+        if (isset($firstPart) && $firstPart->type == 'const' && ((strpos($string, $firstPart->value) !== 0))) {
+            // this is the case when there's wrong constant starts in new String
+            throw new ParserException("String stats from wrong constant.");
         }
-        if (!empty($const)) {
-            $res[] = array(
-                'val' => $const,
-                'type' => 'const',
-            );
+        $vParts = self::strSplit($constants, $string);
+        if (count($variables) != count($vParts)) {
+            throw new ParserException("Can't combine variables, wrong number of placeholders.");
         }
-        return $res;
+        return array_combine($variables, $vParts);
+    }
+
+    /**
+     * @param string|string[] $delimiter
+     * @param string $string
+     * @throws ParserException
+     * @return string[]
+     */
+    public static function strSplit($delimiter, $string)
+    {
+        if (!is_scalar($delimiter) && !is_array($delimiter)) {
+            throw new ParserException(sprintf("Wrong delimiter type: %s.", gettype($delimiter)));
+        } elseif (is_scalar($delimiter)) {
+            return array_values(array_filter(explode($delimiter, $string)));
+        }
+        if (empty($delimiter)) {
+            return [];
+        }
+        $safeDelimiter = self::getSafeDelimiter($string);
+        foreach ($delimiter as $d) {
+            if (($pos = strpos($string, (string) $d)) === false) {
+                throw new ParserException(sprintf("Delimiter %s is not present", $d));
+            }
+            $string = substr_replace($string, $safeDelimiter, $pos, strlen($d));
+        }
+        return array_values(array_filter(explode($safeDelimiter, $string)));
+    }
+
+    /**
+     * @param $string
+     * @return string
+     * @throws ParserException
+     * @codeCoverageIgnore
+     */
+    public static function getSafeDelimiter($string)
+    {
+        $roundsAllowed = 100;
+        do {
+            $delimiter = md5(uniqid());
+            --$roundsAllowed;
+        } while ((strpos($string, $delimiter) !== false) || !$roundsAllowed);
+        if (!$roundsAllowed) {
+            throw new ParserException("Could not find safe delimiter.");
+        }
+        return $delimiter;
     }
 }

@@ -9,127 +9,228 @@ namespace Maketok\Util\Test;
 
 
 use Maketok\Util\ExpressionParser;
+use Maketok\Util\Tokenizer;
 
+/**
+ * @coversDefaultClass \Maketok\Util\ExpressionParser
+ */
 class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @throws \Maketok\Util\Exception\ParserException
-     * @covers Maketok\Util\ExpressionParser::evaluate
+     * @covers ::evaluate
+     * @covers ::validate
+     * @covers ::__construct
+     * @param string $exprString
+     * @param array $parameters
+     * @param string $expected
+     * @dataProvider expressionEvalProvider
      */
-    public function testEvaluate()
+    public function testEvaluate($exprString, $parameters, $expected)
     {
-        $expr = new ExpressionParser('/blog/article/{article_id}');
-        $this->assertEquals('/blog/article/3', $expr->evaluate(array(
-            'article_id' => 3,
-        )));
+        $expr = new ExpressionParser($exprString, new Tokenizer($exprString), $parameters);
+        $this->assertEquals($expected, $expr->evaluate());
+    }
+
+    /**
+     * @return array
+     */
+    public function expressionEvalProvider()
+    {
+        return [
+            ['/blog/article/{article_id}', ['article_id' => 3], '/blog/article/3']
+        ];
     }
 
     /**
      * @test
      * @expectedException \Exception
      * @expectedExceptionMessage One of the parameters (article_id) failed to satisfy requirements.
-     * @covers Maketok\Util\ExpressionParser::evaluate
+     * @covers ::evaluate
+     * @covers ::validate
+     * @covers ::__construct
      */
     public function testEvaluateFail()
     {
-        $expr = new ExpressionParser('/blog/article/{article_id}');
-        $this->assertEquals('/blog/article/sdf', $expr->evaluate(array(
-            'article_id' => 'sdf',
-        ), array(
-            'article_id' => '\d+'
-        )));
+        $exprString = '/blog/article/{article_id}';
+        $expr = new ExpressionParser(
+            $exprString,
+            new Tokenizer($exprString),
+            ['article_id' => 'sdf'],
+            ['article_id' => '\d+']);
+        $expr->evaluate();
     }
 
     /**
      * @test
-     * @throws \Maketok\Util\Exception\ParserException
-     * @covers Maketok\Util\ExpressionParser::tokenize
+     * @covers ::parse
+     * @covers ::validate
+     * @covers ::__construct
+     * @covers ::tokenize
+     * @covers ::strSplit
+     * @param string $exprString
+     * @param array $restrictions
+     * @param string $newString
+     * @param mixed $expected
+     * @dataProvider expressionProvider
      */
-    public function testTokenize()
+    public function testParse($exprString, $newString, $restrictions, $expected)
     {
-        $expr = new ExpressionParser('/blog/article/{article_id}');
-        $tokenized = $expr->tokenize();
-        $this->assertEquals(array(
-            array(
-                'type' => 'const',
-                'val' => '/blog/article/',
-            ),
-            array(
-                'type' => 'var',
-                'val' => 'article_id',
-            )
-        ), $tokenized);
+        $expr = new ExpressionParser(
+            $exprString,
+            new Tokenizer($exprString),
+            [],
+            $restrictions
+        );
+        $this->assertEquals($expected, $expr->parse($newString));
+    }
+
+    /**
+     * @return array
+     */
+    public function expressionProvider()
+    {
+        return [
+            ['/blog/article/{article_id}', '/blog/article/123', [], ['article_id' => '123']],
+            ['/blog/article/{article_id}/cat', '/blog/article/123/cat', [], ['article_id' => '123']],
+            ['/blog/article/{article_id}/dog', '/blog/article/123/cat', [], false],
+            ['/blog/article', '/blog/article', [], []],
+            ['/blog/article', '/blog/tv', [], false],
+            ['/blog/{bla}', 'bla/blog/', [], false],
+            ['/blog/article/{article_id}', '/blog/article/', [], false],
+            ['/blog/article/{article_id}', '/blog/article/gem', ['article_id' => '\d+'], false],
+            [
+                '/{blog}/article/{article_id}',
+                '/blog/article/123',
+                ['article_id' => '\d+'],
+                ['blog' => 'blog', 'article_id' => '123']
+            ],
+            [
+                '/{something}/article/{article_id}',
+                '/blog/article/123',
+                ['article_id' => '\d+'],
+                ['something' => 'blog', 'article_id' => '123']
+            ],
+            ['/{anything}', '/blog/article/123', [], ['anything' => 'blog/article/123']],
+            ['/{anything}', '/sdf', [], ['anything' => 'sdf']],
+        ];
     }
 
     /**
      * @test
-     * @expectedException \Exception
-     * @expectedExceptionMessage Can not end up in variable.
-     * @covers Maketok\Util\ExpressionParser::tokenize
+     * @covers ::__construct
+     * @covers ::tokenize
+     * @covers ::strSplit
+     * @param string $exprString
+     * @param string $newString
+     * @param mixed $expected
+     * @dataProvider tokenizeProvider
      */
-    public function testTokenizeError()
+    public function tokenize($exprString, $newString, $expected)
     {
-        $expr = new ExpressionParser('/blog/article/{article_id');
-        $expr->tokenize();
+        $expr = new ExpressionParser($exprString, new Tokenizer($exprString));
+        $this->assertEquals($expected, $expr->tokenize($newString));
+    }
+
+    /**
+     * return array
+     */
+    public function tokenizeProvider()
+    {
+        return [
+            ['{abc}/{cfd}', '123/123', ['abc' => '123', 'cfd' => '123']],
+            ['blog/article/{id}', 'blog/article/123', ['id' => '123']],
+            ['/{anything}', '/sdf', ['anything' => 'sdf']],
+        ];
     }
 
     /**
      * @test
-     * @throws \Maketok\Util\Exception\ParserException
-     * @covers Maketok\Util\ExpressionParser::parse
+     * @covers ::tokenize
+     * @expectedException \Maketok\Util\Exception\ParserException
+     * @expectedExceptionMessage String stats from wrong constant.
      */
-    public function testParse()
+    public function tokenizeExceptionWrongStart()
     {
-        $expr = new ExpressionParser('/blog/article/{article_id}');
-        $return = $expr->parse('/blog/article/123');
-        $this->assertEquals(array('article_id' => '123'), $return);
+        $e = 'blog/article/{id}/cover';
+        $expr = new ExpressionParser($e, new Tokenizer($e));
+        $expr->tokenize('/cover{id}blog/article/');
+    }
 
-        $expr = new ExpressionParser('/blog/article/{article_id}/cat');
-        $return = $expr->parse('/blog/article/123/cat');
-        $this->assertEquals(array('article_id' => '123'), $return);
+    /**
+     * @test
+     * @covers ::tokenize
+     * @covers ::strSplit
+     * @expectedException \Maketok\Util\Exception\ParserException
+     * @expectedExceptionMessage Can't combine variables, wrong number of placeholders.
+     */
+    public function tokenizeExceptionVariables()
+    {
+        $e = '{abc}{cfd}';
+        $expr = new ExpressionParser($e, new Tokenizer($e));
+        $expr->tokenize('123123');
+    }
 
-        $expr = new ExpressionParser('/blog/article/{article_id}/dog');
-        $return = $expr->parse('/blog/article/123/cat');
-        $this->assertFalse($return);
+    /**
+     * @test
+     * @covers ::strSplit
+     * @param string $delimiter
+     * @param string $newString
+     * @param mixed $expected
+     * @dataProvider splitProvider
+     */
+    public function strSplit($delimiter, $newString, $expected)
+    {
+        $this->assertEquals($expected, ExpressionParser::strSplit($delimiter, $newString));
+    }
 
-        $expr = new ExpressionParser('/blog/article');
-        $return = $expr->parse('/blog/article');
-        $this->assertEquals([], $return);
+    /**
+     * return array
+     */
+    public function splitProvider()
+    {
+        return [
+            ['1', '123', ['23']],
+            ['abs', '13abs331', ['13', '331']],
+            [[13, 331], '13abs331', ['abs']],
+            [['south', '/', 'cat'], 'north cat loves/hates south dog', ['north ', ' loves', 'hates ', ' dog']],
+        ];
+    }
 
-        $expr = new ExpressionParser('/blog/article/{article_id}');
-        $return = $expr->parse('/blog/article/');
-        $this->assertFalse($return);
+    /**
+     * @test
+     * @covers ::strSplit
+     * @expectedException \Maketok\Util\Exception\ParserException
+     * @expectedExceptionMessage Wrong delimiter type
+     * @dataProvider wrongTypeProvider
+     * @param mixed $delimiter
+     */
+    public function strSplitWrongType($delimiter)
+    {
+        ExpressionParser::strSplit($delimiter, '');
+    }
 
-        $expr = new ExpressionParser('/blog/article/{article_id}');
-        $return = $expr->parse('/blog/article/gem', array('article_id' => '\d+'));
-        $this->assertFalse($return);
+    /**
+     * @test
+     * @covers ::strSplit
+     * @expectedException \Maketok\Util\Exception\ParserException
+     * @expectedExceptionMessage Delimiter $ is not present
+     */
+    public function strSplitMissingDelimiter()
+    {
+        ExpressionParser::strSplit(['/', '#', '$'], '/this#string');
+    }
 
-        $expr = new ExpressionParser('/{blog}/article/{article_id}');
-        $return = $expr->parse('/blog/article/123', array('article_id' => '\d+'));
-        $this->assertEquals(array(
-            'blog' => 'blog',
-            'article_id' => '123'
-        ), $return);
-
-        $expr = new ExpressionParser('/{something}/article/{article_id}');
-        $return = $expr->parse('/blog/article/123', array('article_id' => '\d+'));
-        $this->assertEquals(array(
-            'something' => 'blog',
-            'article_id' => '123'
-        ), $return);
-
-        $expr = new ExpressionParser('/{anything}');
-        $return = $expr->parse('/blog/article/123');
-        $this->assertEquals(array(
-            'anything' => 'blog/article/123',
-        ), $return);
-
-        $expr = new ExpressionParser('/{anything}');
-        $return = $expr->parse('/sdf');
-        $this->assertEquals(array(
-            'anything' => 'sdf',
-        ), $return);
+    /**
+     * @return array
+     */
+    public function wrongTypeProvider()
+    {
+        return [
+            [new \stdClass()],
+            [null],
+            [fopen(__FILE__, 'r')]
+        ];
     }
 }
