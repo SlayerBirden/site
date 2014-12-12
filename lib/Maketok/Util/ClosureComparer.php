@@ -20,6 +20,9 @@ class ClosureComparer
      */
     public function compare($a, $b)
     {
+        if (!$this->isClosure($a) || !$this->isClosure($b)) {
+            return 1;
+        }
         $r1 = new \ReflectionFunction($a);
         $r2 = new \ReflectionFunction($b);
 
@@ -27,11 +30,13 @@ class ClosureComparer
             return 1;
         }
 
-        $a = $this->parseClosure(implode(array_slice(file($r1->getFileName()),
+        $a = $this->parseClosure(
+            implode(array_slice(file($r1->getFileName()),
             $r1->getStartLine() - 1,
             ($r1->getEndLine() - $r1->getStartLine() + 1)
         )));
-        $b = $this->parseClosure(implode(array_slice(file($r2->getFileName()),
+        $b = $this->parseClosure(
+            implode(array_slice(file($r2->getFileName()),
             $r2->getStartLine() - 1,
             ($r2->getEndLine() - $r2->getStartLine() + 1)
         )));

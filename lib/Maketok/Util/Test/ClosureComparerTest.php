@@ -45,34 +45,36 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
      */
     public function closureProvider()
     {
-        $c1 = function() {echo 'Closure 1';};
-        $c2 = function() {
+        $c1 = function () {echo 'Closure 1';};
+        $c2 = function () {
             echo 'Closure 2';
         };
-        $c3 = function() {
+        $c3 = function () {
             echo 'Closure 1'
             ;
         };
-        $c4 = function($var) {
+        $c4 = function ($var) {
             echo $var;
         };
         $e = 1;
-        $c5 = function($var) use ($e) {
+        $c5 = function ($var) use ($e) {
             echo $var;
         };
-        $c6 = function() {
+        $c6 = function () {
             'echo $var';
         };
-        $c7 = function($var) {
+        $c7 = function ($var) {
             'echo $var';
         };
+        $a1 = [];
         return [
             [$c1, $c2, 1],
             [$c1, $c3, 0],
             [$c4, $c5, 0],
             [$c4, $c6, 1],
             [$c4, $c7, 1],
-            [$c6, $c7, 1]
+            [$c6, $c7, 1],
+            [$c6, $a1, 1]
         ];
     }
 
@@ -121,8 +123,8 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
     public function textProvider()
     {
         return [
-            ['function() {...}', '...'],
-            ['function() {
+            ['function () {...}', '...'],
+            ['function () {
                 bla
                 ;
             }', 'bla;'],
