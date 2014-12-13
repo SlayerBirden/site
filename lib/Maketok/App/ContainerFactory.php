@@ -67,7 +67,8 @@ class ContainerFactory
         return [
             new \Maketok\Installer\Ddl\DI(),
             new \Maketok\Module\DI(),
-            new \Maketok\Http\Session\DI()
+            new \Maketok\Http\Session\DI(),
+            new \Maketok\Template\DI()
         ];
     }
 
@@ -110,8 +111,9 @@ class ContainerFactory
      */
     public static function addDefaultParameters()
     {
-        self::$ioc->setParameter('AR', AR);
-        self::$ioc->setParameter('DS', DS);
+        self::$ioc->setParameter('ar', AR);
+        self::$ioc->setParameter('ds', DS);
+        self::$ioc->setParameter('env', self::$env);
     }
 
     /**

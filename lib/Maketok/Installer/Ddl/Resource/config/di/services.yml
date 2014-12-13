@@ -60,7 +60,7 @@ services:
       - "@ddl_client_history_result_set"
 
   ddl_client_history_table:
-    class: Maketok\Util\TableMapper
+    class: Maketok\Model\TableMapper
     arguments: ["@ddl_client_history_table_gateway", id, id]
 
   installer_ddl_resource:

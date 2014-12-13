@@ -47,7 +47,8 @@
             "Maketok\\": "lib/",
             "Zend\\Db\\": "lib/",
             "admin\\": "src/",
-            "base\\": "src/"
+            "base\\": "src/",
+            "modules\\": "./"
         }
     }
 }

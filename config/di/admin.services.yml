@@ -6,4 +6,4 @@ services:
   router:
       class: Maketok\Mvc\Router\Stack
       calls:
-        - [source, [%AR%/config/admin.routes.yml]]
+        - [source, [%ar%/config/admin.routes.yml]]

@@ -7,7 +7,6 @@
 
 namespace Maketok\Util\Exception;
 
-
 class ParserException extends \Exception
 {
 

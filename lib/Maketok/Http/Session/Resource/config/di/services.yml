@@ -20,7 +20,7 @@ services:
       - "@session_result_set"
 
   session_table:
-    class: Maketok\Util\TableMapper
+    class: Maketok\Model\TableMapper
     arguments: ["@ddl_client_table_gateway", session_id]
 
   session_save_handler:

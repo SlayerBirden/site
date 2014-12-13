@@ -19,6 +19,9 @@ use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Exception;
 use Zend\Db\Sql\TableIdentifier;
 
+/**
+ * @codeCoverageIgnore
+ */
 class InsertDuplicate extends Insert
 {
 

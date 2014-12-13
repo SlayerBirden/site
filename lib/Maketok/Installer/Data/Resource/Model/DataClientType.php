@@ -8,7 +8,7 @@
 namespace Maketok\Installer\Data\Resource\Model;
 
 use Maketok\Installer\Exception;
-use Maketok\Util\TableMapper;
+use Maketok\Model\TableMapper;
 
 class DataClientType extends TableMapper
 {

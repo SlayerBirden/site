@@ -7,7 +7,6 @@
 
 namespace Maketok\Util\Exception;
 
-
 class ModelException extends \Exception
 {
 

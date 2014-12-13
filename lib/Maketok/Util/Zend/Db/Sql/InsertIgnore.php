@@ -10,6 +10,9 @@ namespace Maketok\Util\Zend\Db\Sql;
 
 use Zend\Db\Sql\Insert;
 
+/**
+ * @codeCoverageIgnore
+ */
 class InsertIgnore extends Insert
 {
 

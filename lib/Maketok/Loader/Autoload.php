@@ -7,6 +7,10 @@
 
 namespace Maketok\Loader;
 
+/**
+ * @codeCoverageIgnore
+ * @deprecated due to usage of composer autoload
+ */
 class Autoload
 {
     const NS_SEPARATOR = '\\';

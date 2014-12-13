@@ -12,6 +12,9 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\Extension\Core\DataTransformer\BaseDateTimeTransformer;
 
+/**
+ * @codeCoverageIgnore
+ */
 class StringToDateTimeTransformer extends BaseDateTimeTransformer
 {
 

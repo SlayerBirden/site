@@ -3,3 +3,5 @@
 # @developer Oleg Kulik slayer.birden@gmail.com maketok.com
 
 parameters:
+  defaultFormTheme: form_div_layout.html.twig
+  translation_locale: en

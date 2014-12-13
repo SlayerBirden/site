@@ -18,7 +18,7 @@ use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
 use Maketok\Util\ArrayValueTrait;
-use Maketok\Util\TableMapper;
+use Maketok\Model\TableMapper;
 use Maketok\Util\StreamHandlerInterface;
 use Monolog\Logger;
 

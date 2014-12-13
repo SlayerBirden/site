@@ -10,6 +10,9 @@ namespace Maketok\Http;
 use Maketok\Util\RequestInterface;
 use Symfony\Component\HttpFoundation\Request as HttpRequest;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Request extends HttpRequest implements RequestInterface
 {
 

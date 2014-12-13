@@ -9,6 +9,9 @@ namespace Maketok\Template;
 
 use Maketok\App\Helper\ContainerTrait;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Twig extends AbstractEngine
 {
     use ContainerTrait;

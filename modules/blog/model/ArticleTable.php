@@ -7,7 +7,7 @@
 
 namespace modules\blog\model;
 
-use Maketok\Util\TableMapper;
+use Maketok\Model\TableMapper;
 use Maketok\Util\Exception\ModelException;
 use Zend\Db\Sql\Select;
 

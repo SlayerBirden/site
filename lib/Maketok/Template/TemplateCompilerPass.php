@@ -11,11 +11,13 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Reference;
 
+/**
+ * @codeCoverageIgnore
+ */
 class TemplateCompilerPass implements CompilerPassInterface
 {
 
     /**
-     * @codeCoverageIgnore
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)

@@ -9,7 +9,6 @@ namespace Maketok\Http\Session\Resource\Model;
 
 class Session
 {
-
     public $session_id;
     public $data;
     public $updated_at;

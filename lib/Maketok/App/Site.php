@@ -44,9 +44,7 @@ final class Site
         define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
         define('AR', APPLICATION_ROOT);
         define('DS', DIRECTORY_SEPARATOR);
-        // register modules loader
-        $loader = new Autoload();
-        $loader->register();
+        define('ENV', $env);
         ContainerFactory::setEnv($env);
         if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();
@@ -94,7 +92,7 @@ final class Site
     {
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         ErrorHandler::start(\E_ALL);
-        set_exception_handler('Maketok\App\Site::maketokExceptionHandler');
+        set_exception_handler([$this, 'maketokExceptionHandler']);
         $this->setRequest(Request::createFromGlobals());
         $this->envInitialized = true;
     }

@@ -13,7 +13,7 @@ use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\Resource\Model\Module;
 use Maketok\Observer\State;
 use Maketok\Observer\SubjectManagerInterface;
-use Maketok\Util\TableMapper;
+use Maketok\Model\TableMapper;
 use Maketok\Util\DirectoryHandlerInterface;
 use Maketok\Util\Exception\ModelException;
 use Monolog\Logger;
@@ -252,7 +252,6 @@ class ModuleManager implements ClientInterface
         $configName = $this->configName;
         foreach ($this->getModuleDirectories() as $dir) {
             if (file_exists($this->getDir() . "/$dir/$configName.php")) {
-                include_once $this->getDir() . "/$dir/$configName.php";
                 $className = "\\modules\\$dir\\$configName";
                 /** @var ConfigInterface $config */
                 $config = new $className();

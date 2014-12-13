@@ -9,7 +9,7 @@ namespace Maketok\Installer\Ddl\Resource\Model;
 
 use Maketok\App\Helper\ContainerTrait;
 use Maketok\Installer\Exception;
-use Maketok\Util\TableMapper;
+use Maketok\Model\TableMapper;
 use Maketok\Util\Exception\ModelException;
 
 class DdlClientType extends TableMapper

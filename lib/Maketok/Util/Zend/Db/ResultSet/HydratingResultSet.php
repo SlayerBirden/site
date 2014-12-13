@@ -9,6 +9,9 @@ namespace Maketok\Util\Zend\Db\ResultSet;
 
 use Zend\Db\ResultSet\HydratingResultSet as BasicHydrator;
 
+/**
+ * @codeCoverageIgnore
+ */
 class HydratingResultSet extends BasicHydrator
 {
     /**

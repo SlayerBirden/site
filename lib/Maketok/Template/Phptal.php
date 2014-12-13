@@ -7,6 +7,9 @@
 
 namespace Maketok\Template;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Phptal extends AbstractEngine
 {
 

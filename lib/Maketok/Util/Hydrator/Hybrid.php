@@ -10,6 +10,9 @@ namespace Maketok\Util\Hydrator;
 
 use Zend\Stdlib\Hydrator\ObjectProperty;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Hybrid extends ObjectProperty
 {
 

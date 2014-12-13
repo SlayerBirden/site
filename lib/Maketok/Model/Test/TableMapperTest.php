@@ -7,9 +7,12 @@
 
 namespace Maketok\Util\Test;
 
-use Maketok\Util\TableMapper;
+use Maketok\Model\TableMapper;
 use Zend\Db\ResultSet\HydratingResultSet;
 
+/**
+ * @coversDefaultClass \Maketok\Model\TableMapper
+ */
 class TableMapperTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -28,7 +31,8 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider idFieldProvider
-     * @covers       Maketok\Util\TableMapper::getIdFilter
+     * @covers       ::getIdFilter
+     * @covers       ::__construct
      * @param        int|string|string[] $id
      * @param        int|string|string[] $data
      * @param        string[] $expected
@@ -38,35 +42,37 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
     {
         // we need to init TableMapper each time in order for DP to work
         $this->table = new TableMapper($this->getTableGatewayMock(), $id);
-        $method = new \ReflectionMethod('\Maketok\Util\TableMapper', 'getIdFilter');
+        $method = new \ReflectionMethod('\Maketok\Model\TableMapper', 'getIdFilter');
         $method->setAccessible(true);
         $this->assertEquals($expected, $method->invokeArgs($this->table, array($data)));
     }
 
     /**
      * @test
-     * @covers                   Maketok\Util\TableMapper::getIdFilter
+     * @covers       ::getIdFilter
+     * @covers       ::__construct
      * @expectedException        \LogicException
      * @ecpectedExceptionMessage Not enough data to get Filter.
      */
     public function getIdFilterLowData()
     {
         $this->table = new TableMapper($this->getTableGatewayMock(), array('code', 'version'));
-        $method = new \ReflectionMethod('\Maketok\Util\TableMapper', 'getIdFilter');
+        $method = new \ReflectionMethod('\Maketok\Model\TableMapper', 'getIdFilter');
         $method->setAccessible(true);
         $this->table->getIdField($method->invokeArgs($this->table, array('code1')));
     }
 
     /**
      * @test
-     * @covers                   Maketok\Util\TableMapper::getIdFilter
+     * @covers       ::getIdFilter
+     * @covers       ::__construct
      * @expectedException        \LogicException
      * @ecpectedExceptionMessage Missing data for id field
      */
     public function getIdFilterWrongData()
     {
         $this->table = new TableMapper($this->getTableGatewayMock(), 'code');
-        $method = new \ReflectionMethod('\Maketok\Util\TableMapper', 'getIdFilter');
+        $method = new \ReflectionMethod('\Maketok\Model\TableMapper', 'getIdFilter');
         $method->setAccessible(true);
         $this->table->getIdField($method->invokeArgs($this->table, array(['id' => 3])));
     }
@@ -86,7 +92,10 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Util\TableMapper::save
+     * @covers ::save
+     * @covers ::assignIncrement
+     * @covers ::__construct
+     * @covers ::getModelData
      */
     public function saveNewNoAI()
     {
@@ -106,7 +115,10 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Util\TableMapper::save
+     * @covers ::save
+     * @covers ::assignIncrement
+     * @covers ::__construct
+     * @covers ::getModelData
      */
     public function saveNewAI()
     {
@@ -126,7 +138,10 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Util\TableMapper::save
+     * @covers ::save
+     * @covers ::assignIncrement
+     * @covers ::__construct
+     * @covers ::getModelData
      */
     public function saveExisting()
     {
@@ -146,7 +161,10 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Util\TableMapper::save
+     * @covers ::save
+     * @covers ::assignIncrement
+     * @covers ::__construct
+     * @covers ::getModelData
      */
     public function saveNewAIMissing()
     {

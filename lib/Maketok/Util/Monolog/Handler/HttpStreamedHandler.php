@@ -9,6 +9,9 @@ namespace Maketok\Util\Monolog\Handler;
 
 use Monolog\Handler\AbstractProcessingHandler;
 
+/**
+ * @codeCoverageIgnore
+ */
 class HttpStreamedHandler extends AbstractProcessingHandler
 {
 

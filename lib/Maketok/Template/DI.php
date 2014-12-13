@@ -5,7 +5,7 @@
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Installer\Ddl;
+namespace Maketok\Template;
 
 use Maketok\App\DependencyConfigExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -21,5 +21,6 @@ class DI implements DependencyConfigExtensionInterface
     public function loadConfig(YamlFileLoader $loader)
     {
         $loader->load(__DIR__.'/Resource/config/di/services.yml');
+        $loader->load(__DIR__.'/Resource/config/di/parameters.yml');
     }
 }

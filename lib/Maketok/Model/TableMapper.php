@@ -5,7 +5,7 @@
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util;
+namespace Maketok\Model;
 
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Util\Exception\ModelException;
@@ -43,6 +43,7 @@ class TableMapper
     }
 
     /**
+     * @codeCoverageIgnore
      * @return string|string[]
      * @throws ModelException
      */
@@ -56,6 +57,7 @@ class TableMapper
 
     /**
      * alias
+     * @codeCoverageIgnore
      * @return string|string[]
      * @throws ModelException
      */
@@ -65,6 +67,7 @@ class TableMapper
     }
 
     /**
+     * @codeCoverageIgnore
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function fetchAll()
@@ -74,6 +77,7 @@ class TableMapper
     }
 
     /**
+     * @codeCoverageIgnore
      * @param array|\Closure|\Zend\Db\Sql\Predicate\PredicateInterface $filter
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
@@ -84,6 +88,7 @@ class TableMapper
     }
 
     /**
+     * @codeCoverageIgnore
      * @return AbstractTableGateway
      */
     public function getGateway()
@@ -92,6 +97,7 @@ class TableMapper
     }
 
     /**
+     * @codeCoverageIgnore
      * @param int|string|string[] $id
      * @return array|\ArrayObject|null
      * @throws ModelException
@@ -107,6 +113,7 @@ class TableMapper
     }
 
     /**
+     * @codeCoverageIgnore
      * delete entry by identifier
      * @param string|int|string[] $id
      */
@@ -151,6 +158,7 @@ class TableMapper
         try {
             $data = $this->getModelData($model);
             // possible update
+            //@codeCoverageIgnoreStart
             if (array_key_exists('updated_at', $data)) {
                 $data['updated_at'] = date("Y-m-d H:i:s");
             }
@@ -158,6 +166,7 @@ class TableMapper
             if (array_key_exists('created_at', $data) && empty($data['created_at'])) {
                 $data['created_at'] = date("Y-m-d H:i:s");
             }
+            //@codeCoverageIgnoreEnd
             // now determine update or insert
             if (is_null($this->autoIncrement) || (isset($data[$this->autoIncrement]))) {
                 $rowsAffected = $this->getGateway()->update($data, $this->getIdFilter($data));
@@ -181,8 +190,6 @@ class TableMapper
                 $this->assignIncrement($model);
             }
         } catch (ModelInfoException $e) {
-            // Informative exceptions; for flow regulation
-            $this->getLogger()->debug($e->getMessage());
         }
     }
 
@@ -224,17 +231,18 @@ class TableMapper
             }
             if (count($fullData) == 0) {
                 // well nothing was changed
-                throw new ModelException("Nothing was changed.");
+                throw new ModelInfoException("Nothing was changed.");
             }
         }
         // do not proceed without data
         if (empty($data)) {
-            throw new ModelException("Empty object data. Or invalid object to save.");
+            throw new ModelInfoException("Empty object data. Or invalid object to save.");
         }
         return $data;
     }
 
     /**
+     * @codeCoverageIgnore
      * @throws ModelException
      * @return \ArrayObject|bool|mixed|null
      */

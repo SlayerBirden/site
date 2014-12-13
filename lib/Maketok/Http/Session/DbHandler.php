@@ -9,7 +9,7 @@ namespace Maketok\Http\Session;
 
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Http\Session\Resource\Model\Session;
-use Maketok\Util\TableMapper;
+use Maketok\Model\TableMapper;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Maketok\Installer\Ddl\ClientInterface;

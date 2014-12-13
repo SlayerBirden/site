@@ -9,6 +9,9 @@ namespace Maketok\Util\Monolog\Handler;
 
 use Monolog\Handler\StreamHandler as BaseStreamHandler;
 
+/**
+ * @codeCoverageIgnore
+ */
 class StreamHandler extends BaseStreamHandler
 {
     /**

@@ -3,6 +3,7 @@
 # @developer Oleg Kulik slayer.birden@gmail.com maketok.com
 
 services:
+
   module_model:
     class: Maketok\Module\Resource\Model\Module
 
@@ -19,10 +20,21 @@ services:
       - "@module_result_set"
 
   module_table:
-    class: Maketok\Util\TableMapper
+    class: Maketok\Model\TableMapper
     arguments: ["@module_table_gateway", [module_code, area]]
 
   module.form.type:
             class: Maketok\Module\Resource\form\ModuleType
             tags:
                 - { name: form.type, alias: module }
+
+  module_manager:
+      class: Maketok\Module\ModuleManager
+      arguments:
+        - "@module_table"
+        - "@directory_handler"
+        - "@subject_manager"
+        - "@logger"
+        - "@session_manager"
+        - "%module_config_name%"
+        - "%module_area%"

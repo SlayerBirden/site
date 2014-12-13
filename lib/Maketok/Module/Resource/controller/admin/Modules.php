@@ -14,7 +14,7 @@ use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\RequestInterface;
-use Maketok\Util\TableMapper;
+use Maketok\Model\TableMapper;
 
 class Modules extends AbstractAdminController
 {

@@ -3,3 +3,6 @@
 # @developer Oleg Kulik slayer.birden@gmail.com maketok.com
 
 parameters:
+  modules_dir: %ar%/modules
+  module_config_name: Config
+  module_area: frontend

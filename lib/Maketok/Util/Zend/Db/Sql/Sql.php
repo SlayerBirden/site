@@ -11,6 +11,9 @@ use Zend\Db\Sql\Insert;
 use Zend\Db\Sql\Exception;
 use Zend\Db\Sql\Sql as OriginalSql;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Sql extends OriginalSql
 {
     /**
