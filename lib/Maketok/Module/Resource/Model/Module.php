@@ -7,9 +7,10 @@
 
 namespace Maketok\Module\Resource\Model;
 
-class Module
-{
+use Maketok\Model\LazyObjectPropModel;
 
+class Module extends LazyObjectPropModel
+{
     /** @var  string */
     public $module_code;
     /** @var  string */

@@ -216,20 +216,11 @@ class TableMapper
         if ($resultSet instanceof HydratingResultSet) {
             $hydrator = $resultSet->getHydrator();
             $data = $hydrator->extract($model);
-        } elseif (method_exists($model, 'getData')) {
-            $data = $model->getData();
         } else {
-            $data = array();
+            throw new ModelInfoException("Unknown object to handle.");
         }
-        if (method_exists($model, 'getOrigin')) {
-            $originData = $model->getOrigin();
-            $fullData = $data;
-            foreach ($fullData as $key => $value) {
-                if (isset($originData[$key]) && ($originData[$key] == $value)) {
-                    unset($fullData[$key]);
-                }
-            }
-            if (count($fullData) == 0) {
+        if ($model instanceof LazyModelInterface) {
+            if (!count(array_diff_assoc($data, $model->processOrigin()))) {
                 // well nothing was changed
                 throw new ModelInfoException("Nothing was changed.");
             }

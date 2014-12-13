@@ -166,6 +166,42 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::getModelData
      */
+    public function saveExistingNotChanged()
+    {
+        $dataArray = [
+            'code' => 'code1',
+            'title' => 'Best',
+        ];
+        // set up object
+        $object = $this->getMock('Maketok\Model\LazyModelInterface');
+        //check it's called once because we mocked the hydrator
+        $object->expects($this->once())->method('processOrigin')->will($this->returnValue($dataArray));
+
+        $hydrator = $this->getMock('Maketok\Util\Hydrator\ObjectProperty');
+        $hydrator->expects($this->once())->method('extract')->will($this->returnValue($dataArray));
+
+        $tg = $this->getTableGatewayMock();
+        $tg->expects($this->never())->method('update');
+        $tg->expects($this->never())->method('getTable');
+        $tg->expects($this->never())->method('insertWith');
+        $tg->expects($this->never())->method('getLastInsertValue');
+        $tg->expects($this->never())->method('insert');
+        $tg->expects($this->once())
+            ->method('getResultSetPrototype')
+            ->will($this->returnValue(new HydratingResultSet($hydrator, $object)));
+
+
+        $this->table = new TableMapper($tg, 'code');
+        $this->table->save($object);
+    }
+
+    /**
+     * @test
+     * @covers ::save
+     * @covers ::assignIncrement
+     * @covers ::__construct
+     * @covers ::getModelData
+     */
     public function saveNewAIMissing()
     {
         $tg = $this->getTableGatewayMock();

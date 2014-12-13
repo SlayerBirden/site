@@ -7,11 +7,10 @@
 
 namespace Maketok\Installer\Ddl\Resource\Model;
 
-class DdlClient
+use Maketok\Model\LazyObjectPropModel;
+
+class DdlClient extends LazyObjectPropModel
 {
-
-    protected $_origin = [];
-
     /** @var int */
     public $id;
     /** @var string */
@@ -22,22 +21,4 @@ class DdlClient
     public $config;
     /** @var array */
     public $dependencies;
-
-    /**
-     * @param array $data
-     * @return $this
-     */
-    public function setOrigin(array $data)
-    {
-        $this->_origin = $data;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getOrigin()
-    {
-        return $this->_origin;
-    }
 }

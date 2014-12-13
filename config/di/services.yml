@@ -36,7 +36,7 @@ services:
           - [attach, [noroute_action, ["@site", terminate], 0]]
 
   object_prop_hydrator:
-    class: Maketok\Util\Hydrator\Hybrid
+    class: Maketok\Util\Hydrator\ObjectProperty
 
   logger_handler:
     class: Maketok\Util\Monolog\Handler\StreamHandler
