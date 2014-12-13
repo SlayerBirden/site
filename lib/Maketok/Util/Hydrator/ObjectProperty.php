@@ -24,7 +24,7 @@ class ObjectProperty extends BaseObjectProperty implements LazyHydratorInterface
     public function hydrate(array $data, $object)
     {
         $object = parent::hydrate($data, $object);
-        $this->saveOriginState($data, $object);
+        return $this->saveOriginState($data, $object);
     }
 
     /**
