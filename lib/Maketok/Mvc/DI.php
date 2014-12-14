@@ -5,7 +5,7 @@
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Module;
+namespace Maketok\Mvc;
 
 use Maketok\App\ContainerFactory;
 use Maketok\App\DependencyConfigExtensionInterface;
@@ -22,10 +22,9 @@ class DI implements DependencyConfigExtensionInterface
     public function loadConfig(YamlFileLoader $loader)
     {
         $loader->load(__DIR__.'/Resource/config/di/services.yml');
-        $loader->load(__DIR__.'/Resource/config/di/parameters.yml');
         if (($env = ContainerFactory::getEnv()) && !empty($env)) {
             try {
-                $loader->load(__DIR__.'/Resource/config/di/' . $env . '.parameters.yml');
+                $loader->load(__DIR__.'/Resource/config/di/' . $env . '.services.yml');
             } catch (\Exception $e) {
             }
         }

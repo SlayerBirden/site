@@ -5,7 +5,7 @@
  * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
  */
 
-namespace Maketok\Util\Symfony\Form;
+namespace Maketok\Template\Symfony\Form;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\Reference;
 /**
  * @codeCoverageIgnore
  */
-class FormExtensionCompilerPass implements CompilerPassInterface
+class FormTypeCompilerPass implements CompilerPassInterface
 {
 
     public function process(ContainerBuilder $container)
@@ -28,11 +28,11 @@ class FormExtensionCompilerPass implements CompilerPassInterface
         );
 
         $taggedServices = $container->findTaggedServiceIds(
-            'form.extension'
+            'form.type'
         );
         foreach ($taggedServices as $id => $attributes) {
             $definition->addMethodCall(
-                'addExtension',
+                'addType',
                 array(new Reference($id))
             );
         }

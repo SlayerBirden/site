@@ -394,7 +394,7 @@ class ModuleManager implements ClientInterface
      */
     public function getDdlConfig($version)
     {
-        $locator = new FileLocator(__DIR__.'/Resource/config/ddl');
+        $locator = new FileLocator(__DIR__.'/Resource/config/installer/ddl');
         try {
             $file = $locator->locate($version.'.yml');
             $reader = new Yaml();

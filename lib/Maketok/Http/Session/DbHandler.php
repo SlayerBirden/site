@@ -121,7 +121,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function getDdlConfig($version)
     {
-        return include __DIR__ . '/Resource/config/ddl/' . $version . '.php';
+        return include __DIR__ . '/Resource/config/installer/ddl/' . $version . '.php';
     }
 
     /**

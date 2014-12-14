@@ -3,7 +3,10 @@
 # @developer Oleg Kulik slayer.birden@gmail.com maketok.com
 
 services:
+
   router:
-      class: Maketok\Mvc\Router\Stack
-      calls:
-        - [source, [%ar%/config/admin.routes.yml]]
+    class: Maketok\Mvc\Router\Stack
+
+  front_controller:
+    class: Maketok\Mvc\Controller\Front
+    arguments: ["@router"]

@@ -68,7 +68,9 @@ class ContainerFactory
             new \Maketok\Installer\Ddl\DI(),
             new \Maketok\Module\DI(),
             new \Maketok\Http\Session\DI(),
-            new \Maketok\Template\DI()
+            new \Maketok\Template\DI(),
+            new \Maketok\Mvc\DI(),
+            new \Maketok\Observer\DI()
         ];
     }
 
@@ -79,8 +81,8 @@ class ContainerFactory
     {
         return [
             new \Maketok\Template\TemplateCompilerPass(),
-            new \Maketok\Util\Symfony\Form\FormExtensionCompilerPass,
-            new \Maketok\Util\Symfony\Form\FormTypeCompilerPass
+            new \Maketok\Template\Symfony\Form\FormExtensionCompilerPass,
+            new \Maketok\Template\Symfony\Form\FormTypeCompilerPass
         ];
     }
 
