@@ -5,31 +5,16 @@
 routes:
   - type: literal
     path: /
-    parameters:
-        module: admin_manager
-        controller: admin\controller\Index
-        action: index
+    resolver: [admin\controller\Index, indexAction]
   - type: literal
     path: /install/run
-    parameters:
-        module: admin_manager
-        controller: admin\controller\Install
-        action: run
+    resolver: [admin\controller\Install, runAction]
   - type: literal
     path: /install
-    parameters:
-        module: admin_manager
-        controller: admin\controller\Install
-        action: index
+    resolver: [admin\controller\Install, indexAction]
   - type: literal
     path: /modules
-    parameters:
-        module: admin_manager
-        controller: Maketok\Module\Resource\controller\admin\Modules
-        action: index
+    resolver: [Maketok\Module\Resource\controller\admin\Modules, indexAction]
   - type: parameterized
     path: /modules/{area}/{module_code}
-    parameters:
-        module: admin_manager
-        controller: Maketok\Module\Resource\controller\admin\Modules
-        action: view
+    resolver: [Maketok\Module\Resource\controller\admin\Modules, viewAction]

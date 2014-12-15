@@ -7,9 +7,10 @@
 
 namespace admin\controller;
 
+use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Util\RequestInterface;
 
-class Index extends AbstractController
+class Index extends AbstractAdminController
 {
 
     /**

@@ -7,11 +7,11 @@
 
 namespace modules\error\controller;
 
-use Maketok\Mvc\Controller\AbstractController;
+use Maketok\Module\Mvc\AbstractBaseController;
 use Maketok\Util\RequestInterface;
 use Maketok\Mvc\Error\DumperInterface;
 
-class Index extends AbstractController implements DumperInterface
+class Index extends AbstractBaseController implements DumperInterface
 {
 
     /**

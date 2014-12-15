@@ -25,7 +25,7 @@ class Front
 
 
     /** @var  RouteInterface */
-    private $_router;
+    private $router;
 
     /** @var \SplStack */
     private $dumpers;
@@ -38,7 +38,7 @@ class Front
     {
         set_exception_handler(array($this, 'exceptionHandler'));
         /** @var Success $success */
-        if ($success = $this->_router->match($state->request)) {
+        if ($success = $this->router->match($state->request)) {
             $this->launch($success);
         } else {
             throw new RouteException("Could not match any route.");
@@ -52,9 +52,7 @@ class Front
      */
     public function launch(Success $success, $silent = false)
     {
-        $params = $success->getParameters();
-        ob_start();
-        $response = $this->launchAction($params, $success->getMatchedRoute());
+        $response = $this->launchAction($success->getResolver(), $success->getMatchedRoute());
         if (!$silent) {
             $this->getDispatcher()->notify('response_send_before', new State());
         }
@@ -66,7 +64,7 @@ class Front
      */
     public function __construct(RouterInterface $router)
     {
-        $this->_router = $router;
+        $this->router = $router;
         $this->dumpers = new \SplStack();
         $this->dumpers->push(new Dumper());
     }
@@ -82,30 +80,19 @@ class Front
             $dumper = $this->dumpers->pop();
             if ($e instanceof RouteException) {
                 // not found
-                $errorRoute = new Error(array(
-                    'controller' => $dumper,
-                    'action' => 'noroute',
-                ));
+                $errorRoute = new Error([$dumper, 'norouteAction']);
                 $this->getDispatcher()->notify('noroute_action', new State(['front' => $this, 'dumper' => $dumper]));
                 $this->launch($errorRoute->match($this->ioc()->get('request')), true);
             } elseif ($e instanceof \ErrorException) {
                 $errno = $e->getSeverity();
                 if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
                     $this->getLogger()->err(sprintf("Front Controller dispatch error exception\n%s", $e->__toString()));
-                    $errorRoute = new Error(array(
-                        'controller' => $dumper,
-                        'action' => 'error',
-                        'exception' => $e,
-                    ));
+                    $errorRoute = new Error([$dumper, 'errorAction'], ['exception' => $e]);
                     $this->launch($errorRoute->match($this->ioc()->get('request')), true);
                 }
             } else {
                 $this->getLogger()->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
-                $errorRoute = new Error(array(
-                    'controller' => $dumper,
-                    'action' => 'error',
-                    'exception' => $e,
-                ));
+                $errorRoute = new Error([$dumper, 'errorAction'], ['exception' => $e]);
                 $this->launch($errorRoute->match($this->ioc()->get('request')), true);
             }
         } catch (\Exception $ex) {
@@ -120,31 +107,13 @@ class Front
     }
 
     /**
-     * @param array $parameters
+     * @param callable $resolver
      * @param \Maketok\Mvc\Router\Route\RouteInterface $route
-     * @throws RouteException
      * @return ResponseInterface
      */
-    protected function launchAction(array $parameters, RouteInterface $route)
+    protected function launchAction($resolver, RouteInterface $route)
     {
-        if (!isset($parameters['controller']) || !isset($parameters['action'])) {
-            throw new RouteException("Missing controller or action for a matched route.");
-        }
-
-        if (is_object($parameters['controller'])) {
-            $controller = $parameters['controller'];
-        } else {
-            $controllerClass = (string) $parameters['controller'];
-            $controller = new $controllerClass();
-         }
-        $actionName = $parameters['action'];
-        if (!method_exists($controller, $actionName)) {
-            $actionName .= 'Action';
-        }
-        if (!method_exists($controller, $actionName)) {
-            throw new RouteException("Non existing action name.");
-        }
-        return $controller->$actionName($route->getRequest());
+        return call_user_func_array($resolver, array($route->getRequest()));
     }
 
     /**

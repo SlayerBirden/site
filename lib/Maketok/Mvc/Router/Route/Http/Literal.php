@@ -16,22 +16,19 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 class Literal extends AbstractRoute implements RouteInterface
 {
 
-
-    /** @var  string */
-    protected $_matchPath;
-
     /** @var  array */
-    protected $_defaults;
+    protected $defaults;
 
     /**
      * @param string $path
-     * @param array $parameters
+     * @param callable $resolver
      * @param array $defaults
      */
-    public function __construct($path, array $parameters,  array $defaults = array()) {
+    public function __construct($path, $resolver,  array $defaults = [])
+    {
         $this->setPath($path);
-        $this->_parameters = $parameters;
-        $this->_defaults = $defaults;
+        $this->resolver = $resolver;
+        $this->defaults = $defaults;
     }
 
     /**
@@ -40,18 +37,16 @@ class Literal extends AbstractRoute implements RouteInterface
      */
     public function match(RequestInterface $request)
     {
-        $this->_request = $request;
-        if ($this->stripTrailingSlash($request->getPathInfo()) === $this->stripTrailingSlash($this->_matchPath)) {
+        $this->request = $request;
+        if ($this->stripTrailingSlash($request->getPathInfo()) === $this->stripTrailingSlash($this->matchPath)) {
             $attributes = $request->getAttributes();
             if (is_object($attributes) && ($attributes instanceof ParameterBag)) {
                 $attributes->add(array(
                     '_route' => $this,
                 ));
                 if (!empty($this->_defaults)) {
-                    $attributes->add($this->_defaults);
+                    $attributes->add($this->defaults);
                 }
-            } elseif (is_array($attributes)) {
-                $attributes[] = ['_route' => $this];
             }
             return new Success($this);
         }
@@ -64,32 +59,6 @@ class Literal extends AbstractRoute implements RouteInterface
      */
     public function assemble(array $params = array())
     {
-        return $this->_matchPath;
-    }
-
-    /**
-     * @param string $path
-     * @return $this
-     */
-    public function setPath($path)
-    {
-        $this->_matchPath = $path;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getParameters()
-    {
-        return $this->_parameters;
-    }
-
-    /**
-     * @return RequestInterface
-     */
-    public function getRequest()
-    {
-        return $this->_request;
+        return $this->matchPath;
     }
 }

@@ -39,4 +39,12 @@ class Request extends HttpRequest implements RequestInterface
     {
         return $this->attributes;
     }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\HeaderBag
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
 }

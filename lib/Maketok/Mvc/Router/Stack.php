@@ -12,18 +12,11 @@ use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Util\RequestInterface;
 
-class Stack implements RouterInterface
+class Stack extends AbstractRouter implements RouterInterface
 {
-    use UtilityHelperTrait;
-
 
     /** @var \SplStack  */
     protected $_routes;
-
-    public function __construct()
-    {
-        $this->_routes = new \SplStack();
-    }
 
     /**
      * {@inheritdoc}
@@ -34,16 +27,6 @@ class Stack implements RouterInterface
             $this->_routes->push($route);
         } elseif (self::STACK_MODE_PREPEND === $mode) {
             $this->_routes->unshift($route);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addRoutes(array $routes)
-    {
-        foreach ($routes as $route) {
-            $this->_routes->push($route);
         }
     }
 
@@ -80,74 +63,9 @@ class Stack implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function assemble(array $params = array())
+    public function clearRoutes()
     {
-        return;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRequest()
-    {
-        return;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getParameters()
-    {
-        return array();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function source($path)
-    {
-        $contents = $this->parseYaml($path);
-        if ($routes = $this->getIfExists('routes', $contents, false)) {
-            foreach ($routes as $route) {
-                $type = $this->getIfExists('type', $route);
-                $path = $this->getIfExists('path', $route);
-                $parameters = $this->getIfExists('parameters', $route);
-                if (is_null($type) || is_null($path) || is_null($parameters)) {
-                    $this->getLogger()->err(sprintf("Invalid route definition: %s", json_encode($route)));
-                    continue;
-                }
-                try {
-                    $name = $this->getFullyQualifiedName($type);
-                    /** @var RouterInterface $routeObj */
-                    $routeObj = new $name($path,
-                        $parameters,
-                        $this->getIfExists('defaults', $route, []),
-                        $this->getIfExists('restrictions', $route, []),
-                        $this->getIfExists('parser', $route)
-                    );
-                    $this->addRoute($routeObj);
-                } catch (RouteException $e) {
-                    $this->getLogger()->err($e->__toString());
-                }
-            }
-        }
-    }
-
-    /**
-     * @param string $type
-     * @throws RouteException
-     * @return string
-     */
-    protected function getFullyQualifiedName($type)
-    {
-        if (!strpos($type, '\\')) {
-            $fullQualifiedRouteName = '\Maketok\Mvc\Router\Route\Http\\' . ucfirst($type);
-        } else {
-            $fullQualifiedRouteName = $type;
-        }
-        if (!class_exists($fullQualifiedRouteName)) {
-            throw new RouteException(sprintf("Invalid route type: %s", $type));
-        }
-        return $fullQualifiedRouteName;
+        $this->_routes = new \SplStack();
+        return $this;
     }
 }

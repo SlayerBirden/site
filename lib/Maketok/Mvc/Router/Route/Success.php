@@ -38,10 +38,10 @@ class Success
     }
 
     /**
-     * @return array
+     * @return callable
      */
-    public function getParameters()
+    public function getResolver()
     {
-        return $this->getMatchedRoute()->getParameters();
+        return $this->getMatchedRoute()->getResolver();
     }
 }

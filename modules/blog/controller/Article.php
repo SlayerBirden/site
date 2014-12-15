@@ -7,13 +7,13 @@
 
 namespace modules\blog\controller;
 
-use Maketok\Mvc\Controller\AbstractController;
+use Maketok\Module\Mvc\AbstractBaseController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
 
-class Article extends AbstractController
+class Article extends AbstractBaseController
 {
 
     /**

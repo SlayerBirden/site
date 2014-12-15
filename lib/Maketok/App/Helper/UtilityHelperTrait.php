@@ -8,6 +8,8 @@
 namespace Maketok\App\Helper;
 
 use Maketok\Http\SessionInterface;
+use Maketok\Mvc\Router\Route\RouteInterface;
+use Maketok\Mvc\Router\RouterInterface;
 use Maketok\Observer\SubjectManagerInterface;
 use Maketok\Util\ArrayValueTrait;
 use Monolog\Logger;
@@ -69,6 +71,17 @@ trait UtilityHelperTrait
     }
 
     /**
+     * Get current url
+     * @return string
+     */
+    public function getCurrentUrl()
+    {
+        /** @var RouteInterface $route */
+        $route = $this->ioc()->get('request')->attributes->get('_route');
+        return $this->getUrl($route->assemble());
+    }
+
+    /**
      * @codeCoverageIgnore
      * @return SubjectManagerInterface
      */
@@ -102,5 +115,13 @@ trait UtilityHelperTrait
             return [];
         }
         return $ymlReader->parse($file);
+    }
+
+    /**
+     * @return RouterInterface
+     */
+    public function getRouter()
+    {
+        return $this->ioc()->get('router');
     }
 }

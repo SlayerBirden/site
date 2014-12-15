@@ -34,4 +34,10 @@ interface RouterInterface extends RouteInterface, ConfigReaderInterface
      * @return mixed
      */
     public function setRoutes(array $routes);
+
+    /**
+     * clear all routes
+     * @return self
+     */
+    public function clearRoutes();
 }

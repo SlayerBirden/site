@@ -21,6 +21,15 @@ class Modules extends AbstractAdminController
     use UtilityHelperTrait;
 
     /**
+     * add template path
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->addTemplatePath(AR . "/lib/Maketok/Module/Resource/view/admin");
+    }
+
+    /**
      * @param RequestInterface $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -101,16 +110,5 @@ class Modules extends AbstractAdminController
         } catch (ModelException $e) {
             throw new RouteException("Could not find model by id.");
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getTemplatePath($template = null, $module = null)
-    {
-        if (is_null($template)) {
-            $template = $this->_template;
-        }
-        return AR . "/lib/Maketok/Module/Resource/view/admin/$template";
     }
 }

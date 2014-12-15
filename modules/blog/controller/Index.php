@@ -7,11 +7,11 @@
 
 namespace modules\blog\controller;
 
-use Maketok\Mvc\Controller\AbstractController;
+use Maketok\Module\Mvc\AbstractBaseController;
 use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
 
-class Index extends AbstractController
+class Index extends AbstractBaseController
 {
 
     /**

@@ -29,6 +29,11 @@ interface RequestInterface extends MessageInterface
     public function getAttributes();
 
     /**
+     * @return array|\IteratorAggregate|\Symfony\Component\HttpFoundation\HeaderBag
+     */
+    public function getHeaders();
+
+    /**
      * @return mixed
      */
     public function getPathInfo();

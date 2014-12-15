@@ -13,10 +13,13 @@ abstract class AbstractRoute
 {
 
     /** @var  RequestInterface */
-    protected $_request;
+    protected $request;
 
-    /** @var  array */
-    protected $_parameters;
+    /** @var  callable */
+    protected $resolver;
+
+    /** @var  string */
+    protected $matchPath;
 
     /**
      * this function is created to make sure there is no trailing-slash-error cases
@@ -29,5 +32,31 @@ abstract class AbstractRoute
     public function stripTrailingSlash($string)
     {
         return rtrim($string, '/');
+    }
+
+    /**
+     * @return RequestInterface
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param string $path
+     * @return $this
+     */
+    public function setPath($path)
+    {
+        $this->matchPath = $path;
+        return $this;
+    }
+
+    /**
+     * @return RequestInterface
+     */
+    public function getResolver()
+    {
+        return $this->resolver;
     }
 }

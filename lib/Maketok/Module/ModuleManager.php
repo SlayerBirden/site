@@ -239,7 +239,7 @@ class ModuleManager implements ClientInterface
     /**
      * @return string
      */
-    protected function getDir()
+    public function getDir()
     {
         return AR . DS . 'modules';
     }

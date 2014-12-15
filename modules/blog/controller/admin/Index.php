@@ -7,7 +7,7 @@
 
 namespace modules\blog\controller\admin;
 
-use Maketok\Mvc\Controller\AbstractAdminController;
+use Maketok\Module\Mvc\AbstractAdminController;
 use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
 

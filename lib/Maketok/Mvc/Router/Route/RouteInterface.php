@@ -30,7 +30,7 @@ interface RouteInterface
     public function getRequest();
 
     /**
-     * @return array
+     * @return callable
      */
-    public function getParameters();
+    public function getResolver();
 }

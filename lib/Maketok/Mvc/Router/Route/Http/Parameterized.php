@@ -19,37 +19,35 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 class Parameterized extends AbstractRoute implements RouteInterface
 {
 
-    /** @var  string */
-    protected $_matchPath;
-
     /** @var  ExpressionParserInterface */
-    protected $_expressionParser;
+    protected $expressionParser;
 
     /** @var  array */
-    protected $_variables;
+    protected $variables;
 
     /** @var  array */
-    protected $_defaults;
+    protected $defaults;
 
     /** @var  array */
-    protected $_restrictions;
+    protected $restrictions;
 
     /**
      * @param string $path
-     * @param array $parameters
+     * @param array $resolver
      * @param array $defaults
      * @param array $restrictions
      * @param \Maketok\Util\ExpressionParserInterface $parser
      */
-    public function __construct($path, array $parameters, array $defaults, array $restrictions, ExpressionParserInterface $parser = null) {
+    public function __construct($path, $resolver, array $defaults, array $restrictions, ExpressionParserInterface $parser = null)
+    {
         $this->setPath($path);
-        $this->_parameters = $parameters;
-        $this->_defaults = $defaults;
-        $this->_restrictions = $restrictions;
+        $this->resolver = $resolver;
+        $this->defaults = $defaults;
+        $this->restrictions = $restrictions;
         if (is_null($parser)) {
-            $this->_expressionParser = new ExpressionParser($this->_matchPath, new Tokenizer($this->_matchPath));
+            $this->expressionParser = new ExpressionParser($this->matchPath, new Tokenizer($this->matchPath));
         } else {
-            $this->_expressionParser = $parser;
+            $this->expressionParser = $parser;
         }
     }
 
@@ -59,34 +57,25 @@ class Parameterized extends AbstractRoute implements RouteInterface
      */
     public function match(RequestInterface $request)
     {
-        $this->_request = $request;
-        $variables = $this->_expressionParser->parse(
+        $this->request = $request;
+        $variables = $this->expressionParser->parse(
             $this->stripTrailingSlash($request->getPathInfo()),
-            $this->_restrictions);
+            $this->restrictions
+        );
         if ($variables !== FALSE) {
             $attributes = $request->getAttributes();
-            // set defaults
             if (is_object($attributes) && ($attributes instanceof ParameterBag)) {
                 $attributes->add(array(
                     '_route' => $this,
                 ));
-                if (!empty($this->_defaults)) {
-                    $attributes->add($this->_defaults);
+                // set defaults
+                if (!empty($this->defaults)) {
+                    $attributes->add($this->defaults);
                 }
-            } elseif (is_array($attributes)) {
-                $attributes[] = ['_route' => $this];
-                if (!empty($this->_defaults)) {
-                    $attributes[] = $this->_defaults;
+                // set variables
+                if (!empty($variables)) {
+                    $attributes->add($variables);
                 }
-            }
-            // set variables
-            $this->_variables = $variables;
-            if (is_object($attributes) &&
-                ($attributes instanceof ParameterBag) &&
-                !empty($variables)) {
-                $attributes->add($variables);
-            } elseif (is_array($attributes)) {
-                $attributes[] = $variables;
             }
             return new Success($this);
         }
@@ -100,35 +89,9 @@ class Parameterized extends AbstractRoute implements RouteInterface
     public function assemble(array $params = array())
     {
         // defaults
-        $parameters = $this->_defaults;
-        $parameters = array_replace($parameters, $this->_variables, $params);
+        $parameters = $this->defaults;
+        $parameters = array_replace($parameters, $this->variables, $params);
 
-        return $this->_expressionParser->evaluate($parameters, $this->_restrictions);
-    }
-
-    /**
-     * @param string $path
-     * @return $this
-     */
-    public function setPath($path)
-    {
-        $this->_matchPath = $path;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getParameters()
-    {
-        return $this->_parameters;
-    }
-
-    /**
-     * @return RequestInterface
-     */
-    public function getRequest()
-    {
-        return $this->_request;
+        return $this->expressionParser->evaluate($parameters, $this->restrictions);
     }
 }

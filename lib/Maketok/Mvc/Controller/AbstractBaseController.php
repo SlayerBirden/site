@@ -10,7 +10,7 @@ namespace Maketok\Mvc\Controller;
 /**
  * @codeCoverageIgnore
  */
-class AbstractAdminController extends AbstractController
+class AbstractBaseController extends AbstractController
 {
 
     /**
@@ -19,6 +19,6 @@ class AbstractAdminController extends AbstractController
      */
     public function __construct()
     {
-        $this->addTemplatePath(AR . '/src/admin/view');
+        $this->addTemplatePath(AR . '/src/base/view');
     }
 }

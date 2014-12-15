@@ -7,7 +7,7 @@
 
 namespace modules\blog\controller\admin;
 
-use Maketok\Mvc\Controller\AbstractAdminController;
+use Maketok\Module\Mvc\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;

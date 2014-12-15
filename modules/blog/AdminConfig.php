@@ -11,6 +11,8 @@ namespace modules\blog;
 use Maketok\Module\AdminConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
+use modules\blog\controller\admin\Article;
+use modules\blog\controller\admin\Index;
 
 class AdminConfig extends Config implements AdminConfigInterface
 {
@@ -20,25 +22,27 @@ class AdminConfig extends Config implements AdminConfigInterface
      */
     public function initRoutes()
     {
-        $this->ioc()->get('router')->addRoute(new Literal('/blog', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\admin\\Index',
-            'action' => 'index',
-        )));
-        $this->ioc()->get('router')->addRoute(new Literal('/blog/article/new', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\admin\\Article',
-            'action' => 'new',
-        )));
-        $this->ioc()->get('router')->addRoute(new Parameterized('/blog/article/edit/{id}', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\admin\\Article',
-            'action' => 'edit',
-        ), [], ['id' => '^\d+$']));
-        $this->ioc()->get('router')->addRoute(new Parameterized('/blog/article/delete/{id}', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\admin\\Article',
-            'action' => 'delete',
-        ), [], ['id' => '^\d+$']));
+        $this->getRouter()->addRoute(new Literal('/blog', [new Index(), 'indexAction']));
+        $this->getRouter()->addRoute(new Literal('/blog/article/new', [new Article(), 'newAction']));
+        $this->getRouter()->addRoute(new Parameterized(
+            '/blog/article/edit/{id}',
+            [new Article(), 'editAction'],
+            [],
+            ['id' => '^\d+$']
+        ));
+        $this->getRouter()->addRoute(new Parameterized(
+            '/blog/article/delete/{id}',
+            [new Article(), 'deleteAction'],
+            [],
+            ['id' => '^\d+$']
+        ));
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return true;
     }
 }

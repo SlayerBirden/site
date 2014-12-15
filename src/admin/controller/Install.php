@@ -7,14 +7,14 @@
 
 namespace admin\controller;
 
-use Maketok\App\Site;
+use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Util\Monolog\Handler\HttpStreamedHandler;
 use Maketok\Util\RequestInterface;
 use Monolog\Formatter\HtmlFormatter;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class Install extends AbstractController
+class Install extends AbstractAdminController
 {
 
     /**

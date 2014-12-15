@@ -32,18 +32,15 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
 
     public function initRoutes()
     {
-        $this->ioc()->get('router')->addRoute(new Literal('/blog', array(
-            'module' => $this->getCode(),
+        $this->getRouter()->addRoute(new Literal('/blog', array(
             'controller' => 'modules\\blog\\controller\\Index',
             'action' => 'index',
         )));
-        $this->ioc()->get('router')->addRoute(new Parameterized('/blog/{code}', array(
-            'module' => $this->getCode(),
+        $this->getRouter()->addRoute(new Parameterized('/blog/{code}', array(
             'controller' => 'modules\\blog\\controller\\Article',
             'action' => 'index',
         ), [], ['code' => '^[a-zA-Z0-9_.-]+$']));
-        $this->ioc()->get('router')->addRoute(new Parameterized('/blog/article/{id}', array(
-            'module' => $this->getCode(),
+        $this->getRouter()->addRoute(new Parameterized('/blog/article/{id}', array(
             'controller' => 'modules\\blog\\controller\\Article',
             'action' => 'index',
         ), [], ['id' => '^\d+$']));
@@ -185,6 +182,6 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
      */
     public function getDdlConfig($version)
     {
-        return include __DIR__ . "/config/ddl/$version.php";
+        return include __DIR__ . "/config/installer/ddl/$version.php";
     }
 }
