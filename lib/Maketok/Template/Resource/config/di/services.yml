@@ -82,6 +82,7 @@ services:
     calls:
       - [addPath, ["%ar%/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Resources/views/Form"]]
       - [addPath, ["%ar%/lib/Maketok/Template/Resource/view/Form"]]
+      - [addPath, ["%ar%/lib/Maketok/Template/Resource/view"]]
 
   twig_env:
     class: Twig_Environment

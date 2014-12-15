@@ -41,6 +41,9 @@ final class Site
      */
     public function run($env = '', $context = null)
     {
+        if ($this->terminated) {
+            return;
+        }
         define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
         define('AR', APPLICATION_ROOT);
         define('DS', DIRECTORY_SEPARATOR);
