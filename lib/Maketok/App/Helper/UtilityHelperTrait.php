@@ -72,6 +72,7 @@ trait UtilityHelperTrait
 
     /**
      * Get current url
+     * @codeCoverageIgnore
      * @return string
      */
     public function getCurrentUrl()
@@ -118,6 +119,7 @@ trait UtilityHelperTrait
     }
 
     /**
+     * @codeCoverageIgnore
      * @return RouterInterface
      */
     public function getRouter()
