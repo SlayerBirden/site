@@ -56,7 +56,9 @@ class Front
         if (!$silent) {
             $this->getDispatcher()->notify('response_send_before', new State());
         }
-        $response->send();
+        if ($response && is_object($response) && ($response instanceof ResponseInterface)) {
+            $response->send();
+        }
     }
 
     /**
@@ -82,19 +84,13 @@ class Front
                 // not found
                 $errorRoute = new Error([$dumper, 'norouteAction']);
                 $this->getDispatcher()->notify('noroute_action', new State(['front' => $this, 'dumper' => $dumper]));
-                $this->launch($errorRoute->match($this->ioc()->get('request')), true);
             } elseif ($e instanceof \ErrorException) {
-                $errno = $e->getSeverity();
-                if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
-                    $this->getLogger()->err(sprintf("Front Controller dispatch error exception\n%s", $e->__toString()));
-                    $errorRoute = new Error([$dumper, 'errorAction'], ['exception' => $e]);
-                    $this->launch($errorRoute->match($this->ioc()->get('request')), true);
-                }
+                $errorRoute = $this->_processError($e, $dumper);
             } else {
                 $this->getLogger()->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
                 $errorRoute = new Error([$dumper, 'errorAction'], ['exception' => $e]);
-                $this->launch($errorRoute->match($this->ioc()->get('request')), true);
             }
+            $this->launch($errorRoute->match($this->ioc()->get('request')), true);
         } catch (\Exception $ex) {
             printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Trace: %s. Previous exception: %s",
                 $ex->getMessage(),
@@ -104,6 +100,25 @@ class Front
                 $e->__toString()
             );
         }
+    }
+
+    /**
+     * @param \ErrorException $e
+     * @param object $dumper controller to handle exceptions
+     * @return Error
+     */
+    protected function _processError(\ErrorException $e, $dumper)
+    {
+        $errno = $e->getSeverity();
+        $message = sprintf("Front Controller dispatch error exception\n%s", $e->__toString());
+        if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
+            $this->getLogger()->err($message);
+        } elseif ($errno & E_WARNING || $errno & E_USER_WARNING) {
+            $this->getLogger()->warn($message);
+        } else {
+            $this->getLogger()->notice($message);
+        }
+        return new Error([$dumper, 'errorAction'], ['exception' => $e]);
     }
 
     /**
