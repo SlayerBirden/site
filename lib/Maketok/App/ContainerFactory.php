@@ -44,6 +44,9 @@ class ContainerFactory
                 require_once $file;
                 $class = self::getContainerClassName();
                 self::$ioc = new $class();
+                // this is kind of a hack: thanks to lazy loading of container parameter bag
+                // to be able to check if it's frozen later
+                self::$ioc->getParameterBag();
             } else {
                 self::createSC();
             }
@@ -100,6 +103,9 @@ class ContainerFactory
      */
     private static function createSC()
     {
+        if (!is_null(self::$ioc)) {
+            throw new \LogicException("Invalid context. Can't create service container, it already exists.");
+        }
         self::$ioc = new ContainerBuilder();
         foreach (self::getCompilerPasses() as $compilerPass) {
             self::$ioc->addCompilerPass($compilerPass);
@@ -196,10 +202,7 @@ class ContainerFactory
      */
     public static function serviceContainerProcessModules(StateInterface $state)
     {
-        // we may not need to
-        $container = self::ioc();
-        $class = self::getContainerClassName();
-        if ($container instanceof $class) {
+        if (self::$ioc->isFrozen()) {
             return;
         }
         $activeModules = $state->modules;
@@ -229,11 +232,8 @@ class ContainerFactory
      */
     public static function scCompile()
     {
-        $file = self::getContainerFileName();
-        // compile only if file doesn't exist, or if debug mode is on
-        if (!file_exists($file) || self::getDebug()) {
+        if (!self::$ioc->isFrozen()) {
             self::ioc()->compile();
-            self::ioc()->get('subject_manager')->notify('ioc_container_compiled', new State([]));
         }
     }
 
@@ -242,12 +242,10 @@ class ContainerFactory
      */
     public static function scDump()
     {
-        $file = self::getContainerFileName();
-        // dump only if another dump doesn't exist or if debug mode
-        if (!file_exists($file) || self::getDebug()) {
-            $dumper = new PhpDumper(self::ioc());
+        if (!self::$ioc->isFrozen()) {
+            $dumper = new PhpDumper(self::$ioc);
             /** @var StreamHandler $writer */
-            $writer = self::ioc()->get('lock_stream_handler');
+            $writer = self::$ioc->get('lock_stream_handler');
             $writer->writeWithLock(
                 $dumper->dump(array('class' => self::getContainerClassName(false))), self::getContainerFileName()
             );

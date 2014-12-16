@@ -10,7 +10,7 @@ services:
     factory_method: getInstance
     calls:
           - [attach, [dispatch, ["@front_controller", dispatch], 10]]
-          - [attach, [ioc_container_initialized, ["@module_manager", processModuleConfig], 10]]
+          - [attach, [ioc_container_initialized, ["@module_manager", processModuleConfig], 15]]
           - [attach, [module_list_exists, \Maketok\App\ContainerFactory::serviceContainerProcessModules, 0]]
           - [attach, [ioc_container_initialized, \Maketok\App\ContainerFactory::scCompile, 10]]
           - [attach, [ioc_container_initialized, \Maketok\App\ContainerFactory::scDump, 5]]

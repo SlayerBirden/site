@@ -32,9 +32,5 @@ services:
       class: Maketok\Module\ModuleManager
       arguments:
         - "@module_table"
-        - "@directory_handler"
-        - "@subject_manager"
-        - "@logger"
-        - "@session_manager"
         - "%module_config_name%"
         - "%module_area%"

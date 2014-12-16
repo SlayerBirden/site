@@ -126,4 +126,13 @@ trait UtilityHelperTrait
     {
         return $this->ioc()->get('router');
     }
+
+    /**
+     * @param string $message
+     * @param string $type
+     */
+    public function addSessionMessage($type, $message)
+    {
+        $this->getSession()->getFlashBag()->add($type, $message);
+    }
 }

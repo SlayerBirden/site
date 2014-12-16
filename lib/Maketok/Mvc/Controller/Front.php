@@ -56,7 +56,7 @@ class Front
         if (!$silent) {
             $this->getDispatcher()->notify('response_send_before', new State());
         }
-        if ($response && is_object($response) && ($response instanceof ResponseInterface)) {
+        if ($response && is_object($response)) {
             $response->send();
         }
     }

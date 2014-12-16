@@ -7,23 +7,19 @@
 
 namespace Maketok\Module;
 
-use Maketok\App\Helper\ContainerTrait;
-use Maketok\Http\SessionInterface;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\Resource\Model\Module;
 use Maketok\Observer\State;
-use Maketok\Observer\SubjectManagerInterface;
 use Maketok\Model\TableMapper;
-use Maketok\Util\DirectoryHandlerInterface;
 use Maketok\Util\Exception\ModelException;
-use Monolog\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
 use Maketok\Installer;
 
 class ModuleManager implements ClientInterface
 {
-    use ContainerTrait;
+    use UtilityHelperTrait;
 
     /** @var TableMapper */
     protected $_tableType;
@@ -36,22 +32,6 @@ class ModuleManager implements ClientInterface
     /** @var array */
     private $_moduleDirs;
     /**
-     * @var SubjectManagerInterface
-     */
-    private $sm;
-    /**
-     * @var DirectoryHandlerInterface
-     */
-    private $dh;
-    /**
-     * @var Logger
-     */
-    private $logger;
-    /**
-     * @var SessionInterface
-     */
-    private $session;
-    /**
      * @var string
      */
     private $configName;
@@ -62,26 +42,12 @@ class ModuleManager implements ClientInterface
 
     /**
      * @param TableMapper $tableType
-     * @param DirectoryHandlerInterface $dh
-     * @param SubjectManagerInterface $sm
-     * @param Logger $logger
-     * @param SessionInterface $session
      * @param string $configName
      * @param string $area
      */
-    public function __construct(TableMapper $tableType,
-                                DirectoryHandlerInterface $dh,
-                                SubjectManagerInterface $sm,
-                                Logger $logger,
-                                SessionInterface $session,
-                                $configName,
-                                $area)
+    public function __construct(TableMapper $tableType, $configName, $area)
     {
         $this->_tableType = $tableType;
-        $this->dh = $dh;
-        $this->sm = $sm;
-        $this->logger = $logger;
-        $this->session = $session;
         $this->configName = $configName;
         $this->area = $area;
     }
@@ -96,8 +62,8 @@ class ModuleManager implements ClientInterface
             $module->active = 0;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
-            $this->logger->err($e->__toString());
-            $this->session->getFlashBag()->add('error', 'Could not update disable.');
+            $this->getLogger()->err($e->__toString());
+            $this->addSessionMessage('error', 'Could not update disable.');
         }
     }
 
@@ -142,8 +108,8 @@ class ModuleManager implements ClientInterface
             $module->version = $version;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
-            $this->logger->err($e->__toString());
-            $this->session->getFlashBag()->add('error', 'Could not update to version.');
+            $this->getLogger()->err($e->__toString());
+            $this->addSessionMessage('error', 'Could not update to version.');
         }
     }
 
@@ -157,8 +123,8 @@ class ModuleManager implements ClientInterface
             $module->active = 1;
             $this->_tableType->save($module);
         } catch (ModelException $e) {
-            $this->logger->err($e->__toString());
-            $this->session->getFlashBag()->add('error', 'Could not update activate.');
+            $this->getLogger()->err($e->__toString());
+            $this->addSessionMessage('error', 'Could not update activate.');
         }
     }
 
@@ -231,7 +197,7 @@ class ModuleManager implements ClientInterface
     public function getModuleDirectories()
     {
         if (is_null($this->_moduleDirs)) {
-            $this->_moduleDirs = $this->dh->ls($this->getDir());
+            $this->_moduleDirs = $this->ioc()->get('directory_handler')->ls($this->getDir());
         }
         return $this->_moduleDirs;
     }
@@ -258,7 +224,7 @@ class ModuleManager implements ClientInterface
                 $this->_modules[$config->getCode()] = $config;
             }
         }
-        $this->sm->notify('module_list_exists', new State(array(
+        $this->getDispatcher()->notify('module_list_exists', new State(array(
             'modules' => $this->_modules
         )));
     }
@@ -310,10 +276,10 @@ class ModuleManager implements ClientInterface
                     $this->removeDbModule($module);
                 }
             }
-            $this->sm->notify('modulemanager_updates_after',
+            $this->getDispatcher()->notify('modulemanager_updates_after',
                 new State(array('active_modules' => $this->getActiveModules())));
         } catch (\Exception $e) {
-            $this->logger->emerg($e->__toString());
+            $this->getLogger()->emerg($e->__toString());
         }
     }
 
@@ -330,7 +296,7 @@ class ModuleManager implements ClientInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->emerg($e->__toString());
+            $this->getLogger()->emerg($e->__toString());
         }
     }
 
@@ -344,23 +310,23 @@ class ModuleManager implements ClientInterface
         }
         try {
             // process active modules
-            $this->sm->notify('modulemanager_process_before',
+            $this->getDispatcher()->notify('modulemanager_process_before',
                 new State(array('active_modules' => $this->getActiveModules())));
             foreach ($this->getActiveModules() as $config) {
                 // events
                 /** @var ConfigInterface $config */
                 $config->initListeners();
             }
-            $this->sm->notify('modulemanager_init_listeners_after',
+            $this->getDispatcher()->notify('modulemanager_init_listeners_after',
                 new State(array('active_modules' => $this->getActiveModules())));
             foreach ($this->getActiveModules() as $config) {
                 // routes
                 $config->initRoutes();
             }
-            $this->sm->notify('modulemanager_process_after',
+            $this->getDispatcher()->notify('modulemanager_process_after',
                 new State(array('active_modules' => $this->getActiveModules())));
         } catch (\Exception $e) {
-            $this->logger->emerg($e->__toString());
+            $this->getLogger()->emerg($e->__toString());
         }
     }
 
@@ -405,8 +371,8 @@ class ModuleManager implements ClientInterface
                 $file = $locator->locate($version.'.php');
                 return include $file;
             } catch (\InvalidArgumentException $nextE) {
-                $this->logger->err($e->__toString());
-                $this->logger->err($nextE->__toString());
+                $this->getLogger()->err($e->__toString());
+                $this->getLogger()->err($nextE->__toString());
             }
         }
         return false;

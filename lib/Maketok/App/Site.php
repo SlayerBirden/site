@@ -54,6 +54,10 @@ final class Site
         }
         $this->ioc()->set('site', $this);
         $this->getDispatcher()->notify('ioc_container_initialized', new State([]));
+        if ($this->ioc()->isFrozen()) {
+            // container can be already compiled
+            $this->getDispatcher()->notify('ioc_container_compiled', new State([]));
+        }
         // we've done our job to init system
         // now we may or may not apply configs/or run dispatcher
         if (!($context & self::CONTEXT_SKIP_DISPATCH)) {
