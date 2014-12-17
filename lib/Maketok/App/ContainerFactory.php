@@ -242,7 +242,9 @@ class ContainerFactory
      */
     public static function scDump()
     {
-        if (!self::$ioc->isFrozen()) {
+        $file = self::getContainerFileName();
+        // dump only if another dump doesn't exist or if debug mode
+        if (!file_exists($file) || self::getDebug()) {
             $dumper = new PhpDumper(self::$ioc);
             /** @var StreamHandler $writer */
             $writer = self::$ioc->get('lock_stream_handler');
