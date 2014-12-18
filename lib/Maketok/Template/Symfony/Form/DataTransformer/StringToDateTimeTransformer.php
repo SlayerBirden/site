@@ -10,7 +10,6 @@
 
 namespace Maketok\Template\Symfony\Form\DataTransformer;
 
-
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer as BaseDateTimeToStringTransformer;
 
 /**
@@ -21,7 +20,7 @@ class StringToDateTimeTransformer extends BaseDateTimeToStringTransformer
 {
 
     /**
-     * @param string $value
+     * @param  string    $value
      * @return \DateTime
      */
     public function transform($value)
@@ -30,7 +29,7 @@ class StringToDateTimeTransformer extends BaseDateTimeToStringTransformer
     }
 
     /**
-     * @param \DateTime $value
+     * @param  \DateTime $value
      * @return string
      */
     public function reverseTransform($value)

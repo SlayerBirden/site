@@ -35,8 +35,8 @@ class TableMapper
 
     /**
      * @param AbstractTableGateway $tableGateway
-     * @param string|string[] $idField
-     * @param string $autoIncrement
+     * @param string|string[]      $idField
+     * @param string               $autoIncrement
      */
     public function __construct(AbstractTableGateway $tableGateway, $idField, $autoIncrement = null)
     {
@@ -55,6 +55,7 @@ class TableMapper
         if (is_null($this->idField)) {
             throw new ModelException("Id Field Name not set.");
         }
+
         return $this->idField;
     }
 
@@ -76,17 +77,19 @@ class TableMapper
     public function fetchAll()
     {
         $resultSet = $this->tableGateway->select();
+
         return $resultSet;
     }
 
     /**
      * @codeCoverageIgnore
-     * @param array|\Closure|\Zend\Db\Sql\Predicate\PredicateInterface $filter
+     * @param  array|\Closure|\Zend\Db\Sql\Predicate\PredicateInterface $filter
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function fetchFilter($filter)
     {
         $resultSet = $this->tableGateway->select($filter);
+
         return $resultSet;
     }
 
@@ -101,7 +104,7 @@ class TableMapper
 
     /**
      * @codeCoverageIgnore
-     * @param int|string|string[] $id
+     * @param  int|string|string[]     $id
      * @return array|\ArrayObject|null
      * @throws ModelException
      */
@@ -112,6 +115,7 @@ class TableMapper
         if (!$row) {
             throw new ModelException(sprintf("Could not find row with identifier %s", json_encode($id)));
         }
+
         return $row;
     }
 
@@ -127,7 +131,7 @@ class TableMapper
 
     /**
      * get Filter
-     * @param int|string|string[] $data
+     * @param  int|string|string[] $data
      * @return string[]
      */
     protected function getIdFilter($data)
@@ -150,6 +154,7 @@ class TableMapper
                 $filter[$fieldName] = $data[$fieldName];
             }
         }
+
         return $filter;
     }
 
@@ -209,7 +214,7 @@ class TableMapper
     }
 
     /**
-     * @param object $model
+     * @param  object         $model
      * @return array
      * @throws ModelException
      */
@@ -232,6 +237,7 @@ class TableMapper
         if (empty($data)) {
             throw new ModelInfoException("Empty object data. Or invalid object to save.");
         }
+
         return $data;
     }
 

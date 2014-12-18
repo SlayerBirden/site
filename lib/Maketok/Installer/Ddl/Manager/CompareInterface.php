@@ -15,10 +15,10 @@ interface CompareInterface
 {
 
     /**
-     * @param array $a
-     * @param array $b
+     * @param  array      $a
+     * @param  array      $b
      * @param $tableName
-     * @param Directives $directives
+     * @param  Directives $directives
      * @return void
      */
     public function intlCompare(array $a, array $b, $tableName, Directives $directives);

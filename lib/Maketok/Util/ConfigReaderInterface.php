@@ -14,7 +14,7 @@ interface ConfigReaderInterface
 {
 
     /**
-     * @param string $path config path
+     * @param  string      $path config path
      * @return mixed|array
      */
     public function source($path);

@@ -29,6 +29,7 @@ class ChangeColumn extends AddColumn implements ProcedureInterface
         $table = new AlterTable($tableName);
         $column = $this->getInitColumn($newName, $newDefinition);
         $table->changeColumn($oldName, $column);
+
         return $this->query($table);
     }
 

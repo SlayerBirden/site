@@ -19,7 +19,7 @@ interface DependencyConfigExtensionInterface
      * Loads the config right into DI Container
      * not waiting for compile
      *
-     * @param YamlFileLoader $loader
+     * @param  YamlFileLoader $loader
      * @return mixed
      */
     public function loadConfig(YamlFileLoader $loader);

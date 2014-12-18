@@ -26,7 +26,6 @@ class Front
 {
     use UtilityHelperTrait;
 
-
     /** @var  RouteInterface */
     private $router;
 
@@ -34,7 +33,7 @@ class Front
     private $dumpers;
 
     /**
-     * @param StateInterface $state
+     * @param  StateInterface $state
      * @throws RouteException
      */
     public function dispatch(StateInterface $state)
@@ -49,8 +48,8 @@ class Front
     }
 
     /**
-     * @param Success $success
-     * @param bool $silent
+     * @param  Success        $success
+     * @param  bool           $silent
      * @throws RouteException
      */
     public function launch(Success $success, $silent = false)
@@ -76,7 +75,7 @@ class Front
 
     /**
      * Custom exception handler
-     * @param \Exception $e
+     * @param  \Exception $e
      * @return void
      */
     public function exceptionHandler(\Exception $e)
@@ -106,8 +105,8 @@ class Front
     }
 
     /**
-     * @param \ErrorException $e
-     * @param object $dumper controller to handle exceptions
+     * @param  \ErrorException $e
+     * @param  object          $dumper controller to handle exceptions
      * @return Error
      */
     protected function _processError(\ErrorException $e, $dumper)
@@ -121,12 +120,13 @@ class Front
         } else {
             $this->getLogger()->notice($message);
         }
+
         return new Error([$dumper, 'errorAction'], ['exception' => $e]);
     }
 
     /**
-     * @param callable $resolver
-     * @param \Maketok\Mvc\Router\Route\RouteInterface $route
+     * @param  callable                                 $resolver
+     * @param  \Maketok\Mvc\Router\Route\RouteInterface $route
      * @return ResponseInterface
      */
     protected function launchAction($resolver, RouteInterface $route)

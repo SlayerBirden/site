@@ -24,7 +24,7 @@ class PriorityQueue
 
     /**
      * @param callable $data
-     * @param int $priority
+     * @param int      $priority
      */
     public function insert($data, $priority = 1)
     {
@@ -42,6 +42,7 @@ class PriorityQueue
         if (is_null($this->_queue)) {
             $this->_queue = new \SplPriorityQueue();
         }
+
         return $this->_queue;
     }
 

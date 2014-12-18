@@ -32,11 +32,12 @@ class Column extends AbstractParser implements ParserInterface
         if (is_string($this->name) && ($columnInfo['name'] == $this->name) || is_null($this->name)) {
             return $columnInfo;
         }
+
         return [];
     }
 
     /**
-     * @param string[] $data
+     * @param  string[] $data
      * @return array
      */
     public function parseLengthColumns($data)
@@ -65,11 +66,12 @@ class Column extends AbstractParser implements ParserInterface
         if (strpos($other, 'DEFAULT') !== false) {
             $columnInfo['default'] = $this->getDefault($other);
         }
+
         return $columnInfo;
     }
 
     /**
-     * @param string[] $data
+     * @param  string[] $data
      * @return array
      */
     public function parseNoLengthColumns($data)
@@ -95,11 +97,12 @@ class Column extends AbstractParser implements ParserInterface
         if (strpos($other, 'ON UPDATE') !== false) {
             $columnInfo['on_update'] = 1;
         }
+
         return $columnInfo;
     }
 
     /**
-     * @param string $string
+     * @param  string      $string
      * @return null|string
      */
     protected function getDefault($string)
@@ -125,11 +128,12 @@ class Column extends AbstractParser implements ParserInterface
                 $result = trim($result, "\"'");
             }
         }
+
         return $result;
     }
 
     /**
-     * @param string $type
+     * @param  string $type
      * @return string
      */
     public function convertType($type)
@@ -137,6 +141,7 @@ class Column extends AbstractParser implements ParserInterface
         if (isset($this->typeMap[$type])) {
             return $this->typeMap[$type];
         }
+
         return $type;
     }
 }

@@ -10,7 +10,6 @@
 
 namespace Maketok\Util\Test;
 
-
 use Maketok\Util\PriorityQueue;
 
 /**
@@ -36,7 +35,7 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
     {
         $data = 'SomeClass::staticMethod';
         $data2 = [new \stdClass(), 'method'];
-        $data3 = function() {echo 'closure';};
+        $data3 = function () {echo 'closure';};
         $this->queue->insert($data);
         $this->queue->insert($data2);
         $this->queue->insert($data3, 10);
@@ -57,14 +56,14 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
     {
         $data = 'SomeClass::staticMethod';
         $data2 = [new \stdClass(), 'method'];
-        $data3 = function() {echo 'closure';};
+        $data3 = function () {echo 'closure';};
         $this->queue->insert($data);
         $this->queue->insert($data2);
         $this->queue->insert($data3, 10);
 
         $this->queue->remove('SomeClass::staticMethod');
         $this->queue->remove([new \stdClass(), 'method']);
-        $this->queue->remove(function() {echo 'closure';});
+        $this->queue->remove(function () {echo 'closure';});
 
         $this->assertTrue($this->queue->isEmpty());
     }

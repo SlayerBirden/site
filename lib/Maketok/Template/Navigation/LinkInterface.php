@@ -15,17 +15,17 @@ interface LinkInterface extends NodeInterface
 
     /**
      * create new link
-     * @param string $code
-     * @param string $reference
-     * @param int $order
-     * @param string $title
+     * @param string        $code
+     * @param string        $reference
+     * @param int           $order
+     * @param string        $title
      * @param LinkInterface $parent
      */
     public function __construct($code, $reference = null, $order = null, $title = null, LinkInterface $parent = null);
 
     /**
      * set link order
-     * @param int $order
+     * @param  int  $order
      * @return self
      */
     public function setOrder($order);
@@ -38,7 +38,7 @@ interface LinkInterface extends NodeInterface
 
     /**
      * set link title
-     * @param string $title
+     * @param  string $title
      * @return self
      */
     public function setTitle($title);
@@ -51,7 +51,7 @@ interface LinkInterface extends NodeInterface
 
     /**
      * set code
-     * @param string $code
+     * @param  string $code
      * @return self
      */
     public function setCode($code);
@@ -64,7 +64,7 @@ interface LinkInterface extends NodeInterface
 
     /**
      * set href
-     * @param string $href
+     * @param  string $href
      * @return self
      */
     public function setReference($href);
@@ -77,21 +77,21 @@ interface LinkInterface extends NodeInterface
 
     /**
      * find a link within current tree
-     * @param LinkInterface $link
+     * @param  LinkInterface      $link
      * @return LinkInterface|null
      */
     public function findLink(LinkInterface $link);
 
     /**
      * find a link by code within current tree
-     * @param string $code
+     * @param  string             $code
      * @return LinkInterface|null
      */
     public function find($code);
 
     /**
      * get Tree representation in array form
-     * @param LinkInterface $link
+     * @param  LinkInterface $link
      * @return array
      */
     public function asArray(LinkInterface $link = null);

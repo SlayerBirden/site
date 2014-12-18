@@ -13,47 +13,47 @@ namespace Maketok\Util;
 interface StreamHandlerInterface
 {
     /**
-     * @param null|string $path
-     * @param string $data
+     * @param  null|string $path
+     * @param  string      $data
      * @return bool
      */
     public function write($data, $path = null);
 
     /**
-     * @param null|string $path
-     * @param string $data
+     * @param  null|string $path
+     * @param  string      $data
      * @return bool
      */
     public function writeWithLock($data, $path = null);
 
     /**
-     * @param int $length
-     * @param null|string $path
+     * @param  int         $length
+     * @param  null|string $path
      * @return string
      */
     public function read($length = null, $path = null);
 
     /**
-     * @param null|string $path
-     * @param bool|int $includeDirectories
+     * @param  null|string $path
+     * @param  bool|int    $includeDirectories
      * @return bool
      */
     public function delete($path = null, $includeDirectories = false);
 
     /**
-     * @param null|string $path
+     * @param  null|string $path
      * @return bool
      */
     public function lock($path = null);
 
     /**
-     * @param null|string $path
+     * @param  null|string $path
      * @return bool
      */
     public function unLock($path = null);
 
     /**
-     * @param null|string $path
+     * @param  null|string $path
      * @return mixed
      */
     public function setPath($path);

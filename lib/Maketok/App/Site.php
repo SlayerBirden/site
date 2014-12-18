@@ -39,7 +39,7 @@ final class Site
     /**
      * launch app process
      * @param string $env
-     * @param int $context
+     * @param int    $context
      */
     public function run($env = '', $context = null)
     {
@@ -110,7 +110,7 @@ final class Site
      * Custom exception handler
      * @param \Exception $e
      */
-    public function maketokExceptionHandler( \Exception $e)
+    public function maketokExceptionHandler(\Exception $e)
     {
         try {
             /** @var Logger $logger */

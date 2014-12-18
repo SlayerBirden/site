@@ -47,10 +47,10 @@ class Node implements NodeInterface
             return [$node];
         }
         $return = [$node];
-        foreach ($node->getChildren() as $child)
-        {
+        foreach ($node->getChildren() as $child) {
             $return = array_merge($return, $child->traverse());
         }
+
         return $return;
     }
 
@@ -60,6 +60,7 @@ class Node implements NodeInterface
     public function detach()
     {
         $this->parent = null;
+
         return $this;
     }
 
@@ -69,6 +70,7 @@ class Node implements NodeInterface
     public function isBranch()
     {
         $children = $this->getChildren();
+
         return count($children) > 0;
     }
 
@@ -86,6 +88,7 @@ class Node implements NodeInterface
     public function isLeaf()
     {
         $children = $this->getChildren();
+
         return count($children) == 0;
     }
 
@@ -96,6 +99,7 @@ class Node implements NodeInterface
     {
         array_push($this->children, $node);
         $node->setParent($this);
+
         return $node;
     }
 
@@ -117,7 +121,8 @@ class Node implements NodeInterface
         }
         $includingSelf = $this->getParent()->getChildren();
         $current = $this;
-        return array_values(array_filter($includingSelf, function($node) use ($current) {
+
+        return array_values(array_filter($includingSelf, function ($node) use ($current) {
             return $node != $current;
         }));
     }
@@ -141,6 +146,7 @@ class Node implements NodeInterface
             $node = $node->getParent();
             $ancestors[] = $node;
         }
+
         return $ancestors;
     }
 
@@ -153,6 +159,7 @@ class Node implements NodeInterface
         while (!$node->isRoot()) {
             $node = $node->getParent();
         }
+
         return $node;
     }
 
@@ -166,7 +173,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * @param NodeInterface $node
+     * @param  NodeInterface $node
      * @return self
      */
     public function setParent(NodeInterface $node)
@@ -175,7 +182,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * @param NodeInterface[] $nodes
+     * @param  NodeInterface[] $nodes
      * @return mixed
      */
     public function addChildren(array $nodes)

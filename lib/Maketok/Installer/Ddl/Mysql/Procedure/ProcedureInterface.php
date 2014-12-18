@@ -23,7 +23,7 @@ interface ProcedureInterface
 
     /**
      * get Query
-     * @param array $args
+     * @param  array  $args
      * @return string
      */
     public function getQuery(array $args);

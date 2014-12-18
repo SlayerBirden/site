@@ -18,9 +18,8 @@ use Zend\Db\Sql\Ddl\Index\Index;
 class AddConstraint extends AbstractProcedure implements ProcedureInterface
 {
 
-
     /** @var array */
-    protected  $availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey', 'index'];
+    protected $availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey', 'index'];
 
     /**
      * {@inheritdoc}
@@ -45,12 +44,13 @@ class AddConstraint extends AbstractProcedure implements ProcedureInterface
         }
 
         $table->addConstraint($this->getConstraint($constraintName, $constraintDefinition));
+
         return $this->query($table);
     }
 
     /**
-     * @param string $constraintName
-     * @param array $constraintDefinition
+     * @param  string              $constraintName
+     * @param  array               $constraintDefinition
      * @return ConstraintInterface
      */
     public function getConstraint($constraintName, $constraintDefinition)
@@ -64,18 +64,19 @@ class AddConstraint extends AbstractProcedure implements ProcedureInterface
             $onDelete = (isset($constraintDefinition['on_delete']) ? $constraintDefinition['on_delete'] : 'CASCADE');
             $onUpdate = (isset($constraintDefinition['on_update']) ? $constraintDefinition['on_update'] : 'CASCADE');
             $constraint = new $type($constraintName, $column, $refTable, $refColumn, $onDelete, $onUpdate);
-        } elseif($constraintDefinition['type'] == 'index') {
+        } elseif ($constraintDefinition['type'] == 'index') {
             $constraint = new Index($constraintDefinition['definition'], $constraintName);
-        } elseif($constraintDefinition['type'] == 'primaryKey') {
+        } elseif ($constraintDefinition['type'] == 'primaryKey') {
             $constraint = new $type($constraintDefinition['definition'], $this->getPKName($constraintDefinition['definition']));
         } else {
             $constraint = new $type($constraintDefinition['definition'], $constraintName);
         }
+
         return $constraint;
     }
 
     /**
-     * @param string[] $def
+     * @param  string[] $def
      * @return string
      */
     public function getPKName($def)
@@ -84,6 +85,7 @@ class AddConstraint extends AbstractProcedure implements ProcedureInterface
         foreach ($def as $colName) {
             $name[] = $colName;
         }
+
         return implode('_', $name);
     }
 

@@ -83,7 +83,7 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
      * @covers ::assign
      * @dataProvider expressionProvider
      * @param string $expression
-     * @param array $expected
+     * @param array  $expected
      */
     public function tokenize($expression, $expected)
     {

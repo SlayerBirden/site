@@ -18,7 +18,7 @@ interface ManagerInterface
     /**
      * sets mutex adapter and stream writer as one entity
      *
-     * @param StreamHandlerInterface $handler
+     * @param  StreamHandlerInterface $handler
      * @return $this
      */
     public function setStreamHandler(StreamHandlerInterface $handler);
@@ -33,7 +33,7 @@ interface ManagerInterface
     /**
      * adds client to install queue
      *
-     * @param ClientInterface $client
+     * @param  ClientInterface $client
      * @return $this
      */
     public function addClient(ClientInterface $client);

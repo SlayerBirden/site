@@ -18,7 +18,7 @@ class Phptal extends AbstractEngine
 
     /**
      * load the template into engine by path
-     * @param string $path
+     * @param  string $path
      * @return mixed
      */
     public function loadTemplate($path)
@@ -28,7 +28,7 @@ class Phptal extends AbstractEngine
 
     /**
      * set the array of variables to use
-     * @param array $variables
+     * @param  array $variables
      * @return mixed
      */
     public function setVariables(array $variables)
@@ -49,7 +49,7 @@ class Phptal extends AbstractEngine
 
     /**
      * include required paths into loader
-     * @param array $paths
+     * @param  array $paths
      * @return mixed
      */
     public function loadDependencies(array $paths)

@@ -35,12 +35,13 @@ class TokenizedBag implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param TokenizedBagPart $part
+     * @param  TokenizedBagPart $part
      * @return $this
      */
     public function addPart(TokenizedBagPart $part)
     {
         $this->parts[] = $part;
+
         return $this;
     }
 
@@ -54,6 +55,7 @@ class TokenizedBag implements \IteratorAggregate, \Countable
         foreach ($this as $part) {
             $arrayParts[] = $part->toArray();
         }
+
         return $arrayParts;
     }
 }

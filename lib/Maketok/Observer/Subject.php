@@ -34,7 +34,7 @@ class Subject implements SubjectInterface
     }
 
     /**
-     * @param bool | int $flag
+     * @param  bool | int $flag
      * @return mixed
      */
     public function setShouldStopPropagation($flag)

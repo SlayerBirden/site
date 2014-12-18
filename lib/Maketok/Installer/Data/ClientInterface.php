@@ -25,7 +25,7 @@ interface ClientInterface extends BaseClientInterface
     /**
      * get client config to install
      *
-     * @param string $version
+     * @param  string     $version
      * @return array|bool
      */
     public function getDataConfig($version);

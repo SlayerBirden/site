@@ -27,6 +27,7 @@ class LazyObjectPropModel implements LazyModelInterface
     public function setOrigin(array $data)
     {
         $this->originalData = $data;
+
         return $this;
     }
 
