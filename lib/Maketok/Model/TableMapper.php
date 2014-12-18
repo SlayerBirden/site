@@ -36,7 +36,7 @@ class TableMapper
     /**
      * @param AbstractTableGateway $tableGateway
      * @param string|string[] $idField
-     * @param null $autoIncrement
+     * @param string $autoIncrement
      */
     public function __construct(AbstractTableGateway $tableGateway, $idField, $autoIncrement = null)
     {

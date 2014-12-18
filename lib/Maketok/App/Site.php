@@ -11,7 +11,6 @@
 namespace Maketok\App;
 
 use Maketok\App\Helper\UtilityHelperTrait;
-use Maketok\Loader\Autoload;
 use Maketok\Observer\State;
 use Maketok\Http\Request;
 use Maketok\Util\RequestInterface;

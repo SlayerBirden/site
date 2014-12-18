@@ -46,6 +46,9 @@ class Autoload
         return $resolvedName;
     }
 
+    /**
+     * @param string $class
+     */
     public function getRealClassName($class)
     {
         return str_replace(self::NS_SEPARATOR, '/', $class) . '.php';

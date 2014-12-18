@@ -39,7 +39,7 @@ class Constraint extends AbstractParser implements ParserInterface
 
     /**
      * @param string $row
-     * @param array $data
+     * @param string[] $data
      * @return array
      */
     public function parseKey($row, $data)
@@ -61,7 +61,7 @@ class Constraint extends AbstractParser implements ParserInterface
     }
 
     /**
-     * @param array $data
+     * @param string[] $data
      * @return array
      */
     public function parseForeignKey($data)

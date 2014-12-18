@@ -56,7 +56,7 @@ abstract class AbstractRoute
     }
 
     /**
-     * @return RequestInterface
+     * @return callable
      */
     public function getResolver()
     {

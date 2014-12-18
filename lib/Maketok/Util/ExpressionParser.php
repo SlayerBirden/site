@@ -161,7 +161,7 @@ class ExpressionParser implements ExpressionParserInterface
     }
 
     /**
-     * @param $string
+     * @param string $string
      * @return string
      * @throws ParserException
      * @codeCoverageIgnore

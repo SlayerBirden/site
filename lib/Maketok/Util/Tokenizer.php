@@ -60,7 +60,7 @@ class Tokenizer implements TokenizerInterface
     }
 
     /**
-     * @return int|null
+     * @return string
      */
     public function getCurrentVar()
     {
@@ -68,7 +68,7 @@ class Tokenizer implements TokenizerInterface
     }
 
     /**
-     * @return int|null
+     * @return string
      */
     public function getCurrentConst()
     {
@@ -97,7 +97,7 @@ class Tokenizer implements TokenizerInterface
 
     /**
      * assign char to appropriate container
-     * @param $char
+     * @param string $char
      */
     public function assign($char)
     {

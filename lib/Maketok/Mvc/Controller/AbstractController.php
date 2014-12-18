@@ -128,7 +128,7 @@ class AbstractController
     }
 
     /**
-     * @param $path
+     * @param string $path
      * @return self
      */
     public function addTemplatePath($path)

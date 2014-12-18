@@ -10,8 +10,6 @@
 
 namespace Maketok\Mvc\Router;
 
-use Maketok\App\Helper\UtilityHelperTrait;
-use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Util\RequestInterface;
 

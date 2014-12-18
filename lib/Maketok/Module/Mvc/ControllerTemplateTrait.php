@@ -29,7 +29,7 @@ trait ControllerTemplateTrait
     }
 
     /**
-     * @param $path
+     * @param string $path
      * @return self
      */
     abstract function addTemplatePath($path);
