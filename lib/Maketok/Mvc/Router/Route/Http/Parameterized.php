@@ -66,7 +66,7 @@ class Parameterized extends AbstractRoute implements RouteInterface
             $attributes = $request->getAttributes();
             if (is_object($attributes) && ($attributes instanceof ParameterBag)) {
                 $attributes->add(array(
-                    '_route' => $this,
+                    '_route' => $this
                 ));
                 // set defaults
                 if (!empty($this->defaults)) {
