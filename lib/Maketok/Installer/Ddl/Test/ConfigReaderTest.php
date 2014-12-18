@@ -232,6 +232,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         ];
         $tree = $this->reader->getDependencyTree();
         $this->assertEquals($expected, $tree, print_r($tree, 1));
+
         return $tree;
     }
 

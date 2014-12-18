@@ -21,7 +21,7 @@ abstract class AbstractEngine implements EngineInterface
 
     /**
      * optional method for configuring different engines
-     * @param mixed $options
+     * @param  mixed $options
      * @return mixed
      */
     public function configure($options)

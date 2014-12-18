@@ -25,7 +25,7 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     private static $streamHandler;
 
     /** @var  vfsStreamDirectory */
-    private static  $root;
+    private static $root;
 
     public static function setUpBeforeClass()
     {

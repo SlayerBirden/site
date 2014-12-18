@@ -14,26 +14,26 @@ interface StateInterface
 {
 
     /**
-     * @param mixed $data
+     * @param  mixed                            $data
      * @return \Maketok\Observer\StateInterface
      */
     public function __construct($data = null);
 
     /**
-     * @param string $key
-     * @param mixed $value
+     * @param  string $key
+     * @param  mixed  $value
      * @return void
      */
     public function __set($key, $value);
 
     /**
-     * @param string $key
+     * @param  string $key
      * @return mixed
      */
     public function __get($key);
 
     /**
-     * @param SubjectInterface $subject
+     * @param  SubjectInterface $subject
      * @return $this
      */
     public function setSubject(SubjectInterface $subject);

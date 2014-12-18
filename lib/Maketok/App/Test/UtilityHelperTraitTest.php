@@ -20,10 +20,10 @@ class UtilityHelperTraitTest extends \PHPUnit_Framework_TestCase
      * @test
      * @covers ::getUrl
      * @dataProvider urlProvider
-     * @param string $path
+     * @param string     $path
      * @param array|null $config
-     * @param string $base
-     * @param string $expected
+     * @param string     $base
+     * @param string     $expected
      */
     public function testGetUrl($path, $config, $base, $expected)
     {

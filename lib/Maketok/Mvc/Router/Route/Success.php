@@ -10,7 +10,6 @@
 
 namespace Maketok\Mvc\Router\Route;
 
-
 class Success
 {
 
@@ -31,12 +30,13 @@ class Success
     }
 
     /**
-     * @param RouteInterface $route
+     * @param  RouteInterface $route
      * @return $this
      */
     public function setMatchedRoute(RouteInterface $route)
     {
         $this->_route = $route;
+
         return $this;
     }
 

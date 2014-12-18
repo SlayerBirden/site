@@ -65,6 +65,7 @@ class Navigation implements NavigationInterface
     public function getNavigation()
     {
         $fullTree = $this->tree->asArray();
+
         return $this->getIfExists(array('root', 'children'), $fullTree, []);
     }
 

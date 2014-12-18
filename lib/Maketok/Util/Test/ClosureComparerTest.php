@@ -37,7 +37,7 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
      * @dataProvider closureProvider
      * @param mixed $c1
      * @param mixed $c2
-     * @param int $expected
+     * @param int   $expected
      */
     public function compare($c1, $c2, $expected)
     {
@@ -71,6 +71,7 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
             'echo $var';
         };
         $a1 = [];
+
         return [
             [$c1, $c2, 1],
             [$c1, $c3, 0],
@@ -87,7 +88,7 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
      * @covers ::isClosure
      * @dataProvider variableProvider
      * @param mixed $var
-     * @param bool $expected
+     * @param bool  $expected
      */
     public function isClosure($var, $expected)
     {
@@ -119,7 +120,6 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals($expected, $this->comparer->parseClosure($contents));
     }
-
 
     /**
      * @return array

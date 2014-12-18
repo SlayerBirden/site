@@ -15,28 +15,28 @@ interface EngineInterface
 
     /**
      * optional method for configuring different engines
-     * @param mixed $options
+     * @param  mixed $options
      * @return mixed
      */
     public function configure($options);
 
     /**
      * load the template into engine by path
-     * @param string $path
+     * @param  string $path
      * @return mixed
      */
     public function loadTemplate($path);
 
     /**
      * set the array of variables to use
-     * @param array $variables
+     * @param  array $variables
      * @return mixed
      */
     public function setVariables(array $variables);
 
     /**
      * include required paths into loader
-     * @param string[] $paths
+     * @param  string[] $paths
      * @return mixed
      */
     public function loadDependencies(array $paths);

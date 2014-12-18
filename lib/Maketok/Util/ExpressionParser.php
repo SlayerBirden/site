@@ -64,6 +64,7 @@ class ExpressionParser implements ExpressionParserInterface
                     }
             }
         }
+
         return implode($result);
     }
 
@@ -96,6 +97,7 @@ class ExpressionParser implements ExpressionParserInterface
         try {
             $tokenized = $this->tokenize($newString);
             $this->validate($tokenized);
+
             return $tokenized;
         } catch (ParserException $e) {
             // flow control exception
@@ -131,12 +133,13 @@ class ExpressionParser implements ExpressionParserInterface
         if (count($variables) != count($vParts)) {
             throw new ParserException("Can't combine variables, wrong number of placeholders.");
         }
+
         return array_combine($variables, $vParts);
     }
 
     /**
-     * @param string|string[] $delimiter
-     * @param string $string
+     * @param  string|string[] $delimiter
+     * @param  string          $string
      * @throws ParserException
      * @return string[]
      */
@@ -157,11 +160,12 @@ class ExpressionParser implements ExpressionParserInterface
             }
             $string = substr_replace($string, $safeDelimiter, $pos, strlen($d));
         }
+
         return array_values(array_filter(explode($safeDelimiter, $string)));
     }
 
     /**
-     * @param string $string
+     * @param  string          $string
      * @return string
      * @throws ParserException
      * @codeCoverageIgnore
@@ -176,6 +180,7 @@ class ExpressionParser implements ExpressionParserInterface
         if (!$roundsAllowed) {
             throw new ParserException("Could not find safe delimiter.");
         }
+
         return $delimiter;
     }
 }

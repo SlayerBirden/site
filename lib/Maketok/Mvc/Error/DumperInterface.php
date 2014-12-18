@@ -17,13 +17,13 @@ interface DumperInterface
 {
 
     /**
-     * @param RequestInterface $request
+     * @param  RequestInterface $request
      * @return Response
      */
     public function errorAction(RequestInterface $request);
 
     /**
-     * @param RequestInterface $request
+     * @param  RequestInterface $request
      * @return Response
      */
     public function norouteAction(RequestInterface $request);

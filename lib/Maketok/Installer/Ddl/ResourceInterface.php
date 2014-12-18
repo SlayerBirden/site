@@ -18,7 +18,7 @@ interface ResourceInterface extends BaseResource
     /**
      * get table description
      *
-     * @param string $table
+     * @param  string $table
      * @return array
      */
     public function getTable($table);
@@ -26,8 +26,8 @@ interface ResourceInterface extends BaseResource
     /**
      * get column description
      *
-     * @param string $table
-     * @param string $column
+     * @param  string $table
+     * @param  string $column
      * @return array
      */
     public function getColumn($table, $column);
@@ -35,8 +35,8 @@ interface ResourceInterface extends BaseResource
     /**
      * get constraint description
      *
-     * @param string $table
-     * @param string $constraint
+     * @param  string $table
+     * @param  string $constraint
      * @return array
      */
     public function getConstraint($table, $constraint);
@@ -44,8 +44,8 @@ interface ResourceInterface extends BaseResource
     /**
      * get index description
      *
-     * @param string $table
-     * @param string $index
+     * @param  string $table
+     * @param  string $index
      * @return array
      */
     public function getIndex($table, $index);

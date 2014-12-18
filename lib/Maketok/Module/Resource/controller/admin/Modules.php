@@ -33,7 +33,7 @@ class Modules extends AbstractAdminController
     }
 
     /**
-     * @param RequestInterface $request
+     * @param  RequestInterface                           $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function indexAction(RequestInterface $request)
@@ -42,6 +42,7 @@ class Modules extends AbstractAdminController
         /** @var TableMapper $moduleTable */
         $moduleTable = $this->getSC()->get('module_table');
         $modules = $moduleTable->fetchAll();
+
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Modules',
             'modules' => $modules,
@@ -50,7 +51,7 @@ class Modules extends AbstractAdminController
     }
 
     /**
-     * @param RequestInterface $request
+     * @param  RequestInterface                           $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function viewAction(RequestInterface $request)
@@ -79,10 +80,13 @@ class Modules extends AbstractAdminController
                     'error',
                     'There was an error processing your request. Our specialists will be looking into it.'
                 );
+
                 return $this->returnBack();
             }
+
             return $this->redirect('modules');
         }
+
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - View Module ' . $module->module_code,
             'description' => 'Module ' . $module->module_code,
@@ -92,7 +96,7 @@ class Modules extends AbstractAdminController
     }
 
     /**
-     * @param RequestInterface $request
+     * @param  RequestInterface $request
      * @return Module
      * @throws RouteException
      */

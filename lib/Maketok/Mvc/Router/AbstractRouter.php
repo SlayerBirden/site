@@ -54,7 +54,7 @@ abstract class AbstractRouter implements RouterInterface
     }
 
     /**
-     * @param array $routes
+     * @param  array $routes
      * @return mixed
      */
     public function setRoutes(array $routes)
@@ -120,11 +120,12 @@ abstract class AbstractRouter implements RouterInterface
                 array_unshift($definition, $className);
             }
         }
+
         return $definition;
     }
 
     /**
-     * @param string $type
+     * @param  string         $type
      * @throws RouteException
      * @return string
      */
@@ -138,6 +139,7 @@ abstract class AbstractRouter implements RouterInterface
         if (!class_exists($fullQualifiedRouteName)) {
             throw new RouteException(sprintf("Invalid route type: %s", $type));
         }
+
         return $fullQualifiedRouteName;
     }
 }

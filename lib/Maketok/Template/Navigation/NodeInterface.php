@@ -15,7 +15,7 @@ interface NodeInterface
 
     /**
      * pre-order traverse
-     * @param NodeInterface $node
+     * @param  NodeInterface   $node
      * @return NodeInterface[]
      */
     public function traverse(NodeInterface $node = null);
@@ -46,7 +46,7 @@ interface NodeInterface
 
     /**
      * add Child Node
-     * @param NodeInterface $node
+     * @param  NodeInterface $node
      * @return NodeInterface child
      */
     public function addChild(NodeInterface $node);
@@ -71,7 +71,7 @@ interface NodeInterface
     public function getParent();
 
     /**
-     * @param NodeInterface $node
+     * @param  NodeInterface $node
      * @return self
      */
     public function setParent(NodeInterface $node);
@@ -88,7 +88,7 @@ interface NodeInterface
     public function getRoot();
 
     /**
-     * @param NodeInterface[] $nodes
+     * @param  NodeInterface[] $nodes
      * @return mixed
      */
     public function addChildren(array $nodes);

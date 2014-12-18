@@ -18,7 +18,7 @@ interface SubjectInterface
     public function getShouldStopPropagation();
 
     /**
-     * @param bool | int $flag
+     * @param  bool | int $flag
      * @return mixed
      */
     public function setShouldStopPropagation($flag);

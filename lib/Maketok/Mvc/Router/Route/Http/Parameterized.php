@@ -10,7 +10,6 @@
 
 namespace Maketok\Mvc\Router\Route\Http;
 
-
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Mvc\Router\Route\Success;
 use Maketok\Util\RequestInterface;
@@ -35,10 +34,10 @@ class Parameterized extends AbstractRoute implements RouteInterface
     protected $restrictions;
 
     /**
-     * @param string $path
-     * @param array $resolver
-     * @param array $defaults
-     * @param array $restrictions
+     * @param string                                  $path
+     * @param array                                   $resolver
+     * @param array                                   $defaults
+     * @param array                                   $restrictions
      * @param \Maketok\Util\ExpressionParserInterface $parser
      */
     public function __construct($path, $resolver, array $defaults, array $restrictions, ExpressionParserInterface $parser = null)
@@ -55,7 +54,7 @@ class Parameterized extends AbstractRoute implements RouteInterface
     }
 
     /**
-     * @param RequestInterface $request
+     * @param  RequestInterface $request
      * @return bool|Success
      */
     public function match(RequestInterface $request)
@@ -80,13 +79,15 @@ class Parameterized extends AbstractRoute implements RouteInterface
                     $attributes->add($this->variables);
                 }
             }
+
             return new Success($this);
         }
+
         return false;
     }
 
     /**
-     * @param array $params
+     * @param  array  $params
      * @return string
      */
     public function assemble(array $params = array())

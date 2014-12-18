@@ -10,7 +10,6 @@
 
 namespace Maketok\Mvc\Router\Route\Http;
 
-
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Mvc\Router\Route\Success;
 use Maketok\Util\RequestInterface;
@@ -25,7 +24,7 @@ class Error extends AbstractRoute implements RouteInterface
 
     /**
      * @param callable $resolver
-     * @param array $options
+     * @param array    $options
      */
     public function __construct($resolver, array $options = [])
     {
@@ -34,7 +33,7 @@ class Error extends AbstractRoute implements RouteInterface
     }
 
     /**
-     * @param RequestInterface $request
+     * @param  RequestInterface $request
      * @return Success
      */
     public function match(RequestInterface $request)
@@ -45,11 +44,12 @@ class Error extends AbstractRoute implements RouteInterface
         if (is_object($attributes) && ($attributes instanceof ParameterBag)) {
             $attributes->add($this->options);
         }
+
         return new Success($this);
     }
 
     /**
-     * @param array $params
+     * @param  array  $params
      * @return string
      */
     public function assemble(array $params = array())

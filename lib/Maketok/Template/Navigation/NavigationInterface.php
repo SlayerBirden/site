@@ -16,8 +16,8 @@ interface NavigationInterface
 {
 
     /**
-     * @param LinkInterface $link
-     * @param mixed $parent
+     * @param  LinkInterface $link
+     * @param  mixed         $parent
      * @return mixed
      */
     public function addLink(LinkInterface $link, $parent = null);
@@ -28,7 +28,7 @@ interface NavigationInterface
     public function getNavigation();
 
     /**
-     * @param DumperInterface $dumper
+     * @param  DumperInterface $dumper
      * @return self
      */
     public function addDumper(DumperInterface $dumper);

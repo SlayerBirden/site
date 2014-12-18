@@ -49,9 +49,9 @@ trait UtilityHelperTrait
     }
 
     /**
-     * @param string $path
-     * @param array $config
-     * @param string $baseUrl
+     * @param  string $path
+     * @param  array  $config
+     * @param  string $baseUrl
      * @return string
      */
     public function getUrl($path, array $config = null, $baseUrl = null)
@@ -70,6 +70,7 @@ trait UtilityHelperTrait
             $path  = $path . '/';
         }
         $uri->setPath($path);
+
         return $uri->toString();
     }
 
@@ -82,6 +83,7 @@ trait UtilityHelperTrait
     {
         /** @var RouteInterface $route */
         $route = $this->ioc()->get('request')->attributes->get('_route');
+
         return $this->getUrl($route->assemble());
     }
 
@@ -105,7 +107,7 @@ trait UtilityHelperTrait
 
     /**
      * @codeCoverageIgnore
-     * @param string $path
+     * @param  string $path
      * @return array
      */
     public function parseYaml($path)
@@ -116,8 +118,10 @@ trait UtilityHelperTrait
             $file = $locator->locate(basename($path));
         } catch (\InvalidArgumentException $e) {
             $this->getLogger()->err($e->getMessage());
+
             return [];
         }
+
         return $ymlReader->parse($file);
     }
 

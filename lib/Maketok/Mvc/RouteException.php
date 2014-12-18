@@ -10,7 +10,6 @@
 
 namespace Maketok\Mvc;
 
-
 class RouteException extends \Exception
 {
 

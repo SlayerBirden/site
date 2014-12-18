@@ -39,12 +39,13 @@ class State implements StateInterface
     }
 
     /**
-     * @param SubjectInterface $subject
+     * @param  SubjectInterface $subject
      * @return $this
      */
     public function setSubject(SubjectInterface $subject)
     {
         $this->_subject = $subject;
+
         return $this;
     }
 

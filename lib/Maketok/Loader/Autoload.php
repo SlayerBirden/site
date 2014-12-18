@@ -27,7 +27,7 @@ class Autoload
     }
 
     /**
-     * @param string $class
+     * @param  string       $class
      * @return mixed|string
      */
     public function autoload($class)
@@ -43,6 +43,7 @@ class Autoload
         if (false !== $resolvedName) {
             return include $resolvedName;
         }
+
         return $resolvedName;
     }
 

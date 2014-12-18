@@ -66,6 +66,7 @@ class Link extends Node implements LinkInterface
     public function setOrder($order)
     {
         $this->order = $order;
+
         return $this;
     }
 
@@ -83,6 +84,7 @@ class Link extends Node implements LinkInterface
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -100,6 +102,7 @@ class Link extends Node implements LinkInterface
     public function setCode($code)
     {
         $this->code = $code;
+
         return $this;
     }
 
@@ -117,6 +120,7 @@ class Link extends Node implements LinkInterface
     public function setReference($href)
     {
         $this->reference = $href;
+
         return $this;
     }
 
@@ -139,6 +143,7 @@ class Link extends Node implements LinkInterface
                 return $node;
             }
         }
+
         return null;
     }
 
@@ -157,12 +162,13 @@ class Link extends Node implements LinkInterface
     {
         $children = parent::getChildren();
         // @codeCoverageIgnoreStart
-        usort($children, function(LinkInterface $a, LinkInterface $b) {
+        usort($children, function (LinkInterface $a, LinkInterface $b) {
             if ($a->getOrder() > $b->getOrder()) {
                 return 1;
             } elseif ($a->getOrder() < $b->getOrder()) {
                 return -1;
             }
+
             return 0;
         });
         // @codeCoverageIgnoreEnd
@@ -187,6 +193,7 @@ class Link extends Node implements LinkInterface
         foreach ($link->getChildren() as $child) {
             $res[$link->getCode()]['children'] = array_merge($res[$link->getCode()]['children'], $child->asArray());
         }
+
         return $res;
     }
 }

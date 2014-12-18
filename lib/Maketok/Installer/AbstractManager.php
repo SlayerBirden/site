@@ -43,6 +43,7 @@ abstract class AbstractManager implements ManagerInterface
     public function setStreamHandler(StreamHandlerInterface $handler)
     {
         $this->_streamHandler = $handler;
+
         return $this;
     }
 
@@ -75,8 +76,8 @@ abstract class AbstractManager implements ManagerInterface
      * should compare versions
      * for strings only!
      *
-     * @param string $a
-     * @param string $b
+     * @param  string                    $a
+     * @param  string                    $b
      * @throws \InvalidArgumentException
      * @return int
      */
@@ -93,6 +94,7 @@ abstract class AbstractManager implements ManagerInterface
                 $a = array_shift($aA);
                 $b = array_shift($aB);
             } while ($a == $b && !is_null($a) && !is_null($b));
+
             return $this->natRecursiveCompare((string) $a, (string) $b);
         } else {
             if ((int) $a > (int) $b) {
@@ -116,11 +118,11 @@ abstract class AbstractManager implements ManagerInterface
         $countA = count($a);
         $countB = count($b);
         if ($countA > $countB) {
-            for ($i = $countB; $i < $countA; $i++){
+            for ($i = $countB; $i < $countA; $i++) {
                 $b[] = $placeholder;
             }
-        } elseif($countB > $countA) {
-            for ($i = $countA; $i < $countB; $i++){
+        } elseif ($countB > $countA) {
+            for ($i = $countA; $i < $countB; $i++) {
                 $a[] = $placeholder;
             }
         }

@@ -10,13 +10,12 @@
 
 namespace Maketok\Installer;
 
-
 interface ResourceInterface
 {
 
     /**
      * create real DB procedures from manager directives
-     * @param DirectivesInterface $directives
+     * @param  DirectivesInterface $directives
      * @return mixed
      */
     public function createProcedures(DirectivesInterface $directives);
