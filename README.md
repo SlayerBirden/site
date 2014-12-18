@@ -28,7 +28,7 @@ Site is bundled with different vendor packages ( which helps a lot!). But I want
 - Few small Util classes (like StreamHandler and DirectoryHandler).
 - Some refactoring of zendframework/db DDL package, which ended up as pull request: https://github.com/zendframework/zf2/pull/6556
 
-This app is distributed under GPL 3.0 licence, and anyone can use it for his (or her) needs as he sees fit. I'm not providing any means of warranty, and may or may not address the issues that can be created in GitHub repo.
+This app is distributed under MIT licence, and anyone can use it for his (or her) needs as he sees fit. I'm not providing any means of warranty, and may or may not address any issues programmatic or of any other sort that are connected with or caused by the software.
 
 Tech
 ----
@@ -45,4 +45,4 @@ Includes next major components from vendors:
 License
 -------
 
-[GPL 3.0](https://www.gnu.org/licenses/gpl-faq.html)
+[MIT](http://opensource.org/licenses/MIT)

@@ -1,7 +1,7 @@
 {
     "name": "maketok/site",
     "description": "Maketok site framework",
-    "license": "GPL-3.0",
+    "license": "MIT",
     "keywords": [
         "site",
         "maketok",
