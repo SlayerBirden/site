@@ -58,11 +58,11 @@ class Parameterized extends AbstractRoute implements RouteInterface
     public function match(RequestInterface $request)
     {
         $this->request = $request;
-        $variables = $this->expressionParser->parse(
+        $this->variables = $this->expressionParser->parse(
             $this->stripTrailingSlash($request->getPathInfo()),
             $this->restrictions
         );
-        if ($variables !== FALSE) {
+        if ($this->variables !== FALSE) {
             $attributes = $request->getAttributes();
             if (is_object($attributes) && ($attributes instanceof ParameterBag)) {
                 $attributes->add(array(
@@ -73,8 +73,8 @@ class Parameterized extends AbstractRoute implements RouteInterface
                     $attributes->add($this->defaults);
                 }
                 // set variables
-                if (!empty($variables)) {
-                    $attributes->add($variables);
+                if (!empty($this->variables)) {
+                    $attributes->add($this->variables);
                 }
             }
             return new Success($this);
