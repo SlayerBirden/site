@@ -61,7 +61,7 @@ class ContainerFactory
      */
     public static function getDebug()
     {
-        return true;
+        return Site::getConfig('debug');
     }
 
     /**
@@ -69,14 +69,7 @@ class ContainerFactory
      */
     public static function getConfigExtensions()
     {
-        return [
-            new \Maketok\Installer\Ddl\DI(),
-            new \Maketok\Module\DI(),
-            new \Maketok\Http\Session\DI(),
-            new \Maketok\Template\DI(),
-            new \Maketok\Mvc\DI(),
-            new \Maketok\Observer\DI()
-        ];
+        return Site::getConfig('ioc_extension');
     }
 
     /**
@@ -84,11 +77,7 @@ class ContainerFactory
      */
     public static function getCompilerPasses()
     {
-        return [
-            new \Maketok\Template\TemplateCompilerPass(),
-            new \Maketok\Template\Symfony\Form\FormExtensionCompilerPass,
-            new \Maketok\Template\Symfony\Form\FormTypeCompilerPass
-        ];
+        return Site::getConfig('iod_compiler_pass');
     }
 
     /**

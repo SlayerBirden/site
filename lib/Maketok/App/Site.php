@@ -37,6 +37,11 @@ final class Site
     private $envInitialized = false;
 
     /**
+     * @var array
+     */
+    private static $config;
+
+    /**
      * launch app process
      * @param string $env
      * @param int    $context
@@ -144,5 +149,33 @@ final class Site
                 $e->__toString()
             );
         }
+    }
+
+    /**
+     * @param string $path
+     * @return mixed
+     */
+    public static function getConfig($path = null)
+    {
+        $path = trim($path, "/ ");
+        if (is_null(self::$config)) {
+            self::$config = include AR . '/config/config.php';
+        }
+        $path = (string) $path;
+        if ($path) {
+            $config = self::$config;
+            while (($pos = strpos($path, '/')) !== false &&
+                isset($config[substr($path, 0, $pos)]) &&
+                is_array($config[substr($path, 0, $pos)])) {
+                $config = $config[substr($path, 0, $pos)];
+                $path = substr($path, $pos + 1);
+            }
+            if (is_array($config) && array_key_exists($path, $config)) {
+                return $config[$path];
+            } else {
+                return null;
+            }
+        }
+        return self::$config;
     }
 }
