@@ -73,7 +73,7 @@ class Column implements ColumnInterface
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getName()
     {

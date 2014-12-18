@@ -10,7 +10,6 @@
 
 namespace Maketok\App;
 
-use Maketok\Observer\State;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\StreamHandler;
 use Symfony\Component\Config\FileLocator;

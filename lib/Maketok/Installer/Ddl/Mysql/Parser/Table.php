@@ -116,7 +116,7 @@ class Table
     }
 
     /**
-     * @param array $data
+     * @param string[] $data
      * @return array
      */
     public function getBasicTableInfo(&$data)

@@ -36,7 +36,7 @@ class Column extends AbstractParser implements ParserInterface
     }
 
     /**
-     * @param array $data
+     * @param string[] $data
      * @return array
      */
     public function parseLengthColumns($data)
@@ -69,7 +69,7 @@ class Column extends AbstractParser implements ParserInterface
     }
 
     /**
-     * @param array $data
+     * @param string[] $data
      * @return array
      */
     public function parseNoLengthColumns($data)
