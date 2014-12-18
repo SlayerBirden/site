@@ -9,7 +9,7 @@
  */
 
 return [
-    'debug' => 1,
+    'debug' => 0,
     'ioc_extension' => [
         new \Maketok\Installer\Ddl\DI(),
         new \Maketok\Module\DI(),
