@@ -24,6 +24,7 @@ class Dumper implements DumperInterface
     public function errorAction(RequestInterface $request)
     {
         $text = 'Oops! We are really sorry, but there was an error!';
+
         return new Response($text, 500);
     }
 

@@ -13,23 +13,23 @@ namespace Maketok\Observer;
 interface SubjectManagerInterface
 {
     /**
-     * @param string $subject
-     * @param callable $subscriber
-     * @param int $priority
+     * @param  string   $subject
+     * @param  callable $subscriber
+     * @param  int      $priority
      * @return mixed
      */
     public function attach($subject, $subscriber, $priority);
 
     /**
-     * @param string $subject
-     * @param callable $subscriber
+     * @param  string   $subject
+     * @param  callable $subscriber
      * @return mixed
      */
     public function detach($subject, $subscriber);
 
     /**
-     * @param string $subject
-     * @param StateInterface $state
+     * @param  string         $subject
+     * @param  StateInterface $state
      * @return mixed
      */
     public function notify($subject, StateInterface $state);

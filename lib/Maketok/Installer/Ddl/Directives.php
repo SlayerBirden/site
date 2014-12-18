@@ -43,8 +43,8 @@ class Directives implements DirectivesInterface
     }
 
     /**
-     * @param string $key
-     * @param mixed $def
+     * @param  string                    $key
+     * @param  mixed                     $def
      * @throws \InvalidArgumentException
      */
     public function addProp($key, $def)
@@ -64,11 +64,12 @@ class Directives implements DirectivesInterface
         foreach ($this as $array) {
             $count += count($array);
         }
+
         return $count;
     }
 
     /**
-     * @param string $key
+     * @param  string $key
      * @return bool
      */
     public function has($key)
@@ -76,6 +77,7 @@ class Directives implements DirectivesInterface
         if (isset($this->$key)) {
             return count($this->$key) > 0;
         }
+
         return false;
     }
 
@@ -112,7 +114,7 @@ class Directives implements DirectivesInterface
     }
 
     /**
-     * @param array $a
+     * @param  array $a
      * @return array
      */
     private function arrayUnique(array $a)

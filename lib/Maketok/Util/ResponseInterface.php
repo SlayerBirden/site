@@ -10,7 +10,6 @@
 
 namespace Maketok\Util;
 
-
 interface ResponseInterface extends MessageInterface
 {
 

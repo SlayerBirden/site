@@ -26,9 +26,9 @@ class Manager extends AbstractManager implements ManagerInterface
 
     /**
      * Constructor
-     * @param ConfigReaderInterface $reader
-     * @param ResourceInterface $resource
-     * @param Directives $directives
+     * @param ConfigReaderInterface       $reader
+     * @param ResourceInterface           $resource
+     * @param Directives                  $directives
      * @param StreamHandlerInterface|null $handler
      */
     public function __construct(ConfigReaderInterface $reader,

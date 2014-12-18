@@ -10,7 +10,6 @@
 
 namespace Maketok\Http;
 
-
 use Maketok\Util\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 

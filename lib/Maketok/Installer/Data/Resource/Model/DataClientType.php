@@ -17,7 +17,7 @@ class DataClientType extends TableMapper
 {
 
     /**
-     * @param string $code
+     * @param  string                       $code
      * @return array|\ArrayObject|null
      * @throws \Maketok\Installer\Exception
      */
@@ -28,6 +28,7 @@ class DataClientType extends TableMapper
         if (!$row) {
             throw new Exception(sprintf("Could not find client with code %s.", $code));
         }
+
         return $row;
     }
 }

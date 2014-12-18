@@ -78,8 +78,8 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * @param DdlClient $a
-     * @param DdlClient $b
+     * @param  DdlClient $a
+     * @param  DdlClient $b
      * @return int
      */
     public function dependencyBubbleSortCallback(DdlClient $a, DdlClient $b)
@@ -107,6 +107,7 @@ class ConfigReader implements ConfigReaderInterface
         } elseif ($b->id > $a->id) {
             return -1;
         }
+
         return 0;
     }
 
@@ -140,7 +141,7 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * @param array $branch
+     * @param  array $branch
      * @return array
      */
     public function recursiveMerge(array $branch)
@@ -151,6 +152,7 @@ class ConfigReader implements ConfigReaderInterface
                 $res = array_replace_recursive($res, $this->recursiveMerge($dBranch));
             }
         }
+
         return $res;
     }
 
@@ -172,7 +174,7 @@ class ConfigReader implements ConfigReaderInterface
 
     /**
      * internal getter
-     * @param null|string $table
+     * @param  null|string $table
      * @return array|null
      */
     private function getTree($table = null)
@@ -187,6 +189,7 @@ class ConfigReader implements ConfigReaderInterface
                 return null;
             }
         }
+
         return $this->_tree;
     }
 
@@ -202,6 +205,7 @@ class ConfigReader implements ConfigReaderInterface
         foreach ($this->getTree() as $table => $branch) {
             $config[$table] = $branch['definition'];
         }
+
         return $config;
     }
 }

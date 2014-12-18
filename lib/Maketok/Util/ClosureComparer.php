@@ -17,8 +17,8 @@ class ClosureComparer
      * returns 0 if equal
      * 1 in all other cases
      *
-     * @param mixed $cl1
-     * @param mixed $cl2
+     * @param  mixed $cl1
+     * @param  mixed $cl2
      * @return int
      */
     public function compare($cl1, $cl2)
@@ -46,11 +46,12 @@ class ClosureComparer
                 ($reflectedClosure2->getEndLine() - $reflectedClosure2->getStartLine() + 1)
             ))
         );
-        return (int)!($a == $b);
+
+        return (int) !($a == $b);
     }
 
     /**
-     * @param mixed $var
+     * @param  mixed $var
      * @return bool
      */
     public function isClosure($var)
@@ -61,7 +62,7 @@ class ClosureComparer
     /**
      * return Closure body
      *
-     * @param string $contents
+     * @param  string $contents
      * @return string
      */
     public function parseClosure($contents)
@@ -74,7 +75,7 @@ class ClosureComparer
     /**
      * filter spaces
      *
-     * @param string $body
+     * @param  string $body
      * @return string
      */
     public function filterBody($body)

@@ -28,6 +28,7 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
     public function getTableGatewayMock()
     {
         $tg = $this->getMock('\Zend\Db\TableGateway\AbstractTableGateway');
+
         return $tg;
     }
 
@@ -36,10 +37,10 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
      * @dataProvider idFieldProvider
      * @covers       ::getIdFilter
      * @covers       ::__construct
-     * @param        int|string|string[] $id
-     * @param        int|string|string[] $data
-     * @param        string[] $expected
-     * @throws       \Maketok\Util\Exception\ModelException
+     * @param  int|string|string[]                    $id
+     * @param  int|string|string[]                    $data
+     * @param  string[]                               $expected
+     * @throws \Maketok\Util\Exception\ModelException
      */
     public function getIdFilter($id, $data, $expected)
     {

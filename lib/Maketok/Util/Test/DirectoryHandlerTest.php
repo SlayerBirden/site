@@ -25,7 +25,7 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
     private static $_dirHandler;
 
     /** @var  vfsStreamDirectory */
-    private static  $root;
+    private static $root;
 
     public static function setUpBeforeClass()
     {

@@ -39,12 +39,12 @@ class Manager extends AbstractManager implements ManagerInterface
 
     /**
      * Constructor
-     * @param ConfigReaderInterface $reader
-     * @param ResourceInterface $resource
-     * @param Directives $directives
+     * @param ConfigReaderInterface       $reader
+     * @param ResourceInterface           $resource
+     * @param Directives                  $directives
      * @param StreamHandlerInterface|null $handler
-     * @param Logger $logger
-     * @param TableMapper $tableMapper
+     * @param Logger                      $logger
+     * @param TableMapper                 $tableMapper
      */
     public function __construct(ConfigReaderInterface $reader,
                                 ResourceInterface $resource,
@@ -82,7 +82,7 @@ class Manager extends AbstractManager implements ManagerInterface
     }
 
     /**
-     * @param DdlClientInterface $client
+     * @param  DdlClientInterface $client
      * @return DdlClient
      */
     public function getClientModel(DdlClientInterface $client)
@@ -101,6 +101,7 @@ class Manager extends AbstractManager implements ManagerInterface
         $model->version = $client->getDdlVersion();
         $model->dependencies = $client->getDependencies();
         $model->config = $client->getDdlConfig($model->version);
+
         return $model;
     }
 
@@ -187,7 +188,7 @@ class Manager extends AbstractManager implements ManagerInterface
      * this is because MySQL automatically creates index record for every FK
      * see more at http://dev.mysql.com/doc/refman/5.6/en/innodb-foreign-key-constraints.html
      *
-     * @param array $config
+     * @param  array     $config
      * @return void
      * @throws Exception
      */
@@ -212,7 +213,7 @@ class Manager extends AbstractManager implements ManagerInterface
                     foreach ($definition['indices'] as $name => $indexDef) {
                         if (is_array($indexDef['definition'])) {
                             $col = current($indexDef['definition']);
-                        } elseif(is_string($indexDef['definition'])) {
+                        } elseif (is_string($indexDef['definition'])) {
                             $col = $indexDef['definition'];
                         } else {
                             throw new Exception("Unrecognizable index column definition.");
@@ -225,7 +226,7 @@ class Manager extends AbstractManager implements ManagerInterface
                         ($constraintDef['type'] == 'uniqueKey' || $constraintDef['type'] == 'primaryKey')) {
                         if (is_array($constraintDef['definition'])) {
                             $col = current($constraintDef['definition']);
-                        } elseif(is_string($constraintDef['definition'])) {
+                        } elseif (is_string($constraintDef['definition'])) {
                             $col = $constraintDef['definition'];
                         } else {
                             throw new Exception("Unrecognizable index column definition.");

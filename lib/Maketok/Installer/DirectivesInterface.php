@@ -10,7 +10,6 @@
 
 namespace Maketok\Installer;
 
-
 interface DirectivesInterface extends \IteratorAggregate, \Countable
 {
 

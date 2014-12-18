@@ -10,7 +10,6 @@
 
 namespace Maketok\Util;
 
-
 interface MessageInterface
 {
     public function getContent();

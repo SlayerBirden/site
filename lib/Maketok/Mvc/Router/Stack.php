@@ -37,7 +37,7 @@ class Stack extends AbstractRouter implements RouterInterface
     public function setRoutes(array $routes)
     {
         // we need to clear stack first
-        while($this->_routes->count() > 0) {
+        while ($this->_routes->count() > 0) {
             $this->_routes->pop();
         }
         foreach ($routes as $route) {
@@ -58,6 +58,7 @@ class Stack extends AbstractRouter implements RouterInterface
                 break;
             }
         }
+
         return $matched;
     }
 
@@ -67,6 +68,7 @@ class Stack extends AbstractRouter implements RouterInterface
     public function clearRoutes()
     {
         $this->_routes = new \SplStack();
+
         return $this;
     }
 }

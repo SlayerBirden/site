@@ -32,7 +32,7 @@ class AbstractManagerTest extends \PHPUnit_Framework_TestCase
      * @dataProvider versionProvider
      * @param string $v1
      * @param string $v2
-     * @param int $expected
+     * @param int    $expected
      */
     public function natRecursiveCompare($v1, $v2, $expected)
     {

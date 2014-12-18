@@ -33,15 +33,17 @@ class AddColumn extends AbstractProcedure implements ProcedureInterface
         $table = (isset($args[3]) ? $args[3] : new AlterTable($tableName));
         $column = $this->getInitColumn($columnName, $columnDefinition);
         $table->addColumn($column);
+
         return $this->query($table);
     }
 
     /**
-     * @param string $name
-     * @param array $definition
+     * @param  string          $name
+     * @param  array           $definition
      * @return ColumnInterface
      */
-    protected function getInitColumn($name, array $definition) {
+    protected function getInitColumn($name, array $definition)
+    {
         if (!isset($definition['type']) || is_int($name)) {
             // can't create column without type or name
             return false;
@@ -66,6 +68,7 @@ class AddColumn extends AbstractProcedure implements ProcedureInterface
         } else {
             $column = new $type($name, $nullable, $default, $options);
         }
+
         return $column;
     }
 }

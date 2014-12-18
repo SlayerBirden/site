@@ -10,13 +10,12 @@
 
 namespace Maketok\Util;
 
-
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 interface RequestInterface extends MessageInterface
 {
     /**
-     * @param SessionInterface $session
+     * @param  SessionInterface $session
      * @return void
      */
     public function setSession(SessionInterface $session);

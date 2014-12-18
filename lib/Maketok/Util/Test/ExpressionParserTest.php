@@ -10,7 +10,6 @@
 
 namespace Maketok\Util\Test;
 
-
 use Maketok\Util\ExpressionParser;
 use Maketok\Util\Tokenizer;
 
@@ -26,7 +25,7 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
      * @covers ::validate
      * @covers ::__construct
      * @param string $exprString
-     * @param array $parameters
+     * @param array  $parameters
      * @param string $expected
      * @dataProvider expressionEvalProvider
      */
@@ -73,9 +72,9 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
      * @covers ::tokenize
      * @covers ::strSplit
      * @param string $exprString
-     * @param array $restrictions
+     * @param array  $restrictions
      * @param string $newString
-     * @param mixed $expected
+     * @param mixed  $expected
      * @dataProvider expressionProvider
      */
     public function testParse($exprString, $newString, $restrictions, $expected)
@@ -127,7 +126,7 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
      * @covers ::strSplit
      * @param string $exprString
      * @param string $newString
-     * @param mixed $expected
+     * @param mixed  $expected
      * @dataProvider tokenizeProvider
      */
     public function tokenize($exprString, $newString, $expected)
@@ -180,7 +179,7 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
      * @covers ::strSplit
      * @param string $delimiter
      * @param string $newString
-     * @param mixed $expected
+     * @param mixed  $expected
      * @dataProvider splitProvider
      */
     public function strSplit($delimiter, $newString, $expected)

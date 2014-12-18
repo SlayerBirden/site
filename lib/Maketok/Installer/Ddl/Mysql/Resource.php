@@ -43,11 +43,12 @@ class Resource implements ResourceInterface
     {
         $data = $this->getTableArray($table);
         $parser = new Table($data);
+
         return $parser->parse();
     }
 
     /**
-     * @param string $table
+     * @param  string $table
      * @return array
      */
     protected function getTableArray($table)
@@ -62,11 +63,12 @@ class Resource implements ResourceInterface
             // this is case with un-existing table
             $data = [];
         }
+
         return $data;
     }
 
     /**
-     * @param string $table
+     * @param  string $table
      * @return array
      */
     protected function getStrippedTableArray($table)
@@ -74,6 +76,7 @@ class Resource implements ResourceInterface
         $data = $this->getTableArray($table);
         array_shift($data);
         array_pop($data);
+
         return $data;
     }
 
@@ -94,9 +97,9 @@ class Resource implements ResourceInterface
     }
 
     /**
-     * @param string $type
-     * @param string $table
-     * @param string $part
+     * @param  string $type
+     * @param  string $table
+     * @param  string $part
      * @return array
      */
     public function getTablePart($type, $table, $part)
@@ -111,11 +114,12 @@ class Resource implements ResourceInterface
                 return $res;
             }
         }
+
         return [];
     }
 
     /**
-     * @param string $type
+     * @param  string $type
      * @return string
      */
     public function getParserClass($type)
@@ -188,7 +192,6 @@ class Resource implements ResourceInterface
             $this->commit($query);
         }
     }
-
 
     /**
      * @param string $query

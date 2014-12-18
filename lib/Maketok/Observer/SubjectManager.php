@@ -28,12 +28,12 @@ class SubjectManager implements SubjectManagerInterface
     /**
      * @var SubjectManager
      */
-    static private $instance;
+    private static $instance;
 
     /**
-     * @param string $subject
-     * @param callable $subscriber
-     * @param int $priority
+     * @param  string   $subject
+     * @param  callable $subscriber
+     * @param  int      $priority
      * @return mixed
      */
     public function attach($subject, $subscriber, $priority)
@@ -48,8 +48,8 @@ class SubjectManager implements SubjectManagerInterface
     }
 
     /**
-     * @param string $subject
-     * @param mixed $subscriber
+     * @param  string $subject
+     * @param  mixed  $subscriber
      * @return mixed
      */
     public function detach($subject, $subscriber)
@@ -60,8 +60,8 @@ class SubjectManager implements SubjectManagerInterface
     }
 
     /**
-     * @param string $subject
-     * @param StateInterface $state
+     * @param  string         $subject
+     * @param  StateInterface $state
      * @return mixed
      */
     public function notify($subject, StateInterface $state)
@@ -81,7 +81,7 @@ class SubjectManager implements SubjectManagerInterface
     }
 
     /**
-     * @param string $subject
+     * @param  string                   $subject
      * @return SubjectInterface|boolean
      */
     public function getSubject($subject)
@@ -89,27 +89,30 @@ class SubjectManager implements SubjectManagerInterface
         if (isset($this->subjects[$subject])) {
             return $this->subjects[$subject];
         }
+
         return false;
     }
 
     /**
-     * @param string $subject
+     * @param  string $subject
      * @return $this
      */
     public function addSubject($subject)
     {
         $this->subjects[$subject] = new Subject($subject);
+
         return $this;
     }
 
     /**
      * @return SubjectManager
      */
-    static public function getInstance()
+    public static function getInstance()
     {
         if (is_null(self::$instance)) {
             self::$instance = new SubjectManager();
         }
+
         return self::$instance;
     }
 

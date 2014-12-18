@@ -55,7 +55,7 @@ class Twig extends AbstractEngine
 
     /**
      * load the template into engine by path
-     * @param string $path
+     * @param  string $path
      * @return mixed
      */
     public function loadTemplate($path)
@@ -66,7 +66,7 @@ class Twig extends AbstractEngine
 
     /**
      * set the array of variables to use
-     * @param array $variables
+     * @param  array $variables
      * @return mixed
      */
     public function setVariables(array $variables)
@@ -85,7 +85,7 @@ class Twig extends AbstractEngine
 
     /**
      * include required paths into loader
-     * @param array $paths
+     * @param  array $paths
      * @return mixed
      */
     public function loadDependencies(array $paths)

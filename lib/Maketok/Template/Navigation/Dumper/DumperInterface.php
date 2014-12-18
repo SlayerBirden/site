@@ -15,7 +15,7 @@ interface DumperInterface
 
     /**
      * dump navigation to a file
-     * @param string $path
+     * @param  string $path
      * @return mixed
      */
     public function write($path);

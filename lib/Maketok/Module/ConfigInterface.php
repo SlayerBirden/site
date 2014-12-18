@@ -10,7 +10,6 @@
 
 namespace Maketok\Module;
 
-
 interface ConfigInterface
 {
 

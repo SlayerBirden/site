@@ -35,6 +35,7 @@ class DdlClientDependencyType extends TableMapper
                 $dependencyCode
             ));
         }
+
         return $row;
     }
 }

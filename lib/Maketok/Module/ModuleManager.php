@@ -45,8 +45,8 @@ class ModuleManager implements ClientInterface
 
     /**
      * @param TableMapper $tableType
-     * @param string $configName
-     * @param string $area
+     * @param string      $configName
+     * @param string      $area
      */
     public function __construct(TableMapper $tableType, $configName, $area)
     {
@@ -71,7 +71,7 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @param int|string|string[] $id
+     * @param  int|string|string[]            $id
      * @return Module|array|\ArrayObject|null
      * @throws ModelException
      */
@@ -143,11 +143,13 @@ class ModuleManager implements ClientInterface
                 /** @var Module $module */
                 $activeDbModuleCodes[] = $module->module_code;
             }
-            $this->_activeModules = array_filter($this->_modules, function($config) use ($activeDbModuleCodes) {
+            $this->_activeModules = array_filter($this->_modules, function ($config) use ($activeDbModuleCodes) {
                 /** @var ConfigInterface $config */
+
                 return in_array($config, $activeDbModuleCodes);
             });
         }
+
         return $this->_activeModules;
     }
 
@@ -172,21 +174,23 @@ class ModuleManager implements ClientInterface
                 $this->_dbModules[$module->module_code] = $module;
             }
         }
+
         return $this->_dbModules;
     }
 
     /**
-     * @param ConfigInterface $config
+     * @param  ConfigInterface $config
      * @return bool
      */
     public function getModuleExistsInDb(ConfigInterface $config)
     {
         $db = $this->getDbModules();
+
         return isset($db[$config->getCode()]);
     }
 
     /**
-     * @param string $code
+     * @param  string      $code
      * @return null|Module
      */
     public function getModule($code)
@@ -202,6 +206,7 @@ class ModuleManager implements ClientInterface
         if (is_null($this->_moduleDirs)) {
             $this->_moduleDirs = $this->ioc()->get('directory_handler')->ls($this->getDir());
         }
+
         return $this->_moduleDirs;
     }
 
@@ -357,7 +362,7 @@ class ModuleManager implements ClientInterface
     /**
      * get client config to install
      *
-     * @param string $version
+     * @param  string     $version
      * @throws Exception
      * @return array|bool
      */
@@ -367,17 +372,20 @@ class ModuleManager implements ClientInterface
         try {
             $file = $locator->locate($version.'.yml');
             $reader = new Yaml();
+
             return $reader->parse($file);
         } catch (\InvalidArgumentException $e) {
             // nested try
             try {
                 $file = $locator->locate($version.'.php');
+
                 return include $file;
             } catch (\InvalidArgumentException $nextE) {
                 $this->getLogger()->err($e->__toString());
                 $this->getLogger()->err($nextE->__toString());
             }
         }
+
         return false;
 
     }
