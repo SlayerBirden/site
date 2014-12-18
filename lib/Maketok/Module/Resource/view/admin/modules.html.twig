@@ -1,3 +1,7 @@
+{# This is a part of Maketok site package. #}
+{# @author Oleg Kulik <slayer.birden@gmail.com> #}
+{# For the full copyright and license information, please view the LICENSE #}
+{# file that was distributed with this source code. #}
 {% extends "base-manager.html.twig" %}
 {% block content %}
     <div id="info" class="info">
@@ -19,7 +23,7 @@
             <td>{{ module.active }}</td>
             <td>{{ module.updated_at }}</td>
             <td>{{ module.area }}</td>
-            <td><a href="{{ base_url }}/{{ module.area }}/{{ module.module_code }}">{% trans %}Edit{% endtrans %}</a></td>
+            <td><a href="{{ base_url }}/modules/{{ module.area }}/{{ module.module_code }}">{% trans %}Edit{% endtrans %}</a></td>
         </tr>
     {% else %}
         <tr><td colspan="5">No modules found in the system! Very strange, how is this message displayed than??</td></tr>

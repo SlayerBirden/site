@@ -1,9 +1,11 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Installer\Ddl;
@@ -18,14 +20,14 @@ use Maketok\Installer\Exception;
 use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
-use Maketok\Util\ArrayValue;
-use Maketok\Util\TableMapper;
+use Maketok\Util\ArrayValueTrait;
+use Maketok\Model\TableMapper;
 use Maketok\Util\StreamHandlerInterface;
 use Monolog\Logger;
 
 class Manager extends AbstractManager implements ManagerInterface
 {
-    use ArrayValue;
+    use ArrayValueTrait;
     /**
      * @var Logger
      */

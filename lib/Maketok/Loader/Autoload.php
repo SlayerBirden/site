@@ -1,22 +1,35 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Loader;
 
+/**
+ * @codeCoverageIgnore
+ * @deprecated due to usage of composer autoload
+ */
 class Autoload
 {
     const NS_SEPARATOR = '\\';
 
+    /**
+     * register autoloader
+     */
     public function register()
     {
         spl_autoload_register(array($this, 'autoload'));
     }
 
+    /**
+     * @param string $class
+     * @return mixed|string
+     */
     public function autoload($class)
     {
         // get base dir

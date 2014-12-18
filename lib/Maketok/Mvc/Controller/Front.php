@@ -1,14 +1,16 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Mvc\Controller;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Mvc\Error\Dumper;
 use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\Http\Error;
@@ -22,10 +24,11 @@ use Maketok\Mvc\Error\DumperInterface;
 
 class Front
 {
+    use UtilityHelperTrait;
 
 
     /** @var  RouteInterface */
-    private $_router;
+    private $router;
 
     /** @var \SplStack */
     private $dumpers;
@@ -38,7 +41,7 @@ class Front
     {
         set_exception_handler(array($this, 'exceptionHandler'));
         /** @var Success $success */
-        if ($success = $this->_router->match($state->request)) {
+        if ($success = $this->router->match($state->request)) {
             $this->launch($success);
         } else {
             throw new RouteException("Could not match any route.");
@@ -52,16 +55,13 @@ class Front
      */
     public function launch(Success $success, $silent = false)
     {
-        $params = $success->getParameters();
-        ob_start();
-        $response = $this->launchAction($params, $success->getMatchedRoute());
-        $content = ob_get_contents();
-        // TODO figure out what to do with buffered content
-        ob_end_clean();
+        $response = $this->launchAction($success->getResolver(), $success->getMatchedRoute());
         if (!$silent) {
-            Site::getSC()->get('subject_manager')->notify('response_send_before', new State());
+            $this->getDispatcher()->notify('response_send_before', new State());
         }
-        $response->send();
+        if ($response && is_object($response)) {
+            $response->send();
+        }
     }
 
     /**
@@ -69,7 +69,7 @@ class Front
      */
     public function __construct(RouterInterface $router)
     {
-        $this->_router = $router;
+        $this->router = $router;
         $this->dumpers = new \SplStack();
         $this->dumpers->push(new Dumper());
     }
@@ -85,35 +85,15 @@ class Front
             $dumper = $this->dumpers->pop();
             if ($e instanceof RouteException) {
                 // not found
-                $errorRoute = new Error(array(
-                    'controller' => $dumper,
-                    'action' => 'noroute',
-                ));
-                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')), true);
+                $errorRoute = new Error([$dumper, 'norouteAction']);
+                $this->getDispatcher()->notify('noroute_action', new State(['front' => $this, 'dumper' => $dumper]));
             } elseif ($e instanceof \ErrorException) {
-                $errno = $e->getSeverity();
-                if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
-                    Site::getServiceContainer()
-                        ->get('logger')
-                        ->err(sprintf("Front Controller dispatch error exception\n%s", $e->__toString()));
-                    $errorRoute = new Error(array(
-                        'controller' => $dumper,
-                        'action' => 'error',
-                        'exception' => $e,
-                    ));
-                    $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')), true);
-                }
+                $errorRoute = $this->_processError($e, $dumper);
             } else {
-                Site::getServiceContainer()
-                    ->get('logger')
-                    ->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
-                $errorRoute = new Error(array(
-                    'controller' => $dumper,
-                    'action' => 'error',
-                    'exception' => $e,
-                ));
-                $this->launch($errorRoute->match(Site::getServiceContainer()->get('request')), true);
+                $this->getLogger()->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
+                $errorRoute = new Error([$dumper, 'errorAction'], ['exception' => $e]);
             }
+            $this->launch($errorRoute->match($this->ioc()->get('request')), true);
         } catch (\Exception $ex) {
             printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Trace: %s. Previous exception: %s",
                 $ex->getMessage(),
@@ -126,31 +106,32 @@ class Front
     }
 
     /**
-     * @param array $parameters
+     * @param \ErrorException $e
+     * @param object $dumper controller to handle exceptions
+     * @return Error
+     */
+    protected function _processError(\ErrorException $e, $dumper)
+    {
+        $errno = $e->getSeverity();
+        $message = sprintf("Front Controller dispatch error exception\n%s", $e->__toString());
+        if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
+            $this->getLogger()->err($message);
+        } elseif ($errno & E_WARNING || $errno & E_USER_WARNING) {
+            $this->getLogger()->warn($message);
+        } else {
+            $this->getLogger()->notice($message);
+        }
+        return new Error([$dumper, 'errorAction'], ['exception' => $e]);
+    }
+
+    /**
+     * @param callable $resolver
      * @param \Maketok\Mvc\Router\Route\RouteInterface $route
-     * @throws RouteException
      * @return ResponseInterface
      */
-    protected function launchAction(array $parameters, RouteInterface $route)
+    protected function launchAction($resolver, RouteInterface $route)
     {
-        if (!isset($parameters['controller']) || !isset($parameters['action'])) {
-            throw new RouteException("Missing controller or action for a matched route.");
-        }
-
-        if (is_object($parameters['controller'])) {
-            $controller = $parameters['controller'];
-        } else {
-            $controllerClass = (string) $parameters['controller'];
-            $controller = new $controllerClass();
-         }
-        $actionName = $parameters['action'];
-        if (!method_exists($controller, $actionName)) {
-            $actionName .= 'Action';
-        }
-        if (!method_exists($controller, $actionName)) {
-            throw new RouteException("Non existing action name.");
-        }
-        return $controller->$actionName($route->getRequest());
+        return call_user_func_array($resolver, array($route->getRequest()));
     }
 
     /**

@@ -1,19 +1,23 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace modules\blog;
 
 
-use Maketok\App\Site;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\ConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
+use modules\blog\controller\Article;
+use modules\blog\controller\Index;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -21,6 +25,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class Config implements ConfigInterface, ExtensionInterface, ClientInterface
 {
+    use UtilityHelperTrait;
 
     /**
      * @return string
@@ -32,21 +37,19 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
 
     public function initRoutes()
     {
-        Site::getServiceContainer()->get('router')->addRoute(new Literal('/blog', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\Index',
-            'action' => 'index',
-        )));
-        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/{code}', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\Article',
-            'action' => 'index',
-        ), [], ['code' => '^[a-zA-Z0-9_.-]+$']));
-        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/article/{id}', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\Article',
-            'action' => 'index',
-        ), [], ['id' => '^\d+$']));
+        $this->getRouter()->addRoute(new Literal('/blog', [new Index(), 'indexAction']));
+        $this->getRouter()->addRoute(new Parameterized(
+            '/blog/{code}',
+            [new Article(), 'indexAction'],
+            [],
+            ['code' => '^[a-zA-Z0-9_.-]+$']
+        ));
+        $this->getRouter()->addRoute(new Parameterized(
+            '/blog/{code}',
+            [new Article(), 'indexAction'],
+            [],
+            ['code' => '^[a-zA-Z0-9_.-]+$']
+        ));
     }
 
     /**
@@ -98,7 +101,7 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
             $validatorYmlConfigPaths = $container->getParameter('validator_builder.yml.config.paths');
         }
         if (!array($validatorYmlConfigPaths)) {
-            Site::getServiceContainer()->get('logger')->error("Wrong parameter type for validator_builder.yml.config.paths.");
+            $this->getLogger()->error("Wrong parameter type for validator_builder.yml.config.paths.");
             return;
         }
         $validatorYmlConfigPaths[] = __DIR__. DS .'config' . DS . 'validation.yml';
@@ -185,6 +188,6 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
      */
     public function getDdlConfig($version)
     {
-        return include __DIR__ . "/config/ddl/$version.php";
+        return include __DIR__ . "/config/installer/ddl/$version.php";
     }
 }

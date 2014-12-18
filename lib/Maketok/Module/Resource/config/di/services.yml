@@ -1,4 +1,10 @@
+# This is a part of Maketok site package.
+# @author Oleg Kulik <slayer.birden@gmail.com>
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
 services:
+
   module_model:
     class: Maketok\Module\Resource\Model\Module
 
@@ -15,10 +21,17 @@ services:
       - "@module_result_set"
 
   module_table:
-    class: Maketok\Util\TableMapper
+    class: Maketok\Model\TableMapper
     arguments: ["@module_table_gateway", [module_code, area]]
 
   module.form.type:
             class: Maketok\Module\Resource\form\ModuleType
             tags:
                 - { name: form.type, alias: module }
+
+  module_manager:
+      class: Maketok\Module\ModuleManager
+      arguments:
+        - "@module_table"
+        - "%module_config_name%"
+        - "%module_area%"

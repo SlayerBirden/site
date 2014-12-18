@@ -1,27 +1,30 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Installer\Ddl\Test;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\Installer\Ddl\Directives;
 use Maketok\Installer\Ddl\Mysql\Resource;
 use Zend\Db\Adapter\Adapter;
 
 class ResourceTest extends \PHPUnit_Framework_TestCase
 {
+    use ContainerTrait;
     /** @var \Maketok\Installer\Ddl\Mysql\Resource */
-    protected static $_resource;
+    protected $resource;
 
     /**
      * set up tables to test
      */
-    public static function setUpBeforeClass()
+    public function setUp()
     {
         $sql = <<<'SQL'
 DROP TABLE IF EXISTS `test_store`;
@@ -58,10 +61,9 @@ CREATE TABLE `test_store` (
    REFERENCES `test_website` (`website_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='Stores';
 SQL;
-        $adapter = Site::getSC()->get('adapter');
+        $adapter = $this->ioc()->get('adapter');
         $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        self::$_resource = new Resource($adapter,
-            Site::getServiceContainer()->get('zend_db_sql'));
+        $this->resource = new Resource($adapter, $this->ioc()->get('zend_db_sql'));
     }
 
     /**
@@ -70,7 +72,7 @@ SQL;
      */
     public function testGetTable()
     {
-        $result = self::$_resource->getTable('test_store');
+        $result = $this->resource->getTable('test_store');
         $this->assertNotEmpty($result);
 
         $this->assertCount(8, $result['columns']);
@@ -93,7 +95,7 @@ SQL;
      */
     public function testGetColumn()
     {
-        $result = self::$_resource->getColumn('test_store', 'group_id');
+        $result = $this->resource->getColumn('test_store', 'group_id');
         $this->assertNotEmpty($result);
 
         $this->assertEquals('group_id', $result['name']);
@@ -104,7 +106,7 @@ SQL;
         $this->assertTrue($result['unsigned']);
         $this->assertEquals('0', $result['default']);
 
-        $result = self::$_resource->getColumn('test_website', 'code');
+        $result = $this->resource->getColumn('test_website', 'code');
         $this->assertNotEmpty($result);
 
         $this->assertEquals('code', $result['name']);
@@ -115,7 +117,7 @@ SQL;
         $this->assertFalse(isset($result['unsigned']));
         $this->assertEquals('', $result['default']);
 
-        $result = self::$_resource->getColumn('test_website', 'name');
+        $result = $this->resource->getColumn('test_website', 'name');
         $this->assertNotEmpty($result);
 
         $this->assertEquals('name', $result['name']);
@@ -126,7 +128,7 @@ SQL;
         $this->assertFalse(isset($result['unsigned']));
         $this->assertEquals('oleg', $result['default']);
 
-        $result = self::$_resource->getColumn('test_website', 'created_at');
+        $result = $this->resource->getColumn('test_website', 'created_at');
         $this->assertNotEmpty($result);
 
         $this->assertEquals('created_at', $result['name']);
@@ -136,7 +138,7 @@ SQL;
         $this->assertFalse($result['nullable']);
         $this->assertEquals('CURRENT_TIMESTAMP', $result['default']);
 
-        $result = self::$_resource->getColumn('test_store', 'updated_at');
+        $result = $this->resource->getColumn('test_store', 'updated_at');
         $this->assertNotEmpty($result);
 
         $this->assertEquals('updated_at', $result['name']);
@@ -154,21 +156,21 @@ SQL;
      */
     public function testGetConstraint()
     {
-        $result = self::$_resource->getConstraint('test_website', 'PRIMARY');
+        $result = $this->resource->getConstraint('test_website', 'PRIMARY');
         $this->assertNotEmpty($result);
 
         $this->assertEquals('primary', $result['type']);
         $this->assertFalse(isset($result['name']));
         $this->assertEquals(array('website_id'), $result['definition']);
 
-        $result = self::$_resource->getConstraint('test_website', 'code');
+        $result = $this->resource->getConstraint('test_website', 'code');
         $this->assertNotEmpty($result);
 
         $this->assertEquals('unique', $result['type']);
         $this->assertEquals('code', $result['name']);
         $this->assertEquals(array('code'), $result['definition']);
 
-        $result = self::$_resource->getConstraint('test_store', 'FK_STORE_WEBSITE');
+        $result = $this->resource->getConstraint('test_store', 'FK_STORE_WEBSITE');
         $this->assertNotEmpty($result);
 
         $this->assertEquals('foreign_key', $result['type']);
@@ -187,7 +189,7 @@ SQL;
      */
     public function testGetIndex()
     {
-        $result = self::$_resource->getIndex('test_store', 'is_active');
+        $result = $this->resource->getIndex('test_store', 'is_active');
         $this->assertNotEmpty($result);
 
         $this->assertEquals('is_active', $result['name']);
@@ -205,11 +207,11 @@ SQL;
         $falseColumn = 'fc';
         $falseConstraint = 'fcon';
         $falseIndex = 'fidx';
-        $this->assertEquals([], self::$_resource->getTable($falseTable));
-        $this->assertEquals([], self::$_resource->getColumn($falseTable, $falseColumn));
+        $this->assertEquals([], $this->resource->getTable($falseTable));
+        $this->assertEquals([], $this->resource->getColumn($falseTable, $falseColumn));
         $this->assertEquals([],
-            self::$_resource->getConstraint($falseTable, $falseConstraint));
-        $this->assertEquals([], self::$_resource->getIndex($falseTable, $falseIndex));
+            $this->resource->getConstraint($falseTable, $falseConstraint));
+        $this->assertEquals([], $this->resource->getIndex($falseTable, $falseIndex));
     }
 
     /**
@@ -218,8 +220,6 @@ SQL;
      */
     public function testCreateProcedures()
     {
-        self::$_resource = new Resource(Site::getServiceContainer()->get('adapter'),
-            Site::getServiceContainer()->get('zend_db_sql'));
         $directives = new Directives();
         $directives->addTables = [
             [
@@ -252,8 +252,8 @@ SQL;
             ],
         ];
 
-        self::$_resource->createProcedures($directives);
-        $refProp = new \ReflectionProperty(get_class(self::$_resource), '_procedures');
+        $this->resource->createProcedures($directives);
+        $refProp = new \ReflectionProperty(get_class($this->resource), '_procedures');
         $refProp->setAccessible(true);
         // the order is switched
         $expected = [
@@ -261,7 +261,7 @@ SQL;
             "ALTER TABLE `test2` DROP INDEX `UNQ_KEY_OOPS`",
             "ALTER TABLE `test2` CHANGE COLUMN `oldCol` `newCol` INTEGER NOT NULL",
         ];
-        $procedures = $refProp->getValue(self::$_resource);
+        $procedures = $refProp->getValue($this->resource);
         $this->assertCount(3, $procedures);
         for ($i = 0; $i < 3; ++$i) {
             $this->assertEquals($expected[$i], preg_replace('/\s+/', ' ', $procedures[$i]));
@@ -274,8 +274,6 @@ SQL;
      */
     public function testCreateProceduresTimestamp()
     {
-        self::$_resource = new Resource(Site::getServiceContainer()->get('adapter'),
-            Site::getServiceContainer()->get('zend_db_sql'));
         $directives = new Directives();
         $directives->addColumns = [
             [
@@ -285,14 +283,14 @@ SQL;
             ],
         ];
 
-        self::$_resource->createProcedures($directives);
-        $refProp = new \ReflectionProperty(get_class(self::$_resource), '_procedures');
+        $this->resource->createProcedures($directives);
+        $refProp = new \ReflectionProperty(get_class($this->resource), '_procedures');
         $refProp->setAccessible(true);
         // the order is switched
         $expected = [
             "ALTER TABLE `test2` ADD COLUMN `oldCol` TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP",
         ];
-        $procedures = $refProp->getValue(self::$_resource);
+        $procedures = $refProp->getValue($this->resource);
         $this->assertCount(1, $procedures);
         $this->assertEquals($expected[0], preg_replace('/\s+/', ' ', $procedures[0]));
     }
@@ -305,11 +303,9 @@ SQL;
      */
     public function testCreateProceduresWrongContext()
     {
-        self::$_resource = new Resource(Site::getServiceContainer()->get('adapter'),
-            Site::getServiceContainer()->get('zend_db_sql'));
         $directives = new Directives();
-        self::$_resource->createProcedures($directives);
-        self::$_resource->createProcedures($directives);
+        $this->resource->createProcedures($directives);
+        $this->resource->createProcedures($directives);
     }
 
     /**
@@ -320,8 +316,6 @@ SQL;
      */
     public function testCreateProceduresWrongDirectives()
     {
-        self::$_resource = new Resource(Site::getServiceContainer()->get('adapter'),
-            Site::getServiceContainer()->get('zend_db_sql'));
         $directives = new Directives();
         $directives->changeColumns = [
             [
@@ -329,19 +323,19 @@ SQL;
                 [],
             ],
         ];
-        self::$_resource->createProcedures($directives);
+        $this->resource->createProcedures($directives);
     }
 
     /**
      * tear down routine
      */
-    static public function tearDownAfterClass()
+    public function tearDown()
     {
         $sql = <<<'SQL'
 DROP TABLE IF EXISTS `test_store`;
 DROP TABLE IF EXISTS `test_website`;
 SQL;
-        $adapter = Site::getServiceContainer()->get('adapter');
+        $adapter = $adapter = $this->ioc()->get('adapter');
         $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
     }
 }

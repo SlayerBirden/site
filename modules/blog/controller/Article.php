@@ -1,20 +1,22 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace modules\blog\controller;
 
-use Maketok\Mvc\Controller\AbstractController;
+use Maketok\Module\Mvc\AbstractBaseController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
 
-class Article extends AbstractController
+class Article extends AbstractBaseController
 {
 
     /**
@@ -24,7 +26,6 @@ class Article extends AbstractController
     public function indexAction(RequestInterface $request)
     {
         $article = $this->initArticle($request);
-        $this->setViewDependency(array('base'));
         $this->setTemplate('article.html.twig');
         return $this->prepareResponse($request, array(
             'article' => $article,

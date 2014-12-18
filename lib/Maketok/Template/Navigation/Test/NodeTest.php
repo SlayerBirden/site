@@ -1,21 +1,26 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Template\Navigation\Test;
 
 use Maketok\Template\Navigation\Node;
 
+/**
+ * @coversDefaultClass \Maketok\Template\Navigation\Node
+ */
 class NodeTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::traverse
+     * @covers ::traverse
      */
     public function traverse()
     {
@@ -30,7 +35,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::detach
+     * @covers ::detach
      */
     public function detach()
     {
@@ -44,7 +49,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::isBranch
+     * @covers ::isBranch
      */
     public function isBranch()
     {
@@ -58,7 +63,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::isRoot
+     * @covers ::isRoot
      */
     public function isRoot()
     {
@@ -72,7 +77,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::isLeaf
+     * @covers ::isLeaf
      */
     public function isLeaf()
     {
@@ -86,7 +91,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::addChild
+     * @covers ::addChild
      */
     public function addChild()
     {
@@ -100,7 +105,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::getChildren
+     * @covers ::getChildren
      */
     public function getChildren()
     {
@@ -113,7 +118,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::getSiblings
+     * @covers ::getSiblings
      */
     public function getSiblings()
     {
@@ -129,7 +134,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::getParent
+     * @covers ::getParent
      */
     public function getParent()
     {
@@ -142,7 +147,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::getAncestors
+     * @covers ::getAncestors
      */
     public function getAncestors()
     {
@@ -156,7 +161,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::getRoot
+     * @covers ::getRoot
      */
     public function getRoot()
     {
@@ -173,7 +178,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::setParent
+     * @covers ::setParent
      */
     public function setParent()
     {
@@ -186,7 +191,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Node::addChildren
+     * @covers ::addChildren
      */
     public function addChildren()
     {

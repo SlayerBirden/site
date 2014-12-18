@@ -1,9 +1,13 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+use  \Maketok\App\Site;
 
-\Maketok\App\Site::run(\Maketok\App\Site::MODE_TEST);
+$site = new Site();
+$site->run('test', Site::CONTEXT_SKIP_ENVIRONMENT | Site::CONTEXT_SKIP_DISPATCH);

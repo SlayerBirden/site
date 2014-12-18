@@ -1,9 +1,11 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Mvc\Router\Route;
@@ -39,10 +41,10 @@ class Success
     }
 
     /**
-     * @return array
+     * @return callable
      */
-    public function getParameters()
+    public function getResolver()
     {
-        return $this->getMatchedRoute()->getParameters();
+        return $this->getMatchedRoute()->getResolver();
     }
 }

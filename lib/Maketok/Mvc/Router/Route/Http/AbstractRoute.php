@@ -1,9 +1,11 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Mvc\Router\Route\Http;
@@ -14,10 +16,13 @@ abstract class AbstractRoute
 {
 
     /** @var  RequestInterface */
-    protected $_request;
+    protected $request;
 
-    /** @var  array */
-    protected $_parameters;
+    /** @var  callable */
+    protected $resolver;
+
+    /** @var  string */
+    protected $matchPath;
 
     /**
      * this function is created to make sure there is no trailing-slash-error cases
@@ -30,5 +35,31 @@ abstract class AbstractRoute
     public function stripTrailingSlash($string)
     {
         return rtrim($string, '/');
+    }
+
+    /**
+     * @return RequestInterface
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param string $path
+     * @return $this
+     */
+    public function setPath($path)
+    {
+        $this->matchPath = $path;
+        return $this;
+    }
+
+    /**
+     * @return RequestInterface
+     */
+    public function getResolver()
+    {
+        return $this->resolver;
     }
 }

@@ -1,18 +1,17 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace modules\blog\model;
 
-use Maketok\App\Site;
-
 class Article
 {
-
     /** @var  int */
     public $id;
     /** @var  string */
@@ -28,11 +27,4 @@ class Article
     /** @var  string text */
     public $content;
 
-    /**
-     * @return string
-     */
-    public function getUrl()
-    {
-        return Site::getUrl('/blog/' . $this->code);
-    }
 }

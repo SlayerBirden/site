@@ -1,19 +1,22 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Installer\Ddl;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
 
 class InstallerClient implements ClientInterface
 {
+    use UtilityHelperTrait;
 
     /**
      * {@inheritdoc}
@@ -33,7 +36,7 @@ class InstallerClient implements ClientInterface
         try {
             $file = $locator->locate($version.'.yml');
         } catch (\InvalidArgumentException $e) {
-            Site::getServiceContainer()->get('logger')->err($e->getMessage());
+            $this->getLogger()->err($e->getMessage());
             return false;
         }
         return $ymlReader->parse($file);

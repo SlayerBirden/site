@@ -1,9 +1,11 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Util\Test;
@@ -11,6 +13,9 @@ namespace Maketok\Util\Test;
 
 use Maketok\Util\PriorityQueue;
 
+/**
+ * @coversDefaultClass \Maketok\Util\PriorityQueue
+ */
 class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 {
     /** @var  PriorityQueue */
@@ -23,13 +28,15 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Util\PriorityQueue::insert
+     * @covers ::insert
+     * @covers ::extract
+     * @covers ::isEmpty
      */
     public function insert()
     {
-        $data = 'test1';
-        $data2 = 'test2';
-        $data3 = 'test3';
+        $data = 'SomeClass::staticMethod';
+        $data2 = [new \stdClass(), 'method'];
+        $data3 = function() {echo 'closure';};
         $this->queue->insert($data);
         $this->queue->insert($data2);
         $this->queue->insert($data3, 10);
@@ -43,21 +50,21 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Util\PriorityQueue::remove
+     * @covers ::remove
+     * @covers ::isEmpty
      */
     public function remove()
     {
-        $data = 'test1';
-        $data2 = 'test2';
-        $data3 = 'test3';
+        $data = 'SomeClass::staticMethod';
+        $data2 = [new \stdClass(), 'method'];
+        $data3 = function() {echo 'closure';};
         $this->queue->insert($data);
         $this->queue->insert($data2);
         $this->queue->insert($data3, 10);
 
-        $this->queue->remove($data3);
-
-        $this->assertEquals($data, $this->queue->extract());
-        $this->assertEquals($data2, $this->queue->extract());
+        $this->queue->remove('SomeClass::staticMethod');
+        $this->queue->remove([new \stdClass(), 'method']);
+        $this->queue->remove(function() {echo 'closure';});
 
         $this->assertTrue($this->queue->isEmpty());
     }

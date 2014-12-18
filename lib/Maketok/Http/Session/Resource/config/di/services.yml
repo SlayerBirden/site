@@ -1,0 +1,37 @@
+# This is a part of Maketok site package.
+# @author Oleg Kulik <slayer.birden@gmail.com>
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+services:
+  session_model:
+    class: Maketok\Http\Session\Resource\Model\Session
+    scope: prototype
+
+  session_result_set:
+    class: %hydrating_resultset%
+    arguments: ["@object_prop_hydrator", "@session_model="]
+
+  session_table_gateway:
+    class: Zend\Db\TableGateway\TableGateway
+    arguments:
+      - session_storage
+      - "@adapter"
+      - []
+      - "@session_result_set"
+
+  session_table:
+    class: Maketok\Model\TableMapper
+    arguments: ["@ddl_client_table_gateway", session_id]
+
+  session_save_handler:
+    class: Maketok\Http\Session\DbHandler
+    arguments: ["@session_table"]
+
+  session_storage:
+    class: Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage
+    arguments: [[], "@session_save_handler"]
+
+  session_manager:
+    class: Maketok\Http\Session
+    arguments: ["@session_storage"]

@@ -1,9 +1,11 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Util;
@@ -32,6 +34,7 @@ class PriorityQueue
     }
 
     /**
+     * @codeCoverageIgnore
      * @return \SplPriorityQueue
      */
     public function getQueue()
@@ -68,7 +71,12 @@ class PriorityQueue
     {
         $shouldRebuildQueue = false;
         foreach ($this->_items as $key => $data) {
-            if ($item === $data['item']) {
+            $comparer = new ClosureComparer();
+            if ($item == $data['item'] ||
+                ($comparer->isClosure($data['item']) &&
+                    $comparer->isClosure($item) &&
+                    $comparer->compare($item, $data['item']) === 0
+                )) {
                 unset($this->_items[$key]);
                 $this->_queue = null;
                 $shouldRebuildQueue = true;

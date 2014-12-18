@@ -2,7 +2,7 @@
     "name": "maketok/utils",
     "description": "Maketok Util StreamHandler component",
     "homepage" : "https://github.com/SlayerBirden/site/tree/master/lib/Maketok/Util",
-    "license": "GPL-3.0",
+    "license": "MIT",
     "keywords": [
         "maketok",
         "utils",

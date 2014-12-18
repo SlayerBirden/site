@@ -1,9 +1,11 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Observer;
@@ -14,16 +16,19 @@ class SubjectManager implements SubjectManagerInterface
 {
     /**
      * array of PriorityQueue objects
-     * @var array
+     * @var PriorityQueue[]
      */
-    private $_subscribers = array();
+    private $subscribers = array();
 
-    private $_subjects = array();
+    /**
+     * @var SubjectInterface[]
+     */
+    private $subjects = array();
 
     /**
      * @var SubjectManager
      */
-    static private $_instance;
+    static private $instance;
 
     /**
      * @param string $subject
@@ -36,10 +41,10 @@ class SubjectManager implements SubjectManagerInterface
         if (!$this->getSubject($subject)) {
             $this->addSubject($subject);
         }
-        if (!isset($this->_subscribers[$subject])) {
-            $this->_subscribers[$subject] = new PriorityQueue();
+        if (!isset($this->subscribers[$subject])) {
+            $this->subscribers[$subject] = new PriorityQueue();
         }
-        $this->_subscribers[$subject]->insert($subscriber, $priority);
+        $this->subscribers[$subject]->insert($subscriber, $priority);
     }
 
     /**
@@ -49,8 +54,8 @@ class SubjectManager implements SubjectManagerInterface
      */
     public function detach($subject, $subscriber)
     {
-        if (isset($this->_subscribers[$subject])) {
-            $this->_subscribers[$subject]->remove($subscriber);
+        if (isset($this->subscribers[$subject])) {
+            $this->subscribers[$subject]->remove($subscriber);
         }
     }
 
@@ -61,10 +66,10 @@ class SubjectManager implements SubjectManagerInterface
      */
     public function notify($subject, StateInterface $state)
     {
-        if (isset($this->_subscribers[$subject])) {
+        if (isset($this->subscribers[$subject])) {
             $_subject = $this->getSubject($subject);
             /** @var PriorityQueue $_subQueue */
-            $_subQueue = $this->_subscribers[$subject];
+            $_subQueue = $this->subscribers[$subject];
             $_subQueue->getQueue()->top();
             while ($_subQueue->getQueue()->valid()) {
                 if ($_subject->getShouldStopPropagation()) {
@@ -81,8 +86,8 @@ class SubjectManager implements SubjectManagerInterface
      */
     public function getSubject($subject)
     {
-        if (isset($this->_subjects[$subject])) {
-            return $this->_subjects[$subject];
+        if (isset($this->subjects[$subject])) {
+            return $this->subjects[$subject];
         }
         return false;
     }
@@ -93,7 +98,7 @@ class SubjectManager implements SubjectManagerInterface
      */
     public function addSubject($subject)
     {
-        $this->_subjects[$subject] = new Subject($subject);
+        $this->subjects[$subject] = new Subject($subject);
         return $this;
     }
 
@@ -102,10 +107,10 @@ class SubjectManager implements SubjectManagerInterface
      */
     static public function getInstance()
     {
-        if (is_null(self::$_instance)) {
-            self::$_instance = new SubjectManager();
+        if (is_null(self::$instance)) {
+            self::$instance = new SubjectManager();
         }
-        return self::$_instance;
+        return self::$instance;
     }
 
     protected function __construct()

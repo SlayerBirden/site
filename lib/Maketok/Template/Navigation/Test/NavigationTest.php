@@ -1,9 +1,11 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Template\Navigation\Test;
@@ -11,12 +13,15 @@ namespace Maketok\Template\Navigation\Test;
 use Maketok\Template\Navigation\Link;
 use Maketok\Template\Navigation\Navigation;
 
+/**
+ * @coversDefaultClass \Maketok\Template\Navigation\Navigation
+ */
 class NavigationTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Navigation::addLink
+     * @covers ::addLink
      */
     public function addLink()
     {
@@ -55,7 +60,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Navigation::addLink
+     * @covers ::addLink
      * @expectedException \Maketok\Template\Navigation\Exception
      * @expectedExceptionMessage Provided parent is not within current context.
      * @dataProvider wrongParentsProvider
@@ -71,7 +76,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Navigation::addLink
+     * @covers ::addLink
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid parent provided:
      * @dataProvider invalidArgumentsProvider
@@ -108,7 +113,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Navigation::getNavigation
+     * @covers ::getNavigation
      */
     public function getNavigation()
     {
@@ -125,7 +130,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Template\Navigation\Navigation::addDumper
+     * @covers ::addDumper
      */
     public function addDumper()
     {

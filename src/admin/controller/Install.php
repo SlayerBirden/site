@@ -1,21 +1,23 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace admin\controller;
 
-use Maketok\App\Site;
+use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Util\Monolog\Handler\HttpStreamedHandler;
 use Maketok\Util\RequestInterface;
 use Monolog\Formatter\HtmlFormatter;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class Install extends AbstractController
+class Install extends AbstractAdminController
 {
 
     /**
@@ -43,7 +45,7 @@ class Install extends AbstractController
     {
         $this->setTemplate('install-manager.html.twig');
         return $this->prepareResponse($request, array(
-            'install_url' => Site::getUrl('install/run'),
+            'install_url' => $this->getUrl('install/run'),
             'title' => 'Installer - Admin Management Area'
         ));
     }

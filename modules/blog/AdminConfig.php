@@ -1,18 +1,21 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace modules\blog;
 
 
-use Maketok\App\Site;
 use Maketok\Module\AdminConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
+use modules\blog\controller\admin\Article;
+use modules\blog\controller\admin\Index;
 
 class AdminConfig extends Config implements AdminConfigInterface
 {
@@ -22,25 +25,27 @@ class AdminConfig extends Config implements AdminConfigInterface
      */
     public function initRoutes()
     {
-        Site::getServiceContainer()->get('router')->addRoute(new Literal('/blog', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\admin\\Index',
-            'action' => 'index',
-        )));
-        Site::getServiceContainer()->get('router')->addRoute(new Literal('/blog/article/new', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\admin\\Article',
-            'action' => 'new',
-        )));
-        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/article/edit/{id}', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\admin\\Article',
-            'action' => 'edit',
-        ), [], ['id' => '^\d+$']));
-        Site::getServiceContainer()->get('router')->addRoute(new Parameterized('/blog/article/delete/{id}', array(
-            'module' => $this->getCode(),
-            'controller' => 'modules\\blog\\controller\\admin\\Article',
-            'action' => 'delete',
-        ), [], ['id' => '^\d+$']));
+        $this->getRouter()->addRoute(new Literal('/blog', [new Index(), 'indexAction']));
+        $this->getRouter()->addRoute(new Literal('/blog/article/new', [new Article(), 'newAction']));
+        $this->getRouter()->addRoute(new Parameterized(
+            '/blog/article/edit/{id}',
+            [new Article(), 'editAction'],
+            [],
+            ['id' => '^\d+$']
+        ));
+        $this->getRouter()->addRoute(new Parameterized(
+            '/blog/article/delete/{id}',
+            [new Article(), 'deleteAction'],
+            [],
+            ['id' => '^\d+$']
+        ));
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return true;
     }
 }

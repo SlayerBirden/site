@@ -1,51 +1,40 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Mvc\Controller;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Http\Response;
 use Maketok\Mvc\GenericException;
-use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Template\EngineInterface;
 use Maketok\Util\RequestInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class AbstractController
 {
+    use UtilityHelperTrait;
 
     /** @var  Response */
-    protected $_response;
+    protected $response;
 
     /** @var  string */
-    protected $_body;
+    protected $body;
 
     /** @var  string */
-    protected $_module;
+    protected $module;
 
     /** @var  string */
-    protected $_template;
+    protected $template;
 
-    /** @var  array - dependencies for configs */
-    protected $_viewDependency = array();
-
-    /**
-     * so some magic
-     */
-    public function __construct()
-    {
-        $className = get_called_class();
-        $classNameSplitted = explode('\\', $className);
-        if (($key = array_search('modules', $classNameSplitted)) !== false) {
-            $key++;
-            $this->_module = $classNameSplitted[$key];
-        }
-    }
+    /** @var string[] */
+    private $templatePaths;
 
     /**
      * @param string|null $content
@@ -55,10 +44,10 @@ class AbstractController
      */
     public function getResponse($content = null, $code = 200, array $headers = null)
     {
-        if (is_null($this->_response)) {
+        if (is_null($this->response)) {
             $this->initResponse($content, $code, $headers);
         }
-        return $this->_response;
+        return $this->response;
     }
 
     /**
@@ -69,15 +58,15 @@ class AbstractController
      */
     protected function initResponse($content, $code, $headers)
     {
-        if (is_null($content) && !is_null($this->_body)) {
-            $content = $this->_body;
-        } elseif (is_null($content) && is_null($this->_body)) {
+        if (is_null($content) && !is_null($this->body)) {
+            $content = $this->body;
+        } elseif (is_null($content) && is_null($this->body)) {
             throw new GenericException("Can't initiate Response object without any body.");
         }
         if (is_null($headers)) {
             $headers = array();
         }
-        $this->_response = Response::create($content, $code, $headers);
+        $this->response = Response::create($content, $code, $headers);
     }
 
     /**
@@ -89,11 +78,11 @@ class AbstractController
      */
     public function prepareResponse(RequestInterface $request, array $templateVars, array $params = null, $httpCode = 200)
     {
-        if (is_null($this->_response)) {
+        if (is_null($this->response)) {
             $this->prepareContent($templateVars, $params);
             $this->initResponse($this->getContent(), $httpCode, array());
         }
-        return $this->_response->prepare($request);
+        return $this->response->prepare($request);
     }
 
     /**
@@ -102,19 +91,14 @@ class AbstractController
      */
     public function prepareContent(array $templateVars)
     {
-        $path = $this->getTemplatePath();
         // get template Engine
         /** @var EngineInterface $engine */
         $engine = $this->getSC()->get('template_engine');
-        $dependencyPaths = $this->getBaseDependencyPaths();
-        foreach ($this->_viewDependency as $_dependencyModule) {
-            $dependencyPaths[] = $this->getTemplatePath('', $_dependencyModule);
-        }
         $templateVars = array_merge($this->getDefaults(), $templateVars);
-        $engine->loadDependencies($dependencyPaths);
-        $engine->loadTemplate($path);
+        $engine->loadDependencies($this->getTemplatePaths());
+        $engine->loadTemplate($this->getTemplate());
         $engine->setVariables($templateVars);
-        $this->_body = $engine->render();
+        $this->body = $engine->render();
     }
 
     /**
@@ -123,12 +107,12 @@ class AbstractController
     public function getDefaults()
     {
         return [
-            'css_url' => Site::getUrl('/css/'),
-            'js_url' => Site::getUrl('/js/'),
-            'images_url' => Site::getUrl('/images/'),
-            'base_url' => Site::getUrl('/', ['wts' => 1]),
+            'css_url' => $this->getUrl('/css/'),
+            'js_url' => $this->getUrl('/js/'),
+            'images_url' => $this->getUrl('/images/'),
+            'base_url' => $this->getUrl('/', ['wts' => 1]),
             'current_url' => $this->getCurrentUrl(),
-            'session' => Site::getSession(),
+            'session' => $this->getSession(),
             'links' => [],
         ];
     }
@@ -144,31 +128,22 @@ class AbstractController
     }
 
     /**
-     * @return string[]
+     * @param $path
+     * @return self
      */
-    protected function getBaseDependencyPaths()
+    public function addTemplatePath($path)
     {
-        return array(AR . '/src/base/view');
+        $this->templatePaths[] = $path;
+        return $this;
     }
 
     /**
-     * @param string $template
-     * @param string|null $module
      * @throws GenericException
-     * @return string
+     * @return string[]
      */
-    protected function getTemplatePath($template = null, $module = null)
+    public function getTemplatePaths()
     {
-        if (is_null($module)) {
-            $module = $this->_module;
-        }
-        if (is_null($template)) {
-            $template = $this->_template;
-        }
-        if (is_null($this->_template)) {
-            throw new GenericException("Can't find template path, no template set.");
-        }
-        return AR . DS . 'modules' . DS . $module . DS . 'view' . DS . $template;
+        return $this->templatePaths;
     }
 
     /**
@@ -176,7 +151,7 @@ class AbstractController
      */
     public function getContent()
     {
-        return $this->_body;
+        return $this->body;
     }
 
     /**
@@ -185,17 +160,7 @@ class AbstractController
      */
     public function setTemplate($template)
     {
-        $this->_template = $template;
-        return $this;
-    }
-
-    /**
-     * @param string[] $moduleNames
-     * @return $this
-     */
-    public function setViewDependency(array $moduleNames)
-    {
-        $this->_viewDependency = $moduleNames;
+        $this->template = $template;
         return $this;
     }
 
@@ -204,23 +169,7 @@ class AbstractController
      */
     public function getTemplate()
     {
-        return $this->_template;
-    }
-
-    /**
-     * @return array
-     */
-    public function getViewDependency()
-    {
-        return $this->_viewDependency;
-    }
-
-    /**
-     * @return \Symfony\Component\DependencyInjection\ContainerBuilder
-     */
-    public function getSC()
-    {
-        return Site::getServiceContainer();
+        return $this->template;
     }
 
     /**
@@ -228,7 +177,7 @@ class AbstractController
      */
     public function getFormFactory()
     {
-        return $this->getSC()->get('form_builder')
+        return $this->ioc()->get('form_builder')
             ->getFormFactory();
     }
 
@@ -247,7 +196,7 @@ class AbstractController
      */
     protected function redirect($path)
     {
-        $url = Site::getUrl($path);
+        $url = $this->getUrl($path);
         return $this->redirectUrl($url);
     }
 
@@ -256,27 +205,7 @@ class AbstractController
      */
     protected function returnBack()
     {
-        $referer = Site::getServiceContainer()->get('request')->headers->get('referer');
+        $referer = $this->ioc()->get('request')->getHeaders()->get('referer');
         return $this->redirectUrl($referer);
-    }
-
-    /**
-     * @param string $path
-     * @return string
-     */
-    public function getUrl($path)
-    {
-        return Site::getUrl($path);
-    }
-
-    /**
-     * Get current url
-     * @return string
-     */
-    public function getCurrentUrl()
-    {
-        /** @var RouteInterface $route */
-        $route = Site::getServiceContainer()->get('request')->attributes->get('_route');
-        return $this->getUrl($route->assemble());
     }
 }

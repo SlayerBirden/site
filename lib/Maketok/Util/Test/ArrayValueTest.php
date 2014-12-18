@@ -1,19 +1,26 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Util\Test;
 
-class ArrayValueTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class ArrayValueTraitTest
+ * @package Maketok\Util\Test
+ * @coversDefaultClass \Maketok\Util\ArrayValueTrait
+ */
+class ArrayValueTraitTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @covers \Maketok\Util\ArrayValue::getIfExists
+     * @covers ::getIfExists
      * @dataProvider provider
      * @param string|string[] $key
      * @param array $data
@@ -22,8 +29,8 @@ class ArrayValueTest extends \PHPUnit_Framework_TestCase
      */
     public function getIfExists($key, $data, $default, $expected)
     {
-        /** @var \Maketok\Util\ArrayValue $trait */
-        $trait = $this->getMockForTrait('Maketok\Util\ArrayValue');
+        /** @var \Maketok\Util\ArrayValueTrait $trait */
+        $trait = $this->getMockForTrait('Maketok\Util\ArrayValueTrait');
 
         $this->assertEquals($expected, $trait->getIfExists($key, $data, $default));
     }

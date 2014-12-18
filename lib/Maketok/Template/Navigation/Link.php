@@ -1,9 +1,11 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Template\Navigation;
@@ -35,6 +37,7 @@ class Link extends Node implements LinkInterface
     private $title;
 
     /**
+     * @codeCoverageIgnore
      * {@inheritdoc}
      */
     public function __construct($code, $reference = null, $order = null, $title = null, LinkInterface $parent = null)
@@ -49,6 +52,7 @@ class Link extends Node implements LinkInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @return string
      */
     public function __toString()
@@ -152,6 +156,7 @@ class Link extends Node implements LinkInterface
     public function getChildren()
     {
         $children = parent::getChildren();
+        // @codeCoverageIgnoreStart
         usort($children, function(LinkInterface $a, LinkInterface $b) {
             if ($a->getOrder() > $b->getOrder()) {
                 return 1;
@@ -160,6 +165,7 @@ class Link extends Node implements LinkInterface
             }
             return 0;
         });
+        // @codeCoverageIgnoreEnd
         return $children;
     }
 

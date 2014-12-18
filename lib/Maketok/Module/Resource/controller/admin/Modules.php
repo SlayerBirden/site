@@ -1,24 +1,36 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Module\Resource\controller\admin;
 
-use Maketok\App\Site;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Module\Resource\Model\Module;
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\RequestInterface;
-use Maketok\Util\TableMapper;
+use Maketok\Model\TableMapper;
 
 class Modules extends AbstractAdminController
 {
+    use UtilityHelperTrait;
+
+    /**
+     * add template path
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->addTemplatePath(AR . "/lib/Maketok/Module/Resource/view/admin");
+    }
 
     /**
      * @param RequestInterface $request
@@ -52,18 +64,18 @@ class Modules extends AbstractAdminController
             $moduleTable = $this->getSC()->get('module_table');
             try {
                 $moduleTable->save($form->getData());
-                Site::getSession()->getFlashBag()->add(
+                $this->getSession()->getFlashBag()->add(
                     'success',
                     'The module was updated successfully!'
                 );
             } catch (ModelInfoException $e) {
-                Site::getSession()->getFlashBag()->add(
+                $this->getSession()->getFlashBag()->add(
                     'notice',
                     $e->getMessage()
                 );
             } catch (\Exception $e) {
                 $this->getSC()->get('logger')->err($e);
-                Site::getSession()->getFlashBag()->add(
+                $this->getSession()->getFlashBag()->add(
                     'error',
                     'There was an error processing your request. Our specialists will be looking into it.'
                 );
@@ -101,16 +113,5 @@ class Modules extends AbstractAdminController
         } catch (ModelException $e) {
             throw new RouteException("Could not find model by id.");
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getTemplatePath($template = null, $module = null)
-    {
-        if (is_null($template)) {
-            $template = $this->_template;
-        }
-        return AR . "/lib/Maketok/Module/Resource/view/admin/$template";
     }
 }

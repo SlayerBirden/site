@@ -1,19 +1,24 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Util\Monolog\Handler;
 
 use Monolog\Handler\StreamHandler as BaseStreamHandler;
 
+/**
+ * @codeCoverageIgnore
+ */
 class StreamHandler extends BaseStreamHandler
 {
     /**
-     * @{inerhitDoc}
+     * {@inheritdoc}
      */
     public function write(array $record)
     {
@@ -23,7 +28,7 @@ class StreamHandler extends BaseStreamHandler
             }
             $dir = dirname($this->url);
             if (!is_dir($dir)) {
-                @mkdir($dir, 0777, TRUE);
+                @mkdir($dir, 0755, TRUE);
             }
         }
         parent::write($record);

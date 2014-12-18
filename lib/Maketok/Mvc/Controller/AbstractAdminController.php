@@ -1,43 +1,27 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Mvc\Controller;
 
-use Maketok\Mvc\GenericException;
-
+/**
+ * @codeCoverageIgnore
+ */
 class AbstractAdminController extends AbstractController
 {
 
     /**
-     * @param null $template
-     * @param string|null $module
-     * @throws GenericException
-     * @return string
+     * init
+     * add base template path
      */
-    protected function getTemplatePath($template = null, $module = null)
+    public function __construct()
     {
-        if (is_null($module)) {
-            $module = $this->_module;
-        }
-        if (is_null($template)) {
-            $template = $this->_template;
-        }
-        if (is_null($this->_template)) {
-            throw new GenericException("Can't find template path, no template set.");
-        }
-        return AR . "/modules/$module/view/admin/$template";
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function getBaseDependencyPaths()
-    {
-        return array(AR . '/src/admin/view');
+        $this->addTemplatePath(AR . '/src/admin/view');
     }
 }

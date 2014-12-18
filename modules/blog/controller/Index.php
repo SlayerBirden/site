@@ -1,18 +1,20 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace modules\blog\controller;
 
-use Maketok\Mvc\Controller\AbstractController;
+use Maketok\Module\Mvc\AbstractBaseController;
 use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
 
-class Index extends AbstractController
+class Index extends AbstractBaseController
 {
 
     /**

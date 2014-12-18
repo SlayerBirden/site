@@ -1,9 +1,11 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Util;
@@ -28,6 +30,11 @@ interface RequestInterface extends MessageInterface
      * @return array|\IteratorAggregate|\Symfony\Component\HttpFoundation\ParameterBag
      */
     public function getAttributes();
+
+    /**
+     * @return array|\IteratorAggregate|\Symfony\Component\HttpFoundation\HeaderBag
+     */
+    public function getHeaders();
 
     /**
      * @return mixed

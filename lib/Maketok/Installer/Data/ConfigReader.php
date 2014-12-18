@@ -1,15 +1,22 @@
 <?php
 /**
- * This is a part of Maketok Site. Licensed under GPL 3.0
+ * This is a part of Maketok site package.
  *
- * @project site
- * @developer Oleg Kulik slayer.birden@gmail.com maketok.com
+ * @author Oleg Kulik <slayer.birden@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Maketok\Installer\Data;
 
 use Maketok\Installer\Data\Resource\Model\DataClient;
 
+/**
+ * Class ConfigReader
+ * @package Maketok\Installer\Data
+ * @codeCoverageIgnore
+ */
 class ConfigReader implements ConfigReaderInterface
 {
 
@@ -27,7 +34,7 @@ class ConfigReader implements ConfigReaderInterface
         $configsToMerge = [];
         foreach ($clients as $client) {
             /** @var DataClient $client */
-            $configsToMerge = $client->config;
+            $configsToMerge[] = $client->config;
         }
         $this->mergeConfigs($configsToMerge);
     }
@@ -38,9 +45,7 @@ class ConfigReader implements ConfigReaderInterface
      */
     protected function mergeConfigs(array $configs)
     {
-        foreach ($configs as $table => $data) {
-            $_config[$table][] = $data;
-        }
+        //@TODO: implement
     }
 
     /**

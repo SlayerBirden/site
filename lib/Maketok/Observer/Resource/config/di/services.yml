@@ -1,0 +1,22 @@
+# This is a part of Maketok site package.
+# @author Oleg Kulik <slayer.birden@gmail.com>
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+services:
+
+  subject_manager:
+    class: Maketok\Observer\SubjectManager
+    factory_class: Maketok\Observer\SubjectManager
+    factory_method: getInstance
+    calls:
+          - [attach, [dispatch, ["@front_controller", dispatch], 10]]
+          - [attach, [ioc_container_initialized, ["@module_manager", processModuleConfig], 15]]
+          - [attach, [module_list_exists, \Maketok\App\ContainerFactory::serviceContainerProcessModules, 0]]
+          - [attach, [ioc_container_initialized, \Maketok\App\ContainerFactory::scCompile, 10]]
+          - [attach, [ioc_container_initialized, \Maketok\App\ContainerFactory::scDump, 5]]
+          - [attach, [ioc_container_compiled, ["@module_manager", updateModules], 20]]
+          - [attach, [ioc_container_compiled, ["@module_manager", processModules], 15]]
+          - [attach, [ioc_container_compiled, ["@module_manager", addInstallerSubscribers], 10]]
+          - [attach, [response_send_before, ["@site", terminate], 0]]
+          - [attach, [noroute_action, ["@site", terminate], 0]]
