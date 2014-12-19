@@ -77,13 +77,13 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @param string $code
+     * @param mixed $id
      * @param string $version
      */
-    public function updateToVersion($code, $version)
+    public function updateToVersion($id, $version)
     {
         try {
-            $module = $this->initModule(array($code, $this->area));
+            $module = $this->initModule($id);
             $module->version = $version;
             $this->tableType->save($module);
         } catch (ModelException $e) {
@@ -93,13 +93,13 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @return array
+     * @return array|null
      */
     public function getActiveModules()
     {
-        if (is_null($this->activeModules)) {
+        if (is_null($this->activeModules) && !is_null($this->modules)) {
             /** @var Module[] $activeDbModulesResultSet */
-            $activeDbModulesResultSet = $this->tableType->fetchFilter(array('active' => 1, 'area' => $this->getArea()));
+            $activeDbModulesResultSet = $this->tableType->fetchFilter(array('active' => 1, 'area' => $this->area));
             $activeDbModuleCodes = [];
             foreach ($activeDbModulesResultSet as $module) {
                 $activeDbModuleCodes[] = $module->module_code;
@@ -114,6 +114,7 @@ class ModuleManager implements ClientInterface
 
     /**
      * @return string
+     * @codeCoverageIgnore
      */
     public function getArea()
     {
@@ -145,20 +146,12 @@ class ModuleManager implements ClientInterface
     {
         $db = $this->getDbModules();
 
-        return isset($db[$config->getCode()]);
-    }
-
-    /**
-     * @param  string      $code
-     * @return null|Module
-     */
-    public function getModule($code)
-    {
-        return isset($this->modules[$code]) ? $this->modules[$code] : null;
+        return isset($db[(string) $config]);
     }
 
     /**
      * @return mixed
+     * @codeCoverageIgnore
      */
     public function getModuleDirectories()
     {
@@ -171,6 +164,7 @@ class ModuleManager implements ClientInterface
 
     /**
      * @return string
+     * @codeCoverageIgnore
      */
     public function getDir()
     {
@@ -206,7 +200,7 @@ class ModuleManager implements ClientInterface
         $module->module_code = $config->getCode();
         $module->active = $config->isActive();
         $module->version = $config->getVersion();
-        $module->area = $this->getArea();
+        $module->area = $this->area;
         $this->tableType->save($module);
     }
 
@@ -253,6 +247,7 @@ class ModuleManager implements ClientInterface
     /**
      * add installer subscribers
      * @internal param StateInterface
+     * @codeCoverageIgnore
      */
     public function addInstallerSubscribers()
     {

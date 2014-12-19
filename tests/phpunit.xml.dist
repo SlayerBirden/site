@@ -22,6 +22,9 @@
         <testsuite name="observer">
             <directory>../lib/Maketok/Observer/Test</directory>
         </testsuite>
+        <testsuite name="module">
+            <directory>../lib/Maketok/Module/Test</directory>
+        </testsuite>
         <testsuite name="maketok">
             <directory>../lib/Maketok/</directory>
         </testsuite>
