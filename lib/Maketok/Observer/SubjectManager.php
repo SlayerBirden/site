@@ -60,8 +60,8 @@ class SubjectManager implements SubjectManagerInterface
     }
 
     /**
-     * @param mixed $subscriber
-     * @param mixed $subject
+     * @param  mixed                     $subscriber
+     * @param  mixed                     $subject
      * @throws \InvalidArgumentException
      * @return SubscriberBag
      */
