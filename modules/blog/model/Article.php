@@ -10,7 +10,9 @@
 
 namespace modules\blog\model;
 
-class Article
+use Maketok\Model\LazyObjectPropModel;
+
+class Article extends LazyObjectPropModel
 {
     /** @var  int */
     public $id;

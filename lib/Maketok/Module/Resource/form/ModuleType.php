@@ -23,12 +23,13 @@ class ModuleType extends AbstractType
         $builder->add('module_code', 'text', array('read_only' => true))
             ->add('version', 'text', array('read_only' => true))
             ->add('active', 'choice', array(
-                'choices'   => array('0' => 'Disabled', '1' => 'Enabled'),
+                'choices' => array('0' => 'Disabled', '1' => 'Enabled')
             ))
             ->add('updated_at', 'text', array('read_only' => true))
             ->add('area', 'text', array('read_only' => true))
         ;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -38,6 +39,7 @@ class ModuleType extends AbstractType
             'data_class' => 'Maketok\Module\Resource\Model\Module',
         ));
     }
+
     /**
      * {@inheritdoc}
      */
