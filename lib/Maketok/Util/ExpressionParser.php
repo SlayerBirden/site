@@ -153,7 +153,7 @@ class ExpressionParser implements ExpressionParserInterface
         if (empty($delimiter)) {
             return [];
         }
-        $safeDelimiter = self::getSafeDelimiter($string);
+        $safeDelimiter = self::getSafeDelimiter($string, $delimiter);
         foreach ($delimiter as $d) {
             if (($pos = strpos($string, (string) $d)) === false) {
                 throw new ParserException(sprintf("Delimiter %s is not present", $d));
@@ -166,21 +166,41 @@ class ExpressionParser implements ExpressionParserInterface
 
     /**
      * @param  string          $string
+     * @param  string|string[] $delimiter
      * @return string
      * @throws ParserException
-     * @codeCoverageIgnore
      */
-    public static function getSafeDelimiter($string)
+    public static function getSafeDelimiter($string, $delimiter)
     {
         $roundsAllowed = 100;
+        if (!is_array($delimiter)) {
+            $delimiter = [$delimiter];
+        }
         do {
-            $delimiter = md5(uniqid());
+            $unique = md5(uniqid(), true);
             --$roundsAllowed;
-        } while ((strpos($string, $delimiter) !== false) || !$roundsAllowed);
+        } while (!$roundsAllowed ||
+            (strpos($string, $unique) !== false) ||
+            self::arrayValueContains($delimiter, $unique));
         if (!$roundsAllowed) {
             throw new ParserException("Could not find safe delimiter.");
         }
 
-        return $delimiter;
+        return $unique;
+    }
+
+    /**
+     * @param string[] $array
+     * @param string $needle
+     * @return bool
+     */
+    public static function arrayValueContains(array $array, $needle)
+    {
+        foreach ($array as $string) {
+            if (strpos($string, $needle) !== false) {
+                return true;
+            }
+        }
+        return false;
     }
 }

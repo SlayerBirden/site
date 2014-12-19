@@ -71,6 +71,8 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::tokenize
      * @covers ::strSplit
+     * @covers ::getSafeDelimiter
+     * @covers ::arrayValueContains
      * @param string $exprString
      * @param array  $restrictions
      * @param string $newString
@@ -124,6 +126,8 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::tokenize
      * @covers ::strSplit
+     * @covers ::getSafeDelimiter
+     * @covers ::arrayValueContains
      * @param string $exprString
      * @param string $newString
      * @param mixed  $expected
@@ -164,6 +168,8 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
      * @test
      * @covers ::tokenize
      * @covers ::strSplit
+     * @covers ::getSafeDelimiter
+     * @covers ::arrayValueContains
      * @expectedException \Maketok\Util\Exception\ParserException
      * @expectedExceptionMessage Can't combine variables, wrong number of placeholders.
      */
@@ -177,6 +183,8 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::strSplit
+     * @covers ::getSafeDelimiter
+     * @covers ::arrayValueContains
      * @param string $delimiter
      * @param string $newString
      * @param mixed  $expected
