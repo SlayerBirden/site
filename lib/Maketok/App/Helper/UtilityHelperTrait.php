@@ -135,6 +135,7 @@ trait UtilityHelperTrait
     }
 
     /**
+     * @codeCoverageIgnore
      * @param string $message
      * @param string $type
      */

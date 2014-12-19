@@ -10,18 +10,18 @@
 
 return [
     'debug' => 0,
-    'ioc_extension' => [
-        new \Maketok\Installer\Ddl\DI(),
-        new \Maketok\Module\DI(),
-        new \Maketok\Http\Session\DI(),
-        new \Maketok\Template\DI(),
-        new \Maketok\Mvc\DI(),
-        new \Maketok\Observer\DI()
+    'ioc_extension_path' => [
+        AR . '/lib/Maketok/Installer/Ddl/Resource/config/di',
+        AR . '/lib/Maketok/Module/Resource/config/di',
+        AR . '/lib/Maketok/Http/Session/Resource/config/di',
+        AR . '/lib/Maketok/Template/Resource/config/di',
+        AR . '/lib/Maketok/Mvc/Resource/config/di',
+        AR . '/lib/Maketok/Observer/Resource/config/di'
     ],
     'iod_compiler_pass' => [
         new \Maketok\Template\TemplateCompilerPass(),
         new \Maketok\Template\Symfony\Form\FormExtensionCompilerPass,
         new \Maketok\Template\Symfony\Form\FormTypeCompilerPass
     ],
-    'routing_provider' => []
+    'routing_provider_path' => []
 ];

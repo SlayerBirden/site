@@ -16,21 +16,21 @@ class PriorityQueue
      * the actual queue
      * @var \SplPriorityQueue
      */
-    protected $_queue;
+    protected $queue;
 
-    protected $_items = array();
+    protected $items = array();
 
-    protected $_serial = PHP_INT_MAX;
+    protected $serial = PHP_INT_MAX;
 
     /**
-     * @param callable $data
+     * @param mixed    $data
      * @param int      $priority
      */
     public function insert($data, $priority = 1)
     {
-        $this->_items[] = array('item' => $data, 'priority' => $priority);
+        $this->items[] = array('item' => $data, 'priority' => $priority);
         // make sure we handle same priorities well
-        $this->getQueue()->insert($data, array($priority, $this->_serial--));
+        $this->getQueue()->insert($data, array($priority, $this->serial--));
     }
 
     /**
@@ -39,11 +39,11 @@ class PriorityQueue
      */
     public function getQueue()
     {
-        if (is_null($this->_queue)) {
-            $this->_queue = new \SplPriorityQueue();
+        if (is_null($this->queue)) {
+            $this->queue = new \SplPriorityQueue();
         }
 
-        return $this->_queue;
+        return $this->queue;
     }
 
     /**
@@ -66,26 +66,22 @@ class PriorityQueue
 
     /**
      * remove item and dequeue it from internal queue
-     * @param $item
+     * @param mixed $item
      */
     public function remove($item)
     {
         $shouldRebuildQueue = false;
-        foreach ($this->_items as $key => $data) {
+        foreach ($this->items as $key => $data) {
             $comparer = new ClosureComparer();
-            if ($item == $data['item'] ||
-                ($comparer->isClosure($data['item']) &&
-                    $comparer->isClosure($item) &&
-                    $comparer->compare($item, $data['item']) === 0
-                )) {
-                unset($this->_items[$key]);
-                $this->_queue = null;
+            if ($item == $data['item'] || $comparer->compare($item, $data['item']) === 0) {
+                unset($this->items[$key]);
+                $this->queue = null;
                 $shouldRebuildQueue = true;
                 break;
             }
         }
         if ($shouldRebuildQueue) {
-            foreach ($this->_items as $data) {
+            foreach ($this->items as $data) {
                 $this->getQueue()->insert($data['item'], $data['priority']);
             }
         }

@@ -13,6 +13,7 @@ namespace Maketok\App;
 use Maketok\Observer\StateInterface;
 use Maketok\Util\StreamHandler;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
@@ -23,59 +24,89 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
  * IoC Container Factory
  * @codeCoverageIgnore
  */
-class ContainerFactory
+class ContainerFactory implements ConfigInterface
 {
     /** @var array  */
-    private static $serviceContainerFileList = ['services', 'parameters'];
+    private $serviceContainerFileList = ['services', 'parameters'];
 
     /** @var ContainerBuilder */
-    private static $ioc;
+    private $ioc;
 
     /** @var string */
-    private static $env;
+    private $env;
+
+    /**
+     * @var ContainerFactory
+     */
+    private static $instance;
+
+    /**
+     * singleton
+     */
+    private function __construct()
+    {
+    }
+
+    /**
+     * singleton
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * @return ContainerFactory
+     */
+    public static function getInstance()
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     /**
      * @return ContainerBuilder
      */
-    public static function getServiceContainer()
+    public function getServiceContainer()
     {
-        if (is_null(self::$ioc)) {
+        if (is_null($this->ioc)) {
             // get cached file
-            $file = self::getContainerFileName();
-            if (file_exists($file) && !self::getDebug()) {
+            $file = $this->getContainerFileName();
+            if (file_exists($file) && !$this->getDebug()) {
                 require_once $file;
-                $class = self::getContainerClassName();
-                self::$ioc = new $class();
+                $class = $this->getContainerClassName();
+                $this->ioc = new $class();
                 // this is kind of a hack: thanks to lazy loading of container parameter bag
                 // to be able to check if it's frozen later
-                self::$ioc->getParameterBag();
+                $this->ioc->getParameterBag();
             } else {
-                self::createSC();
+                $this->createSC();
             }
         }
-        return self::$ioc;
+        return $this->ioc;
     }
 
     /**
      * @return bool
      */
-    public static function getDebug()
+    public function getDebug()
     {
         return Site::getConfig('debug');
     }
 
     /**
-     * @return DependencyConfigExtensionInterface[]
+     * @return ConfigInterface[]
      */
-    public static function getConfigExtensions()
+    public function getConfigExtensionPaths()
     {
-        return Site::getConfig('ioc_extension');
+        return Site::getConfig('ioc_extension_path');
     }
 
     /**
      * @return CompilerPassInterface[]
      */
-    public static function getCompilerPasses()
+    public function getCompilerPasses()
     {
         return Site::getConfig('iod_compiler_pass');
     }
@@ -84,101 +115,89 @@ class ContainerFactory
      * yet another alias
      * @return ContainerBuilder
      */
-    public static function ioc()
+    public function ioc()
     {
-        return self::getServiceContainer();
+        return $this->getServiceContainer();
     }
 
     /**
      * Init Service Container
      */
-    private static function createSC()
+    private function createSC()
     {
-        if (!is_null(self::$ioc)) {
+        if (!is_null($this->ioc)) {
             throw new \LogicException("Invalid context. Can't create service container, it already exists.");
         }
-        self::$ioc = new ContainerBuilder();
-        foreach (self::getCompilerPasses() as $compilerPass) {
-            self::$ioc->addCompilerPass($compilerPass);
+        $this->ioc = new ContainerBuilder();
+        foreach ($this->getCompilerPasses() as $compilerPass) {
+            $this->ioc->addCompilerPass($compilerPass);
         }
-        self::addDefaultParameters();
-        self::loadSCConfig();
+        $this->addDefaultParameters();
+        $this->loadSCConfig();
     }
 
     /**
      * set default params
      */
-    public static function addDefaultParameters()
+    public function addDefaultParameters()
     {
-        self::$ioc->setParameter('ar', AR);
-        self::$ioc->setParameter('ds', DS);
-        self::$ioc->setParameter('env', self::$env);
+        $this->ioc->setParameter('ar', AR);
+        $this->ioc->setParameter('ds', DS);
+        $this->ioc->setParameter('env', $this->env);
     }
 
     /**
      * @return string
      */
-    public static function getEnv()
+    public function getEnv()
     {
-        return self::$env;
+        return $this->env;
     }
 
     /**
      * @param string $env
      */
-    public static function setEnv($env)
+    public function setEnv($env)
     {
         if (!is_scalar($env)) {
-            throw new \InvalidArgumentException(sprintf("Invalid environment variable provided of type %s", gettype($env)));
+            throw new \InvalidArgumentException(sprintf(
+                "Invalid environment variable provided of type %s",
+                gettype($env)
+            ));
         }
-        self::$env = $env;
+        $this->env = $env;
     }
 
     /**
      * load SC configs
      */
-    private static function loadSCConfig()
+    private function loadSCConfig()
     {
-        $loader = new YamlFileLoader(self::$ioc, new FileLocator(AR . '/config/di'));
-        // load base configs
-        foreach (self::$serviceContainerFileList as $fileName) {
-            $toLoad = ["$fileName.yml", "local.$fileName.yml"];
-            if ($env = self::getEnv()) {
-                $toLoad[] = "$env.$fileName.yml";
-                $toLoad[] = "local.$env.$fileName.yml";
-            }
-            array_walk($toLoad, function($value) use ($loader) {
-                try {
-                    $loader->load($value);
-                } catch (\InvalidArgumentException $e) {
-                    // non existing files
-                    // mute exception
-                }
-            });
-        }
-        // now handle some registered lib extensions
-        foreach (self::getConfigExtensions() as $ext) {
-            $ext->loadConfig($loader);
+        $paths = $this->getConfigExtensionPaths();
+        array_unshift($paths, AR . '/config/di');
+        foreach ($paths as $path) {
+            $loader = new YamlFileLoader($this->ioc, new FileLocator($path));
+            $this->loadConfig($loader);
         }
     }
 
     /**
      * @param ExtensionInterface $extension
      */
-    protected static function addDiExtension(ExtensionInterface $extension)
+    protected function addDiExtension(ExtensionInterface $extension)
     {
-        self::ioc()->registerExtension($extension);
-        self::ioc()->loadFromExtension($extension->getAlias());
+        $this->ioc()->registerExtension($extension);
+        $this->ioc()->loadFromExtension($extension->getAlias());
     }
 
     /**
      * @param bool $withNS
      * @return string
      */
-    private static function getContainerClassName($withNS = true)
+    private function getContainerClassName($withNS = true)
     {
         $name = 'MaketokServiceContainer';
-        if ($env = self::getEnv()) {
+        if ($env = $this->getEnv()) {
             $name .= ucfirst($env);
         }
         if ($withNS) {
@@ -191,9 +210,9 @@ class ContainerFactory
     /**
      * @param StateInterface $state
      */
-    public static function serviceContainerProcessModules(StateInterface $state)
+    public function serviceContainerProcessModules(StateInterface $state)
     {
-        if (self::$ioc->isFrozen()) {
+        if ($this->ioc->isFrozen()) {
             return;
         }
         $activeModules = $state->modules;
@@ -201,7 +220,7 @@ class ContainerFactory
             // include each module into sc
             // only the ones that work :)
             if ($moduleConfig instanceof ExtensionInterface) {
-                self::addDiExtension($moduleConfig);
+                $this->addDiExtension($moduleConfig);
             }
         }
     }
@@ -209,10 +228,10 @@ class ContainerFactory
     /**
      * @return string
      */
-    protected static function getContainerFileName()
+    protected function getContainerFileName()
     {
         $path = AR . '/var/cache/ioc/container';
-        if ($env = self::getEnv()) {
+        if ($env = $this->getEnv()) {
             $path .= '.' . $env;
         }
         return $path . '.php';
@@ -221,27 +240,49 @@ class ContainerFactory
     /**
      * dump compile container
      */
-    public static function scCompile()
+    public function scCompile()
     {
-        if (!self::$ioc->isFrozen()) {
-            self::ioc()->compile();
+        if (!$this->ioc->isFrozen()) {
+            $this->ioc()->compile();
         }
     }
 
     /**
      * dump ioc container
      */
-    public static function scDump()
+    public function scDump()
     {
-        $file = self::getContainerFileName();
+        $file = $this->getContainerFileName();
         // dump only if another dump doesn't exist or if debug mode
-        if (!file_exists($file) || self::getDebug()) {
-            $dumper = new PhpDumper(self::$ioc);
+        if (!file_exists($file) || $this->getDebug()) {
+            $dumper = new PhpDumper($this->ioc);
             /** @var StreamHandler $writer */
-            $writer = self::$ioc->get('lock_stream_handler');
+            $writer = $this->ioc->get('lock_stream_handler');
             $writer->writeWithLock(
-                $dumper->dump(array('class' => self::getContainerClassName(false))), self::getContainerFileName()
+                $dumper->dump(array('class' => $this->getContainerClassName(false))), $this->getContainerFileName()
             );
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadConfig(FileLoader $loader)
+    {
+        foreach ($this->serviceContainerFileList as $fileName) {
+            $toLoad = ["$fileName.yml", "local.$fileName.yml"];
+            if ($env = $this->getEnv()) {
+                $toLoad[] = "$env.$fileName.yml";
+                $toLoad[] = "local.$env.$fileName.yml";
+            }
+            array_walk($toLoad, function($value) use ($loader) {
+                try {
+                    $loader->load($value);
+                } catch (\InvalidArgumentException $e) {
+                    // non existing files
+                    // mute exception
+                }
+            });
         }
     }
 }

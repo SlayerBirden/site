@@ -10,6 +10,11 @@
 
 namespace Maketok\Util;
 
+/**
+ * this is pretty much useless because it tries to compare the actual code of the closure
+ * unless we can come up with better idea
+ * there's no point in this component existence
+ */
 class ClosureComparer
 {
 

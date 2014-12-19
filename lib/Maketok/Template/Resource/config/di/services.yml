@@ -18,8 +18,7 @@ services:
 
   validator:
     class: Symfony\Component\Validator\Validator
-    factory_service: validator_builder
-    factory_method: getValidator
+    factory: ["@validator_builder", getValidator]
 
   form_builder_extension_validation:
     class: Symfony\Component\Form\Extension\Validator\ValidatorExtension
@@ -29,8 +28,7 @@ services:
 
   form_builder:
     class: Symfony\Component\Form\FormBuilder
-    factory_class: Symfony\Component\Form\Forms
-    factory_method: createFormFactoryBuilder
+    factory: [Symfony\Component\Form\Forms, createFormFactoryBuilder]
 
 #template ############################################################
   template_engine:

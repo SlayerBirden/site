@@ -19,7 +19,12 @@ interface SubjectInterface
 
     /**
      * @param  bool | int $flag
-     * @return mixed
+     * @return self
      */
     public function setShouldStopPropagation($flag);
+
+    /**
+     * @return string
+     */
+    public function __toString();
 }

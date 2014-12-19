@@ -56,7 +56,17 @@ class SiteTest extends \PHPUnit_Framework_TestCase
             ['complex/more_complex/test', []],
             ['complex/code', 'baz'],
             ['comple', null],
+            [null, [
+                'simple' => 'bar',
+                'complex' => [
+                    'null' => null,
+                    'object' => new \stdClass(),
+                    'more_complex' => [
+                        'test' => []
+                    ],
+                    'code' => 'baz'
+                ],
+            ]],
         ];
     }
 }
- 

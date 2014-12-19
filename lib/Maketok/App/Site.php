@@ -13,15 +13,17 @@ namespace Maketok\App;
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Observer\State;
 use Maketok\Http\Request;
+use Maketok\Util\PhpFileLoader;
 use Maketok\Util\RequestInterface;
 use Monolog\Logger;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Loader\FileLoader;
 use Zend\Stdlib\ErrorHandler;
 
 /**
  * Application entry point
- * @codeCoverageIgnore
  */
-final class Site
+final class Site implements ConfigInterface
 {
     use UtilityHelperTrait;
 
@@ -43,6 +45,7 @@ final class Site
 
     /**
      * launch app process
+     * @codeCoverageIgnore
      * @param string $env
      * @param int    $context
      */
@@ -55,7 +58,11 @@ final class Site
         define('AR', APPLICATION_ROOT);
         define('DS', DIRECTORY_SEPARATOR);
         define('ENV', $env);
-        ContainerFactory::setEnv($env);
+        // load configs
+        $loader = new PhpFileLoader(new FileLocator(AR . '/config'));
+        self::loadConfig($loader);
+        // set env
+        ContainerFactory::getInstance()->setEnv($env);
         if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();
         }
@@ -76,6 +83,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @internal param StateInterface
      * @throws mixed
      */
@@ -91,6 +99,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @param RequestInterface $request
      */
     public function setRequest(RequestInterface $request)
@@ -101,6 +110,7 @@ final class Site
 
     /**
      * init evn
+     * @codeCoverageIgnore
      */
     private function initEnvironment()
     {
@@ -113,6 +123,7 @@ final class Site
 
     /**
      * Custom exception handler
+     * @codeCoverageIgnore
      * @param \Exception $e
      */
     public function maketokExceptionHandler(\Exception $e)
@@ -152,16 +163,13 @@ final class Site
     }
 
     /**
+     * get config value
      * @param string $path
      * @return mixed
      */
     public static function getConfig($path = null)
     {
         $path = trim($path, "/ ");
-        if (is_null(self::$config)) {
-            self::$config = include AR . '/config/config.php';
-        }
-        $path = (string) $path;
         if ($path) {
             $config = self::$config;
             while (($pos = strpos($path, '/')) !== false &&
@@ -176,6 +184,25 @@ final class Site
                 return null;
             }
         }
+
         return self::$config;
+    }
+
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
+     */
+    public function loadConfig(FileLoader $loader)
+    {
+        try {
+            self::$config = $loader->load('config.php');
+            // if there's no local an exception will be thrown and
+            // config will not be merged
+            $localConfig = $loader->load('local.config.php');
+            if (is_array($localConfig)) {
+                self::$config = array_replace(self::$config, $localConfig);
+            }
+        } catch (\InvalidArgumentException $e) {
+        }
     }
 }

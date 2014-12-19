@@ -10,15 +10,24 @@
 
 namespace Maketok\Observer;
 
+/**
+ * @codeCoverageIgnore
+ */
 class State implements StateInterface
 {
-    private $_data = array();
+    /**
+     * @var array
+     */
+    private $data = [];
 
     /**
      * @var SubjectInterface
      */
-    private $_subject;
+    private $subject;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct($data = null)
     {
         if (is_array($data)) {
@@ -28,32 +37,37 @@ class State implements StateInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __set($key, $value)
     {
-        $this->_data[$key] = $value;
-    }
-
-    public function __get($key)
-    {
-        return $this->_data[$key];
+        $this->data[$key] = $value;
     }
 
     /**
-     * @param  SubjectInterface $subject
-     * @return $this
+     * {@inheritdoc}
+     */
+    public function __get($key)
+    {
+        return $this->data[$key];
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function setSubject(SubjectInterface $subject)
     {
-        $this->_subject = $subject;
+        $this->subject = $subject;
 
         return $this;
     }
 
     /**
-     * @return SubjectInterface
+     * {@inheritdoc}
      */
     public function getSubject()
     {
-        return $this->_subject;
+        return $this->subject;
     }
 }

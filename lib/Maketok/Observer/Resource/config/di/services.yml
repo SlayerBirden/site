@@ -7,14 +7,12 @@ services:
 
   subject_manager:
     class: Maketok\Observer\SubjectManager
-    factory_class: Maketok\Observer\SubjectManager
-    factory_method: getInstance
     calls:
           - [attach, [dispatch, ["@front_controller", dispatch], 10]]
           - [attach, [ioc_container_initialized, ["@module_manager", processModuleConfig], 15]]
-          - [attach, [module_list_exists, \Maketok\App\ContainerFactory::serviceContainerProcessModules, 0]]
-          - [attach, [ioc_container_initialized, \Maketok\App\ContainerFactory::scCompile, 10]]
-          - [attach, [ioc_container_initialized, \Maketok\App\ContainerFactory::scDump, 5]]
+          - [attach, [module_list_exists, ["@ioc_factory", serviceContainerProcessModules], 0]]
+          - [attach, [ioc_container_initialized, ["@ioc_factory", scCompile], 10]]
+          - [attach, [ioc_container_initialized, ["@ioc_factory", scDump], 5]]
           - [attach, [ioc_container_compiled, ["@module_manager", updateModules], 20]]
           - [attach, [ioc_container_compiled, ["@module_manager", processModules], 15]]
           - [attach, [ioc_container_compiled, ["@module_manager", addInstallerSubscribers], 10]]

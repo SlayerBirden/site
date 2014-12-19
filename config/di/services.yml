@@ -5,6 +5,10 @@
 
 services:
 
+  ioc_factory:
+    class: Maketok\App\ContainerFactory
+    factory: [Maketok\App\ContainerFactory, getInstance]
+
   adapter:
     class: Zend\Db\Adapter\Adapter
     arguments:

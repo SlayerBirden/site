@@ -10,35 +10,52 @@
 
 namespace Maketok\Observer;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Subject implements SubjectInterface
 {
 
-    protected $_shouldStopPropagation = false;
+    /**
+     * @var bool
+     */
+    protected $shouldStopPropagation = false;
 
-    protected $_code;
+    /**
+     * @var string
+     */
+    protected $code;
 
     /**
      * @param string $code
      */
     public function __construct($code)
     {
-        $this->_code = $code;
+        $this->code = $code;
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function getShouldStopPropagation()
     {
-        return $this->_shouldStopPropagation;
+        return $this->shouldStopPropagation;
     }
 
     /**
-     * @param  bool | int $flag
-     * @return mixed
+     * {@inheritdoc}
      */
     public function setShouldStopPropagation($flag)
     {
-        $this->_shouldStopPropagation = (bool) $flag;
+        $this->shouldStopPropagation = (bool) $flag;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->code;
     }
 }

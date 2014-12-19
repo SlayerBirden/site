@@ -25,7 +25,7 @@ trait ContainerTrait
      */
     public function getServiceContainer()
     {
-        return ContainerFactory::getServiceContainer();
+        return ContainerFactory::getInstance()->getServiceContainer();
     }
 
     /**

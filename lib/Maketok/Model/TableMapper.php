@@ -186,9 +186,11 @@ class TableMapper
                     $insert->values($data);
                     $rowsAffected = $this->getGateway()->insertWith($insert);
                     if (!$rowsAffected) {
+                        //@codeCoverageIgnoreStart
                         // questionable
                         throw new ModelInfoException(sprintf("Model %s wasn't changed during save process.",
                             get_class($model)));
+                        //@codeCoverageIgnoreEnd
                     } else {
                         $this->assignIncrement($model);
                     }
@@ -225,7 +227,9 @@ class TableMapper
             $hydrator = $resultSet->getHydrator();
             $data = $hydrator->extract($model);
         } else {
+            //@codeCoverageIgnoreStart
             throw new ModelInfoException("Unknown object to handle.");
+            //@codeCoverageIgnoreEnd
         }
         if ($model instanceof LazyModelInterface) {
             if (!count(array_diff_assoc($data, $model->processOrigin()))) {
@@ -234,9 +238,11 @@ class TableMapper
             }
         }
         // do not proceed without data
+        //@codeCoverageIgnoreStart
         if (empty($data)) {
             throw new ModelInfoException("Empty object data. Or invalid object to save.");
         }
+        //@codeCoverageIgnoreEnd
 
         return $data;
     }

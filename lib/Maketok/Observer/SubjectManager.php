@@ -15,114 +15,67 @@ use Maketok\Util\PriorityQueue;
 class SubjectManager implements SubjectManagerInterface
 {
     /**
-     * array of PriorityQueue objects
      * @var PriorityQueue[]
      */
     private $subscribers = array();
 
     /**
-     * @var SubjectInterface[]
-     */
-    private $subjects = array();
-
-    /**
-     * @var SubjectManager
-     */
-    private static $instance;
-
-    /**
-     * @param  string   $subject
-     * @param  callable $subscriber
-     * @param  int      $priority
-     * @return mixed
+     * {@inheritdoc}
      */
     public function attach($subject, $subscriber, $priority)
     {
-        if (!$this->getSubject($subject)) {
-            $this->addSubject($subject);
+        if (!isset($this->subscribers[(string) $subject])) {
+            $this->subscribers[(string) $subject] = new PriorityQueue();
         }
-        if (!isset($this->subscribers[$subject])) {
-            $this->subscribers[$subject] = new PriorityQueue();
-        }
-        $this->subscribers[$subject]->insert($subscriber, $priority);
+        $this->subscribers[(string) $subject]->insert($this->resolveSubscriber($subscriber, $subject), $priority);
     }
 
     /**
-     * @param  string $subject
-     * @param  mixed  $subscriber
-     * @return mixed
+     * {@inheritdoc}
      */
     public function detach($subject, $subscriber)
     {
-        if (isset($this->subscribers[$subject])) {
-            $this->subscribers[$subject]->remove($subscriber);
+        if (isset($this->subscribers[(string) $subject])) {
+            $this->subscribers[(string) $subject]->remove($this->resolveSubscriber($subscriber, $subject));
         }
     }
 
     /**
-     * @param  string         $subject
-     * @param  StateInterface $state
-     * @return mixed
+     * {@inheritdoc}
      */
     public function notify($subject, StateInterface $state)
     {
         if (isset($this->subscribers[$subject])) {
-            $_subject = $this->getSubject($subject);
             /** @var PriorityQueue $_subQueue */
-            $_subQueue = $this->subscribers[$subject];
-            $_subQueue->getQueue()->top();
-            while ($_subQueue->getQueue()->valid()) {
-                if ($_subject->getShouldStopPropagation()) {
+            $subQueue = $this->subscribers[$subject];
+            while ($subQueue->getQueue()->valid()) {
+                /** @var SubscriberBag $subBag */
+                $subBag = $subQueue->getQueue()->extract();
+                call_user_func($subBag->subscriber, $state->setSubject($subBag->subject));
+                if ($subBag->subject->getShouldStopPropagation()) {
                     break;
                 }
-                call_user_func($_subQueue->getQueue()->extract(), $state->setSubject($_subject));
             }
         }
     }
 
     /**
-     * @param  string                   $subject
-     * @return SubjectInterface|boolean
+     * @param mixed $subscriber
+     * @param mixed $subject
+     * @throws \InvalidArgumentException
+     * @return SubscriberBag
      */
-    public function getSubject($subject)
+    protected function resolveSubscriber($subscriber, $subject)
     {
-        if (isset($this->subjects[$subject])) {
-            return $this->subjects[$subject];
+        if (is_callable($subscriber)) {
+            if (is_object($subject) && ($subject instanceof SubjectInterface)) {
+                return new SubscriberBag($subscriber, $subject);
+            } else {
+                return new SubscriberBag($subscriber, new Subject((string) $subject));
+            }
+        } elseif (is_object($subscriber) && ($subscriber instanceof SubscriberBag)) {
+            return $subscriber;
         }
-
-        return false;
-    }
-
-    /**
-     * @param  string $subject
-     * @return $this
-     */
-    public function addSubject($subject)
-    {
-        $this->subjects[$subject] = new Subject($subject);
-
-        return $this;
-    }
-
-    /**
-     * @return SubjectManager
-     */
-    public static function getInstance()
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new SubjectManager();
-        }
-
-        return self::$instance;
-    }
-
-    protected function __construct()
-    {
-        // singleton
-    }
-
-    protected function __clone()
-    {
-        // singleton
+        throw new \InvalidArgumentException("Invalid subscriber given.");
     }
 }

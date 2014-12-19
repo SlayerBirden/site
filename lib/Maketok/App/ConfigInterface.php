@@ -10,17 +10,16 @@
 
 namespace Maketok\App;
 
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Config\Loader\FileLoader;
 
-interface DependencyConfigExtensionInterface
+interface ConfigInterface
 {
 
     /**
-     * Loads the config right into DI Container
-     * not waiting for compile
+     * Loads the config right into appropriate container
      *
-     * @param  YamlFileLoader $loader
+     * @param  FileLoader $loader
      * @return mixed
      */
-    public function loadConfig(YamlFileLoader $loader);
+    public function loadConfig(FileLoader $loader);
 }

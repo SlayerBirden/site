@@ -7,8 +7,6 @@ services:
 
   subject_manager:
     class: Maketok\Observer\SubjectManager
-    factory_class: Maketok\Observer\SubjectManager
-    factory_method: getInstance
     calls:
           - [attach, [ioc_container_initialized, ["@module_manager", processModuleConfig], 10]]
-          - [attach, [ioc_container_initialized, "\Maketok\App\ContainerFactory::scCompile", 10]]
+          - [attach, [ioc_container_initialized, ["@ioc_factory", scCompile], 10]]
