@@ -11,12 +11,12 @@
 namespace Maketok\Module\Resource\controller\admin;
 
 use Maketok\App\Helper\UtilityHelperTrait;
+use Maketok\Http\Request;
 use Maketok\Module\Resource\Model\Module;
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
-use Maketok\Util\RequestInterface;
 use Maketok\Model\TableMapper;
 
 class Modules extends AbstractAdminController
@@ -33,10 +33,10 @@ class Modules extends AbstractAdminController
     }
 
     /**
-     * @param  RequestInterface                           $request
+     * @param  Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction(RequestInterface $request)
+    public function indexAction(Request $request)
     {
         $this->setTemplate('modules.html.twig');
         /** @var TableMapper $moduleTable */
@@ -51,10 +51,10 @@ class Modules extends AbstractAdminController
     }
 
     /**
-     * @param  RequestInterface                           $request
+     * @param  Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function viewAction(RequestInterface $request)
+    public function viewAction(Request $request)
     {
         $this->setTemplate('module.html.twig');
         $module = $this->initModule($request);
@@ -96,14 +96,14 @@ class Modules extends AbstractAdminController
     }
 
     /**
-     * @param  RequestInterface $request
+     * @param  Request $request
      * @return Module
      * @throws RouteException
      */
-    protected function initModule(RequestInterface $request)
+    protected function initModule(Request $request)
     {
-        $area = $request->getAttributes()->get('area');
-        $code = $request->getAttributes()->get('module_code');
+        $area = $request->query->get('area');
+        $code = $request->query->get('module_code');
         if ($area === null) {
             throw new RouteException("Can not process module without area.");
         }

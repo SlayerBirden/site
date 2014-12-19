@@ -10,11 +10,11 @@
 
 namespace modules\blog\controller\admin;
 
+use Maketok\Http\Request;
 use Maketok\Module\Mvc\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
-use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
 use Symfony\Component\Form\FormInterface;
 
@@ -22,10 +22,10 @@ class Article extends AbstractAdminController
 {
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function editAction(RequestInterface $request)
+    public function editAction(Request $request)
     {
         $this->setTemplate('article.html.twig');
         $article = $this->initArticle($request);
@@ -42,10 +42,10 @@ class Article extends AbstractAdminController
     }
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function deleteAction(RequestInterface $request)
+    public function deleteAction(Request $request)
     {
         $article = $this->initArticle($request);
         /** @var ArticleTable $articleTable */
@@ -59,11 +59,11 @@ class Article extends AbstractAdminController
     }
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \modules\blog\model\Article
      * @throws RouteException
      */
-    protected function initArticle(RequestInterface $request)
+    protected function initArticle(Request $request)
     {
         $id = $request->getAttributes()->get('id');
         if ($id === null) {
@@ -80,10 +80,10 @@ class Article extends AbstractAdminController
     }
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function newAction(RequestInterface $request)
+    public function newAction(Request $request)
     {
         $this->setTemplate('article.html.twig');
         $form = $this->getFormFactory()->create('article', null);
