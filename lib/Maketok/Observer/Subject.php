@@ -48,6 +48,7 @@ class Subject implements SubjectInterface
     public function setShouldStopPropagation($flag)
     {
         $this->shouldStopPropagation = (bool) $flag;
+
         return $this;
     }
 

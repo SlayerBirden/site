@@ -23,8 +23,8 @@ class PriorityQueue
     protected $serial = PHP_INT_MAX;
 
     /**
-     * @param mixed    $data
-     * @param int      $priority
+     * @param mixed $data
+     * @param int   $priority
      */
     public function insert($data, $priority = 1)
     {
