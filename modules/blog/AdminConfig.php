@@ -10,13 +10,15 @@
 
 namespace modules\blog;
 
-
 use Maketok\Module\AdminConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
 use modules\blog\controller\admin\Article;
 use modules\blog\controller\admin\Index;
 
+/**
+ * @codeCoverageIgnore
+ */
 class AdminConfig extends Config implements AdminConfigInterface
 {
 

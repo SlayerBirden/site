@@ -10,11 +10,13 @@
 
 namespace modules\error;
 
-
 use Maketok\App\Helper\ContainerTrait;
 use Maketok\Module\ConfigInterface;
 use modules\error\controller\Index;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Config implements ConfigInterface
 {
     use ContainerTrait;

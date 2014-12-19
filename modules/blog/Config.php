@@ -10,7 +10,6 @@
 
 namespace modules\blog;
 
-
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\ConfigInterface;
@@ -23,6 +22,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Config implements ConfigInterface, ExtensionInterface, ClientInterface
 {
     use UtilityHelperTrait;
