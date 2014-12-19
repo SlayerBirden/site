@@ -15,5 +15,4 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class Response extends HttpResponse implements ResponseInterface
 {
-
 }

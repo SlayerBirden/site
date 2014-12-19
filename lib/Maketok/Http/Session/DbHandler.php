@@ -18,7 +18,6 @@ use Maketok\Installer\Ddl\ClientInterface;
 
 /**
  * Class DbHandler
- * @package Maketok\Http\Session
  * @codeCoverageIgnore
  */
 class DbHandler implements \SessionHandlerInterface, ClientInterface
