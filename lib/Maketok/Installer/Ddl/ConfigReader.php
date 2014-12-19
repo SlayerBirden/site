@@ -18,7 +18,7 @@ class ConfigReader implements ConfigReaderInterface
     /**
      * @var array
      */
-    private $_tree;
+    private $tree;
     /** @var bool */
     private $_isMerged = false;
 
@@ -29,7 +29,7 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function buildDependencyTree($clients)
     {
-        if (is_array($this->_tree) && !empty($this->_tree)) {
+        if (is_array($this->tree) && !empty($this->tree)) {
             throw new DependencyTreeException("Invalid context of calling method. The tree is already built.");
         }
         try {
@@ -52,26 +52,26 @@ class ConfigReader implements ConfigReaderInterface
                     'definition' => $definition,
                     'dependents' => [],
                 ];
-                if (isset($this->_tree[$table])) {
-                    if (!in_array($this->_tree[$table]['client'], $client->dependencies)) {
+                if (isset($this->tree[$table])) {
+                    if (!in_array($this->tree[$table]['client'], $client->dependencies)) {
                         throw new DependencyTreeException(
                             sprintf("Client %s tries to modify resource %s without declaring dependency.",
                                 $client->code,
                                 $table)
                         );
                     } else {
-                        $this->_tree[$table]['dependents'][] = $branch;
+                        $this->tree[$table]['dependents'][] = $branch;
                     }
                 } else {
                     if ($client->dependencies) {
                         foreach ($client->dependencies as $dependency) {
-                            if (!isset($this->_tree[$dependency])) {
+                            if (!isset($this->tree[$dependency])) {
                                 throw new DependencyTreeException(
                                     sprintf("Unresolved dependency '%s' for client %s.", $dependency, $client->code));
                             }
                         }
                     }
-                    $this->_tree[$table] = $branch;
+                    $this->tree[$table] = $branch;
                 }
             }
         }
@@ -128,10 +128,10 @@ class ConfigReader implements ConfigReaderInterface
         if ($this->_isMerged) {
             return;
         }
-        if (is_null($this->_tree)) {
+        if (is_null($this->tree)) {
             throw new DependencyTreeException("Invalid context of calling method. The tree is not built yet.");
         }
-        foreach ($this->_tree as &$branch) {
+        foreach ($this->tree as &$branch) {
             $branch['definition'] = $this->recursiveMerge($branch);
             if (isset($branch['dependents'])) {
                 unset($branch['dependents']);
@@ -179,18 +179,18 @@ class ConfigReader implements ConfigReaderInterface
      */
     private function getTree($table = null)
     {
-        if (!isset($this->_tree)) {
+        if (!isset($this->tree)) {
             return [];
         }
         if (is_string($table)) {
-            if (isset($this->_tree[$table])) {
-                return $this->_tree[$table];
+            if (isset($this->tree[$table])) {
+                return $this->tree[$table];
             } else {
                 return null;
             }
         }
 
-        return $this->_tree;
+        return $this->tree;
     }
 
     /**

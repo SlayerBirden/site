@@ -4,25 +4,17 @@
 # file that was distributed with this source code.
 
 services:
-  session_model:
-    class: Maketok\Http\Session\Resource\Model\Session
-    scope: prototype
 
-  session_result_set:
-    class: %hydrating_resultset%
-    arguments: ["@object_prop_hydrator", "@session_model="]
-
-  session_table_gateway:
-    class: Zend\Db\TableGateway\TableGateway
+  session_factory:
+    class: Maketok\Model\HydratingTableFactory
     arguments:
       - session_storage
-      - "@adapter"
-      - []
-      - "@session_result_set"
+      - session_id
+      - Maketok\Http\Session\Resource\Model\Session
 
   session_table:
     class: Maketok\Model\TableMapper
-    arguments: ["@ddl_client_table_gateway", session_id]
+    factory: ["@session_factory", spawnTable]
 
   session_save_handler:
     class: Maketok\Http\Session\DbHandler

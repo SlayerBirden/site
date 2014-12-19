@@ -12,5 +12,4 @@ namespace Maketok\Util\Exception;
 
 class DirectoryException extends \Exception
 {
-
 }

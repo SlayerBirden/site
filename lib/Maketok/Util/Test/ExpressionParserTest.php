@@ -243,4 +243,28 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
             [fopen(__FILE__, 'r')]
         ];
     }
+
+    /**
+     * @test
+     * @dataProvider avProvider
+     * @covers ::arrayValueContains
+     * @param string $haystack
+     * @param string|string[] $delimiter
+     * @param bool $expected
+     */
+    public function arrayValueContains($haystack, $delimiter, $expected)
+    {
+        $this->assertEquals($expected, ExpressionParser::arrayValueContains($delimiter, $haystack));
+    }
+
+    /**
+     * @return array
+     */
+    public function avProvider()
+    {
+        return [
+            ['$adaasd', ['$'], true],
+            ['$adaasd', ['#'], false]
+        ];
+    }
 }

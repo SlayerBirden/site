@@ -4,90 +4,68 @@
 # file that was distributed with this source code.
 
 services:
-  ddl_client_model:
-    class: Maketok\Installer\Ddl\Resource\Model\DdlClient
-    scope: prototype
 
-  ddl_client_result_set:
-    class: %hydrating_resultset%
-    arguments: ["@object_prop_hydrator", "@ddl_client_model="]
-
-  ddl_client_table_gateway:
-    class: Zend\Db\TableGateway\TableGateway
-    arguments:
-      - installer_ddl_client
-      - "@adapter"
-      - []
-      - "@ddl_client_result_set"
+  ddl_client_table_factory:
+      class: Maketok\Model\HydratingTableFactory
+      arguments:
+        - installer_ddl_client
+        - id
+        - Maketok\Installer\Ddl\Resource\Model\DdlClient
+        - id
+        - "%ddl_client_table.class%"
 
   ddl_client_table:
-    class: Maketok\Installer\Ddl\Resource\Model\DdlClientType
-    arguments: ["@ddl_client_table_gateway", id, id]
+      class: "%ddl_client_table.class%"
+      factory: ["@ddl_client_table_factory", spawnTable]
 
-  ddl_client_dependency_model:
-    class: Maketok\Installer\Ddl\Resource\Model\DdlClientDependency
-    scope: prototype
-
-  ddl_client_dependency_result_set:
-    class: %hydrating_resultset%
-    arguments: ["@object_prop_hydrator", "@ddl_client_dependency_model="]
-
-  ddl_client_dependency_table_gateway:
-    class: Zend\Db\TableGateway\TableGateway
-    arguments:
-      - installer_ddl_client_config
-      - "@adapter"
-      - []
-      - "@ddl_client_dependency_result_set"
+  ddl_client_dependency_table_factory:
+      class: Maketok\Model\HydratingTableFactory
+      arguments:
+        - installer_ddl_client_dependency
+        - id
+        - Maketok\Installer\Ddl\Resource\Model\DdlClientDependency
+        - id
+        - "%ddl_client_dependency_table.class%"
 
   ddl_client_dependency_table:
-    class: Maketok\Installer\Ddl\Resource\Model\DdlClientDependencyType
-    arguments: ["@ddl_client_dependency_table_gateway", id, id]
+      class: "%ddl_client_dependency_table.class%"
+      factory: ["@ddl_client_dependency_table_factory", spawnTable]
 
-  ddl_client_history_model:
-    class: Maketok\Installer\Ddl\Resource\Model\DdlClientHistory
-    scope: prototype
-
-  ddl_client_history_result_set:
-    class: %hydrating_resultset%
-    arguments: ["@object_prop_hydrator", "@ddl_client_history_model="]
-
-  ddl_client_history_table_gateway:
-    class: Zend\Db\TableGateway\TableGateway
-    arguments:
-      - installer_ddl_client_history
-      - "@adapter"
-      - []
-      - "@ddl_client_history_result_set"
+  ddl_client_history_table_factory:
+      class: Maketok\Model\HydratingTableFactory
+      arguments:
+        - installer_ddl_client_history
+        - id
+        - Maketok\Installer\Ddl\Resource\Model\DdlClientHistory
+        - id
 
   ddl_client_history_table:
-    class: Maketok\Model\TableMapper
-    arguments: ["@ddl_client_history_table_gateway", id, id]
+      class: Maketok\Model\TableMapper
+      factory: ["@ddl_client_history_table_factory", spawnTable]
 
   installer_ddl_resource:
-    class: Maketok\Installer\Ddl\Mysql\Resource
-    arguments: ["@adapter", "@zend_db_sql"]
+      class: Maketok\Installer\Ddl\Mysql\Resource
+      arguments: ["@adapter", "@zend_db_sql"]
 
   installer_ddl_reader:
     class: Maketok\Installer\Ddl\ConfigReader
 
   installer_ddl_directives:
-    class: Maketok\Installer\Ddl\Directives
+      class: Maketok\Installer\Ddl\Directives
 
   installer_ddl_client:
-    class: Maketok\Installer\Ddl\InstallerClient
-    scope: prototype
+      class: Maketok\Installer\Ddl\InstallerClient
+      scope: prototype
 
   installer_ddl_manager:
-    class: Maketok\Installer\Ddl\Manager
-    arguments:
-      - "@installer_ddl_reader"
-      - "@installer_ddl_resource"
-      - "@installer_ddl_directives"
-      - "@lock_stream_handler"
-      - "@logger"
-      - "@ddl_client_table"
-    calls:
-      - [addClient, ["@session_save_handler"]]
-      - [addClient, ["@installer_ddl_client="]]
-      - [addClient, ["@module_manager"]]
+      class: Maketok\Installer\Ddl\Manager
+      arguments:
+        - "@installer_ddl_reader"
+        - "@installer_ddl_resource"
+        - "@installer_ddl_directives"
+        - "@lock_stream_handler="
+        - "@ddl_client_table"
+      calls:
+        - [addClient, ["@session_save_handler"]]
+        - [addClient, ["@installer_ddl_client="]]
+        - [addClient, ["@module_manager"]]

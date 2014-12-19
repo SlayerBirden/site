@@ -10,13 +10,15 @@
 
 namespace Maketok\Installer\Ddl\Resource\Model;
 
-class DdlClientDependency
+use Maketok\Model\LazyObjectPropModel;
+
+class DdlClientDependency extends LazyObjectPropModel
 {
 
     /** @var int */
     public $id;
     /** @var int */
     public $client_id;
-    /** @var int */
+    /** @var string */
     public $dependency_code;
 }

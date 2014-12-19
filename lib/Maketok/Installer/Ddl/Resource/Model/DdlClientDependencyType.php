@@ -17,8 +17,8 @@ class DdlClientDependencyType extends TableMapper
 {
 
     /**
-     * @param $clientId
-     * @param $dependencyCode
+     * @param int $clientId
+     * @param string $dependencyCode
      * @return array|\ArrayObject|null
      * @throws ModelException
      */

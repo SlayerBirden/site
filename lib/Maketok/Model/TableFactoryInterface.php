@@ -8,11 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Installer\Data;
+namespace Maketok\Model;
 
-use Maketok\Installer\ConfigReaderInterface as BaseConfigReader;
-
-interface ConfigReaderInterface extends BaseConfigReader
+interface TableFactoryInterface
 {
-
+    /**
+     * This is basic factory interface for spawning table mappers
+     *
+     * @return TableMapper
+     */
+    public function spawnTable();
 }

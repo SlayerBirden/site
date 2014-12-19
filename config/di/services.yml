@@ -23,6 +23,7 @@ services:
 
   lock_stream_handler:
     class: Maketok\Util\StreamHandler
+    scope: prototype
 
   object_prop_hydrator:
     class: Maketok\Util\Hydrator\ObjectProperty

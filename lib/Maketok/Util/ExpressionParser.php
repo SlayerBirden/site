@@ -191,13 +191,13 @@ class ExpressionParser implements ExpressionParserInterface
 
     /**
      * @param string[] $array
-     * @param string $needle
+     * @param string $haystack
      * @return bool
      */
-    public static function arrayValueContains(array $array, $needle)
+    public static function arrayValueContains(array $array, $haystack)
     {
         foreach ($array as $string) {
-            if (strpos($string, $needle) !== false) {
+            if (strpos($haystack, $string) !== false) {
                 return true;
             }
         }

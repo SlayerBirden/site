@@ -20,9 +20,9 @@ class DdlClientType extends TableMapper
     use ContainerTrait;
 
     /**
-     * @param  string                       $code
+     * @param  string $code
      * @return array|\ArrayObject|null
-     * @throws \Maketok\Installer\Exception
+     * @throws Exception
      */
     public function getClientByCode($code)
     {

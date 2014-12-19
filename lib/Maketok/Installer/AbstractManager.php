@@ -16,59 +16,47 @@ use Zend\Db\Adapter\Adapter;
 abstract class AbstractManager implements ManagerInterface
 {
 
-    /** @var array */
-    protected $_clients;
-    /** @var Adapter */
-    protected $_adapter;
-    /** @var ConfigReaderInterface */
-    protected $_reader;
-    /** @var StreamHandlerInterface */
-    protected $_streamHandler;
-    /** @var array */
-    protected $_messages;
-    /** @var \Maketok\Util\Zend\Db\Sql\Sql  */
-    protected $_sql;
-    /** @var string */
-    protected $_type;
-    /** @var DirectivesInterface */
+    /**
+     * @var ClientInterface[]
+     */
+    protected $clients;
+    /**
+     * @var Adapter
+     */
+    protected $adapter;
+    /**
+     * @var ConfigReaderInterface
+     */
+    protected $reader;
+    /**
+     * @var StreamHandlerInterface
+     */
+    protected $streamHandler;
+    /**
+     * @var DirectivesInterface
+     */
     protected $directives;
     /**
      * @var ResourceInterface
      */
-    protected $_resource;
+    protected $resource;
 
     /**
      * {@inheritdoc}
-     */
-    public function setStreamHandler(StreamHandlerInterface $handler)
-    {
-        $this->_streamHandler = $handler;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStreamHandler()
-    {
-        return $this->_streamHandler;
-    }
-
-    /**
-     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getClients()
     {
-        return $this->_clients;
+        return $this->clients;
     }
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function hasClients()
     {
-        return count($this->_clients) > 0;
+        return count($this->clients) > 0;
     }
 
     /**
@@ -130,6 +118,7 @@ abstract class AbstractManager implements ManagerInterface
 
     /**
      * @return DirectivesInterface
+     * @codeCoverageIgnore
      */
     public function getDirectives()
     {

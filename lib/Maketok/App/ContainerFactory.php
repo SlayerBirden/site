@@ -27,7 +27,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class ContainerFactory implements ConfigInterface
 {
     /** @var array  */
-    private $serviceContainerFileList = ['services', 'parameters'];
+    private $serviceContainerFileList = ['parameters', 'services'];
 
     /** @var ContainerBuilder */
     private $ioc;

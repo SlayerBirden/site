@@ -24,7 +24,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->reader = new ConfigReader();
-        $this->treeProp = new \ReflectionProperty(get_class($this->reader), '_tree');
+        $this->treeProp = new \ReflectionProperty(get_class($this->reader), 'tree');
         $this->treeProp->setAccessible(true);
     }
 

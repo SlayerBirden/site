@@ -32,7 +32,7 @@ class Article extends AbstractAdminController
         $form = $this->getFormFactory()->create('article', $article);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->handleArticle($form);
+            return $this->handleArticle($form);
         }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Edit Article ' . $article->title,
@@ -89,7 +89,7 @@ class Article extends AbstractAdminController
         $form = $this->getFormFactory()->create('article', null);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->handleArticle($form);
+            return $this->handleArticle($form);
         }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Add New Article ',

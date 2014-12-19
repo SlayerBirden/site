@@ -12,5 +12,4 @@ namespace Maketok\Installer;
 
 interface ClientInterface
 {
-
 }

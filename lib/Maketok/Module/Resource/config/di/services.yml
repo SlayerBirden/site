@@ -5,33 +5,25 @@
 
 services:
 
-  module_model:
-    class: Maketok\Module\Resource\Model\Module
-
-  module_result_set:
-    class: %hydrating_resultset%
-    arguments: ["@object_prop_hydrator", "@module_model"]
-
-  module_table_gateway:
-    class: Zend\Db\TableGateway\TableGateway
+  module_factory:
+    class: Maketok\Model\HydratingTableFactory
     arguments:
       - modules
-      - "@adapter"
-      - []
-      - "@module_result_set"
+      - [module_code, area]
+      - Maketok\Module\Resource\Model\Module
 
   module_table:
     class: Maketok\Model\TableMapper
-    arguments: ["@module_table_gateway", [module_code, area]]
+    factory: ["@module_factory", spawnTable]
 
   module.form.type:
-            class: Maketok\Module\Resource\form\ModuleType
-            tags:
-                - { name: form.type, alias: module }
+    class: Maketok\Module\Resource\form\ModuleType
+    tags:
+      - { name: form.type, alias: module }
 
   module_manager:
-      class: Maketok\Module\ModuleManager
-      arguments:
-        - "@module_table"
-        - "%module_config_name%"
-        - "%module_area%"
+    class: Maketok\Module\ModuleManager
+    arguments:
+      - "@module_table"
+      - "%module_config_name%"
+      - "%module_area%"

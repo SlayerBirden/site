@@ -12,6 +12,9 @@ namespace Maketok\Installer\Ddl;
 
 use Maketok\Installer\DirectivesInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Directives implements DirectivesInterface
 {
 

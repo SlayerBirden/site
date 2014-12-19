@@ -20,8 +20,7 @@ class ModuleType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('module_code', 'text', array('read_only' => true))
+        $builder->add('module_code', 'text', array('read_only' => true))
             ->add('version', 'text', array('read_only' => true))
             ->add('active', 'choice', array(
                 'choices'   => array('0' => 'Disabled', '1' => 'Enabled'),
@@ -40,9 +39,7 @@ class ModuleType extends AbstractType
         ));
     }
     /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
+     * {@inheritdoc}
      */
     public function getName()
     {
