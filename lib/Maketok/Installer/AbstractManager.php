@@ -80,6 +80,7 @@ abstract class AbstractManager implements ManagerInterface
      * @param  string                    $b
      * @throws \InvalidArgumentException
      * @return int
+     * @deprecated
      */
     public function natRecursiveCompare($a, $b)
     {
