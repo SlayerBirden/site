@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Template\Navigation;
+namespace Maketok\Navigation;
 
-use Maketok\Template\Navigation\Dumper\DumperInterface;
+use Maketok\Navigation\Dumper\DumperInterface;
 
 interface NavigationInterface
 {
