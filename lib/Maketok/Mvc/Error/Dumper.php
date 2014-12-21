@@ -21,9 +21,7 @@ class Dumper implements DumperInterface
      */
     public function errorAction(Request $request)
     {
-        $text = 'Oops! We are really sorry, but there was an error!';
-
-        return new Response($text, 500);
+        return new Response('<h1>Oops! We are really sorry, but there was an error!</h1>', 500);
     }
 
     /**
@@ -31,6 +29,6 @@ class Dumper implements DumperInterface
      */
     public function norouteAction(Request $request)
     {
-        return new Response("Oops! We couldn't find the page you searched for. Looks like it doesn't exist anymore.", 404);
+        return new Response("<h1>Oops! We couldn't find the page you searched for. Looks like it doesn't exist anymore.</h1>", 404);
     }
 }

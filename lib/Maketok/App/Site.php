@@ -75,9 +75,7 @@ final class Site implements ConfigInterface
         // we've done our job to init system
         // now we may or may not apply configs/or run dispatcher
         if (!($context & self::CONTEXT_SKIP_DISPATCH)) {
-            $this->getDispatcher()->notify('dispatch', new State(array(
-                'request' => $this->ioc()->get('request'),
-            )));
+            $this->getDispatcher()->notify('dispatch', new State());
         }
         $this->terminate();
     }

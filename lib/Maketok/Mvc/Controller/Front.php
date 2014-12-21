@@ -33,14 +33,15 @@ class Front
     private $dumpers;
 
     /**
-     * @param  StateInterface $state
      * @throws RouteException
+     * @internal param StateInterface $state
      */
-    public function dispatch(StateInterface $state)
+    public function dispatch()
     {
         set_exception_handler(array($this, 'exceptionHandler'));
         /** @var Success $success */
-        if ($success = $this->router->match($state->request)) {
+        if ($success = $this->router->match($this->ioc()->get('request'))) {
+            $this->getDispatcher()->notify('match_route_successful', new State(['success' => $success]));
             $this->launch($success);
         } else {
             throw new RouteException("Could not match any route.");
