@@ -8,27 +8,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Installer\Test;
+namespace Maketok\Util\Test;
 
-use Maketok\Installer\AbstractManager;
+use Maketok\Util\VersionComparer;
 
+/**
+ * @coversDefaultClass \Maketok\Util\VersionComparer
+ */
 class AbstractManagerTest extends \PHPUnit_Framework_TestCase
 {
 
-    /** @var AbstractManager */
-    private $manager;
-
-    /**
-     * set up manager
-     */
-    public function setUp()
-    {
-        $this->manager = $this->getMockForAbstractClass('Maketok\Installer\AbstractManager');
-    }
-
     /**
      * @test
-     * @covers       Maketok\Installer\AbstractManager::natRecursiveCompare
+     * @covers       ::natRecursiveCompare
      * @dataProvider versionProvider
      * @param string $v1
      * @param string $v2
@@ -36,18 +28,18 @@ class AbstractManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function natRecursiveCompare($v1, $v2, $expected)
     {
-        $this->assertEquals($expected, $this->manager->natRecursiveCompare($v1, $v2));
+        $this->assertEquals($expected, VersionComparer::natRecursiveCompare($v1, $v2));
     }
 
     /**
      * @test
-     * @covers Maketok\Installer\AbstractManager::natRecursiveCompare
+     * @covers ::natRecursiveCompare
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Compared arguments must be strings.
      */
     public function natRecursiveCompareWrongArg()
     {
-        $this->manager->natRecursiveCompare([], '123');
+        VersionComparer::natRecursiveCompare([], '123');
     }
 
     /**
@@ -79,7 +71,7 @@ class AbstractManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Installer\AbstractManager::castEqualLength
+     * @covers ::castEqualLength
      * @dataProvider arrayProvider
      * @param array $a
      * @param array $b
@@ -88,7 +80,7 @@ class AbstractManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function castEqualLength(array $a, array $b, $expectedA, $expectedB)
     {
-        $this->manager->castEqualLength($a, $b);
+        VersionComparer::castEqualLength($a, $b);
         $this->assertEquals($expectedA, $a);
         $this->assertEquals($expectedB, $b);
     }
