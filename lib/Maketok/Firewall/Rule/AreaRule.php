@@ -10,24 +10,23 @@
 
 namespace Maketok\Firewall\Rule;
 
+use Maketok\Firewall\FirewallException;
 use Maketok\Http\Request;
 
-class AreaRule implements RuleInterface
+class AreaRule extends  AbstractRule
 {
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addBlacklist($role, $condition)
-    {
-        // TODO: Implement addBlacklist() method.
-    }
 
     /**
      * {@inheritdoc}
      */
     public function isGranted($role, Request $request)
     {
-        // TODO: Implement isGranted() method.
+        if (empty($this->blacklist)) {
+            throw new FirewallException("No lists found.");
+        }
+        if (isset($this->blacklist[$role]) && is_array($this->blacklist[$role]) && in_array(ENV, $this->blacklist[$role])) {
+            return false;
+        }
+        return true;
     }
 }

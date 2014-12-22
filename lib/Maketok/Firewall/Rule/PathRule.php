@@ -13,43 +13,17 @@ namespace Maketok\Firewall\Rule;
 use Maketok\Firewall\FirewallException;
 use Maketok\Http\Request;
 
-class PathRule implements RuleInterface
+class PathRule extends  AbstractRule
 {
-
-    /**
-     * @var array
-     */
-    private $blacklist = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addBlacklist($role, $condition)
-    {
-        if (!is_array($condition)) {
-            $condition = [$condition];
-        }
-        if (!isset($this->blacklist[$role])) {
-            $this->blacklist[$role] = [];
-        }
-        $this->blacklist[$role] = array_merge_recursive($this->blacklist[$role], $condition);
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getBlacklist()
-    {
-        return $this->blacklist;
-    }
 
     /**
      * {@inheritdoc}
      */
     public function isGranted($role, Request $request)
     {
+        if (empty($this->blacklist)) {
+            throw new FirewallException("No lists found.");
+        }
         if (isset($this->blacklist[$role]) && is_array($this->blacklist[$role])) {
             foreach ($this->blacklist[$role] as $condition) {
                 $res = preg_match("#$condition#", $request->getPathInfo());
@@ -57,8 +31,6 @@ class PathRule implements RuleInterface
                     return false;
                 }
             }
-        } else {
-            throw new FirewallException("No lists found for the role.");
         }
         return true;
     }

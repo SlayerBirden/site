@@ -62,7 +62,6 @@ final class Site implements ConfigInterface
         $loader = new PhpFileLoader(new FileLocator(AR . '/config'));
         self::loadConfig($loader);
         // set env
-        ContainerFactory::getInstance()->setEnv($env);
         if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();
         }

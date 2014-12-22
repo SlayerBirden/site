@@ -75,6 +75,12 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
                 0,
                 Request::create('/admin'),
                 true
+            ],
+            [
+                [0, ['^/admin']],
+                1,
+                Request::create('/admin'),
+                true
             ]
         ];
     }
@@ -97,7 +103,7 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
      * @test
      * @covers ::isGranted
      * @expectedException \Maketok\Firewall\FirewallException
-     * @expectedExceptionMessage No lists found for the role.
+     * @expectedExceptionMessage No lists found.
      */
     public function isGrantedNoLists()
     {
