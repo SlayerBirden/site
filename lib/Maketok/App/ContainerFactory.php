@@ -32,9 +32,6 @@ class ContainerFactory implements ConfigInterface
     /** @var ContainerBuilder */
     private $ioc;
 
-    /** @var string */
-    private $env;
-
     /**
      * @var ContainerFactory
      */
@@ -143,29 +140,7 @@ class ContainerFactory implements ConfigInterface
     {
         $this->ioc->setParameter('ar', AR);
         $this->ioc->setParameter('ds', DS);
-        $this->ioc->setParameter('env', $this->env);
-    }
-
-    /**
-     * @return string
-     */
-    public function getEnv()
-    {
-        return $this->env;
-    }
-
-    /**
-     * @param string $env
-     */
-    public function setEnv($env)
-    {
-        if (!is_scalar($env)) {
-            throw new \InvalidArgumentException(sprintf(
-                "Invalid environment variable provided of type %s",
-                gettype($env)
-            ));
-        }
-        $this->env = $env;
+        $this->ioc->setParameter('env', ENV);
     }
 
     /**
@@ -197,7 +172,8 @@ class ContainerFactory implements ConfigInterface
     private function getContainerClassName($withNS = true)
     {
         $name = 'MaketokServiceContainer';
-        if ($env = $this->getEnv()) {
+        // assignment on purpose, ENV may contain empty string
+        if ($env = ENV) {
             $name .= ucfirst($env);
         }
         if ($withNS) {
@@ -231,7 +207,8 @@ class ContainerFactory implements ConfigInterface
     protected function getContainerFileName()
     {
         $path = AR . '/var/cache/ioc/container';
-        if ($env = $this->getEnv()) {
+        // assignment on purpose, ENV may contain empty string
+        if ($env = ENV) {
             $path .= '.' . $env;
         }
         return $path . '.php';
@@ -271,7 +248,8 @@ class ContainerFactory implements ConfigInterface
     {
         foreach ($this->serviceContainerFileList as $fileName) {
             $toLoad = ["$fileName.yml", "local.$fileName.yml"];
-            if ($env = $this->getEnv()) {
+            // assignment on purpose, ENV may contain empty string
+            if ($env = ENV) {
                 $toLoad[] = "$env.$fileName.yml";
                 $toLoad[] = "local.$env.$fileName.yml";
             }

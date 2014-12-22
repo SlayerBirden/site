@@ -26,7 +26,7 @@ class SubscriberBag implements \IteratorAggregate
     public $subject;
 
     /**
-     * @param callable $subscriber
+     * @param callable         $subscriber
      * @param SubjectInterface $subject
      */
     public function __construct($subscriber, SubjectInterface $subject)

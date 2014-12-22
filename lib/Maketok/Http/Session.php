@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Session\Session as BaseSession;
 
 /**
  * Class Session
- * @package Maketok\Http
  */
 class Session extends BaseSession implements SessionInterface
 {

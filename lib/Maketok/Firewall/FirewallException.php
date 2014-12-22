@@ -8,9 +8,8 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Template\Navigation;
+namespace Maketok\Firewall;
 
-class Exception extends \Exception
+class FirewallException extends \Exception
 {
-
 }

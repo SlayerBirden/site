@@ -6,9 +6,7 @@
 <phpunit bootstrap="bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="installer">
-            <directory>../lib/Maketok/Installer/Test/</directory>
             <directory>../lib/Maketok/Installer/Ddl/Test/</directory>
-            <directory>../lib/Maketok/Installer/Data/Test/</directory>
         </testsuite>
         <testsuite name="util">
             <directory>../lib/Maketok/Util/Test/</directory>
@@ -21,6 +19,9 @@
         </testsuite>
         <testsuite name="observer">
             <directory>../lib/Maketok/Observer/Test</directory>
+        </testsuite>
+        <testsuite name="firewall">
+            <directory>../lib/Maketok/Firewall/Test</directory>
         </testsuite>
         <testsuite name="module">
             <directory>../lib/Maketok/Module/Test</directory>

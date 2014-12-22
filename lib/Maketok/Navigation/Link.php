@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Template\Navigation;
+namespace Maketok\Navigation;
 
 /**
  * Class Link
- * @package Maketok\Template\Navigation
+ * @package Maketok\Navigation
  * @method LinkInterface[] traverse(NodeInterface $node = null)
  * @method LinkInterface getRoot
  * @method LinkInterface addChild(NodeInterface $node)

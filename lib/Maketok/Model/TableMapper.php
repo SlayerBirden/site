@@ -243,7 +243,6 @@ class TableMapper
             throw new ModelInfoException("Empty object data. Or invalid object to save.");
         }
         //@codeCoverageIgnoreEnd
-
         return $data;
     }
 

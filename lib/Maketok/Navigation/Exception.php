@@ -8,11 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Http;
+namespace Maketok\Navigation;
 
-use Maketok\Util\ResponseInterface;
-use Symfony\Component\HttpFoundation\Response as HttpResponse;
-
-class Response extends HttpResponse implements ResponseInterface
+class Exception extends \Exception
 {
+
 }

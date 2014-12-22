@@ -62,7 +62,6 @@ final class Site implements ConfigInterface
         $loader = new PhpFileLoader(new FileLocator(AR . '/config'));
         self::loadConfig($loader);
         // set env
-        ContainerFactory::getInstance()->setEnv($env);
         if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();
         }
@@ -75,9 +74,7 @@ final class Site implements ConfigInterface
         // we've done our job to init system
         // now we may or may not apply configs/or run dispatcher
         if (!($context & self::CONTEXT_SKIP_DISPATCH)) {
-            $this->getDispatcher()->notify('dispatch', new State(array(
-                'request' => $this->ioc()->get('request'),
-            )));
+            $this->getDispatcher()->notify('dispatch', new State());
         }
         $this->terminate();
     }

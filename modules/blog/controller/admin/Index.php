@@ -10,18 +10,18 @@
 
 namespace modules\blog\controller\admin;
 
+use Maketok\Http\Request;
 use Maketok\Module\Mvc\AbstractAdminController;
-use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
 
 class Index extends AbstractAdminController
 {
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction(RequestInterface $request)
+    public function indexAction(Request $request)
     {
         $this->setTemplate('blog.html.twig');
         /** @var ArticleTable $articleTable */

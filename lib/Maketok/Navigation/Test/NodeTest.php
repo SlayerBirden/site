@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Template\Navigation\Test;
+namespace Maketok\Navigation\Test;
 
-use Maketok\Template\Navigation\Node;
+use Maketok\Navigation\Node;
 
 /**
- * @coversDefaultClass \Maketok\Template\Navigation\Node
+ * @coversDefaultClass \Maketok\Navigation\Node
  */
 class NodeTest extends \PHPUnit_Framework_TestCase
 {

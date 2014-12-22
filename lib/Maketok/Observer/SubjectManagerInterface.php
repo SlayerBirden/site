@@ -28,8 +28,8 @@ interface SubjectManagerInterface
     public function detach($subject, $subscriber);
 
     /**
-     * @param  string                  $subject
-     * @param  StateInterface          $state
+     * @param  string         $subject
+     * @param  StateInterface $state
      * @return mixed
      */
     public function notify($subject, StateInterface $state);

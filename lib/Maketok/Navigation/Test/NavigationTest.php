@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Template\Navigation\Test;
+namespace Maketok\Navigation\Test;
 
-use Maketok\Template\Navigation\Link;
-use Maketok\Template\Navigation\Navigation;
+use Maketok\Navigation\Link;
+use Maketok\Navigation\Navigation;
 
 /**
- * @coversDefaultClass \Maketok\Template\Navigation\Navigation
+ * @coversDefaultClass \Maketok\Navigation\Navigation
  */
 class NavigationTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,7 +61,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::addLink
-     * @expectedException \Maketok\Template\Navigation\Exception
+     * @expectedException \Maketok\Navigation\Exception
      * @expectedExceptionMessage Provided parent is not within current context.
      * @dataProvider wrongParentsProvider
      * @param mixed $parent
@@ -134,7 +134,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
      */
     public function addDumper()
     {
-        $dumper = $this->getMock('Maketok\Template\Navigation\Dumper\DumperInterface');
+        $dumper = $this->getMock('Maketok\Navigation\Dumper\DumperInterface');
         $nav = new Navigation();
         $nav->addDumper($dumper);
 

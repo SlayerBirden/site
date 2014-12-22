@@ -10,20 +10,20 @@
 
 namespace modules\blog\controller;
 
+use Maketok\Http\Request;
 use Maketok\Module\Mvc\AbstractBaseController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
-use Maketok\Util\RequestInterface;
 use modules\blog\model\ArticleTable;
 
 class Article extends AbstractBaseController
 {
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction(RequestInterface $request)
+    public function indexAction(Request $request)
     {
         $article = $this->initArticle($request);
         $this->setTemplate('article.html.twig');
@@ -33,14 +33,14 @@ class Article extends AbstractBaseController
     }
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \modules\blog\model\Article
      * @throws RouteException
      */
-    protected function initArticle(RequestInterface $request)
+    protected function initArticle(Request $request)
     {
-        $id = $request->getAttributes()->get('id');
-        $code = $request->getAttributes()->get('code');
+        $id = $request->query->get('id');
+        $code = $request->query->get('code');
         if ($id === null && $code === null) {
             throw new RouteException("Can not process article without id or code.");
         }

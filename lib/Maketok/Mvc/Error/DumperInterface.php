@@ -10,21 +10,21 @@
 
 namespace Maketok\Mvc\Error;
 
-use Maketok\Util\RequestInterface;
+use Maketok\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 interface DumperInterface
 {
 
     /**
-     * @param  RequestInterface $request
+     * @param  Request $request
      * @return Response
      */
-    public function errorAction(RequestInterface $request);
+    public function errorAction(Request $request);
 
     /**
-     * @param  RequestInterface $request
+     * @param  Request $request
      * @return Response
      */
-    public function norouteAction(RequestInterface $request);
+    public function norouteAction(Request $request);
 }
