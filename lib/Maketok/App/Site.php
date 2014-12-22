@@ -59,10 +59,10 @@ final class Site
         define('AR', APPLICATION_ROOT);
         define('DS', DIRECTORY_SEPARATOR);
         define('ENV', $env);
+        $this->loadConfig();
         if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();
         }
-        $this->loadConfig();
         $this->ioc()->set('site', $this);
         $this->getDispatcher()->notify('ioc_container_initialized', new State([]));
         if ($this->ioc()->isFrozen()) {

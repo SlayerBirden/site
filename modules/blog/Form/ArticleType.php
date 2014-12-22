@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace modules\blog\form;
+namespace modules\blog\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -39,7 +39,7 @@ class ArticleType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'modules\blog\model\Article',
+            'data_class' => 'modules\blog\Model\Article',
         ));
     }
 

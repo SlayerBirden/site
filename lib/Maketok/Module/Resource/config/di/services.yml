@@ -17,7 +17,7 @@ services:
     factory: ["@module_factory", spawnTable]
 
   module.form.type:
-    class: Maketok\Module\Resource\form\ModuleType
+    class: Maketok\Module\Resource\Form\ModuleType
     tags:
       - { name: form.type, alias: module }
 
