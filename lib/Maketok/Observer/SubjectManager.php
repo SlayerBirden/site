@@ -111,7 +111,6 @@ class SubjectManager implements SubjectManagerInterface
 
     /**
      * @param array $config
-     * @codeCoverageIgnore
      */
     protected function parseConfig($config)
     {
