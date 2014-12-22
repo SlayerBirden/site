@@ -16,10 +16,5 @@ return [
         'detach' => [
             [$iocFactory, 'scDump']
         ]
-    ],
-    'dispatch' => [
-        'attach' => [
-            [[$ioc->get('site'), 'terminate'], 0]
-        ]
-    ],
+    ]
 ];
