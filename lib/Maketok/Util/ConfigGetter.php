@@ -67,6 +67,7 @@ class ConfigGetter
     }
 
     /**
+     * @codeCoverageIgnore
      * @param string $path
      * @return DelegatingLoader
      */
