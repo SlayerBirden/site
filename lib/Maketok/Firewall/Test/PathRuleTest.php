@@ -10,7 +10,6 @@
 
 namespace Maketok\Firewall\Test;
 use Maketok\Firewall\Rule\PathRule;
-use Maketok\Firewall\FirewallException;
 use Maketok\Http\Request;
 
 /**
@@ -21,8 +20,8 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::addBlacklist
-     * @covers ::getBlacklist
+     * @covers Maketok\Firewall\Rule\AbstractRule::addBlacklist
+     * @covers Maketok\Firewall\Rule\AbstractRule::getBlacklist
      */
     public function addBlacklist()
     {
@@ -40,7 +39,7 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::isGranted
-     * @covers ::addBlacklist
+     * @covers Maketok\Firewall\Rule\AbstractRule::addBlacklist
      * @dataProvider provider
      * @param string[] $blacklist
      * @param int $role
@@ -83,20 +82,6 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
                 true
             ]
         ];
-    }
-
-    /**
-     * @test
-     * @covers ::isGranted
-     * @expectedException \PHPUnit_Framework_Error
-     */
-    public function isGrantedWrongPattern()
-    {
-        $rule = new PathRule();
-
-        $rule->addBlacklist(0, ['ab[\]c']);
-
-        $rule->isGranted(0, new Request());
     }
 
     /**
