@@ -16,6 +16,7 @@ use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\Resource\Model\Module;
 use Maketok\Observer\State;
 use Maketok\Model\TableMapper;
+use Maketok\Util\ConfigGetter;
 use Maketok\Util\Exception\ModelException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
@@ -314,26 +315,7 @@ class ModuleManager implements ClientInterface
      */
     public function getDdlConfig($version)
     {
-        $locator = new FileLocator(__DIR__.'/Resource/config/installer/ddl');
-        try {
-            $file = $locator->locate($version.'.yml');
-            $reader = new Yaml();
-
-            return $reader->parse($file);
-        } catch (\InvalidArgumentException $e) {
-            // nested try
-            try {
-                $file = $locator->locate($version.'.php');
-
-                return include $file;
-            } catch (\InvalidArgumentException $nextE) {
-                $this->getLogger()->err($e->__toString());
-                $this->getLogger()->err($nextE->__toString());
-            }
-        }
-
-        return false;
-
+        return current(ConfigGetter::getConfig(__DIR__.'/Resource/config/installer/ddl', $version));
     }
 
     /**

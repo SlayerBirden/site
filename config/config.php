@@ -23,7 +23,9 @@ return [
         new \Maketok\Template\Symfony\Form\FormExtensionCompilerPass,
         new \Maketok\Template\Symfony\Form\FormTypeCompilerPass
     ],
-    'routing_provider_path' => [],
+    'routing_provider_path' => [
+        AR . '/lib/Maketok/Mvc/Resource/config/routes'
+    ],
     'modules_dir' => AR . '/modules',
     'template_path' => [
         AR . '/lib/Maketok/Template/Resource/view/Form',

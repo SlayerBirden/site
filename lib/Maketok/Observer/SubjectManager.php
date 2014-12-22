@@ -11,6 +11,7 @@
 namespace Maketok\Observer;
 
 use Maketok\App\Site;
+use Maketok\Util\ConfigGetter;
 use Maketok\Util\PhpFileLoader;
 use Maketok\Util\PriorityQueue;
 use Symfony\Component\Config\FileLocator;
@@ -88,24 +89,8 @@ class SubjectManager implements SubjectManagerInterface
      */
     public function loadMap()
     {
-        $paths = Site::getConfig('subscribers_config_path');
-        $toLoad = ['subscribers.php'];
-        if ($env = ENV) {
-            $toLoad[] = "$env.subscribers.php";
-        }
-        foreach ($paths as $path) {
-            $loader = new PhpFileLoader(new FileLocator($path));
-            foreach ($toLoad as $fileName) {
-                try {
-                    $config = $loader->load($fileName);
-                    if (!is_array($config)) {
-                        continue;
-                    }
-                } catch (\InvalidArgumentException $e) {
-                    continue;
-                }
-                $this->parseConfig($config);
-            }
+        foreach (ConfigGetter::getConfig(Site::getConfig('subscribers_config_path'), 'subscribers', ENV) as $config) {
+            $this->parseConfig($config);
         }
     }
 

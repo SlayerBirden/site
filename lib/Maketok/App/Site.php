@@ -13,6 +13,7 @@ namespace Maketok\App;
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Observer\State;
 use Maketok\Http\Request;
+use Maketok\Util\ConfigGetter;
 use Maketok\Util\PhpFileLoader;
 use Maketok\Util\RequestInterface;
 use Monolog\Logger;
@@ -23,7 +24,7 @@ use Zend\Stdlib\ErrorHandler;
 /**
  * Application entry point
  */
-final class Site implements ConfigInterface
+final class Site
 {
     use UtilityHelperTrait;
 
@@ -59,8 +60,7 @@ final class Site implements ConfigInterface
         define('DS', DIRECTORY_SEPARATOR);
         define('ENV', $env);
         // load configs
-        $loader = new PhpFileLoader(new FileLocator(AR . '/config'));
-        $this->loadConfig($loader);
+        $this->loadConfig();
         // set env
         if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();
@@ -185,21 +185,13 @@ final class Site implements ConfigInterface
         return self::$config;
     }
 
-    /**
-     * {@inheritdoc}
-     * @codeCoverageIgnore
-     */
-    public function loadConfig(FileLoader $loader)
+
+    public function loadConfig()
     {
-        try {
-            self::$config = $loader->load('config.php');
-            // if there's no local an exception will be thrown and
-            // config will not be merged
-            $localConfig = $loader->load('local.config.php');
-            if (is_array($localConfig)) {
-                self::$config = array_replace(self::$config, $localConfig);
-            }
-        } catch (\InvalidArgumentException $e) {
+        $configs = ConfigGetter::getConfig(AR . '/config', 'config', 'local');
+        self::$config = [];
+        foreach ($configs as $cnfg) {
+            self::$config = array_replace(self::$config, $cnfg);
         }
     }
 }

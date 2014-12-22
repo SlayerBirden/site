@@ -11,9 +11,8 @@
 namespace Maketok\Mvc\Router;
 
 use Maketok\Mvc\Router\Route\RouteInterface;
-use Maketok\Util\ConfigReaderInterface;
 
-interface RouterInterface extends RouteInterface, ConfigReaderInterface
+interface RouterInterface extends RouteInterface
 {
 
     const STACK_MODE_APPEND = 1;

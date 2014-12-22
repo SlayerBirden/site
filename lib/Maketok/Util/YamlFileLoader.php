@@ -10,10 +10,12 @@
 
 namespace Maketok\Util;
 
+use Symfony\Component\Yaml\Yaml;
+
 /**
  * @codeCoverageIgnore
  */
-class PhpFileLoader extends AbstractFileLoader
+class YamlFileLoader extends AbstractFileLoader
 {
 
     /**
@@ -22,8 +24,9 @@ class PhpFileLoader extends AbstractFileLoader
     public function load($resource, $type = null)
     {
         $path = $this->locator->locate($resource);
+        $parser = new Yaml();
 
-        return include $path;
+        return $parser->parse(file_get_contents($path));
     }
 
     /**
@@ -39,6 +42,7 @@ class PhpFileLoader extends AbstractFileLoader
      */
     public function getExtension()
     {
-        return 'php';
+        return 'yml';
     }
+
 }
