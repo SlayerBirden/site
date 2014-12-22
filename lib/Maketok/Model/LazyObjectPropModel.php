@@ -19,7 +19,7 @@ class LazyObjectPropModel implements LazyModelInterface
     /**
      * @var array
      */
-    protected $originalData;
+    protected $originalData = [];
 
     /**
      * {@inheritdoc}
