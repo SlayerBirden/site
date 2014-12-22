@@ -122,7 +122,7 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @return array|\Zend\Db\ResultSet\ResultSet
+     * @return Module[]
      */
     public function getDbModules()
     {
@@ -231,9 +231,7 @@ class ModuleManager implements ClientInterface
             }
             // candidates for deletion
             foreach ($this->getDbModules() as $module) {
-                /** @var Module $module */
-                $mConfig = $this->getModule($module->module_code);
-                if (is_null($mConfig)) {
+                if (!isset($this->modules[$module->module_code])) {
                     $this->removeDbModule($module);
                 }
             }

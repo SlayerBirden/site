@@ -102,8 +102,8 @@ class Modules extends AbstractAdminController
      */
     protected function initModule(Request $request)
     {
-        $area = $request->query->get('area');
-        $code = $request->query->get('module_code');
+        $area = $request->getAttributes()->get('area');
+        $code = $request->getAttributes()->get('module_code');
         if ($area === null) {
             throw new RouteException("Can not process module without area.");
         }

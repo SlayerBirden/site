@@ -8,9 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace modules\blog\model;
+$iocFactory = \Maketok\App\ContainerFactory::getInstance();
+$ioc = $iocFactory->getServiceContainer();
 
-class Category
-{
-
-}
+return [
+    'dispatch' => [
+        'detach' => [
+            [$ioc->get('front_controller'), 'dispatch']
+        ]
+    ]
+];

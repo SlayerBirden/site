@@ -141,6 +141,7 @@ class ContainerFactory implements ConfigInterface
         $this->ioc->setParameter('ar', AR);
         $this->ioc->setParameter('ds', DS);
         $this->ioc->setParameter('env', ENV);
+        $this->ioc->setParameter('debug', Site::getConfig('debug'));
     }
 
     /**

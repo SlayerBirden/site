@@ -60,7 +60,7 @@ final class Site implements ConfigInterface
         define('ENV', $env);
         // load configs
         $loader = new PhpFileLoader(new FileLocator(AR . '/config'));
-        self::loadConfig($loader);
+        $this->loadConfig($loader);
         // set env
         if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();

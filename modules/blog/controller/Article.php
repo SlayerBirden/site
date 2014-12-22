@@ -39,18 +39,14 @@ class Article extends AbstractBaseController
      */
     protected function initArticle(Request $request)
     {
-        $id = $request->query->get('id');
-        $code = $request->query->get('code');
-        if ($id === null && $code === null) {
-            throw new RouteException("Can not process article without id or code.");
+        $code = $request->getAttributes()->get('code');
+        if ($code === null) {
+            throw new RouteException("Can not process article without code.");
         }
         /** @var ArticleTable $articleTable */
         $articleTable = $this->getSC()->get('article_table');
         try {
-            if (!is_null($code)) {
-                return $articleTable->findByCode($code);
-            }
-            return $articleTable->find($id);
+            return $articleTable->findByCode($code);
         } catch (ModelException $e) {
             throw new RouteException("Could not find model by id.");
         }

@@ -10,7 +10,10 @@
 
 namespace Maketok\Observer;
 
+use Maketok\App\Site;
+use Maketok\Util\PhpFileLoader;
 use Maketok\Util\PriorityQueue;
+use Symfony\Component\Config\FileLocator;
 
 class SubjectManager implements SubjectManagerInterface
 {
@@ -77,5 +80,60 @@ class SubjectManager implements SubjectManagerInterface
             return $subscriber;
         }
         throw new \InvalidArgumentException("Invalid subscriber given.");
+    }
+
+    /**
+     * loads system subscribers
+     * @codeCoverageIgnore
+     */
+    public function loadMap()
+    {
+        $paths = Site::getConfig('subscribers_config_path');
+        $toLoad = ['subscribers.php'];
+        if ($env = ENV) {
+            $toLoad[] = "$env.subscribers.php";
+        }
+        foreach ($paths as $path) {
+            $loader = new PhpFileLoader(new FileLocator($path));
+            foreach ($toLoad as $fileName) {
+                try {
+                    $config = $loader->load($fileName);
+                    if (!is_array($config)) {
+                        continue;
+                    }
+                } catch (\InvalidArgumentException $e) {
+                    continue;
+                }
+                $this->parseConfig($config);
+            }
+        }
+    }
+
+    /**
+     * @param array $config
+     * @codeCoverageIgnore
+     */
+    protected function parseConfig($config)
+    {
+        foreach ($config as $event => $subscribers) {
+            if (isset($subscribers['attach'])) {
+                foreach ($subscribers['attach'] as $subscriberArray) {
+                    if (is_array($subscriberArray) && isset($subscriberArray[0]) && isset($subscriberArray[1])) {
+                        $subscriber = $subscriberArray[0];
+                        $priority = $subscriberArray[1];
+                        if (is_callable($subscriber)) {
+                            $this->attach($event, $subscriber, $priority);
+                        }
+                    }
+                }
+            }
+            if (isset($subscribers['detach'])) {
+                foreach ($subscribers['detach'] as $subscriber) {
+                    if (is_callable($subscriber)) {
+                        $this->detach($event, $subscriber);
+                    }
+                }
+            }
+        }
     }
 }

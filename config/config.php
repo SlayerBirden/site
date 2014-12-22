@@ -24,5 +24,15 @@ return [
         new \Maketok\Template\Symfony\Form\FormTypeCompilerPass
     ],
     'routing_provider_path' => [],
-    'modules_dir' => AR . '/modules'
+    'modules_dir' => AR . '/modules',
+    'template_path' => [
+        AR . '/lib/Maketok/Template/Resource/view/Form',
+        AR . '/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Resources/views/Form',
+        AR . '/lib/Maketok/Navigation/Resource/view'
+    ],
+    'subscribers_config_path' => [
+        AR . '/lib/Maketok/App/Resource/config/events',
+        AR . '/lib/Maketok/Module/Resource/config/events',
+        AR . '/lib/Maketok/Mvc/Resource/config/events'
+    ]
 ];

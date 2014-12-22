@@ -15,7 +15,7 @@ use Maketok\Module\Mvc\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
-use modules\blog\model\ArticleTable;
+use modules\blog\Model\ArticleTable;
 use Symfony\Component\Form\FormInterface;
 
 class Article extends AbstractAdminController

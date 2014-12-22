@@ -12,7 +12,7 @@ namespace modules\blog\controller\admin;
 
 use Maketok\Http\Request;
 use Maketok\Module\Mvc\AbstractAdminController;
-use modules\blog\model\ArticleTable;
+use modules\blog\Model\ArticleTable;
 
 class Index extends AbstractAdminController
 {

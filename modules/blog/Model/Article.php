@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace modules\blog\model;
+namespace modules\blog\Model;
 
 use Maketok\Model\LazyObjectPropModel;
 

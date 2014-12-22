@@ -23,7 +23,7 @@ class Phptal extends AbstractEngine
      */
     public function loadTemplate($path)
     {
-        $this->_engine = new \PHPTAL($path);
+        $this->engine = new \PHPTAL($path);
     }
 
     /**
@@ -34,7 +34,7 @@ class Phptal extends AbstractEngine
     public function setVariables(array $variables)
     {
         foreach ($variables as $key => $value) {
-            $this->_engine->$key = $value;
+            $this->engine->$key = $value;
         }
     }
 
@@ -44,7 +44,7 @@ class Phptal extends AbstractEngine
      */
     public function render()
     {
-        return $this->_engine->execute();
+        return $this->engine->execute();
     }
 
     /**
