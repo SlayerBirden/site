@@ -5,15 +5,6 @@
 
 routes:
   - type: literal
-    path: /
-    resolver: [admin\controller\Index, indexAction]
-  - type: literal
-    path: /install/run
-    resolver: [admin\controller\Install, runAction]
-  - type: literal
-    path: /install
-    resolver: [admin\controller\Install, indexAction]
-  - type: literal
     path: /modules
     resolver: [Maketok\Module\Resource\controller\admin\Modules, indexAction]
   - type: parameterized
