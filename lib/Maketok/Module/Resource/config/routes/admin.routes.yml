@@ -9,4 +9,7 @@ routes:
     resolver: [Maketok\Module\Resource\controller\admin\Modules, indexAction]
   - type: parameterized
     path: /modules/{area}/{module_code}
+    restrictions:
+        area: "^[a-zA-Z0-9_.-]+$"
+        module_code: "^[a-zA-Z0-9_.-]+$"
     resolver: [Maketok\Module\Resource\controller\admin\Modules, viewAction]

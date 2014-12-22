@@ -47,7 +47,7 @@ class Parameterized extends AbstractRoute implements RouteInterface
         $this->defaults = $defaults;
         $this->restrictions = $restrictions;
         if (is_null($parser)) {
-            $this->expressionParser = new ExpressionParser($this->matchPath, new Tokenizer($this->matchPath));
+            $this->expressionParser = new ExpressionParser($this->matchPath, new Tokenizer($this->matchPath), $defaults, $restrictions);
         } else {
             $this->expressionParser = $parser;
         }
@@ -61,8 +61,7 @@ class Parameterized extends AbstractRoute implements RouteInterface
     {
         $this->request = $request;
         $this->variables = $this->expressionParser->parse(
-            $this->stripTrailingSlash($request->getPathInfo()),
-            $this->restrictions
+            $this->stripTrailingSlash($request->getPathInfo())
         );
         if ($this->variables !== FALSE) {
             $attributes = $request->getAttributes();
