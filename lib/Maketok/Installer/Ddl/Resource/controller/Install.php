@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace admin\controller;
+namespace Maketok\Installer\Ddl\Resource\controller;
 
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Util\Monolog\Handler\HttpStreamedHandler;

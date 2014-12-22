@@ -13,8 +13,6 @@ namespace modules\blog;
 use Maketok\Module\AdminConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
-use modules\blog\controller\admin\Article;
-use modules\blog\controller\admin\Index;
 
 /**
  * @codeCoverageIgnore
@@ -27,17 +25,17 @@ class AdminConfig extends Config implements AdminConfigInterface
      */
     public function initRoutes()
     {
-        $this->getRouter()->addRoute(new Literal('/blog', [new Index(), 'indexAction']));
-        $this->getRouter()->addRoute(new Literal('/blog/article/new', [new Article(), 'newAction']));
+        $this->getRouter()->addRoute(new Literal('/blog', ['\modules\blog\controller\admin\Index', 'indexAction']));
+        $this->getRouter()->addRoute(new Literal('/blog/article/new', ['\modules\blog\controller\admin\Article', 'newAction']));
         $this->getRouter()->addRoute(new Parameterized(
             '/blog/article/edit/{id}',
-            [new Article(), 'editAction'],
+            ['\modules\blog\controller\admin\Article', 'editAction'],
             [],
             ['id' => '^\d+$']
         ));
         $this->getRouter()->addRoute(new Parameterized(
             '/blog/article/delete/{id}',
-            [new Article(), 'deleteAction'],
+            ['\modules\blog\controller\admin\Article', 'deleteAction'],
             [],
             ['id' => '^\d+$']
         ));

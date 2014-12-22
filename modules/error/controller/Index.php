@@ -11,7 +11,7 @@
 namespace modules\error\controller;
 
 use Maketok\Http\Request;
-use Maketok\Module\Mvc\AbstractBaseController;
+use Maketok\Mvc\Controller\AbstractBaseController;
 use Maketok\Mvc\Error\DumperInterface;
 
 class Index extends AbstractBaseController implements DumperInterface

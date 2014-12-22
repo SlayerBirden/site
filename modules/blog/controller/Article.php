@@ -11,7 +11,7 @@
 namespace modules\blog\controller;
 
 use Maketok\Http\Request;
-use Maketok\Module\Mvc\AbstractBaseController;
+use Maketok\Mvc\Controller\AbstractBaseController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use modules\blog\model\ArticleTable;

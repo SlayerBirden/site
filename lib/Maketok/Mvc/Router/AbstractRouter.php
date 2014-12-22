@@ -84,7 +84,6 @@ abstract class AbstractRouter implements RouterInterface
                     $type = $this->getIfExists('type', $route);
                     $path = $this->getIfExists('path', $route);
                     $resolver = $this->getIfExists('resolver', $route);
-                    $resolver = $this->processConfigResolver($resolver);
                     if (is_null($type) || is_null($path) || is_null($resolver)) {
                         $this->getLogger()->err(sprintf("Invalid route definition: %s", json_encode($route)));
                         continue;
@@ -106,26 +105,6 @@ abstract class AbstractRouter implements RouterInterface
                 }
             }
         }
-    }
-
-    /**
-     * convert static resolver from config
-     * @param $definition
-     * @return callable
-     */
-    public function processConfigResolver($definition)
-    {
-        // we can't resolve static from config
-        if (is_array($definition) && !empty($definition) && is_string(current($definition))) {
-            $className = array_shift($definition);
-            if (class_exists($className, true)) {
-                array_unshift($definition, new $className());
-            } else {
-                array_unshift($definition, $className);
-            }
-        }
-
-        return $definition;
     }
 
     /**

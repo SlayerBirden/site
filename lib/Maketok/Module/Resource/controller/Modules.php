@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Module\Resource\controller\admin;
+namespace Maketok\Module\Resource\controller;
 
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Http\Request;
@@ -22,15 +22,6 @@ use Maketok\Model\TableMapper;
 class Modules extends AbstractAdminController
 {
     use UtilityHelperTrait;
-
-    /**
-     * add template path
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->addTemplatePath(AR . "/lib/Maketok/Module/Resource/view/admin");
-    }
 
     /**
      * @param  Request $request

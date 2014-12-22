@@ -13,7 +13,7 @@ namespace Maketok\Mvc\Controller;
 /**
  * @codeCoverageIgnore
  */
-class AbstractAdminController extends AbstractController
+abstract class AbstractAdminController extends AbstractController
 {
 
     /**
@@ -23,5 +23,19 @@ class AbstractAdminController extends AbstractController
     public function __construct()
     {
         $this->addTemplatePath(AR . '/src/admin/view');
+        // load view under admin
+        $rc = new \ReflectionClass($this);
+        $parent = dirname($rc->getFileName());
+        if ('admin' === basename($parent)) {
+            $root = dirname(dirname($parent));
+            $view = $root . "/view/admin";
+        } else {
+            // try to load it normally
+            $root = dirname($parent);
+            $view = $root . "/view";
+        }
+        if (file_exists($view) && is_dir($view)) {
+            $this->addTemplatePath($view);
+        }
     }
 }

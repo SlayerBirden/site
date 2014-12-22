@@ -16,8 +16,6 @@ use Maketok\Module\ConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
 use Maketok\Util\ConfigGetter;
-use modules\blog\controller\Article;
-use modules\blog\controller\Index;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -51,16 +49,16 @@ class Config extends Extension implements ConfigInterface, ClientInterface
      */
     public function initRoutes()
     {
-        $this->getRouter()->addRoute(new Literal('/blog', [new Index(), 'indexAction']));
+        $this->getRouter()->addRoute(new Literal('/blog', ['\modules\blog\controller\Index', 'indexAction']));
         $this->getRouter()->addRoute(new Parameterized(
             '/blog/{code}',
-            [new Article(), 'indexAction'],
+            ['\modules\blog\controller\Article', 'indexAction'],
             [],
             ['code' => '^[a-zA-Z0-9_.-]+$']
         ));
         $this->getRouter()->addRoute(new Parameterized(
             '/blog/{code}',
-            [new Article(), 'indexAction'],
+            ['\modules\blog\controller\Article', 'indexAction'],
             [],
             ['code' => '^[a-zA-Z0-9_.-]+$']
         ));

@@ -22,6 +22,7 @@ class AbstractBaseController extends AbstractController
      */
     public function __construct()
     {
+        parent::__construct();
         $this->addTemplatePath(AR . '/src/base/view');
     }
 }

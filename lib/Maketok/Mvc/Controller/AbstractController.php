@@ -37,6 +37,19 @@ class AbstractController
     private $templatePaths;
 
     /**
+     * add base template path
+     */
+    public function __construct()
+    {
+        $rc = new \ReflectionClass($this);
+        $root = dirname(dirname($rc->getFileName()));
+        $view = $root . "/view";
+        if (file_exists($view) && is_dir($view)) {
+            $this->addTemplatePath($view);
+        }
+    }
+
+    /**
      * @param  string|null $content
      * @param  int         $code
      * @param  array|null  $headers

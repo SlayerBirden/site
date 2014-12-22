@@ -12,6 +12,7 @@ namespace Maketok\Mvc\Controller;
 
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Mvc\Error\Dumper;
+use Maketok\Mvc\GenericException;
 use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\Http\Error;
 use Maketok\Mvc\Router\Route\RouteInterface;
@@ -132,7 +133,28 @@ class Front
      */
     protected function launchAction($resolver, RouteInterface $route)
     {
-        return call_user_func_array($resolver, array($route->getRequest()));
+        return call_user_func_array($this->processConfigResolver($resolver), array($route->getRequest()));
+    }
+
+    /**
+     * convert static resolver from config
+     * @param callable $definition
+     * @return callable
+     * @throws GenericException
+     */
+    public function processConfigResolver($definition)
+    {
+        // we can't resolve static from config
+        if (is_array($definition) && !empty($definition) && is_string(current($definition))) {
+            $className = array_shift($definition);
+            if (class_exists($className, true)) {
+                array_unshift($definition, new $className());
+            } else {
+                throw new GenericException(sprintf("Can't resolve controller class: %s", $className));
+            }
+        }
+
+        return $definition;
     }
 
     /**

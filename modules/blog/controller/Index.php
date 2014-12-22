@@ -11,7 +11,7 @@
 namespace modules\blog\controller;
 
 use Maketok\Http\Request;
-use Maketok\Module\Mvc\AbstractBaseController;
+use Maketok\Mvc\Controller\AbstractBaseController;
 use modules\blog\Model\ArticleTable;
 
 class Index extends AbstractBaseController

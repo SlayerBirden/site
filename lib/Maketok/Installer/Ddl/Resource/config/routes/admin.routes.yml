@@ -6,7 +6,7 @@
 routes:
   - type: literal
     path: /install/run
-    resolver: [admin\controller\Install, runAction]
+    resolver: [Maketok\Installer\Ddl\Resource\controller\Install, runAction]
   - type: literal
     path: /install
-    resolver: [admin\controller\Install, indexAction]
+    resolver: [Maketok\Installer\Ddl\Resource\controller\Install, indexAction]
