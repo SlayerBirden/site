@@ -52,6 +52,13 @@ interface NodeInterface
     public function addChild(NodeInterface $node);
 
     /**
+     * remove Child Node
+     * @param  NodeInterface $node
+     * @return NodeInterface $node
+     */
+    public function removeChild(NodeInterface $node);
+
+    /**
      * get Children
      * @return NodeInterface[]
      */

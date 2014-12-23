@@ -21,6 +21,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::traverse
+     * @covers ::addChildren
      */
     public function traverse()
     {
@@ -36,6 +37,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::detach
+     * @covers ::addChild
      */
     public function detach()
     {
@@ -49,7 +51,24 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @covers ::removeChild
+     * @covers ::addChild
+     */
+    public function removeChild()
+    {
+        $node = new Node('A');
+        $nodeB = new Node('B');
+        $node->addChild($nodeB);
+
+        $node->removeChild($nodeB);
+        $this->assertEmpty($node->getChildren());
+        $this->assertNull($nodeB->getParent());
+    }
+
+    /**
+     * @test
      * @covers ::isBranch
+     * @covers ::addChild
      */
     public function isBranch()
     {
@@ -64,6 +83,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::isRoot
+     * @covers ::addChild
      */
     public function isRoot()
     {
@@ -78,6 +98,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::isLeaf
+     * @covers ::addChild
      */
     public function isLeaf()
     {
@@ -91,21 +112,8 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::addChild
-     */
-    public function addChild()
-    {
-        $node = new Node('A');
-        $nodeB = new Node('B');
-        $node->addChild($nodeB);
-
-        $this->assertEquals($node, $nodeB->getParent());
-        $this->assertEquals([$nodeB], $node->getChildren());
-    }
-
-    /**
-     * @test
      * @covers ::getChildren
+     * @covers ::addChild
      */
     public function getChildren()
     {
@@ -119,6 +127,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::getSiblings
+     * @covers ::addChildren
      */
     public function getSiblings()
     {
@@ -135,6 +144,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::getParent
+     * @covers ::addChild
      */
     public function getParent()
     {
@@ -148,6 +158,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::getAncestors
+     * @covers ::addChild
      */
     public function getAncestors()
     {
@@ -162,6 +173,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::getRoot
+     * @covers ::addChild
      */
     public function getRoot()
     {
@@ -179,6 +191,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::setParent
+     * @covers ::addChild
      */
     public function setParent()
     {
@@ -187,19 +200,5 @@ class NodeTest extends \PHPUnit_Framework_TestCase
         $node->addChild($nodeB);
 
         $this->assertEquals($node, $nodeB->getParent());
-    }
-
-    /**
-     * @test
-     * @covers ::addChildren
-     */
-    public function addChildren()
-    {
-        $node = new Node('A');
-        $nodeB = new Node('B');
-        $nodeC = new Node('C');
-        $node->addChildren([$nodeB, $nodeC]);
-
-        $this->assertEquals([$nodeB, $nodeC], $node->getChildren());
     }
 }

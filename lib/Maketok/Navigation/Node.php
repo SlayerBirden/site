@@ -106,6 +106,19 @@ class Node implements NodeInterface
     /**
      * {@inheritdoc}
      */
+    public function removeChild(NodeInterface $node)
+    {
+        $this->children = array_values(array_filter($this->children, function ($el) use ($node) {
+            return $el != $node;
+        }));
+        $node->detach();
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getChildren()
     {
         return $this->children;
