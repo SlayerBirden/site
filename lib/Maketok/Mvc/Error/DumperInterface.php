@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 interface DumperInterface
 {
-
     /**
      * @param  Request $request
      * @return Response

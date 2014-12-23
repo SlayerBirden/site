@@ -14,7 +14,6 @@ use Maketok\Util\Exception\ParserException;
 
 class ExpressionParser implements ExpressionParserInterface
 {
-
     /**
      * @var string
      */

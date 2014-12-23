@@ -15,7 +15,6 @@ use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 
 class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 {
-
     /** @var ConfigReader */
     public $reader;
     /** @var \ReflectionProperty */
@@ -707,5 +706,4 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         ];
         $this->assertEquals($expected, $this->reader->getMergedConfig());
     }
-
 }

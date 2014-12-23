@@ -204,7 +204,7 @@ class AbstractController
      */
     protected function redirectUrl($url)
     {
-       return new RedirectResponse($url);
+        return new RedirectResponse($url);
     }
 
     /**

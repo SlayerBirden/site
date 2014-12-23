@@ -14,7 +14,6 @@ use Maketok\Mvc\Router\Route\RouteInterface;
 
 interface RouterInterface extends RouteInterface
 {
-
     const STACK_MODE_APPEND = 1;
     const STACK_MODE_PREPEND = 2;
 

@@ -12,7 +12,6 @@ namespace Maketok\Template;
 
 abstract class AbstractEngine implements EngineInterface
 {
-
     /**
      * internal handler for real engine
      * @var object

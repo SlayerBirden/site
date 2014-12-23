@@ -12,7 +12,6 @@ namespace Maketok\Navigation;
 
 class Node implements NodeInterface
 {
-
     /**
      * @var NodeInterface
      */

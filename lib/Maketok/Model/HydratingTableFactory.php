@@ -62,8 +62,7 @@ class HydratingTableFactory implements TableFactoryInterface
                                 AdapterInterface $adapter = null,
                                 $gateway = '\Zend\Db\TableGateway\TableGateway',
                                 $features = null
-    )
-    {
+    ) {
         if (is_null($resultSet)) {
             $resultSet = $this->ioc()->getParameter('hydrating_resultset');
         }

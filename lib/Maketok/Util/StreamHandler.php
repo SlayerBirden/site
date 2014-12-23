@@ -14,7 +14,6 @@ use Maketok\Util\Exception\StreamException;
 
 class StreamHandler implements StreamHandlerInterface
 {
-
     protected $path;
     protected $handle;
 

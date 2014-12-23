@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 class Parameterized extends AbstractRoute implements RouteInterface
 {
-
     /** @var  ExpressionParserInterface */
     protected $expressionParser;
 
@@ -63,7 +62,7 @@ class Parameterized extends AbstractRoute implements RouteInterface
         $this->variables = $this->expressionParser->parse(
             $this->stripTrailingSlash($request->getPathInfo())
         );
-        if ($this->variables !== FALSE) {
+        if ($this->variables !== false) {
             $attributes = $request->getAttributes();
             if (is_object($attributes) && ($attributes instanceof ParameterBag)) {
                 $attributes->add(array(

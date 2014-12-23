@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Install extends AbstractAdminController
 {
-
     /**
      * @internal param RequestInterface $request
      * @return \Symfony\Component\HttpFoundation\Response
@@ -31,7 +30,7 @@ class Install extends AbstractAdminController
         $handler = new HttpStreamedHandler();
         $handler->setFormatter(new HtmlFormatter());
         $logger->pushHandler($handler);
-        $response = new StreamedResponse(function(){
+        $response = new StreamedResponse(function () {
             $this->getSC()->get('installer_ddl_manager')->process();
         });
         return $response;

@@ -12,5 +12,4 @@ namespace Maketok\Module;
 
 interface AdminConfigInterface extends ConfigInterface
 {
-
 }

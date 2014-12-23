@@ -12,7 +12,6 @@ namespace Maketok\Util;
 
 class VersionComparer
 {
-
     /**
      * the recursive compare function
      * should compare versions

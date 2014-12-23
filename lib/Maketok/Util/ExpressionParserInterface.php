@@ -12,7 +12,6 @@ namespace Maketok\Util;
 
 interface ExpressionParserInterface
 {
-
     /**
      * @param string             $expression
      * @param array              $parameters

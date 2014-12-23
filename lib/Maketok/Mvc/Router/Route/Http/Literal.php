@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 class Literal extends AbstractRoute implements RouteInterface
 {
-
     /** @var  array */
     protected $defaults;
 

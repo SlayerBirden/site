@@ -15,7 +15,6 @@ use Maketok\Http\Request;
 
 class PathRule extends  AbstractRule
 {
-
     /**
      * {@inheritdoc}
      */

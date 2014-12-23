@@ -9,6 +9,7 @@
  */
 
 namespace Maketok\Firewall\Test;
+
 use Maketok\Firewall\Rule\PathRule;
 use Maketok\Http\Request;
 
@@ -17,7 +18,6 @@ use Maketok\Http\Request;
  */
 class PathRuleTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      * @covers Maketok\Firewall\Rule\AbstractRule::addBlacklist

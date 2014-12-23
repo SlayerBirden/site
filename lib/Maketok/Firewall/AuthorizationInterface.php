@@ -15,7 +15,6 @@ use Maketok\Http\Request;
 
 interface AuthorizationInterface extends RuleInterface
 {
-
     const ROLE_GUEST = 0;
 
     /**

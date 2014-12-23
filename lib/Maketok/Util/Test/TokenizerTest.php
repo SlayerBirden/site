@@ -17,7 +17,6 @@ use Maketok\Util\Tokenizer;
  */
 class TokenizerTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      * @covers ::__construct
@@ -71,7 +70,6 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $tokenizer->flowControl($tokenizer->variableCharBegin);
         $this->assertEmpty($tokenizer->getCurrentVar());
         $this->assertEmpty($tokenizer->getCurrentConst());
-
     }
 
     /**

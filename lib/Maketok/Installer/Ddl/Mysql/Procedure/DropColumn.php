@@ -29,5 +29,4 @@ class DropColumn extends AbstractProcedure implements ProcedureInterface
 
         return $this->query($table);
     }
-
 }

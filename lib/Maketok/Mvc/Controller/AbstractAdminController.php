@@ -15,7 +15,6 @@ namespace Maketok\Mvc\Controller;
  */
 abstract class AbstractAdminController extends AbstractController
 {
-
     /**
      * init
      * add base template path

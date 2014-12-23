@@ -12,7 +12,6 @@ namespace Maketok\Util;
 
 interface ResponseInterface extends MessageInterface
 {
-
     /**
      * @return \Symfony\Component\HttpFoundation\Response
      */

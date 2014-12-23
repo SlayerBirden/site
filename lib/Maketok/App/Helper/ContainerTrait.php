@@ -19,7 +19,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 trait ContainerTrait
 {
-
     /**
      * @return ContainerBuilder
      */

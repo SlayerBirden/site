@@ -14,7 +14,6 @@ use Zend\Db\Sql\Ddl\AlterTable;
 
 class DropConstraint extends AbstractProcedure implements ProcedureInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -40,5 +39,4 @@ class DropConstraint extends AbstractProcedure implements ProcedureInterface
 
         return $query;
     }
-
 }

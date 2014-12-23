@@ -14,7 +14,6 @@ use Maketok\Installer\ResourceInterface as BaseResource;
 
 interface ResourceInterface extends BaseResource
 {
-
     /**
      * get table description
      *

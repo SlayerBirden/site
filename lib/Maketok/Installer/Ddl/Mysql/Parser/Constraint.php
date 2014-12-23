@@ -12,7 +12,6 @@ namespace Maketok\Installer\Ddl\Mysql\Parser;
 
 class Constraint extends AbstractParser implements ParserInterface
 {
-
     /**
      * {@inheritdoc}
      */

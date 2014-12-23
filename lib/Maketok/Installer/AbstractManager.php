@@ -15,7 +15,6 @@ use Zend\Db\Adapter\Adapter;
 
 abstract class AbstractManager implements ManagerInterface
 {
-
     /**
      * @var ClientInterface[]
      */

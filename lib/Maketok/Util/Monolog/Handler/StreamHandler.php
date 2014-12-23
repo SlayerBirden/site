@@ -28,7 +28,7 @@ class StreamHandler extends BaseStreamHandler
             }
             $dir = dirname($this->url);
             if (!is_dir($dir)) {
-                @mkdir($dir, 0755, TRUE);
+                @mkdir($dir, 0755, true);
             }
         }
         parent::write($record);

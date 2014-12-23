@@ -12,7 +12,6 @@ namespace Maketok\Module;
 
 interface ConfigInterface
 {
-
     /**
      * @return void
      */

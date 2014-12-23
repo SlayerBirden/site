@@ -9,6 +9,7 @@
  */
 
 namespace Maketok\App\Test;
+
 use Maketok\App\Site;
 
 /**
@@ -16,7 +17,6 @@ use Maketok\App\Site;
  */
 class SiteTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      * @covers ::getConfig

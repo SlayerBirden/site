@@ -9,6 +9,7 @@
  */
 
 namespace Maketok\Module\Test;
+
 use Maketok\Module\ModuleManager;
 use Maketok\Module\Resource\Model\Module;
 
@@ -17,7 +18,6 @@ use Maketok\Module\Resource\Model\Module;
  */
 class ModuleManagerTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      * @covers ::updateToVersion
@@ -82,26 +82,21 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
 
     public function processModuleConfig()
     {
-
     }
 
     public function addDbModule()
     {
-
     }
 
     public function removeDbModule()
     {
-
     }
 
     public function updateModules()
     {
-
     }
 
     public function processModules()
     {
-
     }
 }

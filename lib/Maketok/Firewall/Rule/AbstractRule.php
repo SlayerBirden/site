@@ -12,7 +12,6 @@ namespace Maketok\Firewall\Rule;
 
 abstract class AbstractRule implements RuleInterface
 {
-
     /**
      * @var array
      */

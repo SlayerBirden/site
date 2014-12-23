@@ -13,7 +13,6 @@ use Maketok\Installer\Ddl\Directives;
 
 class Columns implements CompareInterface
 {
-
     /**
      * {@inheritdoc}
      */

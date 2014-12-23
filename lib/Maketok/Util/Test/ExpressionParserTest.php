@@ -18,7 +18,6 @@ use Maketok\Util\Tokenizer;
  */
 class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      * @covers ::evaluate

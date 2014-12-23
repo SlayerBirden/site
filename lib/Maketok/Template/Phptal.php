@@ -15,7 +15,6 @@ namespace Maketok\Template;
  */
 class Phptal extends AbstractEngine
 {
-
     /**
      * load the template into engine by path
      * @param  string $path

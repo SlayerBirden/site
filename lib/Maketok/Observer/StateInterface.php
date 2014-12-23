@@ -12,7 +12,6 @@ namespace Maketok\Observer;
 
 interface StateInterface
 {
-
     /**
      * @param  array                            $data
      * @return \Maketok\Observer\StateInterface

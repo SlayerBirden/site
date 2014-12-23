@@ -15,7 +15,6 @@ namespace Maketok\Util;
  */
 class PhpFileLoader extends AbstractFileLoader
 {
-
     /**
      * {@inheritdoc}
      */

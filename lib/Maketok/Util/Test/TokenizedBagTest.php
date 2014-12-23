@@ -9,6 +9,7 @@
  */
 
 namespace Maketok\Util\Test;
+
 use Maketok\Util\TokenizedBag;
 use Maketok\Util\TokenizedBagPart;
 
@@ -17,7 +18,6 @@ use Maketok\Util\TokenizedBagPart;
  */
 class TokenizedBagTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      * @covers ::asArray

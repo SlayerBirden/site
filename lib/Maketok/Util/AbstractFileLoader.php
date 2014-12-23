@@ -12,7 +12,6 @@ use Symfony\Component\Config\Loader\FileLoader;
 
 abstract class AbstractFileLoader extends FileLoader
 {
-
     /**
      * @return string
      */

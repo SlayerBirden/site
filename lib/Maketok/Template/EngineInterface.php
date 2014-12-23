@@ -12,7 +12,6 @@ namespace Maketok\Template;
 
 interface EngineInterface
 {
-
     /**
      * optional method for configuring different engines
      * @param  mixed $options

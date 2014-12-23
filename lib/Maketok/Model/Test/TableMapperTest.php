@@ -18,7 +18,6 @@ use Zend\Db\ResultSet\HydratingResultSet;
  */
 class TableMapperTest extends \PHPUnit_Framework_TestCase
 {
-
     /** @var TableMapper */
     protected $table;
 

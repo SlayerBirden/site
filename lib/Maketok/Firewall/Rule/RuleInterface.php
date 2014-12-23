@@ -14,7 +14,6 @@ use Maketok\Http\Request;
 
 interface RuleInterface
 {
-
     /**
      * @param int $role
      * @param mixed $condition

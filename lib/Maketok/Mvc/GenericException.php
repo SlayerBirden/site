@@ -12,5 +12,4 @@ namespace Maketok\Mvc;
 
 class GenericException extends \Exception
 {
-
 }

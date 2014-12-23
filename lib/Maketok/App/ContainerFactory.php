@@ -254,7 +254,7 @@ class ContainerFactory implements ConfigInterface
                 $toLoad[] = "$env.$fileName.yml";
                 $toLoad[] = "local.$env.$fileName.yml";
             }
-            array_walk($toLoad, function($value) use ($loader) {
+            array_walk($toLoad, function ($value) use ($loader) {
                 try {
                     $loader->load($value);
                 } catch (\InvalidArgumentException $e) {

@@ -12,7 +12,6 @@ namespace Maketok\Installer\Ddl\Mysql\Parser;
 
 interface ParserInterface
 {
-
     /**
      * @param string $row
      * @param string $name

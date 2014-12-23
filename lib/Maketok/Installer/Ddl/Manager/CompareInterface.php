@@ -13,7 +13,6 @@ use Maketok\Installer\Ddl\Directives;
 
 interface CompareInterface
 {
-
     /**
      * @param  array      $a
      * @param  array      $b

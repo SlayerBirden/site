@@ -15,7 +15,6 @@ use Maketok\Http\Request;
 
 class AreaRule extends  AbstractRule
 {
-
     /**
      * {@inheritdoc}
      */

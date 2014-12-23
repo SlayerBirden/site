@@ -12,7 +12,6 @@ namespace Maketok\Mvc\Router\Route;
 
 class Success
 {
-
     /** @var  RouteInterface */
     protected $_route;
 

@@ -14,7 +14,6 @@ use Maketok\Navigation\Dumper\DumperInterface;
 
 interface NavigationInterface
 {
-
     /**
      * @param  LinkInterface $link
      * @param  mixed         $parent

@@ -14,7 +14,6 @@ use Maketok\Util\Exception\DirectoryException;
 
 class DirectoryHandler implements DirectoryHandlerInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -80,5 +79,4 @@ class DirectoryHandler implements DirectoryHandlerInterface
 
         return $result;
     }
-
 }

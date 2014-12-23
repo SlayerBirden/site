@@ -15,9 +15,8 @@ use Maketok\Util\VersionComparer;
 /**
  * @coversDefaultClass \Maketok\Util\VersionComparer
  */
-class AbstractManagerTest extends \PHPUnit_Framework_TestCase
+class VersionComparerTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      * @covers       ::natRecursiveCompare

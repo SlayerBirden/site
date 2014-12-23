@@ -36,5 +36,4 @@ abstract class AbstractProcedure implements ProcedureInterface
     {
         return $this->sql->getSqlStringForSqlObject($table);
     }
-
 }

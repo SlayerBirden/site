@@ -12,7 +12,6 @@ namespace Maketok\Navigation;
 
 interface NodeInterface
 {
-
     /**
      * pre-order traverse
      * @param  NodeInterface   $node

@@ -12,7 +12,6 @@ namespace Maketok\Installer\Ddl\Mysql\Parser;
 
 class Index extends AbstractParser implements ParserInterface
 {
-
     /**
      * {@inheritdoc}
      */

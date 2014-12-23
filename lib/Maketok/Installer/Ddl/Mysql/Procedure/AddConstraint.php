@@ -17,7 +17,6 @@ use Zend\Db\Sql\Ddl\Index\Index;
 
 class AddConstraint extends AbstractProcedure implements ProcedureInterface
 {
-
     /** @var array */
     protected $availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey', 'index'];
 
@@ -88,5 +87,4 @@ class AddConstraint extends AbstractProcedure implements ProcedureInterface
 
         return implode('_', $name);
     }
-
 }

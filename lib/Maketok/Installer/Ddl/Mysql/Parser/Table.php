@@ -24,7 +24,6 @@ class Table
      */
     public function __construct(array $tableArray)
     {
-
         $this->tableArray = $tableArray;
     }
 

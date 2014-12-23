@@ -17,7 +17,6 @@ namespace Maketok\Util;
  */
 class ClosureComparer
 {
-
     /**
      * returns 0 if equal
      * 1 in all other cases

@@ -17,7 +17,6 @@ use Maketok\Navigation\Node;
  */
 class NodeTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      * @covers ::traverse

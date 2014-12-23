@@ -15,7 +15,6 @@ use Maketok\Util\Exception\ModelException;
 
 class DdlClientDependencyType extends TableMapper
 {
-
     /**
      * @param int $clientId
      * @param string $dependencyCode

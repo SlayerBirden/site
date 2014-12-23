@@ -12,7 +12,6 @@ namespace Maketok\Navigation;
 
 interface LinkInterface extends NodeInterface
 {
-
     /**
      * create new link
      * @param string        $code

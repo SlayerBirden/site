@@ -12,5 +12,4 @@ namespace Maketok\Navigation;
 
 class Exception extends \Exception
 {
-
 }

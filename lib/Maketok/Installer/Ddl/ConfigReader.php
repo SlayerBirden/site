@@ -14,7 +14,6 @@ use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 
 class ConfigReader implements ConfigReaderInterface
 {
-
     /**
      * @var array
      */

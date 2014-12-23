@@ -14,7 +14,6 @@ use Maketok\Util\RequestInterface;
 
 abstract class AbstractRoute
 {
-
     /** @var  RequestInterface */
     protected $request;
 

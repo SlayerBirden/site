@@ -15,7 +15,6 @@ namespace Maketok\Observer;
  */
 class SubscriberBag implements \IteratorAggregate
 {
-
     /**
      * @var callable
      */

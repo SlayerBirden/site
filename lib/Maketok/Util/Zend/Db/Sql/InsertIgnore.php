@@ -10,7 +10,6 @@
 
 namespace Maketok\Util\Zend\Db\Sql;
 
-
 use Zend\Db\Sql\Insert;
 
 /**
@@ -18,7 +17,6 @@ use Zend\Db\Sql\Insert;
  */
 class InsertIgnore extends Insert
 {
-
     /**
      * @var array Specification array
      */

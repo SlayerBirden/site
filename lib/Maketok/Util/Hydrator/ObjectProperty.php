@@ -18,7 +18,6 @@ use Zend\Stdlib\Hydrator\ObjectProperty as BaseObjectProperty;
  */
 class ObjectProperty extends BaseObjectProperty implements LazyHydratorInterface
 {
-
     /**
      * {@inheritdoc}
      * add setter for origin data

@@ -17,7 +17,6 @@ use Maketok\Util\ClosureComparer;
  */
 class ClosureComparerTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var ClosureComparer
      */

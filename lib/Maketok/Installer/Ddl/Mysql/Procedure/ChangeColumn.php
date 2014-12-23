@@ -32,5 +32,4 @@ class ChangeColumn extends AddColumn implements ProcedureInterface
 
         return $this->query($table);
     }
-
 }

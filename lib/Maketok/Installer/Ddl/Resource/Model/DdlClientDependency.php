@@ -14,7 +14,6 @@ use Maketok\Model\LazyObjectPropModel;
 
 class DdlClientDependency extends LazyObjectPropModel
 {
-
     /** @var int */
     public $id;
     /** @var int */

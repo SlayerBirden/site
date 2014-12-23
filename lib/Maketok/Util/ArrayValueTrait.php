@@ -12,7 +12,6 @@ namespace Maketok\Util;
 
 trait ArrayValueTrait
 {
-
     /**
      * @param  string|string[] $key
      * @param  array           $data

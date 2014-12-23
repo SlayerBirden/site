@@ -15,7 +15,6 @@ namespace Maketok\Observer;
  */
 class Subject implements SubjectInterface
 {
-
     /**
      * @var bool
      */

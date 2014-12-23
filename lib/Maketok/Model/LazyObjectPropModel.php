@@ -15,7 +15,6 @@ namespace Maketok\Model;
  */
 class LazyObjectPropModel implements LazyModelInterface
 {
-
     /**
      * @var array
      */

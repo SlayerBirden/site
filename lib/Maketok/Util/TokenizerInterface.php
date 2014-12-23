@@ -12,7 +12,6 @@ namespace Maketok\Util;
 
 interface TokenizerInterface
 {
-
     /**
      * @param string $expression
      */

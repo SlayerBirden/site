@@ -14,7 +14,6 @@ use Symfony\Component\Config\Loader\FileLoader;
 
 interface ConfigInterface
 {
-
     /**
      * Loads the config right into appropriate container
      *

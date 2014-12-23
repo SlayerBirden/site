@@ -12,7 +12,6 @@ namespace Maketok\Util;
 
 class TokenizedBagPart
 {
-
     /**
      * @var string
      */

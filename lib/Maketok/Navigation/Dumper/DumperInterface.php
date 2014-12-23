@@ -12,7 +12,6 @@ namespace Maketok\Navigation\Dumper;
 
 interface DumperInterface
 {
-
     /**
      * dump navigation to a file
      * @param  string $path

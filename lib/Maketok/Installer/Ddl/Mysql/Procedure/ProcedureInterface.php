@@ -14,7 +14,6 @@ use Zend\Db\Sql\Sql;
 
 interface ProcedureInterface
 {
-
     /**
      * set sql
      * @param Sql $sql

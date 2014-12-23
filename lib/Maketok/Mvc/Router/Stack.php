@@ -15,7 +15,6 @@ use Maketok\Util\RequestInterface;
 
 class Stack extends AbstractRouter implements RouterInterface
 {
-
     /** @var \SplStack  */
     protected $_routes;
 

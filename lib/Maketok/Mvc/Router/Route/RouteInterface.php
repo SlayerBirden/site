@@ -14,7 +14,6 @@ use Maketok\Util\RequestInterface;
 
 interface RouteInterface
 {
-
     /**
      * @param  RequestInterface $request
      * @return Success

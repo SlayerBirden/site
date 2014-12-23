@@ -22,7 +22,6 @@ use Maketok\Installer\Ddl\ClientInterface;
  */
 class DbHandler implements \SessionHandlerInterface, ClientInterface
 {
-
     use UtilityHelperTrait;
 
     /**

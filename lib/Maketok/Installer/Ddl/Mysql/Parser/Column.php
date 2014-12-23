@@ -12,7 +12,6 @@ namespace Maketok\Installer\Ddl\Mysql\Parser;
 
 class Column extends AbstractParser implements ParserInterface
 {
-
     /** @var array  */
     protected $typeMap = [
         'int' => 'integer',

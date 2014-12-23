@@ -12,7 +12,6 @@ namespace Maketok\Installer\Ddl\Resource\Model;
 
 class DdlClientHistory
 {
-
     /** @var int */
     public $id;
     /** @var int */

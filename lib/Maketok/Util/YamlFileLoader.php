@@ -17,7 +17,6 @@ use Symfony\Component\Yaml\Yaml;
  */
 class YamlFileLoader extends AbstractFileLoader
 {
-
     /**
      * {@inheritdoc}
      */
@@ -44,5 +43,4 @@ class YamlFileLoader extends AbstractFileLoader
     {
         return 'yml';
     }
-
 }

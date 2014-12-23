@@ -17,7 +17,6 @@ namespace Maketok\Util\Test;
  */
 class ArrayValueTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      * @covers ::getIfExists

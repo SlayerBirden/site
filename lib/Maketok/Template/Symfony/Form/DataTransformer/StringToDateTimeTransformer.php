@@ -18,7 +18,6 @@ use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransf
  */
 class StringToDateTimeTransformer extends BaseDateTimeToStringTransformer
 {
-
     /**
      * @param  string    $value
      * @return \DateTime

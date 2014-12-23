@@ -12,7 +12,6 @@ namespace Maketok\Installer;
 
 interface ConfigReaderInterface
 {
-
     /**
      * return merged config
      *

@@ -12,7 +12,6 @@ namespace Maketok\Util;
 
 class TokenizedBag implements \IteratorAggregate, \Countable
 {
-
     /**
      * @var TokenizedBagPart[]
      */

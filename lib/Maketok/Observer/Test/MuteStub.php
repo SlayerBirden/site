@@ -16,7 +16,6 @@ namespace Maketok\Observer\Test;
  */
 class MuteStub
 {
-
     /**
      * this is some logic
      */

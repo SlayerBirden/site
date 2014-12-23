@@ -20,7 +20,6 @@ use Maketok\Observer\SubscriberBag;
  */
 class SubjectManagerTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      * @covers ::attach

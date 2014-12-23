@@ -17,7 +17,6 @@ use Maketok\Installer\DirectivesInterface;
  */
 class Directives implements DirectivesInterface
 {
-
     /** @var array */
     public $addTables = [];
     /** @var array */
@@ -125,5 +124,4 @@ class Directives implements DirectivesInterface
         // kind of a hack to make it multi-dimensional
         return array_unique($a, SORT_REGULAR);
     }
-
 }

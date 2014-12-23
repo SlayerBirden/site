@@ -16,7 +16,6 @@ use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {
-
     /** @var \Maketok\Installer\Ddl\Manager */
     protected static $manager;
 
