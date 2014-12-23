@@ -19,7 +19,23 @@ class ConfigGetter
     /**
      * @var AbstractFileLoader[]
      */
-    private static $loaders;
+    private $loaders;
+
+    /**
+     * @param AbstractFileLoader[] $loaders
+     */
+    public function setLoaders($loaders)
+    {
+        $this->loaders = $loaders;
+    }
+
+    /**
+     * @return AbstractFileLoader[]
+     */
+    public function getLoaders()
+    {
+        return $this->loaders;
+    }
 
     /**
      * @param string|string[] $paths
@@ -28,7 +44,7 @@ class ConfigGetter
      * @throws \Symfony\Component\Config\Exception\FileLoaderLoadException
      * @return mixed
      */
-    public static function getConfig($paths, $fileName, $prefix = '')
+    public function getConfig($paths, $fileName, $prefix = '')
     {
         $configs = [];
         if (!is_array($fileName)) {
@@ -43,9 +59,11 @@ class ConfigGetter
             $paths = [$paths];
         }
         foreach ($paths as $path) {
-            $loader = self::getLoader($path);
+            $locator = new FileLocator($path);
+            $this->setLoaders([new YamlFileLoader($locator), new PhpFileLoader($locator)]);
+            $loader = $this->getLoader();
             $correctFileNames = [];
-            foreach (self::$loaders as $ld) {
+            foreach ($this->getLoaders() as $ld) {
                 $suffix = $ld->getExtension();
                 $correctFileNames = array_merge($correctFileNames, array_map(function ($fn) use ($suffix) {
                     return "$fn.$suffix";
@@ -68,14 +86,11 @@ class ConfigGetter
 
     /**
      * @codeCoverageIgnore
-     * @param string $path
      * @return DelegatingLoader
      */
-    private static function getLoader($path)
+    private function getLoader()
     {
-        $locator = new FileLocator($path);
-        self::$loaders = [new YamlFileLoader($locator), new PhpFileLoader($locator)];
-        $resolver = new LoaderResolver(self::$loaders);
+        $resolver = new LoaderResolver($this->getLoaders());
         return new DelegatingLoader($resolver);
     }
 }

@@ -10,14 +10,15 @@
 
 namespace Maketok\Navigation;
 
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\App\Site;
 use Maketok\Navigation\Dumper\DumperInterface;
 use Maketok\Util\ArrayValueTrait;
-use Maketok\Util\ConfigGetter;
 
 class Navigation implements NavigationInterface
 {
     use ArrayValueTrait;
+    use ContainerTrait;
 
     /**
      * @var LinkInterface
@@ -91,7 +92,8 @@ class Navigation implements NavigationInterface
     public function initConfig()
     {
         $tree = [];
-        foreach (ConfigGetter::getConfig(Site::getConfig('navigation_config_path'), 'navigation', ENV) as $config) {
+        foreach ($this->ioc()->get('config_getter')
+                     ->getConfig(Site::getConfig('navigation_config_path'), 'navigation', ENV) as $config) {
             $tree = array_replace_recursive($tree, $config);
         }
         $config = $this->getIfExists($this->code, $tree, []);

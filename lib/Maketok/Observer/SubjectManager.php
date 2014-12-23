@@ -10,14 +10,13 @@
 
 namespace Maketok\Observer;
 
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\App\Site;
-use Maketok\Util\ConfigGetter;
-use Maketok\Util\PhpFileLoader;
 use Maketok\Util\PriorityQueue;
-use Symfony\Component\Config\FileLocator;
 
 class SubjectManager implements SubjectManagerInterface
 {
+    use ContainerTrait;
     /**
      * @var PriorityQueue[]
      */
@@ -89,7 +88,8 @@ class SubjectManager implements SubjectManagerInterface
      */
     public function loadMap()
     {
-        foreach (ConfigGetter::getConfig(Site::getConfig('subscribers_config_path'), 'subscribers', ENV) as $config) {
+        foreach ($this->ioc()->get('config_getter')
+                     ->getConfig(Site::getConfig('subscribers_config_path'), 'subscribers', ENV) as $config) {
             $this->parseConfig($config);
         }
     }

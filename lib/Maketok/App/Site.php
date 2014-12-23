@@ -14,11 +14,8 @@ use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Observer\State;
 use Maketok\Http\Request;
 use Maketok\Util\ConfigGetter;
-use Maketok\Util\PhpFileLoader;
 use Maketok\Util\RequestInterface;
 use Monolog\Logger;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Config\Loader\FileLoader;
 use Zend\Stdlib\ErrorHandler;
 
 /**
@@ -188,7 +185,8 @@ final class Site
      */
     public function loadConfig()
     {
-        $configs = ConfigGetter::getConfig(AR . '/config', 'config', 'local');
+        $configGetter = new ConfigGetter();
+        $configs = $configGetter->getConfig(AR . '/config', 'config', 'local');
         self::$config = [];
         foreach ($configs as $cnfg) {
             self::$config = array_replace(self::$config, $cnfg);

@@ -13,7 +13,6 @@ namespace Maketok\Mvc\Router;
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\App\Site;
 use Maketok\Mvc\RouteException;
-use Maketok\Util\ConfigGetter;
 use Maketok\Util\RequestInterface;
 
 abstract class AbstractRouter implements RouterInterface
@@ -77,7 +76,7 @@ abstract class AbstractRouter implements RouterInterface
      */
     public function loadConfig()
     {
-        $configs = ConfigGetter::getConfig(Site::getConfig('routing_provider_path'), 'routes', ENV);
+        $configs = $this->ioc()->get('config_getter')->getConfig(Site::getConfig('routing_provider_path'), 'routes', ENV);
         foreach ($configs as $contents) {
             if ($routes = $this->getIfExists('routes', $contents, false)) {
                 foreach ($routes as $route) {

@@ -149,6 +149,6 @@ class Config extends Extension implements ConfigInterface, ClientInterface
      */
     public function getDdlConfig($version)
     {
-        return current(ConfigGetter::getConfig(__DIR__ . "/config/installer/ddl", $version));
+        return current($this->ioc()->get('config_getter')->getConfig(__DIR__ . "/config/installer/ddl", $version));
     }
 }

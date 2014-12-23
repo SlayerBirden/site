@@ -44,6 +44,9 @@ services:
     class: Maketok\Util\Zend\Db\Sql\Sql
     arguments: ["@adapter", ~, "@zend_sql_platform"]
 
+  config_getter:
+    class: Maketok\Util\ConfigGetter
+
   request:
     synthetic: true
 
