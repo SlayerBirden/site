@@ -3,9 +3,12 @@
 {# For the full copyright and license information, please view the LICENSE #}
 {# file that was distributed with this source code. #}
 {% for link in links %}
-    <li>
+    <li class="{{ link.code }}">
         {% if link.href %}
-            <a href="{{ link.href }}" title="">{{ link.title }}</a>
+            <a href="{{ link.href }}" title="{{ link.title }}"
+            {% if (path_info == link.href) or (current_url == link.href) %}
+                class="active"
+            {% endif %}>{{ link.title }}</a>
         {% else %}
             <span>{{ link.title }}</span>
         {% endif %}
