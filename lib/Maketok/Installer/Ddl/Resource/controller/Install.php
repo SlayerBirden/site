@@ -45,7 +45,7 @@ class Install extends AbstractAdminController
     {
         $this->setTemplate('install-manager.html.twig');
         return $this->prepareResponse($request, array(
-            'install_url' => $this->getUrl('install/run'),
+            'install_url' => $this->getUrl('install/ddl/run'),
             'title' => 'Installer - Admin Management Area'
         ));
     }

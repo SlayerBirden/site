@@ -25,7 +25,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
      */
     public function addLink()
     {
-        $nav = new Navigation();
+        $nav = new Navigation('test');
         $link = new Link('A');
         $nav->addLink($link);
         $nav->addLink(new Link('B'), 'A');
@@ -68,7 +68,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
      */
     public function addLinkWrongParent($parent)
     {
-        $nav = new Navigation();
+        $nav = new Navigation('test');
         $link = new Link('A');
         $nav->addLink($link);
         $nav->addLink(new Link('B'), $parent);
@@ -84,7 +84,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
      */
     public function addLinkInvalidArgument($parent)
     {
-        $nav = new Navigation();
+        $nav = new Navigation('test');
         $nav->addLink(new Link('B'), $parent);
     }
 
@@ -117,7 +117,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
      */
     public function getNavigation()
     {
-        $nav = new Navigation();
+        $nav = new Navigation('test');
         $nav->addLink(new Link('A'));
         $this->assertEquals([
             'A' => [
@@ -135,7 +135,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
     public function addDumper()
     {
         $dumper = $this->getMock('Maketok\Navigation\Dumper\DumperInterface');
-        $nav = new Navigation();
+        $nav = new Navigation('test');
         $nav->addDumper($dumper);
 
         $refProp = new \ReflectionProperty(get_class($nav), 'dumpers');

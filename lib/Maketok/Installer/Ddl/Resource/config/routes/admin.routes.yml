@@ -5,8 +5,8 @@
 
 routes:
   - type: literal
-    path: /install/run
+    path: /install/ddl/run
     resolver: [Maketok\Installer\Ddl\Resource\controller\Install, runAction]
   - type: literal
-    path: /install
+    path: /install/ddl
     resolver: [Maketok\Installer\Ddl\Resource\controller\Install, indexAction]

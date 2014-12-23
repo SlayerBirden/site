@@ -10,8 +10,10 @@
 
 namespace Maketok\Navigation;
 
+use Maketok\App\Site;
 use Maketok\Navigation\Dumper\DumperInterface;
 use Maketok\Util\ArrayValueTrait;
+use Maketok\Util\ConfigGetter;
 
 class Navigation implements NavigationInterface
 {
@@ -26,15 +28,21 @@ class Navigation implements NavigationInterface
      * @var \SplStack
      */
     protected $dumpers;
+    /**
+     * @var string
+     */
+    protected $code;
 
     /**
      * init tree
      * @codeCoverageIgnore
+     * @param string $code
      */
-    public function __construct()
+    public function __construct($code)
     {
         $this->tree = new Link('root');
         $this->dumpers = new \SplStack();
+        $this->code = $code;
     }
 
     /**
@@ -75,5 +83,43 @@ class Navigation implements NavigationInterface
     public function addDumper(DumperInterface $dumper)
     {
         $this->dumpers->push($dumper);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function initConfig()
+    {
+        $tree = [];
+        foreach (ConfigGetter::getConfig(Site::getConfig('navigation_config_path'), 'navigation', ENV) as $config) {
+            $tree = array_replace_recursive($tree, $config);
+        }
+        $config = $this->getIfExists($this->code, $tree, []);
+        if ($config) {
+            $this->parseConfig($config, $this->tree);
+        }
+    }
+
+    /**
+     * @param array $config
+     * @param LinkInterface $parent
+     * @throws Exception
+     */
+    protected function parseConfig($config, LinkInterface $parent)
+    {
+        foreach ($config as $code => $link) {
+            if (is_array($link)) {
+                $href = $this->getIfExists('href', $link);
+                $order = $this->getIfExists('order', $link);
+                $title = $this->getIfExists('title', $link);
+                $children = $this->getIfExists('children', $link);
+                $node = $parent->addChild(new Link($code, $href, $order, $title));
+                if ($children) {
+                    $this->parseConfig($children, $node);
+                }
+            } else {
+                throw new Exception(sprintf("Invalid link type given: %s", gettype($link)));
+            }
+        }
     }
 }

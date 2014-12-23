@@ -32,4 +32,9 @@ interface NavigationInterface
      * @return self
      */
     public function addDumper(DumperInterface $dumper);
+
+    /**
+     * load configuration
+     */
+    public function initConfig();
 }

@@ -38,4 +38,14 @@ abstract class AbstractAdminController extends AbstractController
             $this->addTemplatePath($view);
         }
     }
+
+    /**
+     * @return array
+     */
+    public function getDefaults()
+    {
+        $defaults = parent::getDefaults();
+        $defaults['links'] = $this->ioc()->get('topmenu')->getNavigation();
+        return $defaults;
+    }
 }

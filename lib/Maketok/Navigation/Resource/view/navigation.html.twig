@@ -4,7 +4,11 @@
 {# file that was distributed with this source code. #}
 {% for link in links %}
     <li>
-        <a href="{{ link.url }}" title="">{{ link.title }}</a>
+        {% if link.href %}
+            <a href="{{ link.href }}" title="">{{ link.title }}</a>
+        {% else %}
+            <span>{{ link.title }}</span>
+        {% endif %}
         {% if link.children %}
             <ul>
                 {% include "navigation.html.twig" with {'links': link.children} %}

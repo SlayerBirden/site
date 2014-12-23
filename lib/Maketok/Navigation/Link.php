@@ -47,7 +47,7 @@ class Link extends Node implements LinkInterface
         $this->order = $order;
         $this->title = $title;
         if ($parent) {
-            $this->setParent($parent);
+            $parent->addChild($this);
         }
     }
 

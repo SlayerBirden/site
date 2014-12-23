@@ -13,6 +13,7 @@ namespace modules\blog;
 use Maketok\Module\AdminConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
+use Maketok\Navigation\Link;
 
 /**
  * @codeCoverageIgnore
@@ -39,6 +40,9 @@ class AdminConfig extends Config implements AdminConfigInterface
             [],
             ['id' => '^\d+$']
         ));
+
+        // menu handling
+        $this->ioc()->get('topmenu')->addLink(new Link('blog', $this->getUrl('blog'), 6, 'Blog'));
     }
 
     /**

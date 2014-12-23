@@ -127,8 +127,7 @@ class AbstractController
             'images_url' => $this->getUrl('/images/'),
             'base_url' => $this->getUrl('/', ['wts' => 1]),
             'current_url' => $this->getCurrentUrl(),
-            'session' => $this->getSession(),
-            'links' => [],
+            'session' => $this->getSession()
         ];
     }
 
