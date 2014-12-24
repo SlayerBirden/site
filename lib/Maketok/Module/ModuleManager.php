@@ -75,7 +75,7 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @param mixed $id
+     * @param string $id
      * @param string $version
      */
     public function updateToVersion($id, $version)
