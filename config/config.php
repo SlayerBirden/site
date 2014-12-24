@@ -25,7 +25,7 @@ return [
         new \Maketok\Template\Symfony\Form\FormTypeCompilerPass
     ],
     'routing_provider_path' => [
-        AR . '/config',
+        AR . '/config/routes',
         AR . '/lib/Maketok/Module/Resource/config/routes',
         AR . '/lib/Maketok/Installer/Ddl/Resource/config/routes',
     ],
