@@ -9,6 +9,7 @@
  */
 
 namespace Maketok\Util\Test;
+
 use Maketok\Util\CallableHash;
 
 /**

@@ -12,7 +12,6 @@ namespace Maketok\Util;
 
 class CallableHash
 {
-
     /**
      * @param callable $client
      * @return string

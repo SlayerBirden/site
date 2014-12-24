@@ -46,7 +46,7 @@ class PriorityQueue implements \ArrayAccess
         if (count($this->queue) <= 1) {
             return;
         }
-        uasort($this->queue, function($a, $b) {
+        uasort($this->queue, function ($a, $b) {
             if ($a['priority'] > $b['priority']) {
                 return 1;
             } elseif ($a['priority'] < $b['priority']) {

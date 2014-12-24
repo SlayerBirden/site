@@ -15,7 +15,6 @@ use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\ConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
-use Maketok\Util\ConfigGetter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
