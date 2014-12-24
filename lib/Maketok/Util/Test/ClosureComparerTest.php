@@ -33,6 +33,7 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
      * @covers ::isClosure
      * @covers ::parseClosure
      * @covers ::filterBody
+     * @covers ::getClosureContents
      * @dataProvider closureProvider
      * @param mixed $c1
      * @param mixed $c2

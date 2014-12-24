@@ -23,15 +23,21 @@ class SubscriberBag implements \IteratorAggregate
      * @var SubjectInterface
      */
     public $subject;
+    /**
+     * @var string unique id
+     */
+    public $code;
 
     /**
-     * @param callable         $subscriber
+     * @param string $code
+     * @param callable $subscriber
      * @param SubjectInterface $subject
      */
-    public function __construct($subscriber, SubjectInterface $subject)
+    public function __construct($code, $subscriber, SubjectInterface $subject)
     {
         $this->subscriber = $subscriber;
         $this->subject = $subject;
+        $this->code = $code;
     }
 
     /**

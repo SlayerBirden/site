@@ -30,11 +30,11 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
     public function testAddSame()
     {
         $manager = new SubjectManager();
-        $mock = $this->getMock('\Maketok\Observer\Test\MuteStub');
+        $mock = $this->getMock('MuteStub', ['doSomething']);
         $mock->expects($this->once())->method('doSomething');
-        $manager->attach('simpleEvent', [$mock, 'doSomething'], 1);
-        $manager->attach('simpleEvent', [$mock, 'doSomething'], 2);
-        $manager->detach('simpleEvent', [$mock, 'doSomething']);
+        $manager->attach('simpleEvent', ['first' => [$mock, 'doSomething']], 1);
+        $manager->attach('simpleEvent', ['second' => [$mock, 'doSomething']], 2);
+        $manager->detach('simpleEvent', 'first');
         $manager->notify('simpleEvent', new State());
     }
 
@@ -47,9 +47,9 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
     public function testAddDifferent()
     {
         $manager = new SubjectManager();
-        $mock = $this->getMock('\Maketok\Observer\Test\MuteStub');
+        $mock = $this->getMock('MuteStub', ['doSomething']);
         $mock->expects($this->once())->method('doSomething');
-        $mock2 = $this->getMock('\Maketok\Observer\Test\MuteStub');
+        $mock2 = $this->getMock('MuteStub', ['doSomethingElse']);
         $mock2->expects($this->once())->method('doSomethingElse');
         $manager->attach('simpleEvent', [$mock, 'doSomething'], 1);
         $manager->attach('simpleEvent', [$mock2, 'doSomethingElse'], 2);
@@ -65,9 +65,9 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
     public function testNoPropagation()
     {
         $manager = new SubjectManager();
-        $mock = $this->getMock('\Maketok\Observer\Test\MuteStub');
+        $mock = $this->getMock('MuteStub', ['doSomething']);
         $mock->expects($this->once())->method('doSomething');
-        $mock2 = $this->getMock('\Maketok\Observer\Test\MuteStub');
+        $mock2 = $this->getMock('MuteStub', ['doSomethingElse']);
         $mock2->expects($this->never())->method('doSomethingElse');
         $subject = new Subject('simpleEvent');
         $manager->attach($subject->setShouldStopPropagation(1), [$mock, 'doSomething'], 999);
@@ -84,13 +84,39 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
     public function testResolver()
     {
         $manager = new SubjectManager();
-        $mock = $this->getMock('\Maketok\Observer\Test\MuteStub');
+        $mock = $this->getMock('MuteStub', ['doSomething']);
         $mock->expects($this->once())->method('doSomething');
-        $mock2 = $this->getMock('\Maketok\Observer\Test\MuteStub');
+        $mock2 = $this->getMock('MuteStub', ['doSomethingElse']);
         $mock2->expects($this->never())->method('doSomethingElse');
         $subject = new Subject('simpleEvent');
-        $manager->attach($subject, new SubscriberBag([$mock, 'doSomething'], $subject->setShouldStopPropagation(1)), 999);
+        $manager->attach($subject, new SubscriberBag(
+            'test',
+            [$mock, 'doSomething'],
+            $subject->setShouldStopPropagation(1)
+        ), 999);
         $manager->attach('simpleEvent', [$mock2, 'doSomethingElse'], 2);
+        $manager->notify('simpleEvent', new State());
+    }
+
+    /**
+     * @test
+     * @covers ::attach
+     * @covers ::detach
+     * @covers ::notify
+     * @covers ::resolveSubscriber
+     */
+    public function testNoSubs()
+    {
+        $manager = new SubjectManager();
+        $mock = $this->getMock('MuteStub', ['doSomething']);
+        $mock->expects($this->never())->method('doSomething');
+        $subject = new Subject('simpleEvent');
+        $manager->attach($subject, new SubscriberBag(
+            'test',
+            [$mock, 'doSomething'],
+            $subject->setShouldStopPropagation(1)
+        ), 999);
+        $manager->detach('simpleEvent', 'test');
         $manager->notify('simpleEvent', new State());
     }
 
@@ -105,5 +131,30 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
     {
         $manager = new SubjectManager();
         $manager->attach('simpleEvent', new \stdClass(), 2);
+    }
+
+    /**
+     * @test
+     * @covers ::parseConfig
+     * @covers ::attach
+     * @covers ::notify
+     */
+    public function parseConfig()
+    {
+        $mock = $this->getMock('MuteStub', ['doSomething']);
+        $mock->expects($this->never())->method('doSomething');
+        $config = [
+            'test_event' => [
+                'attach' => [
+                    [
+                        ['test_sub' => [$mock, 'doSomething']], 0
+                    ]
+                ],
+                'detach' => ['test_sub']
+            ]
+        ];
+        $manager = new SubjectManager();
+        $manager->parseConfig($config);
+        $manager->notify('test_event', new State());
     }
 }

@@ -8,23 +8,34 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Observer\Test;
+namespace Maketok\Util\Test;
 
-/**
- * @codeCoverageIgnore
- * this is solely for the purpose of testing callbacks
- */
 class MuteStub
 {
     /**
-     * this is some logic
+     * @var mixed
+     */
+    public $prop;
+
+    /**
+     * @param mixed $value
+     * @return $this
+     */
+    public function setProp($value)
+    {
+        $this->prop = $value;
+        return $this;
+    }
+
+    /**
+     * stub method
      */
     public function doSomething()
     {
     }
 
     /**
-     * this is some logic
+     * stub method
      */
     public function doSomethingElse()
     {

@@ -22,7 +22,7 @@ interface SubjectManagerInterface
 
     /**
      * @param  string|SubjectInterface $subject
-     * @param  callable|SubscriberBag  $subscriber
+     * @param  callable|SubscriberBag|string  $subscriber -> you can use code
      * @return mixed
      */
     public function detach($subject, $subscriber);

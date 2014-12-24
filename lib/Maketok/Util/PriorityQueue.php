@@ -10,39 +10,59 @@
 
 namespace Maketok\Util;
 
-class PriorityQueue
+class PriorityQueue implements \ArrayAccess
 {
     /**
      * the actual queue
-     * @var \SplPriorityQueue
+     * @var array
      */
     protected $queue;
 
-    protected $items = array();
-
+    /**
+     * @var int
+     */
     protected $serial = PHP_INT_MAX;
 
     /**
      * @param mixed $data
-     * @param int   $priority
+     * @param int $priority
+     * @param int|string $offset
      */
-    public function insert($data, $priority = 1)
+    public function insert($data, $priority = 1, $offset = null)
     {
-        $this->items[] = array('item' => $data, 'priority' => $priority);
-        // make sure we handle same priorities well
-        $this->getQueue()->insert($data, array($priority, $this->serial--));
+        if (is_null($offset)) {
+            $this->queue[] = ['item' => $data, 'priority' => [$priority, $this->serial--]];
+        } else {
+            $this[$offset] = ['item' => $data, 'priority' => [$priority, $this->serial--]];
+        }
+        $this->adjustQueue();
+    }
+
+    /**
+     * sort queue to make sure all members are on their priority places
+     */
+    protected function adjustQueue()
+    {
+        if (count($this->queue) <= 1) {
+            return;
+        }
+        uasort($this->queue, function($a, $b) {
+            if ($a['priority'] > $b['priority']) {
+                return 1;
+            } elseif ($a['priority'] < $b['priority']) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
     }
 
     /**
      * @codeCoverageIgnore
-     * @return \SplPriorityQueue
+     * @return array
      */
     public function getQueue()
     {
-        if (is_null($this->queue)) {
-            $this->queue = new \SplPriorityQueue();
-        }
-
         return $this->queue;
     }
 
@@ -51,7 +71,7 @@ class PriorityQueue
      */
     public function isEmpty()
     {
-        return $this->getQueue()->isEmpty();
+        return count($this->queue) <= 0;
     }
 
     /**
@@ -61,29 +81,62 @@ class PriorityQueue
      */
     public function extract()
     {
-        return $this->getQueue()->extract();
+        $el = array_pop($this->queue);
+        return $el['item'];
     }
 
     /**
      * remove item and dequeue it from internal queue
      * @param mixed $item
+     * @param int|string $offset
      */
-    public function remove($item)
+    public function remove($item = null, $offset = null)
     {
-        $shouldRebuildQueue = false;
-        foreach ($this->items as $key => $data) {
-            $comparer = new ClosureComparer();
-            if ($item == $data['item'] || $comparer->compare($item, $data['item']) === 0) {
-                unset($this->items[$key]);
-                $this->queue = null;
-                $shouldRebuildQueue = true;
-                break;
+        if (is_null($item) && is_null($offset)) {
+            throw new \InvalidArgumentException("Not enough arguments given.");
+        }
+        if (!is_null($offset)) {
+            unset($this[$offset]);
+        } elseif (!is_null($item)) {
+            foreach ($this->queue as $key => $data) {
+                $comparer = new ClosureComparer();
+                if ($item == $data['item'] || $comparer->compare($item, $data['item']) === 0) {
+                    unset($this[$key]);
+                    break;
+                }
             }
         }
-        if ($shouldRebuildQueue) {
-            foreach ($this->items as $data) {
-                $this->getQueue()->insert($data['item'], $data['priority']);
-            }
-        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->queue[$offset]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet($offset)
+    {
+        return $this->queue[$offset]['item'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->queue[$offset] = $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->queue[$offset]);
     }
 }

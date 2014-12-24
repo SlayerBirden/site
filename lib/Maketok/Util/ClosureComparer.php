@@ -36,22 +36,26 @@ class ClosureComparer
         if ($reflectedClosure1->getParameters() != $reflectedClosure2->getParameters()) {
             return 1;
         }
-        $a = $this->parseClosure(
-            implode(array_slice(
-                file($reflectedClosure1->getFileName()),
-                $reflectedClosure1->getStartLine() - 1,
-                ($reflectedClosure1->getEndLine() - $reflectedClosure1->getStartLine() + 1)
-            ))
-        );
-        $b = $this->parseClosure(
-            implode(array_slice(
-                file($reflectedClosure2->getFileName()),
-                $reflectedClosure2->getStartLine() - 1,
-                ($reflectedClosure2->getEndLine() - $reflectedClosure2->getStartLine() + 1)
-            ))
-        );
+        $a = $this->getClosureContents($cl1);
+        $b = $this->getClosureContents($cl2);
 
         return (int) !($a == $b);
+    }
+
+    /**
+     * @param \Closure $closure
+     * @return string
+     */
+    public function getClosureContents(\Closure $closure)
+    {
+        $reflectedClosure = new \ReflectionFunction($closure);
+        return $this->parseClosure(
+            implode(array_slice(
+                file($reflectedClosure->getFileName()),
+                $reflectedClosure->getStartLine() - 1,
+                ($reflectedClosure->getEndLine() - $reflectedClosure->getStartLine() + 1)
+            ))
+        );
     }
 
     /**

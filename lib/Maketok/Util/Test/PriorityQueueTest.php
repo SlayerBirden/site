@@ -30,6 +30,9 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
      * @covers ::insert
      * @covers ::extract
      * @covers ::isEmpty
+     * @covers ::adjustQueue
+     * @covers ::offsetGet
+     * @covers ::offsetSet
      */
     public function insert()
     {
@@ -39,10 +42,12 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
         $this->queue->insert($data);
         $this->queue->insert($data2);
         $this->queue->insert($data3, 10);
+        $this->queue->insert($data3, -1, 'key');
 
         $this->assertEquals($data3, $this->queue->extract());
         $this->assertEquals($data, $this->queue->extract());
         $this->assertEquals($data2, $this->queue->extract());
+        $this->assertEquals($data3, $this->queue->extract());
 
         $this->assertTrue($this->queue->isEmpty());
     }
@@ -51,6 +56,7 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
      * @test
      * @covers ::remove
      * @covers ::isEmpty
+     * @covers ::offsetGet
      */
     public function remove()
     {
@@ -59,11 +65,11 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
         $data3 = function () {echo 'closure';};
         $this->queue->insert($data);
         $this->queue->insert($data2);
-        $this->queue->insert($data3, 10);
+        $this->queue->insert($data3, 10, 'testkey');
 
         $this->queue->remove('SomeClass::staticMethod');
         $this->queue->remove([new \stdClass(), 'method']);
-        $this->queue->remove(function () {echo 'closure';});
+        $this->queue->remove(null, 'testkey');
 
         $this->assertTrue($this->queue->isEmpty());
     }

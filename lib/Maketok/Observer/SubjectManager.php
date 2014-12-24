@@ -12,6 +12,7 @@ namespace Maketok\Observer;
 
 use Maketok\App\Helper\ContainerTrait;
 use Maketok\App\Site;
+use Maketok\Util\CallableHash;
 use Maketok\Util\PriorityQueue;
 
 class SubjectManager implements SubjectManagerInterface
@@ -30,7 +31,8 @@ class SubjectManager implements SubjectManagerInterface
         if (!isset($this->subscribers[(string) $subject])) {
             $this->subscribers[(string) $subject] = new PriorityQueue();
         }
-        $this->subscribers[(string) $subject]->insert($this->resolveSubscriber($subscriber, $subject), $priority);
+        $sub = $this->resolveSubscriber($subscriber, $subject);
+        $this->subscribers[(string) $subject]->insert($sub, $priority, $sub->code);
     }
 
     /**
@@ -51,9 +53,9 @@ class SubjectManager implements SubjectManagerInterface
         if (isset($this->subscribers[$subject])) {
             /** @var PriorityQueue $_subQueue */
             $subQueue = $this->subscribers[$subject];
-            while ($subQueue->getQueue()->valid()) {
+            while (!$subQueue->isEmpty()) {
                 /** @var SubscriberBag $subBag */
-                $subBag = $subQueue->getQueue()->extract();
+                $subBag = $subQueue->extract();
                 call_user_func($subBag->subscriber, $state->setSubject($subBag->subject));
                 if ($subBag->subject->getShouldStopPropagation()) {
                     break;
@@ -70,13 +72,28 @@ class SubjectManager implements SubjectManagerInterface
      */
     protected function resolveSubscriber($subscriber, $subject)
     {
-        if (is_callable($subscriber)) {
-            if (is_object($subject) && ($subject instanceof SubjectInterface)) {
-                return new SubscriberBag($subscriber, $subject);
+        if (is_string($subscriber)) {
+            if (isset($this->subscribers[$subject][$subscriber])) {
+                return $this->subscribers[$subject][$subscriber];
             } else {
-                return new SubscriberBag($subscriber, new Subject((string) $subject));
+                throw new \InvalidArgumentException(sprintf("Can't find subscriber by id %s.", $subscriber));
             }
+        }
+        // from now on we don't need string sub
+        if (!is_object($subject) || !($subject instanceof SubjectInterface)) {
+            $subject = new Subject((string) $subject);
+        }
+        if (is_array($subscriber) && !is_callable($subscriber)) {
+            // id => sub pair
+            if (is_callable(current($subscriber))) {
+                return new SubscriberBag(key($subscriber), current($subscriber), $subject);
+            }
+        } elseif (is_callable($subscriber)) {
+            // only sub
+            $hasher = new CallableHash();
+            return new SubscriberBag($hasher->getHash($subscriber), $subscriber, $subject);
         } elseif (is_object($subscriber) && ($subscriber instanceof SubscriberBag)) {
+            // bag already
             return $subscriber;
         }
         throw new \InvalidArgumentException("Invalid subscriber given.");
@@ -97,7 +114,7 @@ class SubjectManager implements SubjectManagerInterface
     /**
      * @param array $config
      */
-    protected function parseConfig($config)
+    public function parseConfig($config)
     {
         foreach ($config as $event => $subscribers) {
             if (isset($subscribers['attach'])) {
@@ -105,17 +122,13 @@ class SubjectManager implements SubjectManagerInterface
                     if (is_array($subscriberArray) && isset($subscriberArray[0]) && isset($subscriberArray[1])) {
                         $subscriber = $subscriberArray[0];
                         $priority = $subscriberArray[1];
-                        if (is_callable($subscriber)) {
-                            $this->attach($event, $subscriber, $priority);
-                        }
+                        $this->attach($event, $subscriber, $priority);
                     }
                 }
             }
             if (isset($subscribers['detach'])) {
                 foreach ($subscribers['detach'] as $subscriber) {
-                    if (is_callable($subscriber)) {
-                        $this->detach($event, $subscriber);
-                    }
+                    $this->detach($event, $subscriber);
                 }
             }
         }
