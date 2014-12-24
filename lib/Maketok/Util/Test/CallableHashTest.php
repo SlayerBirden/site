@@ -31,6 +31,9 @@ class CallableHashTest extends \PHPUnit_Framework_TestCase
         $this->assertThat($hasher->getHash($client1) == $hasher->getHash($client2), $this->identicalTo($expected));
     }
 
+    /**
+     * @return array
+     */
     public function clientProvider()
     {
         $muteStub = new MuteStub();
@@ -52,6 +55,8 @@ class CallableHashTest extends \PHPUnit_Framework_TestCase
             [$cl1, $cl2, true],
             [$cl1, $cl3, false],
             [[$muteStub, 'doSomething'], $cl1, false],
+            [$muteStub, $muteStub2, true],
+            ['\Maketok\Util\Test\MuteStub::StaticMethod', '\Maketok\Util\Test\MuteStub::StaticMethod', true],
         ];
     }
 }

@@ -46,6 +46,7 @@ class PriorityQueue implements \ArrayAccess
         if (count($this->queue) <= 1) {
             return;
         }
+        //@codeCoverageIgnoreStart
         uasort($this->queue, function ($a, $b) {
             if ($a['priority'] > $b['priority']) {
                 return 1;
@@ -55,6 +56,7 @@ class PriorityQueue implements \ArrayAccess
                 return 0;
             }
         });
+        //@codeCoverageIgnoreEnd
     }
 
     /**
@@ -110,6 +112,7 @@ class PriorityQueue implements \ArrayAccess
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function offsetExists($offset)
     {
@@ -118,6 +121,7 @@ class PriorityQueue implements \ArrayAccess
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function offsetGet($offset)
     {
@@ -134,6 +138,7 @@ class PriorityQueue implements \ArrayAccess
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function offsetUnset($offset)
     {

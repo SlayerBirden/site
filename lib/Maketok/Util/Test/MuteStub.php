@@ -10,6 +10,9 @@
 
 namespace Maketok\Util\Test;
 
+/**
+ * @codeCoverageIgnore
+ */
 class MuteStub
 {
     /**
@@ -38,6 +41,20 @@ class MuteStub
      * stub method
      */
     public function doSomethingElse()
+    {
+    }
+
+    /**
+     * invoker
+     */
+    public function __invoke()
+    {
+    }
+
+    /**
+     * static method
+     */
+    public static function StaticMethod()
     {
     }
 }

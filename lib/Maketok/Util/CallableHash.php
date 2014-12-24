@@ -16,11 +16,8 @@ class CallableHash
      * @param callable $client
      * @return string
      */
-    public function getHash($client)
+    public function getHash(callable $client)
     {
-        if (!is_callable($client)) {
-            throw new \InvalidArgumentException("Will hash only callables.");
-        }
         if (is_object($client) && $client instanceof \Closure) {
             $closureHelper = new ClosureComparer();
             return md5(serialize($closureHelper->getClosureContents($client)));
