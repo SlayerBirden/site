@@ -145,4 +145,45 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('SplStack', $stack);
         $this->assertEquals($dumper, $stack->pop());
     }
+
+    /**
+     * @test
+     * @covers ::parseConfig
+     * @covers Maketok\Navigation\Node::addChild
+     * @covers ::getNavigation
+     */
+    public function parseConfig()
+    {
+        $config = [
+            'A' => [
+                'href' => '/linkA',
+                'title' => 'Link A',
+                'children' => [
+                    'B' => [
+                        'href' => '/linkB',
+                        'title' => 'Link B',
+                        'children' => []
+                    ]
+                ]
+            ]
+        ];
+        $nav = new Navigation('test');
+        $nav->parseConfig($config);
+        $this->assertEquals($config, $nav->getNavigation());
+    }
+
+    /**
+     * @test
+     * @covers ::parseConfig
+     * @expectedException \Maketok\Navigation\Exception
+     * @expectedExceptionMessage Invalid link type given:
+     */
+    public function parseConfigInvalidLink()
+    {
+        $config = [
+            'A' => 'test'
+        ];
+        $nav = new Navigation('test');
+        $nav->parseConfig($config);
+    }
 }

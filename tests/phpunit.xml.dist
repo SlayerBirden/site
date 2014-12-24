@@ -15,7 +15,7 @@
             <directory>../lib/Maketok/App/Test/</directory>
         </testsuite>
         <testsuite name="nav">
-            <directory>../lib/Maketok/Template/Navigation/Test</directory>
+            <directory>../lib/Maketok/Navigation/Test</directory>
         </testsuite>
         <testsuite name="observer">
             <directory>../lib/Maketok/Observer/Test</directory>

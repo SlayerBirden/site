@@ -88,6 +88,7 @@ class Navigation implements NavigationInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function initConfig()
     {
@@ -98,7 +99,7 @@ class Navigation implements NavigationInterface
         }
         $config = $this->getIfExists($this->code, $tree, []);
         if ($config) {
-            $this->parseConfig($config, $this->tree);
+            $this->parseConfig($config);
         }
     }
 
@@ -107,8 +108,11 @@ class Navigation implements NavigationInterface
      * @param LinkInterface $parent
      * @throws Exception
      */
-    protected function parseConfig($config, LinkInterface $parent)
+    public function parseConfig($config, LinkInterface $parent = null)
     {
+        if (is_null($parent)) {
+            $parent = $this->tree;
+        }
         foreach ($config as $code => $link) {
             if (is_array($link)) {
                 $href = $this->getIfExists('href', $link);
