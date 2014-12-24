@@ -71,7 +71,7 @@ class ConfigGetter
             }
             foreach ($correctFileNames as $file) {
                 try {
-                    $config = $loader->load($file);
+                    $config = $loader->load($file, null);
                     if (!is_array($config)) {
                         continue;
                     }
@@ -88,7 +88,7 @@ class ConfigGetter
      * @codeCoverageIgnore
      * @return DelegatingLoader
      */
-    private function getLoader()
+    protected function getLoader()
     {
         $resolver = new LoaderResolver($this->getLoaders());
         return new DelegatingLoader($resolver);

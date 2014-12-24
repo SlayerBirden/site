@@ -16,7 +16,6 @@ use Maketok\Mvc\Error\DumperInterface;
 
 class Index extends AbstractBaseController implements DumperInterface
 {
-
     /**
      * {@inheritdoc}
      */

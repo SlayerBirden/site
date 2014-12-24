@@ -20,7 +20,6 @@ use Maketok\Navigation\Link;
  */
 class AdminConfig extends Config implements AdminConfigInterface
 {
-
     /**
      * {@inheritdoc}
      */

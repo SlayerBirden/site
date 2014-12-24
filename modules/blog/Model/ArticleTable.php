@@ -16,7 +16,6 @@ use Zend\Db\Sql\Select;
 
 class ArticleTable extends TableMapper
 {
-
     /**
      * get ten most recent articles
      * @return \Zend\Db\ResultSet\ResultSet

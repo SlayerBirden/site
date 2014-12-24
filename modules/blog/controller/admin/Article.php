@@ -20,7 +20,6 @@ use Symfony\Component\Form\FormInterface;
 
 class Article extends AbstractAdminController
 {
-
     /**
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response

@@ -11,7 +11,7 @@
 namespace Maketok\Util\Test;
 
 /**
- * @coversDefaultClass \Maketok\Util\ConfigGetterTest
+ * @coversDefaultClass Maketok\Util\ConfigGetter
  */
 class ConfigGetterTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,21 +24,20 @@ class ConfigGetterTest extends \PHPUnit_Framework_TestCase
     public function getConfig()
     {
         $configGetter = $this->getMock('Maketok\Util\ConfigGetter', ['getLoader']);
-
         $loaderMock = $this->getMock('Symfony\Component\Config\Loader\LoaderInterface');
-
         $map = [
-            ['config.yml', null],
-            ['admin.config.yml', ['value' => [1]]],
-            ['config.php', ['value' => [2]]],
-            ['admin.config.php', ['value' => [3]]],
+            ['config.yml', null, null],
+            ['admin.config.yml', null, ['value' => [1]]],
+            ['config.php', null, ['value' => [2]]],
+            ['admin.config.php', null, ['value' => [3]]],
         ];
         $loaderMock->expects($this->any())->method('load')->willReturnMap($map);
-
-        $this->assertEquals(['value' => [1]], $loaderMock->load('admin.config.yml'));
-
+        $this->assertEquals(['value' => [1]], $loaderMock->load('admin.config.yml', null));
         $configGetter->expects($this->any())->method('getLoader')->will($this->returnValue($loaderMock));
-
-        $this->assertEquals(['value' => [1,2,3]], $configGetter->getConfig('testpath', 'config', 'admin'));
+        $this->assertEquals([
+            ['value' => [1]],
+            ['value' => [2]],
+            ['value' => [3]],
+        ], $configGetter->getConfig('testpath', 'config', 'admin'));
     }
 }

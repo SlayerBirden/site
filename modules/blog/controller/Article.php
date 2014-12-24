@@ -18,7 +18,6 @@ use modules\blog\model\ArticleTable;
 
 class Article extends AbstractBaseController
 {
-
     /**
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response

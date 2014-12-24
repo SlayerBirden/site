@@ -16,7 +16,6 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ArticleType extends AbstractType
 {
-
     /**
      * {@inheritdoc}
      */

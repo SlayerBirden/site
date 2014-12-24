@@ -16,7 +16,6 @@ use modules\blog\Model\ArticleTable;
 
 class Index extends AbstractBaseController
 {
-
     /**
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
@@ -33,5 +32,4 @@ class Index extends AbstractBaseController
             'articles' => $articles
         ));
     }
-
 }
