@@ -131,7 +131,7 @@ class Front
      * @param  \Maketok\Mvc\Router\Route\RouteInterface $route
      * @return ResponseInterface
      */
-    protected function launchAction(callable $resolver, RouteInterface $route)
+    protected function launchAction($resolver, RouteInterface $route)
     {
         return call_user_func_array($this->processConfigResolver($resolver), array($route->getRequest()));
     }

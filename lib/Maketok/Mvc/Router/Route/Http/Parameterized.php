@@ -34,12 +34,12 @@ class Parameterized extends AbstractRoute implements RouteInterface
 
     /**
      * @param string $path
-     * @param callable $resolver
+     * @param callable|string[] $resolver
      * @param array $defaults
      * @param array $restrictions
      * @param \Maketok\Util\ExpressionParserInterface $parser
      */
-    public function __construct($path, callable $resolver, array $defaults, array $restrictions, ExpressionParserInterface $parser = null)
+    public function __construct($path, $resolver, array $defaults, array $restrictions, ExpressionParserInterface $parser = null)
     {
         $this->setPath($path);
         $this->resolver = $resolver;
