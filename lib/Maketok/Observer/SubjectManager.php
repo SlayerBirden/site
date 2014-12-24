@@ -13,9 +13,10 @@ namespace Maketok\Observer;
 use Maketok\App\Helper\ContainerTrait;
 use Maketok\App\Site;
 use Maketok\Util\CallableHash;
+use Maketok\Util\ConfigConsumer;
 use Maketok\Util\PriorityQueue;
 
-class SubjectManager implements SubjectManagerInterface
+class SubjectManager implements SubjectManagerInterface, ConfigConsumer
 {
     use ContainerTrait;
     /**
@@ -100,10 +101,10 @@ class SubjectManager implements SubjectManagerInterface
     }
 
     /**
-     * loads system subscribers
+     * {@inheritdoc}
      * @codeCoverageIgnore
      */
-    public function loadMap()
+    public function initConfig()
     {
         foreach ($this->ioc()->get('config_getter')
                      ->getConfig(Site::getConfig('subscribers_config_path'), 'subscribers', ENV) as $config) {
@@ -112,9 +113,9 @@ class SubjectManager implements SubjectManagerInterface
     }
 
     /**
-     * @param array $config
+     * {@inheritdoc}
      */
-    public function parseConfig($config)
+    public function parseConfig(array $config)
     {
         foreach ($config as $event => $subscribers) {
             if (isset($subscribers['attach'])) {

@@ -14,8 +14,9 @@ use Maketok\App\Helper\ContainerTrait;
 use Maketok\App\Site;
 use Maketok\Navigation\Dumper\DumperInterface;
 use Maketok\Util\ArrayValueTrait;
+use Maketok\Util\ConfigConsumer;
 
-class Navigation implements NavigationInterface
+class Navigation implements NavigationInterface, ConfigConsumer
 {
     use ArrayValueTrait;
     use ContainerTrait;
@@ -104,16 +105,23 @@ class Navigation implements NavigationInterface
     }
 
     /**
-     * @param array $config
+     * {@inheritdoc}
+     * @throws Exception
+     */
+    public function parseConfig(array $config)
+    {
+        $parent = $this->tree;
+        $this->drawNodes($config, $parent);
+    }
+
+    /**
+     * @param array $nodesData
      * @param LinkInterface $parent
      * @throws Exception
      */
-    public function parseConfig($config, LinkInterface $parent = null)
+    protected function drawNodes(array $nodesData, LinkInterface $parent)
     {
-        if (is_null($parent)) {
-            $parent = $this->tree;
-        }
-        foreach ($config as $code => $link) {
+        foreach ($nodesData as $code => $link) {
             if (is_array($link)) {
                 $href = $this->getIfExists('href', $link);
                 $order = $this->getIfExists('order', $link);
@@ -121,7 +129,7 @@ class Navigation implements NavigationInterface
                 $children = $this->getIfExists('children', $link);
                 $node = $parent->addChild(new Link($code, $href, $order, $title));
                 if ($children) {
-                    $this->parseConfig($children, $node);
+                    $this->drawNodes($children, $node);
                 }
             } else {
                 throw new Exception(sprintf("Invalid link type given: %s", gettype($link)));

@@ -13,9 +13,10 @@ namespace Maketok\Mvc\Router;
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\App\Site;
 use Maketok\Mvc\RouteException;
+use Maketok\Util\ConfigConsumer;
 use Maketok\Util\RequestInterface;
 
-abstract class AbstractRouter implements RouterInterface
+abstract class AbstractRouter implements RouterInterface, ConfigConsumer
 {
     use UtilityHelperTrait;
 
@@ -73,41 +74,53 @@ abstract class AbstractRouter implements RouterInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
-    public function loadConfig()
+    public function initConfig()
     {
         $configs = $this->ioc()->get('config_getter')->getConfig(Site::getConfig('routing_provider_path'), 'routes', ENV);
         foreach ($configs as $contents) {
-            if ($routes = $this->getIfExists('routes', $contents, false)) {
-                foreach ($routes as $route) {
-                    $type = $this->getIfExists('type', $route);
-                    $path = $this->getIfExists('path', $route);
-                    $resolver = $this->getIfExists('resolver', $route);
-                    if (is_null($type) || is_null($path) || is_null($resolver)) {
-                        $this->getLogger()->err(sprintf("Invalid route definition: %s", json_encode($route)));
-                        continue;
-                    }
-                    try {
-                        $name = $this->getFullyQualifiedName($type);
-                        /** @var RouterInterface $routeObj */
-                        $routeObj = new $name(
-                            $path,
-                            $resolver,
-                            $this->getIfExists('defaults', $route, []),
-                            $this->getIfExists('restrictions', $route, []),
-                            $this->getIfExists('parser', $route)
-                        );
-                        $this->addRoute($routeObj);
-                    } catch (RouteException $e) {
-                        $this->getLogger()->err($e->__toString());
-                    }
-                }
+            try {
+                $this->parseConfig($contents);
+            } catch (RouteException $e) {
+                $this->getLogger()->err($e->__toString());
             }
         }
     }
 
     /**
-     * @param  string         $type
+     * {@inheritdoc}
+     * @throws RouteException
+     */
+    public function parseConfig(array $config)
+    {
+        $routes = $this->getIfExists('routes', $config, false);
+        if (!$routes) {
+            return;
+        }
+        foreach ($routes as $route) {
+            $type = $this->getIfExists('type', $route);
+            $path = $this->getIfExists('path', $route);
+            $resolver = $this->getIfExists('resolver', $route);
+            if (is_null($type) || is_null($path) || is_null($resolver)) {
+                $this->getLogger()->err(sprintf("Invalid route definition: %s", json_encode($route)));
+                continue;
+            }
+            $name = $this->getFullyQualifiedName($type);
+            /** @var RouterInterface $routeObj */
+            $routeObj = new $name(
+                $path,
+                $resolver,
+                $this->getIfExists('defaults', $route, []),
+                $this->getIfExists('restrictions', $route, []),
+                $this->getIfExists('parser', $route)
+            );
+            $this->addRoute($routeObj);
+        }
+    }
+
+    /**
+     * @param  string $type
      * @throws RouteException
      * @return string
      */

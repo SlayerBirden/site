@@ -7,7 +7,7 @@ services:
   router:
       class: Maketok\Mvc\Router\Stack
       calls:
-        - [loadConfig]
+        - [initConfig]
 
   front_controller:
       class: Maketok\Mvc\Controller\Front

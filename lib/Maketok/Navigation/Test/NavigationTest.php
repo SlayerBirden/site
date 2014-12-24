@@ -149,6 +149,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::parseConfig
+     * @covers ::drawNodes
      * @covers Maketok\Navigation\Node::addChild
      * @covers ::getNavigation
      */
@@ -175,6 +176,7 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers ::parseConfig
+     * @covers ::drawNodes
      * @expectedException \Maketok\Navigation\Exception
      * @expectedExceptionMessage Invalid link type given:
      */

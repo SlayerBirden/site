@@ -13,6 +13,7 @@ namespace Maketok\App;
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Observer\State;
 use Maketok\Http\Request;
+use Maketok\Util\ConfigConsumer;
 use Maketok\Util\ConfigGetter;
 use Maketok\Util\RequestInterface;
 use Monolog\Logger;
@@ -21,7 +22,7 @@ use Zend\Stdlib\ErrorHandler;
 /**
  * Application entry point
  */
-final class Site
+final class Site implements ConfigConsumer
 {
     use UtilityHelperTrait;
 
@@ -56,7 +57,7 @@ final class Site
         define('AR', APPLICATION_ROOT);
         define('DS', DIRECTORY_SEPARATOR);
         define('ENV', $env);
-        $this->loadConfig();
+        $this->initConfig();
         if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();
         }
@@ -181,15 +182,25 @@ final class Site
     }
 
     /**
-     * load configs
+     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
-    public function loadConfig()
+    public function initConfig()
     {
         $configGetter = new ConfigGetter();
         $configs = $configGetter->getConfig(AR . '/config', 'config', 'local');
         self::$config = [];
-        foreach ($configs as $cnfg) {
-            self::$config = array_replace(self::$config, $cnfg);
+        foreach ($configs as $cfg) {
+            $this->parseConfig($cfg);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
+     */
+    public function parseConfig(array $config)
+    {
+        self::$config = array_replace(self::$config, $config);
     }
 }

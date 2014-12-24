@@ -8,4 +8,4 @@ services:
   subject_manager:
     class: Maketok\Observer\SubjectManager
     calls:
-      - [loadMap]
+      - [initConfig]
