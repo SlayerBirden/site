@@ -23,7 +23,7 @@ interface ManagerInterface
     /**
      * get all clients in queue
      *
-     * @return array|\ArrayObject
+     * @return ClientInterface[]
      */
     public function getClients();
 

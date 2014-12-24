@@ -34,6 +34,7 @@ interface NavigationInterface
 
     /**
      * load configuration
+     * @return void
      */
     public function initConfig();
 }
