@@ -28,11 +28,14 @@ App code is bundled in Maketok namespace and consists of major areas:
     - **DDL**. This is component gathers Data Structure map across all subscribers (clients) and creates appropriate directives for concrete Data Storage. It also handles conflicts and dependencies across clients.
     - **Data**. The Data part is not yet implemented. I should handle clients that update data inside the built Structure.
 - **MVC** (Front Controller). Provides routing and helper classes for controllers.
-- Few small Util classes
+- Few small **Util** classes
     - **StreamHandler** - basic IO operations with files
     - **DirectoryHandler** - basic IO operations with directories
     - **ExpressionParser** - parse variables in curly brackets
     - **ClosureComparer** - compare closures
+    - **CallableHash** - gets static hash of any callable
+    - **ArrayValueTrait** - safely gets the value from an array by key
+    - **ConfigGetter** - loads PHP and YAML configs in given paths
     - **PriorityQueue** - wrapper around SPL \PriorityQueue to provide removal functional
 
 This app is distributed under MIT licence, and anyone can use it for his (or her) needs as he sees fit. I'm not providing any means of warranty, and may or may not address any issues programmatic or of any other sort that are connected with or caused by the software.
