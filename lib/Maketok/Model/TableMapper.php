@@ -166,7 +166,6 @@ class TableMapper
         try {
             $data = $this->getModelData($model);
             // possible update
-            //@codeCoverageIgnoreStart
             if (array_key_exists('updated_at', $data)) {
                 $data['updated_at'] = date("Y-m-d H:i:s");
             }
@@ -174,7 +173,6 @@ class TableMapper
             if (array_key_exists('created_at', $data) && empty($data['created_at'])) {
                 $data['created_at'] = date("Y-m-d H:i:s");
             }
-            //@codeCoverageIgnoreEnd
             // now determine update or insert
             if (is_null($this->autoIncrement) || (isset($data[$this->autoIncrement]))) {
                 $rowsAffected = $this->getGateway()->update($data, $this->getIdFilter($data));
@@ -182,15 +180,15 @@ class TableMapper
                     // either no corresponding rows exist, so we need to insert
                     // or data set is not updated compared to db entry
                     // try to insert ignore
+                    // P.S. this is only viable for the models not implementing the "Lazy" interface
                     $insert = new InsertIgnore($this->getGateway()->getTable());
                     $insert->values($data);
                     $rowsAffected = $this->getGateway()->insertWith($insert);
                     if (!$rowsAffected) {
-                        //@codeCoverageIgnoreStart
-                        // questionable
-                        throw new ModelInfoException(sprintf("Model %s wasn't changed during save process.",
+                        // at this step it means something is wrong with the app-db link
+                        // or with app logic
+                        throw new ModelException(sprintf("Model %s wasn't changed during save process.",
                             get_class($model)));
-                        //@codeCoverageIgnoreEnd
                     } else {
                         $this->assignIncrement($model);
                     }
@@ -200,6 +198,7 @@ class TableMapper
                 $this->assignIncrement($model);
             }
         } catch (ModelInfoException $e) {
+            // the info exception is silently burried here, as it serves merely a flow regulation
         }
     }
 
@@ -216,7 +215,7 @@ class TableMapper
     }
 
     /**
-     * @param  object         $model
+     * @param  object $model
      * @return array
      * @throws ModelException
      */
@@ -227,9 +226,7 @@ class TableMapper
             $hydrator = $resultSet->getHydrator();
             $data = $hydrator->extract($model);
         } else {
-            //@codeCoverageIgnoreStart
-            throw new ModelInfoException("Unknown object to handle.");
-            //@codeCoverageIgnoreEnd
+            throw new ModelException("Unknown object to handle.");
         }
         if ($model instanceof LazyModelInterface) {
             if (!count(array_diff_assoc($data, $model->processOrigin()))) {
@@ -238,11 +235,9 @@ class TableMapper
             }
         }
         // do not proceed without data
-        //@codeCoverageIgnoreStart
         if (empty($data)) {
-            throw new ModelInfoException("Empty object data. Or invalid object to save.");
+            throw new ModelException("Empty object data. Or invalid object to save.");
         }
-        //@codeCoverageIgnoreEnd
         return $data;
     }
 

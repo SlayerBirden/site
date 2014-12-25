@@ -42,7 +42,7 @@ class ConfigGetter
      * @param string|string[] $fileName
      * @param string $prefix
      * @throws \Symfony\Component\Config\Exception\FileLoaderLoadException
-     * @return mixed
+     * @return array
      */
     public function getConfig($paths, $fileName, $prefix = '')
     {
