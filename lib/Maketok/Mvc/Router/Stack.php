@@ -16,7 +16,7 @@ use Maketok\Util\RequestInterface;
 class Stack extends AbstractRouter implements RouterInterface
 {
     /** @var \SplStack  */
-    protected $_routes;
+    protected $routes;
 
     /**
      * {@inheritdoc}
@@ -24,24 +24,11 @@ class Stack extends AbstractRouter implements RouterInterface
     public function addRoute(RouteInterface $route, $mode = self::STACK_MODE_APPEND)
     {
         if (self::STACK_MODE_APPEND === $mode) {
-            $this->_routes->push($route);
+            $this->routes->push($route);
         } elseif (self::STACK_MODE_PREPEND === $mode) {
-            $this->_routes->unshift($route);
+            $this->routes->unshift($route);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setRoutes(array $routes)
-    {
-        // we need to clear stack first
-        while ($this->_routes->count() > 0) {
-            $this->_routes->pop();
-        }
-        foreach ($routes as $route) {
-            $this->_routes->push($route);
-        }
+        return $this;
     }
 
     /**
@@ -50,14 +37,13 @@ class Stack extends AbstractRouter implements RouterInterface
     public function match(RequestInterface $request)
     {
         $matched = false;
-        foreach ($this->_routes as $route) {
+        foreach ($this->routes as $route) {
             /** @var RouteInterface $route */
             if ($success = $route->match($request)) {
                 $matched = $success;
                 break;
             }
         }
-
         return $matched;
     }
 
@@ -66,8 +52,7 @@ class Stack extends AbstractRouter implements RouterInterface
      */
     public function clearRoutes()
     {
-        $this->_routes = new \SplStack();
-
+        $this->routes = new \SplStack();
         return $this;
     }
 }

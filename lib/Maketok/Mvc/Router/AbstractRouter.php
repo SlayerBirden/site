@@ -13,6 +13,7 @@ namespace Maketok\Mvc\Router;
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\App\Site;
 use Maketok\Mvc\RouteException;
+use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Util\ConfigConsumer;
 use Maketok\Util\RequestInterface;
 
@@ -22,6 +23,7 @@ abstract class AbstractRouter implements RouterInterface, ConfigConsumer
 
     /**
      * init
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
@@ -29,16 +31,18 @@ abstract class AbstractRouter implements RouterInterface, ConfigConsumer
     }
 
     /**
-     * @return RequestInterface
+     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getRequest()
     {
-        //pass really
+        //pass, really
         return $this->ioc()->get('request');
     }
 
     /**
-     * @return callable
+     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getResolver()
     {
@@ -53,19 +57,20 @@ abstract class AbstractRouter implements RouterInterface, ConfigConsumer
         foreach ($routes as $route) {
             $this->addRoute($route);
         }
-    }
-
-    /**
-     * @param  array $routes
-     * @return mixed
-     */
-    public function setRoutes(array $routes)
-    {
-        $this->clearRoutes()->addRoutes($routes);
+        return $this;
     }
 
     /**
      * {@inheritdoc}
+     */
+    public function setRoutes(array $routes)
+    {
+        return $this->clearRoutes()->addRoutes($routes);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function assemble(array $params = array())
     {
@@ -126,7 +131,7 @@ abstract class AbstractRouter implements RouterInterface, ConfigConsumer
      */
     protected function getFullyQualifiedName($type)
     {
-        if (!strpos($type, '\\')) {
+        if (strpos($type, '\\') === false) {
             $fullQualifiedRouteName = '\Maketok\Mvc\Router\Route\Http\\' . ucfirst($type);
         } else {
             $fullQualifiedRouteName = $type;

@@ -26,6 +26,9 @@
         <testsuite name="module">
             <directory>../lib/Maketok/Module/Test</directory>
         </testsuite>
+        <testsuite name="mvc">
+            <directory>../lib/Maketok/Mvc/Test</directory>
+        </testsuite>
         <testsuite name="maketok">
             <directory>../lib/Maketok/</directory>
         </testsuite>

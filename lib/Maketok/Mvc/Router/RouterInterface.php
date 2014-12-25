@@ -19,20 +19,20 @@ interface RouterInterface extends RouteInterface
 
     /**
      * @param  RouteInterface $route
-     * @param  int            $mode
-     * @return mixed
+     * @param  int $mode
+     * @return self
      */
     public function addRoute(RouteInterface $route, $mode = self::STACK_MODE_APPEND);
 
     /**
-     * @param  array $routes
-     * @return mixed
+     * @param  RouteInterface[] $routes
+     * @return self
      */
     public function addRoutes(array $routes);
 
     /**
-     * @param  array $routes
-     * @return mixed
+     * @param  RouteInterface[] $routes
+     * @return self
      */
     public function setRoutes(array $routes);
 
