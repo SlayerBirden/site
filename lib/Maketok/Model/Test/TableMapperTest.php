@@ -31,9 +31,9 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider idFieldProvider
-     * @param  int|string|string[]                    $id
-     * @param  int|string|string[]                    $data
-     * @param  string[]                               $expected
+     * @param  int|string|string[] $id
+     * @param  int|string|string[] $data
+     * @param  string[] $expected
      * @throws \Maketok\Util\Exception\ModelException
      */
     public function getIdFilter($id, $data, $expected)
@@ -47,7 +47,7 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException        \LogicException
+     * @expectedException \LogicException
      * @ecpectedExceptionMessage Not enough data to get Filter.
      */
     public function getIdFilterLowData()
@@ -60,7 +60,7 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException        \LogicException
+     * @expectedException \LogicException
      * @ecpectedExceptionMessage Missing data for id field
      */
     public function getIdFilterWrongData()
@@ -167,7 +167,6 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
         $tg->expects($this->once())
             ->method('getResultSetPrototype')
             ->will($this->returnValue(new HydratingResultSet($hydrator, $object)));
-
 
         $this->table = new TableMapper($tg, 'code');
         $this->table->save($object);
