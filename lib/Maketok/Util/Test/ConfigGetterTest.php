@@ -10,16 +10,10 @@
 
 namespace Maketok\Util\Test;
 
-/**
- * @coversDefaultClass Maketok\Util\ConfigGetter
- */
 class ConfigGetterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::getConfig
-     * @covers ::setLoaders
-     * @covers ::getLoaders
      */
     public function getConfig()
     {

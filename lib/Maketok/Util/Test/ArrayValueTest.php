@@ -10,16 +10,10 @@
 
 namespace Maketok\Util\Test;
 
-/**
- * Class ArrayValueTraitTest
- * @package Maketok\Util\Test
- * @coversDefaultClass \Maketok\Util\ArrayValueTrait
- */
 class ArrayValueTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::getIfExists
      * @dataProvider provider
      * @param string|string[] $key
      * @param array           $data

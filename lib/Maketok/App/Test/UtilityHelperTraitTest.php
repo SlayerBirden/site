@@ -10,14 +10,10 @@
 
 namespace Maketok\App\Test;
 
-/**
- * @coversDefaultClass \Maketok\App\Helper\UtilityHelperTrait
- */
 class UtilityHelperTraitTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::getUrl
      * @dataProvider urlProvider
      * @param string     $path
      * @param array|null $config

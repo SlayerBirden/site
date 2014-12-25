@@ -10,15 +10,10 @@
 
 namespace Maketok\Mvc\Test\Router;
 
-/**
- * @coversDefaultClass \Maketok\Mvc\Router\AbstractRouter
- */
 class AbstractRouterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::parseConfig
-     * @covers ::getFullyQualifiedName
      */
     public function parseConfig()
     {
@@ -50,8 +45,6 @@ class AbstractRouterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getFullyQualifiedName
-     * @covers ::parseConfig
      * @expectedException \Maketok\Mvc\RouteException
      * @expectedExceptionMessage Invalid route type:
      */
@@ -73,7 +66,6 @@ class AbstractRouterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::parseConfig
      */
     public function parseConfigNoConfig()
     {
@@ -93,7 +85,6 @@ class AbstractRouterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::parseConfig
      */
     public function parseConfigOneRouteConfigMissing()
     {

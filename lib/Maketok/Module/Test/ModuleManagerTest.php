@@ -13,16 +13,10 @@ namespace Maketok\Module\Test;
 use Maketok\Module\ModuleManager;
 use Maketok\Module\Resource\Model\Module;
 
-/**
- * @coversDefaultClass \Maketok\Module\ModuleManager
- */
 class ModuleManagerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::updateToVersion
-     * @covers ::__construct
-     * @covers ::initModule
      */
     public function updateToVersion()
     {
@@ -40,7 +34,6 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getActiveModules
      */
     public function getActiveModules()
     {
@@ -63,8 +56,6 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getDbModules
-     * @covers ::getModuleExistsInDb
      */
     public function getModuleExistsInDb()
     {

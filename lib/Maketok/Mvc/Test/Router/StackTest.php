@@ -13,15 +13,10 @@ use Maketok\Mvc\Router\RouterInterface;
 use Maketok\Mvc\Router\Stack;
 use Maketok\Http\Request;
 
-/**
- * @coversDefaultClass Maketok\Mvc\Router\Stack
- */
 class StackTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::addRoute
-     * @covers ::match
      */
     public function addRoute()
     {
@@ -46,10 +41,6 @@ class StackTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers \Maketok\Mvc\Router\AbstractRouter::setRoutes
-     * @covers \Maketok\Mvc\Router\AbstractRouter::addRoutes
-     * @covers ::match
-     * @covers ::clearRoutes
      */
     public function setRoutes()
     {
@@ -67,10 +58,6 @@ class StackTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers \Maketok\Mvc\Router\AbstractRouter::setRoutes
-     * @covers \Maketok\Mvc\Router\AbstractRouter::addRoutes
-     * @covers ::match
-     * @covers ::clearRoutes
      */
     public function clearRoutes()
     {

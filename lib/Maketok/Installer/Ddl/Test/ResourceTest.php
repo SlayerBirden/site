@@ -68,7 +68,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::getTable
      */
     public function testGetTable()
     {
@@ -91,7 +90,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::getColumn
      */
     public function testGetColumn()
     {
@@ -152,7 +150,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::getConstraint
      */
     public function testGetConstraint()
     {
@@ -185,7 +182,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::getIndex
      */
     public function testGetIndex()
     {
@@ -216,7 +212,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::createProcedures
      */
     public function testCreateProcedures()
     {
@@ -270,7 +265,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::createProcedures
      */
     public function testCreateProceduresTimestamp()
     {
@@ -299,7 +293,6 @@ SQL;
      * @test
      * @expectedException \LogicException
      * @expectedExceptionMessage Wrong context of launching create procedures method
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::createProcedures
      */
     public function testCreateProceduresWrongContext()
     {
@@ -312,7 +305,6 @@ SQL;
      * @test
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Not enough parameter to change column
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::createProcedures
      */
     public function testCreateProceduresWrongDirectives()
     {

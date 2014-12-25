@@ -12,18 +12,10 @@ namespace Maketok\Util\Test;
 
 use Maketok\Util\Tokenizer;
 
-/**
- * @coversDefaultClass \Maketok\Util\Tokenizer
- */
 class TokenizerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::__construct
-     * @covers ::getCurrentMode
-     * @covers ::flowControl
-     * @covers ::changeMode
-     * @covers ::flushCurrentStorage
      */
     public function flowControl()
     {
@@ -37,9 +29,6 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::__construct
-     * @covers ::flowControl
-     * @covers ::changeMode
      * @expectedException \Maketok\Util\Exception\TokenizerException
      * @expectedExceptionMessage Does not allow nested types.
      */
@@ -52,13 +41,6 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::__construct
-     * @covers ::getCurrentVar
-     * @covers ::getCurrentConst
-     * @covers ::assign
-     * @covers ::flowControl
-     * @covers ::changeMode
-     * @covers ::flushCurrentStorage
      */
     public function assign()
     {
@@ -74,11 +56,6 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::tokenize
-     * @covers ::flowControl
-     * @covers ::changeMode
-     * @covers ::flushCurrentStorage
-     * @covers ::assign
      * @dataProvider expressionProvider
      * @param string $expression
      * @param array  $expected

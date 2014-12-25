@@ -12,9 +12,6 @@ namespace Maketok\Util\Test;
 
 use Maketok\Util\ClosureComparer;
 
-/**
- * @coversDefaultClass \Maketok\Util\ClosureComparer
- */
 class ClosureComparerTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -29,11 +26,6 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::compare
-     * @covers ::isClosure
-     * @covers ::parseClosure
-     * @covers ::filterBody
-     * @covers ::getClosureContents
      * @dataProvider closureProvider
      * @param mixed $c1
      * @param mixed $c2
@@ -85,7 +77,6 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::isClosure
      * @dataProvider variableProvider
      * @param mixed $var
      * @param bool  $expected
@@ -110,8 +101,6 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::parseClosure
-     * @covers ::filterBody
      * @dataProvider textProvider
      * @param string $contents
      * @param string $expected

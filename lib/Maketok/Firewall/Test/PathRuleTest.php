@@ -13,15 +13,10 @@ namespace Maketok\Firewall\Test;
 use Maketok\Firewall\Rule\PathRule;
 use Maketok\Http\Request;
 
-/**
- * @coversDefaultClass \Maketok\Firewall\Rule\PathRule
- */
 class PathRuleTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers Maketok\Firewall\Rule\AbstractRule::addBlacklist
-     * @covers Maketok\Firewall\Rule\AbstractRule::getBlacklist
      */
     public function addBlacklist()
     {
@@ -38,8 +33,6 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::isGranted
-     * @covers Maketok\Firewall\Rule\AbstractRule::addBlacklist
      * @dataProvider provider
      * @param string[] $blacklist
      * @param int $role
@@ -86,7 +79,6 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::isGranted
      * @expectedException \Maketok\Firewall\FirewallException
      * @expectedExceptionMessage No lists found.
      */

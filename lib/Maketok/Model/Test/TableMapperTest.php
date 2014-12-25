@@ -13,9 +13,6 @@ namespace Maketok\Util\Test;
 use Maketok\Model\TableMapper;
 use Zend\Db\ResultSet\HydratingResultSet;
 
-/**
- * @coversDefaultClass \Maketok\Model\TableMapper
- */
 class TableMapperTest extends \PHPUnit_Framework_TestCase
 {
     /** @var TableMapper */
@@ -34,8 +31,6 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider idFieldProvider
-     * @covers       ::getIdFilter
-     * @covers       ::__construct
      * @param  int|string|string[]                    $id
      * @param  int|string|string[]                    $data
      * @param  string[]                               $expected
@@ -52,8 +47,6 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers       ::getIdFilter
-     * @covers       ::__construct
      * @expectedException        \LogicException
      * @ecpectedExceptionMessage Not enough data to get Filter.
      */
@@ -67,8 +60,6 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers       ::getIdFilter
-     * @covers       ::__construct
      * @expectedException        \LogicException
      * @ecpectedExceptionMessage Missing data for id field
      */
@@ -95,10 +86,6 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::save
-     * @covers ::assignIncrement
-     * @covers ::__construct
-     * @covers ::getModelData
      */
     public function saveNewNoAI()
     {
@@ -118,10 +105,6 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::save
-     * @covers ::assignIncrement
-     * @covers ::__construct
-     * @covers ::getModelData
      */
     public function saveNewAI()
     {
@@ -141,10 +124,6 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::save
-     * @covers ::assignIncrement
-     * @covers ::__construct
-     * @covers ::getModelData
      */
     public function saveExisting()
     {
@@ -164,10 +143,6 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::save
-     * @covers ::assignIncrement
-     * @covers ::__construct
-     * @covers ::getModelData
      */
     public function saveExistingNotChanged()
     {
@@ -200,10 +175,6 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::save
-     * @covers ::assignIncrement
-     * @covers ::__construct
-     * @covers ::getModelData
      */
     public function saveNewAIMissing()
     {

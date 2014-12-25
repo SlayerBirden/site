@@ -12,15 +12,10 @@ namespace Maketok\Navigation\Test;
 
 use Maketok\Navigation\Node;
 
-/**
- * @coversDefaultClass \Maketok\Navigation\Node
- */
 class NodeTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::traverse
-     * @covers ::addChildren
      */
     public function traverse()
     {
@@ -35,8 +30,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::detach
-     * @covers ::addChild
      */
     public function detach()
     {
@@ -50,8 +43,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::removeChild
-     * @covers ::addChild
      */
     public function removeChild()
     {
@@ -66,8 +57,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::isBranch
-     * @covers ::addChild
      */
     public function isBranch()
     {
@@ -81,8 +70,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::isRoot
-     * @covers ::addChild
      */
     public function isRoot()
     {
@@ -96,8 +83,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::isLeaf
-     * @covers ::addChild
      */
     public function isLeaf()
     {
@@ -111,8 +96,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getChildren
-     * @covers ::addChild
      */
     public function getChildren()
     {
@@ -125,8 +108,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getSiblings
-     * @covers ::addChildren
      */
     public function getSiblings()
     {
@@ -142,8 +123,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getParent
-     * @covers ::addChild
      */
     public function getParent()
     {
@@ -156,8 +135,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getAncestors
-     * @covers ::addChild
      */
     public function getAncestors()
     {
@@ -171,8 +148,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getRoot
-     * @covers ::addChild
      */
     public function getRoot()
     {
@@ -189,8 +164,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::setParent
-     * @covers ::addChild
      */
     public function setParent()
     {

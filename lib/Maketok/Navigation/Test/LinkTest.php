@@ -12,14 +12,10 @@ namespace Maketok\Navigation\Test;
 
 use Maketok\Navigation\Link;
 
-/**
- * @coversDefaultClass \Maketok\Navigation\Link
- */
 class LinkTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::setOrder
      */
     public function setOrder()
     {
@@ -31,7 +27,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getOrder
      */
     public function getOrder()
     {
@@ -43,7 +38,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::setTitle
      */
     public function setTitle()
     {
@@ -55,7 +49,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getTitle
      */
     public function getTitle()
     {
@@ -67,7 +60,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::setCode
      */
     public function setCode()
     {
@@ -79,7 +71,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getCode
      */
     public function getCode()
     {
@@ -90,7 +81,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::setReference
      */
     public function setReference()
     {
@@ -102,7 +92,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getReference
      */
     public function getReference()
     {
@@ -114,7 +103,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getChildren
      */
     public function getChildren()
     {
@@ -128,7 +116,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::findLink
      */
     public function findLink()
     {
@@ -144,7 +131,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::find
      */
     public function find()
     {
@@ -160,7 +146,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::asArray
      */
     public function asArray()
     {

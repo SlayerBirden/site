@@ -12,9 +12,6 @@ namespace Maketok\Util\Test;
 
 use Maketok\Util\PriorityQueue;
 
-/**
- * @coversDefaultClass \Maketok\Util\PriorityQueue
- */
 class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 {
     /** @var  PriorityQueue */
@@ -27,12 +24,6 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::insert
-     * @covers ::extract
-     * @covers ::isEmpty
-     * @covers ::adjustQueue
-     * @covers ::offsetGet
-     * @covers ::offsetSet
      */
     public function insert()
     {
@@ -54,9 +45,6 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::remove
-     * @covers ::isEmpty
-     * @covers ::offsetGet
      */
     public function remove()
     {

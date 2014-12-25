@@ -14,9 +14,6 @@ use Maketok\Util\DirectoryHandler;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
-/**
- * @coversDefaultClass \Maketok\Util\DirectoryHandler
- */
 class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -34,7 +31,6 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
     }
     /**
      * @test
-     * @covers ::mkdir
      */
     public function testMakeDir()
     {
@@ -45,8 +41,6 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testMakeDir
-     * @covers ::rm
-     * @covers ::mkdir
      */
     public function testRmDir()
     {
@@ -65,8 +59,6 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testRmDir
-     * @covers ::ls
-     * @covers ::rm
      */
     public function testLs()
     {
@@ -82,7 +74,6 @@ class DirectoryHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::ls
      * @depends testLs
      * @expectedException \Maketok\Util\Exception\DirectoryException
      * @expectedExceptionMessage The path does not exist.

@@ -14,9 +14,6 @@ use Maketok\Util\StreamHandler;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
-/**
- * @coversDefaultClass \Maketok\Util\StreamHandler
- */
 class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -40,8 +37,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::write
-     * @covers ::initHandle
      */
     public function testWriteSingleFile()
     {
@@ -51,8 +46,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::writeWithLock
-     * @covers ::initHandle
      */
     public function testWriteWithLock()
     {
@@ -62,8 +55,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::setPath
-     * @covers ::pwd
      */
     public function testPwd()
     {
@@ -73,8 +64,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::write
-     * @covers ::initHandle
      */
     public function testWriteDirFile()
     {
@@ -87,9 +76,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends testWriteSingleFile
      * @depends testWriteDirFile
-     * @covers ::read
-     * @covers ::initHandle
-     * @covers ::close
      */
     public function testRead()
     {
@@ -104,9 +90,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::read
-     * @covers ::initHandle
-     * @covers ::eof
      */
     public function testEof()
     {
@@ -120,7 +103,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testWriteSingleFile
-     * @covers ::delete
      */
     public function testDeleteSingleFile()
     {
@@ -131,7 +113,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testDeleteSingleFile
-     * @covers ::delete
      */
     public function testDeleteDir()
     {
@@ -143,9 +124,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testWriteDirFile
-     * @covers ::initHandle
-     * @covers ::lock
-     * @covers ::setPath
      */
     public function testLock()
     {
@@ -161,8 +139,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @depends testLock
-     * @covers ::unLock
-     * @covers ::setPath
      */
     public function testUnlock()
     {
@@ -178,7 +154,6 @@ class StreamHandlerTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends testLock
      * @depends testUnlock
-     * @covers ::delete
      */
     public function testDelete()
     {

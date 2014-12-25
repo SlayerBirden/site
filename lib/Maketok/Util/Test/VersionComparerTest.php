@@ -12,14 +12,10 @@ namespace Maketok\Util\Test;
 
 use Maketok\Util\VersionComparer;
 
-/**
- * @coversDefaultClass \Maketok\Util\VersionComparer
- */
 class VersionComparerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers       ::natRecursiveCompare
      * @dataProvider versionProvider
      * @param string $v1
      * @param string $v2
@@ -32,7 +28,6 @@ class VersionComparerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::natRecursiveCompare
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Compared arguments must be strings.
      */
@@ -70,7 +65,6 @@ class VersionComparerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::castEqualLength
      * @dataProvider arrayProvider
      * @param array $a
      * @param array $b

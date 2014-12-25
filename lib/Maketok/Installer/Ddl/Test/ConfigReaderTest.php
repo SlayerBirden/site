@@ -29,7 +29,6 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\ConfigReader::buildDependencyTree
      */
     public function testBuildDependencyTree()
     {
@@ -238,7 +237,6 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException \Maketok\Installer\Ddl\DependencyTreeException
-     * @covers Maketok\Installer\Ddl\ConfigReader::buildDependencyTree
      */
     public function testRebuildTree()
     {
@@ -250,7 +248,6 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
      * @test
      * @expectedException \Maketok\Installer\Ddl\DependencyTreeException
      * @expectedExceptionMessage Unresolved dependency
-     * @covers Maketok\Installer\Ddl\ConfigReader::buildDependencyTree
      */
     public function testBuildWrongTree()
     {
@@ -328,7 +325,6 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\ConfigReader::recursiveMerge
      */
     public function testRecursiveMerge()
     {
@@ -500,7 +496,6 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends testBuildDependencyTree
      * @depends testRecursiveMerge
-     * @covers Maketok\Installer\Ddl\ConfigReader::mergeDependencyTree
      */
     public function testMergeDependencyTree($tree)
     {
@@ -565,7 +560,6 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
      * @test
      * @expectedException \Maketok\Installer\Ddl\DependencyTreeException
      * @expectedExceptionMessage The tree is not built yet
-     * @covers Maketok\Installer\Ddl\ConfigReader::mergeDependencyTree
      */
     public function testMergeDependencyTreeEmpty()
     {
@@ -574,7 +568,6 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\ConfigReader::dependencyBubbleSortCallback
      */
     public function testDependencyBubbleSortCallback()
     {
@@ -604,7 +597,6 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\ConfigReader::getMergedConfig
      */
     public function testGetMergedConfig()
     {

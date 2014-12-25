@@ -13,14 +13,10 @@ namespace Maketok\Navigation\Test;
 use Maketok\Navigation\Link;
 use Maketok\Navigation\Navigation;
 
-/**
- * @coversDefaultClass \Maketok\Navigation\Navigation
- */
 class NavigationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::addLink
      */
     public function addLink()
     {
@@ -59,7 +55,6 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::addLink
      * @expectedException \Maketok\Navigation\Exception
      * @expectedExceptionMessage Provided parent is not within current context.
      * @dataProvider wrongParentsProvider
@@ -75,7 +70,6 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::addLink
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid parent provided:
      * @dataProvider invalidArgumentsProvider
@@ -112,7 +106,6 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::getNavigation
      */
     public function getNavigation()
     {
@@ -129,7 +122,6 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::addDumper
      */
     public function addDumper()
     {
@@ -148,10 +140,6 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::parseConfig
-     * @covers ::drawNodes
-     * @covers Maketok\Navigation\Node::addChild
-     * @covers ::getNavigation
      */
     public function parseConfig()
     {
@@ -175,8 +163,6 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::parseConfig
-     * @covers ::drawNodes
      * @expectedException \Maketok\Navigation\Exception
      * @expectedExceptionMessage Invalid link type given:
      */

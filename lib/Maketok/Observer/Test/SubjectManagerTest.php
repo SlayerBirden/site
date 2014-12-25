@@ -15,17 +15,10 @@ use Maketok\Observer\Subject;
 use Maketok\Observer\SubjectManager;
 use Maketok\Observer\SubscriberBag;
 
-/**
- * @coversDefaultClass \Maketok\Observer\SubjectManager
- */
 class SubjectManagerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::attach
-     * @covers ::detach
-     * @covers ::notify
-     * @covers ::resolveSubscriber
      */
     public function testAddSame()
     {
@@ -40,9 +33,6 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::attach
-     * @covers ::notify
-     * @covers ::resolveSubscriber
      */
     public function testAddDifferent()
     {
@@ -58,9 +48,6 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::attach
-     * @covers ::notify
-     * @covers ::resolveSubscriber
      */
     public function testNoPropagation()
     {
@@ -77,9 +64,6 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::attach
-     * @covers ::notify
-     * @covers ::resolveSubscriber
      */
     public function testResolver()
     {
@@ -100,10 +84,6 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::attach
-     * @covers ::detach
-     * @covers ::notify
-     * @covers ::resolveSubscriber
      */
     public function testNoSubs()
     {
@@ -122,8 +102,6 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::attach
-     * @covers ::resolveSubscriber
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid subscriber given.
      */
@@ -135,9 +113,6 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::parseConfig
-     * @covers ::attach
-     * @covers ::notify
      */
     public function parseConfig()
     {

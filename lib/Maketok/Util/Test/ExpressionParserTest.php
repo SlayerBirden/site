@@ -13,16 +13,10 @@ namespace Maketok\Util\Test;
 use Maketok\Util\ExpressionParser;
 use Maketok\Util\Tokenizer;
 
-/**
- * @coversDefaultClass \Maketok\Util\ExpressionParser
- */
 class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @covers ::evaluate
-     * @covers ::validate
-     * @covers ::__construct
      * @param string $exprString
      * @param array  $parameters
      * @param string $expected
@@ -48,9 +42,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
      * @test
      * @expectedException \Exception
      * @expectedExceptionMessage One of the parameters (article_id) failed to satisfy requirements.
-     * @covers ::evaluate
-     * @covers ::validate
-     * @covers ::__construct
      */
     public function testEvaluateFail()
     {
@@ -65,13 +56,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::parse
-     * @covers ::validate
-     * @covers ::__construct
-     * @covers ::tokenize
-     * @covers ::strSplit
-     * @covers ::getSafeDelimiter
-     * @covers ::arrayValueContains
      * @param string $exprString
      * @param array  $restrictions
      * @param string $newString
@@ -122,11 +106,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::__construct
-     * @covers ::tokenize
-     * @covers ::strSplit
-     * @covers ::getSafeDelimiter
-     * @covers ::arrayValueContains
      * @param string $exprString
      * @param string $newString
      * @param mixed  $expected
@@ -152,7 +131,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::tokenize
      * @expectedException \Maketok\Util\Exception\ParserException
      * @expectedExceptionMessage String stats from wrong constant.
      */
@@ -165,10 +143,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::tokenize
-     * @covers ::strSplit
-     * @covers ::getSafeDelimiter
-     * @covers ::arrayValueContains
      * @expectedException \Maketok\Util\Exception\ParserException
      * @expectedExceptionMessage Can't combine variables, wrong number of placeholders.
      */
@@ -181,9 +155,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::strSplit
-     * @covers ::getSafeDelimiter
-     * @covers ::arrayValueContains
      * @param string $delimiter
      * @param string $newString
      * @param mixed  $expected
@@ -209,7 +180,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::strSplit
      * @expectedException \Maketok\Util\Exception\ParserException
      * @expectedExceptionMessage Wrong delimiter type
      * @dataProvider wrongTypeProvider
@@ -222,7 +192,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::strSplit
      * @expectedException \Maketok\Util\Exception\ParserException
      * @expectedExceptionMessage Delimiter $ is not present
      */
@@ -246,7 +215,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider avProvider
-     * @covers ::arrayValueContains
      * @param string $haystack
      * @param string|string[] $delimiter
      * @param bool $expected

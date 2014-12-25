@@ -12,15 +12,11 @@ namespace Maketok\Util\Test;
 
 use Maketok\Util\CallableHash;
 
-/**
- * @coversDefaultClass Maketok\Util\CallableHash
- */
 class CallableHashTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
      * @dataProvider clientProvider
-     * @covers ::getHash
      * @param callable $client1
      * @param callable $client2
      * @param bool $expected
