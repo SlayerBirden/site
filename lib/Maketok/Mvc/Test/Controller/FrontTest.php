@@ -27,7 +27,7 @@ class FrontTest extends \PHPUnit_Framework_TestCase
         $route = $this->getMock('MyRoute', ['index']);
         $route->expects($this->once())
             ->method('index')
-            ->willReturn(new Response('All is Ok', Response::HTTP_OK));
+            ->willReturn(new Response('', Response::HTTP_OK));
         $router = new Stack();
         $router->addRoute(new Literal('/testroute', [$route, 'index']));
 
