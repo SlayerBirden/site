@@ -12,7 +12,6 @@ namespace Maketok\Util;
 
 interface ConfigConsumer
 {
-
     /**
      * initialize configuration from resources
      * @return void

@@ -70,7 +70,7 @@ CREATE TABLE `test_store` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='Stores';
 SQL;
         $getter = new ConfigGetter();
-        $optionConfigs = $getter->getConfig(AR . '/config/di', ['travis.parameters', 'local.parameters' , 'test.parameters']);
+        $optionConfigs = $getter->getConfig(AR . '/config/di', ['travis.parameters', 'local.parameters', 'test.parameters']);
         $merged = [];
         foreach ($optionConfigs as $config) {
             $merged = array_replace_recursive($merged, $config);

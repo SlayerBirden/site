@@ -9,7 +9,6 @@
  */
 
 namespace Maketok\Observer;
-use Traversable;
 
 /**
  * @codeCoverageIgnore

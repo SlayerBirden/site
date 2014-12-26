@@ -9,6 +9,7 @@
  */
 
 namespace Maketok\Mvc\Test\Router;
+
 use Maketok\Mvc\Router\RouterInterface;
 use Maketok\Mvc\Router\Stack;
 use Maketok\Http\Request;
