@@ -22,6 +22,8 @@ use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
 use Maketok\Model\TableMapper;
+use Maketok\Util\Exception\ModelException;
+use Maketok\Util\StreamHandler;
 use Maketok\Util\StreamHandlerInterface;
 
 class Manager extends AbstractManager implements ManagerInterface
@@ -47,12 +49,31 @@ class Manager extends AbstractManager implements ManagerInterface
                                 TableMapper $tableMapper)
     {
         $this->reader = $reader;
-        $this->streamHandler = $handler;
+        $this->resource = $resource;
         $this->directives = $directives;
         if ($handler) {
-            $this->resource = $resource;
+            $this->streamHandler = $handler;
         }
         $this->tableMapper = $tableMapper;
+    }
+
+    /**
+     * @return StreamHandlerInterface
+     */
+    public function getStreamHandler()
+    {
+        if (is_null($this->streamHandler)) {
+            $this->streamHandler = new StreamHandler();
+        }
+        return $this->streamHandler;
+    }
+
+    /**
+     * @param StreamHandlerInterface $streamHandler
+     */
+    public function setStreamHandler(StreamHandlerInterface $streamHandler)
+    {
+        $this->streamHandler = $streamHandler;
     }
 
     /**
@@ -104,7 +125,7 @@ class Manager extends AbstractManager implements ManagerInterface
     public function process()
     {
         // lock process
-        if (!$this->streamHandler->lock(AR . '/var/locks/installer.ddl.lock')) {
+        if (!$this->getStreamHandler()->lock(AR . '/var/locks/installer.ddl.lock')) {
             $this->getLogger()->info("Installer is locked.");
             return;
         }
@@ -129,13 +150,18 @@ class Manager extends AbstractManager implements ManagerInterface
             $this->resource->runProcedures();
             // @TODO: create backup mechanism
             foreach ($this->clients as $client) {
-                $this->tableMapper->save($client);
+                try {
+                    $this->tableMapper->save($client);
+                } catch (ModelException $e) {
+                    // right here it would probably mean no data was updated in the db
+                    // however we can possibly add logging here
+                }
             }
             $this->getLogger()->info("All procedures have been completed.");
         } catch (\Exception $e) {
             $this->getLogger()->err(sprintf("Exception while running DDL Installer process: %s", $e->__toString()));
         }
-        $this->streamHandler->unLock();
+        $this->getStreamHandler()->unLock();
     }
 
     /**
@@ -148,7 +174,7 @@ class Manager extends AbstractManager implements ManagerInterface
         $this->getLogger()->info("Merged Config", array(
             'config' => $config,
         ));
-        $this->processValidateMergedConfig($config);
+        $this->resource->processValidateMergedConfig($config);
         $this->getLogger()->info("Processed Merged Config", array(
             'config' => $config,
         ));
@@ -175,70 +201,5 @@ class Manager extends AbstractManager implements ManagerInterface
             }
         }
         $this->directives->unique();
-    }
-
-    /**
-     * first purpose of this is to make sure FK has correspondent index record
-     * otherwise create it
-     * this is because MySQL automatically creates index record for every FK
-     * see more at http://dev.mysql.com/doc/refman/5.6/en/innodb-foreign-key-constraints.html
-     *
-     * @param  array     $config
-     * @return void
-     * @throws Exception
-     */
-    public function processValidateMergedConfig(array &$config)
-    {
-        foreach ($config as $tableName => $definition) {
-            $needToCreateMap = false;
-            $fkMap = array();
-            if (isset($definition['constraints'])) {
-                foreach ($definition['constraints'] as $name => $constraintDef) {
-                    if (isset($constraintDef['type']) && $constraintDef['type'] == 'foreignKey') {
-                        // now check if FK has index announced
-                        $needToCreateMap = true;
-                        $fkMap[$constraintDef['column']] = $name;
-                    }
-                }
-            }
-            if ($needToCreateMap) {
-                // create index map
-                $indexMap = array();
-                if (isset($definition['indices'])) {
-                    foreach ($definition['indices'] as $name => $indexDef) {
-                        if (is_array($indexDef['definition'])) {
-                            $col = current($indexDef['definition']);
-                        } elseif (is_string($indexDef['definition'])) {
-                            $col = $indexDef['definition'];
-                        } else {
-                            throw new Exception("Unrecognizable index column definition.");
-                        }
-                        $indexMap[$col] = $name;
-                    }
-                }
-                foreach ($definition['constraints'] as $name => $constraintDef) {
-                    if (isset($constraintDef['type']) &&
-                        ($constraintDef['type'] == 'uniqueKey' || $constraintDef['type'] == 'primaryKey')) {
-                        if (is_array($constraintDef['definition'])) {
-                            $col = current($constraintDef['definition']);
-                        } elseif (is_string($constraintDef['definition'])) {
-                            $col = $constraintDef['definition'];
-                        } else {
-                            throw new Exception("Unrecognizable index column definition.");
-                        }
-                        $indexMap[$col] = $name;
-                    }
-                }
-                // check correspondence
-                foreach ($fkMap as $column => $name) {
-                    if (!isset($indexMap[$column])) {
-                        $config[$tableName]['indices'][$name] = [
-                            'type' => 'index',
-                            'definition' => [$column],
-                        ];
-                    }
-                }
-            }
-        }
     }
 }

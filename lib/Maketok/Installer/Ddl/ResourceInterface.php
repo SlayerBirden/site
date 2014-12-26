@@ -48,4 +48,15 @@ interface ResourceInterface extends BaseResource
      * @return array
      */
     public function getIndex($table, $index);
+
+    /**
+     * mail purpose of this is to make sure FK has correspondent index record
+     * otherwise create it
+     * this is because MySQL automatically creates index record for every FK
+     * see more at http://dev.mysql.com/doc/refman/5.6/en/innodb-foreign-key-constraints.html
+     *
+     * @param  array $config - passed by reference
+     * @return void
+     */
+    public function processValidateMergedConfig(array &$config);
 }

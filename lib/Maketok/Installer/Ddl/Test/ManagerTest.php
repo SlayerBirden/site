@@ -17,14 +17,14 @@ use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \Maketok\Installer\Ddl\Manager */
-    protected static $manager;
+    protected $manager;
 
     public function setUp()
     {
         $tableMapper = $this->getMock('Maketok\Installer\Ddl\Resource\Model\DdlClientType', [], [], '', false);
         // simply throw exception, let's pretend there's no client available yet
         $tableMapper->expects($this->any())->method('getClientByCode')->will($this->throwException(new \Exception('')));
-        self::$manager = new Manager(
+        $this->manager = new Manager(
             $this->getMock('Maketok\Installer\Ddl\ConfigReader'),
             $this->getMock('Maketok\Installer\Ddl\Mysql\Resource', [], [], '', false),
             new Directives(),
@@ -43,11 +43,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $client->expects($this->any())->method('getDdlConfig')->will($this->returnValue([]));
         $client->expects($this->any())->method('getDdlCode')->will($this->returnValue('t1'));
 
-        self::$manager->addClient($client);
-        $this->assertTrue(self::$manager->hasClients());
-        $this->assertCount(1, self::$manager->getClients());
+        $this->manager->addClient($client);
+        $this->assertTrue($this->manager->hasClients());
+        $this->assertCount(1, $this->manager->getClients());
         /** @var DdlClient $actual */
-        $actual = current(self::$manager->getClients());
+        $actual = current($this->manager->getClients());
         $this->assertEquals('0.1.0', $actual->version);
         $this->assertEquals([], $actual->config);
         $this->assertEquals('t1', $actual->code);
@@ -57,10 +57,10 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $client->expects($this->any())->method('getDdlConfig')->will($this->returnValue([]));
         $client->expects($this->any())->method('getDdlCode')->will($this->returnValue('t2'));
 
-        self::$manager->addClient($client);
-        $this->assertTrue(self::$manager->hasClients());
-        $this->assertCount(2, self::$manager->getClients());
-        $clients = self::$manager->getClients();
+        $this->manager->addClient($client);
+        $this->assertTrue($this->manager->hasClients());
+        $this->assertCount(2, $this->manager->getClients());
+        $clients = $this->manager->getClients();
         $actual = $clients['t2'];
         $this->assertEquals('0.1.0', $actual->version);
         $this->assertEquals([], $actual->config);
@@ -71,10 +71,10 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $client->expects($this->any())->method('getDdlConfig')->will($this->returnValue(['bla']));
         $client->expects($this->any())->method('getDdlCode')->will($this->returnValue('t2'));
 
-        self::$manager->addClient($client);
-        $this->assertTrue(self::$manager->hasClients());
-        $this->assertCount(2, self::$manager->getClients());
-        $clients = self::$manager->getClients();
+        $this->manager->addClient($client);
+        $this->assertTrue($this->manager->hasClients());
+        $this->assertCount(2, $this->manager->getClients());
+        $clients = $this->manager->getClients();
         $actual = $clients['t2'];
         $this->assertEquals('0.2.0', $actual->version);
         $this->assertEquals(['bla'], $actual->config);
@@ -86,7 +86,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateDirectives()
     {
-        $refProp = new \ReflectionProperty(get_class(self::$manager), 'reader');
+        $refProp = new \ReflectionProperty(get_class($this->manager), 'reader');
         $refProp->setAccessible(true);
 
         $mock = $this->getMock('Maketok\Installer\Ddl\ConfigReader');
@@ -137,9 +137,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->any())
             ->method('getMergedConfig')
             ->will($this->returnValue($merged));
-        $refProp->setValue(self::$manager, $mock);
+        $refProp->setValue($this->manager, $mock);
 
-        $refPropRes = new \ReflectionProperty(get_class(self::$manager), 'resource');
+        $refPropRes = new \ReflectionProperty(get_class($this->manager), 'resource');
         $refPropRes->setAccessible(true);
         $mock = $this->getMock('Maketok\Installer\Ddl\Mysql\Resource', [], [], '', false);
         $mock->expects($this->any())
@@ -183,12 +183,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                     ],
                 ]],
             ]));
-        $refPropRes->setValue(self::$manager, $mock);
+        $refPropRes->setValue($this->manager, $mock);
 
-        self::$manager->createDirectives();
+        $this->manager->createDirectives();
 
         /** @var Directives $expectedDirectives */
-        $expectedDirectives = self::$manager->getDirectives();
+        $expectedDirectives = $this->manager->getDirectives();
         $this->assertCount(1, $expectedDirectives->addColumns);
         $this->assertCount(1, $expectedDirectives->changeColumns);
         $this->assertCount(1, $expectedDirectives->dropColumns);
@@ -201,12 +201,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateDirectivesException()
     {
-        $refProp = new \ReflectionProperty(get_class(self::$manager), 'reader');
+        $refProp = new \ReflectionProperty(get_class($this->manager), 'reader');
         $refProp->setAccessible(true);
 
         $mock = $this->getMock('Maketok\Installer\Ddl\ConfigReader');
         $mock->expects($this->any())->method('getMergedConfig')->will($this->returnValue([1]));
-        $refProp->setValue(self::$manager, $mock);
-        self::$manager->createDirectives();
+        $refProp->setValue($this->manager, $mock);
+        $this->manager->createDirectives();
     }
 }

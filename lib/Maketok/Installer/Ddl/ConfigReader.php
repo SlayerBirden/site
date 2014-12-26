@@ -18,8 +18,10 @@ class ConfigReader implements ConfigReaderInterface
      * @var array
      */
     private $tree;
-    /** @var bool */
-    private $_isMerged = false;
+    /**
+     * @var bool
+     */
+    private $isMerged = false;
 
     /**
      * {@inheritdoc}
@@ -106,16 +108,7 @@ class ConfigReader implements ConfigReaderInterface
         } elseif ($b->id > $a->id) {
             return -1;
         }
-
         return 0;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateDependencyTree()
-    {
-        // not in use now
     }
 
     /**
@@ -124,7 +117,7 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function mergeDependencyTree()
     {
-        if ($this->_isMerged) {
+        if ($this->isMerged) {
             return;
         }
         if (is_null($this->tree)) {
@@ -136,7 +129,7 @@ class ConfigReader implements ConfigReaderInterface
                 unset($branch['dependents']);
             }
         }
-        $this->_isMerged = true;
+        $this->isMerged = true;
     }
 
     /**
@@ -168,7 +161,7 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function getIsMerged()
     {
-        return $this->_isMerged;
+        return $this->isMerged;
     }
 
     /**
@@ -197,7 +190,7 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function getMergedConfig()
     {
-        if (!$this->_isMerged) {
+        if (!$this->isMerged) {
             $this->mergeDependencyTree();
         }
         $config = [];

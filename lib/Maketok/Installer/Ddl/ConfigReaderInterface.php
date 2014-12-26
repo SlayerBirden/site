@@ -23,13 +23,6 @@ interface ConfigReaderInterface extends BaseConfigReader
     public function buildDependencyTree($clients);
 
     /**
-     * validate tree
-     *
-     * @return void
-     */
-    public function validateDependencyTree();
-
-    /**
      * compile tree, merge all branches into main branch
      *
      * @return void
