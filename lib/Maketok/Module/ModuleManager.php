@@ -16,6 +16,7 @@ use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\Resource\Model\Module;
 use Maketok\Observer\State;
 use Maketok\Model\TableMapper;
+use Maketok\Util\DirectoryHandler;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Installer;
 
@@ -53,9 +54,14 @@ class ModuleManager implements ClientInterface
     private $area;
 
     /**
+     * @var DirectoryHandler
+     */
+    private $directoryHandler;
+
+    /**
      * @param TableMapper $tableType
-     * @param string      $configName
-     * @param string      $area
+     * @param string $configName
+     * @param string $area
      */
     public function __construct(TableMapper $tableType, $configName, $area)
     {
@@ -65,7 +71,26 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @param  int|string|string[]            $id
+     * @return DirectoryHandler
+     */
+    public function getDirectoryHandler()
+    {
+        if (is_null($this->directoryHandler)) {
+            $this->directoryHandler = $this->ioc()->get('directory_handler');
+        }
+        return $this->directoryHandler;
+    }
+
+    /**
+     * @param DirectoryHandler $directoryHandler
+     */
+    public function setDirectoryHandler($directoryHandler)
+    {
+        $this->directoryHandler = $directoryHandler;
+    }
+
+    /**
+     * @param  int|string|string[] $id
      * @return Module|array|\ArrayObject|null
      * @throws ModelException
      */
@@ -106,17 +131,7 @@ class ModuleManager implements ClientInterface
                 return in_array($config, $activeDbModuleCodes);
             });
         }
-
         return $this->activeModules;
-    }
-
-    /**
-     * @return string
-     * @codeCoverageIgnore
-     */
-    public function getArea()
-    {
-        return $this->area;
     }
 
     /**
@@ -132,7 +147,6 @@ class ModuleManager implements ClientInterface
                 $this->dbModules[$module->module_code] = $module;
             }
         }
-
         return $this->dbModules;
     }
 
@@ -143,26 +157,22 @@ class ModuleManager implements ClientInterface
     public function getModuleExistsInDb(ConfigInterface $config)
     {
         $db = $this->getDbModules();
-
         return isset($db[(string) $config]);
     }
 
     /**
      * @return mixed
-     * @codeCoverageIgnore
      */
     public function getModuleDirectories()
     {
         if (is_null($this->moduleDirs)) {
-            $this->moduleDirs = $this->ioc()->get('directory_handler')->ls($this->getDir());
+            $this->moduleDirs = $this->getDirectoryHandler()->ls($this->getDir());
         }
-
         return $this->moduleDirs;
     }
 
     /**
      * @return string
-     * @codeCoverageIgnore
      */
     public function getDir()
     {
@@ -170,22 +180,35 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @internal param StateInterface $state
+     * get all existing modules from the directory
      */
     public function processModuleConfig()
     {
-        $configName = $this->configName;
         foreach ($this->getModuleDirectories() as $dir) {
-            if (file_exists($this->getDir() . "/$dir/$configName.php")) {
-                $className = "\\modules\\$dir\\$configName";
-                /** @var ConfigInterface $config */
-                $config = new $className();
-                $this->modules[$config->getCode()] = $config;
-            }
+            try {
+                $className = $this->getConfigClassName($dir);
+                if (class_exists($className)) {
+                    /** @var ConfigInterface $config */
+                    $config = new $className(['code' => $dir]);
+                    $this->modules[$config->getCode()] = $config;
+                }
+            } catch (\LogicException $e) {
+                sprintf("Could not file Module config '%s' in directory %s", $this->configName, $dir);
+            };
         }
         $this->getDispatcher()->notify('module_list_exists', new State([
             'modules' => $this->modules
         ]));
+    }
+
+    /**
+     * @param string $dir
+     * @return string
+     */
+    public function getConfigClassName($dir)
+    {
+        $modulesNs = basename($this->getDir());
+        return "\\$modulesNs\\$dir\\{$this->configName}";
     }
 
     /**
@@ -212,7 +235,6 @@ class ModuleManager implements ClientInterface
 
     /**
      * update Modules in current storage
-     * @internal param StateInterface
      */
     public function updateModules()
     {
@@ -242,7 +264,6 @@ class ModuleManager implements ClientInterface
 
     /**
      * add installer subscribers
-     * @internal param StateInterface
      * @codeCoverageIgnore
      */
     public function addInstallerSubscribers()
@@ -259,7 +280,7 @@ class ModuleManager implements ClientInterface
     }
 
     /**
-     * @internal param StateInterface
+     * process modules' config
      */
     public function processModules()
     {

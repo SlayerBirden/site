@@ -160,6 +160,7 @@ class TableMapper
 
     /**
      * @param object $model
+     * @throws ModelException
      */
     public function save($model)
     {

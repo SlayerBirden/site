@@ -10,15 +10,17 @@
 
 namespace Maketok\Util\Test;
 
-/**
- * @codeCoverageIgnore
- */
 class MuteStub
 {
     /**
      * @var mixed
      */
     public $prop;
+
+    /**
+     * @var array
+     */
+    protected $params;
 
     /**
      * @param mixed $value
@@ -28,6 +30,43 @@ class MuteStub
     {
         $this->prop = $value;
         return $this;
+    }
+
+    /**
+     * constructor
+     * @param array $params
+     */
+    public function __construct(array $params = [])
+    {
+        $this->params = $params;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        if (isset($this->params[$name])) {
+            return $this->params[$name];
+        }
+        return null;
+    }
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     * @return mixed
+     */
+    public function __call($name, array $arguments)
+    {
+        if (strpos($name, 'get') === 0) {
+            $key = strtolower(substr($name, 3, strlen($name) - 3));
+            if (isset($this->params[$key])) {
+                return $this->params[$key];
+            }
+        }
+        throw new \InvalidArgumentException(sprintf("Method %s doesn't exist.", $name));
     }
 
     /**
