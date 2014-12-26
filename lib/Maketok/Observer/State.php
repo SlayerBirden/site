@@ -9,11 +9,12 @@
  */
 
 namespace Maketok\Observer;
+use Traversable;
 
 /**
  * @codeCoverageIgnore
  */
-class State implements StateInterface
+class State implements StateInterface, \IteratorAggregate
 {
     /**
      * @var array
@@ -69,5 +70,13 @@ class State implements StateInterface
     public function getSubject()
     {
         return $this->subject;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->data);
     }
 }

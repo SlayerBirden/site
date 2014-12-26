@@ -43,6 +43,26 @@ class ExpressionParser implements ExpressionParserInterface
     }
 
     /**
+     * @param array $restrictions
+     * @return $this
+     */
+    public function setRestrictions($restrictions)
+    {
+        $this->restrictions = $restrictions;
+        return $this;
+    }
+
+    /**
+     * @param array $parameters
+     * @return $this
+     */
+    public function setParameters($parameters)
+    {
+        $this->parameters = $parameters;
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      * @throws ParserException
      */

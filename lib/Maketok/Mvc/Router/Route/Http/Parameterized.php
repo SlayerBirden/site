@@ -93,7 +93,7 @@ class Parameterized extends AbstractRoute implements RouteInterface
         // defaults
         $parameters = $this->defaults;
         $parameters = array_replace($parameters, $this->variables, $params);
-
+        $this->expressionParser->setParameters($parameters);
         return $this->expressionParser->evaluate($parameters, $this->restrictions);
     }
 }

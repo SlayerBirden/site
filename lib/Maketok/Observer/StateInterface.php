@@ -13,7 +13,7 @@ namespace Maketok\Observer;
 interface StateInterface
 {
     /**
-     * @param  array                            $data
+     * @param  array $data
      * @return \Maketok\Observer\StateInterface
      */
     public function __construct($data = null);

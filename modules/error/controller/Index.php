@@ -12,10 +12,12 @@ namespace modules\error\controller;
 
 use Maketok\Http\Request;
 use Maketok\Mvc\Controller\AbstractBaseController;
-use Maketok\Mvc\Error\DumperInterface;
+use Maketok\Mvc\Error\DumperTrait;
 
-class Index extends AbstractBaseController implements DumperInterface
+class Index extends AbstractBaseController
 {
+    use DumperTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -24,6 +26,7 @@ class Index extends AbstractBaseController implements DumperInterface
         $this->setTemplate('404.html.twig');
         return $this->prepareResponse($request, array('title' => 'Page Not Found'), null, 404);
     }
+
     /**
      * {@inheritdoc}
      */

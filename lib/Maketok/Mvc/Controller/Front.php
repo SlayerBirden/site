@@ -11,7 +11,7 @@
 namespace Maketok\Mvc\Controller;
 
 use Maketok\App\Helper\UtilityHelperTrait;
-use Maketok\Mvc\Error\Dumper;
+use Maketok\Http\Response;
 use Maketok\Mvc\GenericException;
 use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\Http\Error;
@@ -19,29 +19,38 @@ use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Mvc\Router\Route\Success;
 use Maketok\Mvc\Router\RouterInterface;
 use Maketok\Observer\State;
-use Maketok\Observer\StateInterface;
+use Maketok\Util\RequestInterface;
 use Maketok\Util\ResponseInterface;
-use Maketok\Mvc\Error\DumperInterface;
 
 class Front
 {
     use UtilityHelperTrait;
 
-    /** @var  RouteInterface */
+    /**
+     * @var RouterInterface
+     */
     private $router;
 
-    /** @var \SplStack */
+    /**
+     * @var \SplStack
+     */
     private $dumpers;
 
     /**
-     * @throws RouteException
-     * @internal param StateInterface $state
+     * @var RequestInterface
      */
-    public function dispatch()
+    private $request;
+
+    /**
+     * @param RequestInterface $request
+     * @throws RouteException
+     */
+    public function dispatch(RequestInterface $request)
     {
-        set_exception_handler(array($this, 'exceptionHandler'));
+        $this->request = $request;
+        set_exception_handler([$this, 'exceptionHandler']);
         /** @var Success $success */
-        if ($success = $this->router->match($this->ioc()->get('request'))) {
+        if ($success = $this->router->match($request)) {
             $this->getDispatcher()->notify('match_route_successful', new State(['success' => $success]));
             $this->launch($success);
         } else {
@@ -50,16 +59,27 @@ class Front
     }
 
     /**
-     * @param  Success        $success
-     * @param  bool           $silent
-     * @throws RouteException
+     * @param RequestInterface $request
+     * @return $this
      */
-    public function launch(Success $success, $silent = false)
+    public function setRequest(RequestInterface $request)
     {
-        $response = $this->launchAction($success->getResolver(), $success->getMatchedRoute());
+        $this->request = $request;
+        return $this;
+    }
+
+    /**
+     * @param Success $success
+     * @param bool $silent
+     * @param array $parameters
+     */
+    public function launch(Success $success, $silent = false, $parameters = [])
+    {
+        $response = $this->launchAction($success->getResolver(), $success->getMatchedRoute(), $parameters);
         if (!$silent) {
-            $this->getDispatcher()->notify('response_send_before', new State());
+            $this->getDispatcher()->notify('response_send_before', new State(['response' => $response]));
         }
+        restore_exception_handler();
         if ($response && is_object($response)) {
             $response->send();
         }
@@ -72,7 +92,7 @@ class Front
     {
         $this->router = $router;
         $this->dumpers = new \SplStack();
-        $this->dumpers->push(new Dumper());
+        $this->dumpers->push(['Maketok\Mvc\Error\Dumper', 'dump']);
     }
 
     /**
@@ -86,15 +106,18 @@ class Front
             $dumper = $this->dumpers->pop();
             if ($e instanceof RouteException) {
                 // not found
-                $errorRoute = new Error([$dumper, 'norouteAction']);
+                $code = Response::HTTP_NOT_FOUND;
+                $errorRoute = new Error($dumper);
                 $this->getDispatcher()->notify('noroute_action', new State(['front' => $this, 'dumper' => $dumper]));
             } elseif ($e instanceof \ErrorException) {
-                $errorRoute = $this->_processError($e, $dumper);
+                $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+                $errorRoute = $this->processError($e, $dumper);
             } else {
+                $code = Response::HTTP_INTERNAL_SERVER_ERROR;
                 $this->getLogger()->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
-                $errorRoute = new Error([$dumper, 'errorAction'], ['exception' => $e]);
+                $errorRoute = new Error($dumper, ['exception' => $e]);
             }
-            $this->launch($errorRoute->match($this->ioc()->get('request')), true);
+            $this->launch($errorRoute->match($this->request), true, [$code]);
         } catch (\Exception $ex) {
             printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Trace: %s. Previous exception: %s",
                 $ex->getMessage(),
@@ -108,10 +131,10 @@ class Front
 
     /**
      * @param  \ErrorException $e
-     * @param  object          $dumper controller to handle exceptions
+     * @param  array|callable $dumper controller to handle exceptions
      * @return Error
      */
-    protected function _processError(\ErrorException $e, $dumper)
+    protected function processError(\ErrorException $e, $dumper)
     {
         $errno = $e->getSeverity();
         $message = sprintf("Front Controller dispatch error exception\n%s", $e->__toString());
@@ -123,17 +146,20 @@ class Front
             $this->getLogger()->notice($message);
         }
 
-        return new Error([$dumper, 'errorAction'], ['exception' => $e]);
+        return new Error($dumper, ['exception' => $e]);
     }
 
     /**
-     * @param  callable $resolver
-     * @param  \Maketok\Mvc\Router\Route\RouteInterface $route
+     * @param callable $resolver
+     * @param \Maketok\Mvc\Router\Route\RouteInterface $route
+     * @param array $params
      * @return ResponseInterface
+     * @throws GenericException
      */
-    protected function launchAction($resolver, RouteInterface $route)
+    protected function launchAction($resolver, RouteInterface $route, $params = [])
     {
-        return call_user_func_array($this->processConfigResolver($resolver), array($route->getRequest()));
+        array_unshift($params, $route->getRequest());
+        return call_user_func_array($this->processConfigResolver($resolver), $params);
     }
 
     /**
@@ -158,9 +184,9 @@ class Front
     }
 
     /**
-     * @param DumperInterface $dumper
+     * @param array|callable $dumper
      */
-    public function addDumper(DumperInterface $dumper)
+    public function addDumper($dumper)
     {
         $this->dumpers->push($dumper);
     }

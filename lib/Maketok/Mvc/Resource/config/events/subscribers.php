@@ -14,7 +14,9 @@ $ioc = $iocFactory->getServiceContainer();
 return [
     'dispatch' => [
         'attach' => [
-            [[$ioc->get('front_controller'), 'dispatch'], 10]
+            [
+                ['front_controller_dispatcher' => [$ioc->get('front_controller'), 'dispatch']], 10
+            ]
         ]
     ]
 ];

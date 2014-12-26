@@ -19,6 +19,7 @@ use Maketok\Util\PriorityQueue;
 class SubjectManager implements SubjectManagerInterface, ConfigConsumer
 {
     use ContainerTrait;
+
     /**
      * @var PriorityQueue[]
      */
@@ -57,7 +58,11 @@ class SubjectManager implements SubjectManagerInterface, ConfigConsumer
             while (!$subQueue->isEmpty()) {
                 /** @var SubscriberBag $subBag */
                 $subBag = $subQueue->extract();
-                call_user_func($subBag->subscriber, $state->setSubject($subBag->subject));
+                $arguments = [];
+                foreach ($state as $argument) {
+                    $arguments[] = $argument;
+                }
+                call_user_func_array($subBag->subscriber, $arguments);
                 if ($subBag->subject->getShouldStopPropagation()) {
                     break;
                 }
@@ -66,8 +71,8 @@ class SubjectManager implements SubjectManagerInterface, ConfigConsumer
     }
 
     /**
-     * @param  mixed                     $subscriber
-     * @param  mixed                     $subject
+     * @param  mixed $subscriber
+     * @param  mixed $subject
      * @throws \InvalidArgumentException
      * @return SubscriberBag
      */

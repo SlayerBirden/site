@@ -10,7 +10,7 @@
 
 namespace Maketok\App;
 
-use Maketok\Observer\StateInterface;
+use Maketok\Module\ConfigInterface as ModuleConfigInterface;
 use Maketok\Util\StreamHandler;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\FileLoader;
@@ -185,14 +185,13 @@ class ContainerFactory implements ConfigInterface
     }
 
     /**
-     * @param StateInterface $state
+     * @param ModuleConfigInterface[] $activeModules
      */
-    public function serviceContainerProcessModules(StateInterface $state)
+    public function serviceContainerProcessModules($activeModules)
     {
         if ($this->ioc->isFrozen()) {
             return;
         }
-        $activeModules = $state->modules;
         foreach ($activeModules as $moduleConfig) {
             // include each module into sc
             // only the ones that work :)

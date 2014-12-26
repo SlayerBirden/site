@@ -70,7 +70,7 @@ final class Site implements ConfigConsumer
         // we've done our job to init system
         // now we may or may not apply configs/or run dispatcher
         if (!($context & self::CONTEXT_SKIP_DISPATCH)) {
-            $this->getDispatcher()->notify('dispatch', new State());
+            $this->getDispatcher()->notify('dispatch', new State(['request' => $this->ioc()->get('request')]));
         }
         $this->terminate();
     }
@@ -132,18 +132,18 @@ final class Site implements ConfigConsumer
                     $logger->warn($e->__toString());
                 } elseif ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
                     $logger->err($e->__toString());
-                    $this->getDispatcher()->notify('application_error_triggered', new State(array(
+                    $this->getDispatcher()->notify('application_error_triggered', new State([
                         'exception' => $e,
                         'message' => $e->__toString(),
-                    )));
+                    ]));
                 }
             } else {
                 $message = sprintf("Unhandled exception\n%s", $e->__toString());
                 $logger->emergency($message);
-                $this->getDispatcher()->notify('application_error_triggered', new State(array(
+                $this->getDispatcher()->notify('application_error_triggered', new State([
                     'exception' => $e,
                     'message' => $message,
-                )));
+                ]));
             }
         } catch (\Exception $ex) {
             printf("Exception '%s' thrown within the exception handler in file %s on line %d. Previous exception: %s",

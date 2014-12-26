@@ -34,7 +34,7 @@ class Config implements ConfigInterface
      */
     public function initRoutes()
     {
-        $this->ioc()->get('front_controller')->addDumper(new Index);
+        $this->ioc()->get('front_controller')->addDumper(['modules\error\controller\Index', 'dump']);
     }
 
     /**

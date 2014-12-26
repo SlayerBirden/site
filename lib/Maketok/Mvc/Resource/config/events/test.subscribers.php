@@ -13,8 +13,6 @@ $ioc = $iocFactory->getServiceContainer();
 
 return [
     'dispatch' => [
-        'detach' => [
-            [$ioc->get('front_controller'), 'dispatch']
-        ]
+        'detach' => ['front_controller_dispatcher']
     ]
 ];

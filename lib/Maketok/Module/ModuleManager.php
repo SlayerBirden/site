@@ -183,9 +183,9 @@ class ModuleManager implements ClientInterface
                 $this->modules[$config->getCode()] = $config;
             }
         }
-        $this->getDispatcher()->notify('module_list_exists', new State(array(
+        $this->getDispatcher()->notify('module_list_exists', new State([
             'modules' => $this->modules
-        )));
+        ]));
     }
 
     /**
