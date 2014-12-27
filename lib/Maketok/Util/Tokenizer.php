@@ -60,7 +60,7 @@ class Tokenizer implements TokenizerInterface
     }
 
     /**
-     * @return int|null
+     * @return string
      */
     public function getCurrentVar()
     {
@@ -68,7 +68,7 @@ class Tokenizer implements TokenizerInterface
     }
 
     /**
-     * @return int|null
+     * @return string
      */
     public function getCurrentConst()
     {
@@ -81,23 +81,25 @@ class Tokenizer implements TokenizerInterface
      */
     public function tokenize()
     {
-        $str = $this->expression;
-        $this->changeMode(self::MODE_CONST);
-        while (strlen($str) > 0) {
-            $char = substr($str, 0, 1);
-            $str = substr($str, 1, strlen($str)-1);
-            $this->flowControl($char);
+        if (!$this->bag->count()) {
+            $str = $this->expression;
+            $this->changeMode(self::MODE_CONST);
+            while (strlen($str) > 0) {
+                $char = substr($str, 0, 1);
+                $str = substr($str, 1, strlen($str)-1);
+                $this->flowControl($char);
+            }
+            // we should have finished in const;
+            // call to change mode so we're dumping remaining container
+            // and throwing exception if mode was var
+            $this->changeMode(self::MODE_VAR);
         }
-        // we should have finished in const;
-        // call to change mode so we're dumping remaining container
-        // and throwing exception if mode was var
-        $this->changeMode(self::MODE_VAR);
         return $this->bag;
     }
 
     /**
      * assign char to appropriate container
-     * @param $char
+     * @param string $char
      */
     public function assign($char)
     {
@@ -112,7 +114,7 @@ class Tokenizer implements TokenizerInterface
     }
 
     /**
-     * @param string $character
+     * @param  string             $character
      * @throws TokenizerException
      * @return self
      */
@@ -125,11 +127,12 @@ class Tokenizer implements TokenizerInterface
         } else {
             $this->assign($character);
         }
+
         return $this;
     }
 
     /**
-     * @param int $newMode
+     * @param  int                $newMode
      * @throws TokenizerException
      */
     protected function changeMode($newMode)

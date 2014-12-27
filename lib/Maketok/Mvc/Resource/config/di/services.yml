@@ -5,8 +5,10 @@
 
 services:
   router:
-    class: Maketok\Mvc\Router\Stack
+      class: Maketok\Mvc\Router\Stack
+      calls:
+        - [initConfig]
 
   front_controller:
-    class: Maketok\Mvc\Controller\Front
-    arguments: ["@router"]
+      class: Maketok\Mvc\Controller\Front
+      arguments: ["@router"]

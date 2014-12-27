@@ -10,29 +10,7 @@
 
 namespace Maketok\Mvc\Error;
 
-use Maketok\Util\RequestInterface;
-use Symfony\Component\HttpFoundation\Response;
-
-class Dumper implements DumperInterface
+class Dumper
 {
-
-    /**
-     * default error dumper
-     * @internal param RequestInterface $request
-     * @return Response
-     */
-    public function errorAction(RequestInterface $request)
-    {
-        $text = 'Oops! We are really sorry, but there was an error!';
-        return new Response($text, 500);
-    }
-
-    /**
-     * @internal param RequestInterface $request
-     * @return Response
-     */
-    public function norouteAction(RequestInterface $request)
-    {
-        return new Response("Oops! We couldn't find the page you searched for. Looks like it doesn't exist anymore.", 404);
-    }
+    use DumperTrait;
 }

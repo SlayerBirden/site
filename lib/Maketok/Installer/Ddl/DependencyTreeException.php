@@ -14,5 +14,4 @@ use Maketok\Installer\Exception;
 
 class DependencyTreeException extends Exception
 {
-
 }

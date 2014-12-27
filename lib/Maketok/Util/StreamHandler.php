@@ -14,15 +14,14 @@ use Maketok\Util\Exception\StreamException;
 
 class StreamHandler implements StreamHandlerInterface
 {
-
-    protected $_path;
-    protected $_handle;
+    protected $path;
+    protected $handle;
 
     const PERMISSIONS = 0755;
 
     /**
-     * @param null|string $path
-     * @param string $data
+     * @param  null|string   $path
+     * @param  string        $data
      * @return bool|null|int
      */
     public function writeWithLock($data, $path = null)
@@ -30,44 +29,46 @@ class StreamHandler implements StreamHandlerInterface
         $this->initHandle($path, 'c+');
         $result = null;
         if ($this->lock($path)) {
-            ftruncate($this->_handle, 0);
+            ftruncate($this->handle, 0);
             // do not write at the middle of no where
-            rewind($this->_handle);
-            $result = fwrite($this->_handle, $data);
+            rewind($this->handle);
+            $result = fwrite($this->handle, $data);
             $this->unLock($path);
         }
+
         return $result;
     }
     /**
-     * @param null|string $path
-     * @param string $data
+     * @param  null|string $path
+     * @param  string      $data
      * @return bool
      */
     public function write($data, $path = null)
     {
         $this->initHandle($path, 'w');
         // truncate all file in case it was opened with c+
-        ftruncate($this->_handle, 0);
+        ftruncate($this->handle, 0);
         // do not write at the middle of no where
-        rewind($this->_handle);
-        $result = fwrite($this->_handle, $data);
+        rewind($this->handle);
+        $result = fwrite($this->handle, $data);
         // rewind pointer if we need to read later
-        rewind($this->_handle);
+        rewind($this->handle);
+
         return $result !== false;
     }
 
     /**
-     * @param null|string $path
-     * @param string $mode
+     * @param  null|string     $path
+     * @param  string          $mode
      * @throws StreamException
      */
     protected function initHandle($path = null, $mode = 'w')
     {
-        if (is_resource($this->_handle)) {
+        if (is_resource($this->handle)) {
             return;
         }
         if (is_null($path)) {
-            $path = $this->_path;
+            $path = $this->path;
         }
         if (is_null($path)) {
             throw new StreamException('The path to write is not specified.');
@@ -76,12 +77,12 @@ class StreamHandler implements StreamHandlerInterface
         if (!is_dir($dirName)) {
             mkdir($dirName, self::PERMISSIONS, true);
         }
-        $this->_handle = fopen($path, $mode);
+        $this->handle = fopen($path, $mode);
     }
 
     /**
-     * @param int $length
-     * @param null|string $path
+     * @param  int         $length
+     * @param  null|string $path
      * @return string
      */
     public function read($length = null, $path = null)
@@ -89,25 +90,26 @@ class StreamHandler implements StreamHandlerInterface
         $this->initHandle($path, 'r+');
         if (is_null($length)) {
             if (is_null($path)) {
-                $path = $this->_path;
+                $path = $this->path;
             }
             $length = filesize($path);
             if ($length <= 0) {
                 $length = 1;
             }
         }
-        return fread($this->_handle, $length);
+
+        return fread($this->handle, $length);
     }
 
     /**
-     * @param null|string $path
-     * @param bool|int $includeDirectories
+     * @param  null|string $path
+     * @param  bool|int    $includeDirectories
      * @return bool
      */
     public function delete($path = null, $includeDirectories = false)
     {
         if (is_null($path)) {
-            $path = $this->_path;
+            $path = $this->path;
         }
         if (is_dir($path)) {
             $res = rmdir($path);
@@ -118,38 +120,41 @@ class StreamHandler implements StreamHandlerInterface
             $path = dirname($path);
             $res = $res && $this->delete($path, $includeDirectories - 1);
         }
+
         return $res;
     }
 
     /**
-     * @param null|string $path
+     * @param  null|string $path
      * @return bool
      */
     public function lock($path = null)
     {
         $this->initHandle($path, 'c');
-        return flock($this->_handle, LOCK_EX | LOCK_NB);
+
+        return flock($this->handle, LOCK_EX | LOCK_NB);
     }
 
     /**
-     * @param null|string $path
+     * @param  null|string $path
      * @return bool
      */
     public function unLock($path = null)
     {
         $this->initHandle($path, 'c+');
-        return flock($this->_handle, LOCK_UN);
+
+        return flock($this->handle, LOCK_UN);
     }
 
     /**
      * destroy handler
-     * @param null|string $path
+     * @param  null|string $path
      * @return mixed
      */
     public function setPath($path)
     {
-        $this->_path = $path;
-        $this->_handle = null;
+        $this->path = $path;
+        $this->handle = null;
     }
 
     /**
@@ -165,9 +170,10 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function eof()
     {
-        if (is_resource($this->_handle)) {
-            return feof($this->_handle);
+        if (is_resource($this->handle)) {
+            return feof($this->handle);
         }
+
         return true;
     }
 
@@ -176,9 +182,9 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function close()
     {
-        if (is_resource($this->_handle)) {
-            fclose($this->_handle);
-            $this->_handle = null;
+        if (is_resource($this->handle)) {
+            fclose($this->handle);
+            $this->handle = null;
         }
     }
 
@@ -187,6 +193,6 @@ class StreamHandler implements StreamHandlerInterface
      */
     public function pwd()
     {
-        return $this->_path;
+        return $this->path;
     }
 }

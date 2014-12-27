@@ -14,7 +14,6 @@ use Zend\Db\Sql\Ddl\AlterTable;
 
 class DropConstraint extends AbstractProcedure implements ProcedureInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -37,7 +36,7 @@ class DropConstraint extends AbstractProcedure implements ProcedureInterface
         } elseif ($type == 'unique' || $type == 'index') {
             $query = str_replace('CONSTRAINT', 'INDEX', $query);
         }
+
         return $query;
     }
-
 }

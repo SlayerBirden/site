@@ -13,10 +13,7 @@ before_script:
 
 script:
   - cd tests
-  - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --testsuite "util" --report-useless-tests --strict
-  - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --testsuite "installer" --report-useless-tests --strict
-  - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --testsuite "app" --report-useless-tests --strict
-  - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --testsuite "nav" --report-useless-tests --strict
+  - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --report-useless-tests --strict
   - ../vendor/bin/phpunit --bootstrap ./ci/travis.bootstrap.php --report-useless-tests --coverage-clover ./coverage.clover
 
 after_script:

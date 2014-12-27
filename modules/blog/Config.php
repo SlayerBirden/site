@@ -10,43 +10,54 @@
 
 namespace modules\blog;
 
-
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Module\ConfigInterface;
 use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Mvc\Router\Route\Http\Parameterized;
-use modules\blog\controller\Article;
-use modules\blog\controller\Index;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class Config implements ConfigInterface, ExtensionInterface, ClientInterface
+/**
+ * @codeCoverageIgnore
+ */
+class Config extends Extension implements ConfigInterface, ClientInterface
 {
     use UtilityHelperTrait;
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getVersion()
     {
         return '0.1.3';
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getCode()
+    {
+        return 'blog';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function initRoutes()
     {
-        $this->getRouter()->addRoute(new Literal('/blog', [new Index(), 'indexAction']));
+        $this->getRouter()->addRoute(new Literal('/blog', ['\modules\blog\controller\Index', 'indexAction']));
         $this->getRouter()->addRoute(new Parameterized(
             '/blog/{code}',
-            [new Article(), 'indexAction'],
+            ['\modules\blog\controller\Article', 'indexAction'],
             [],
             ['code' => '^[a-zA-Z0-9_.-]+$']
         ));
         $this->getRouter()->addRoute(new Parameterized(
             '/blog/{code}',
-            [new Article(), 'indexAction'],
+            ['\modules\blog\controller\Article', 'indexAction'],
             [],
             ['code' => '^[a-zA-Z0-9_.-]+$']
         ));
@@ -61,16 +72,7 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
     }
 
     /**
-     * @return string
-     */
-    public function getCode()
-    {
-        return 'blog';
-    }
-
-    /**
-     * magic method for returning string representation of the the config class
-     * @return string
+     * {@inheritdoc}
      */
     public function __toString()
     {
@@ -78,14 +80,7 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
     }
 
     /**
-     * Loads a specific configuration.
-     *
-     * @param array $config An array of configuration values
-     * @param ContainerBuilder $container A ContainerBuilder instance
-     *
-     * @throws \InvalidArgumentException When provided tag is not defined in this extension
-     *
-     * @api
+     * {@inheritdoc}
      */
     public function load(array $config, ContainerBuilder $container)
     {
@@ -109,30 +104,6 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
     }
 
     /**
-     * Returns the namespace to be used for this extension (XML namespace).
-     *
-     * @return string The XML namespace
-     *
-     * @api
-     */
-    public function getNamespace()
-    {
-        return 'http://www.example.com/symfony/schema/';
-    }
-
-    /**
-     * Returns the base path for the XSD files.
-     *
-     * @return string The XSD base path
-     *
-     * @api
-     */
-    public function getXsdValidationBasePath()
-    {
-        return __DIR__.'/config';
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getAlias()
@@ -141,7 +112,7 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isActive()
     {
@@ -149,10 +120,7 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
     }
 
     /**
-     * client register dependencies (parents)
-     * it must register dependencies to change resources that were created by other clients
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getDependencies()
     {
@@ -160,9 +128,7 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
     }
 
     /**
-     * get client version to install
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getDdlVersion()
     {
@@ -170,10 +136,7 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
     }
 
     /**
-     * get client identifier
-     * must be unique
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getDdlCode()
     {
@@ -181,13 +144,10 @@ class Config implements ConfigInterface, ExtensionInterface, ClientInterface
     }
 
     /**
-     * get client config to install
-     *
-     * @param string $version
-     * @return array|bool
+     * {@inheritdoc}
      */
     public function getDdlConfig($version)
     {
-        return include __DIR__ . "/config/installer/ddl/$version.php";
+        return current($this->ioc()->get('config_getter')->getConfig(__DIR__ . "/config/installer/ddl", $version));
     }
 }

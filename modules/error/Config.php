@@ -10,11 +10,13 @@
 
 namespace modules\error;
 
-
 use Maketok\App\Helper\ContainerTrait;
 use Maketok\Module\ConfigInterface;
 use modules\error\controller\Index;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Config implements ConfigInterface
 {
     use ContainerTrait;
@@ -32,7 +34,7 @@ class Config implements ConfigInterface
      */
     public function initRoutes()
     {
-        $this->ioc()->get('front_controller')->addDumper(new Index);
+        $this->ioc()->get('front_controller')->addDumper(['modules\error\controller\Index', 'dump']);
     }
 
     /**

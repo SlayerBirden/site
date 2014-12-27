@@ -12,5 +12,4 @@ namespace Maketok\Installer;
 
 class Exception extends \Exception
 {
-
 }

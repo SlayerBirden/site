@@ -11,30 +11,28 @@
 namespace Maketok\Mvc\Router;
 
 use Maketok\Mvc\Router\Route\RouteInterface;
-use Maketok\Util\ConfigReaderInterface;
 
-interface RouterInterface extends RouteInterface, ConfigReaderInterface
+interface RouterInterface extends RouteInterface
 {
-
     const STACK_MODE_APPEND = 1;
     const STACK_MODE_PREPEND = 2;
 
     /**
-     * @param RouteInterface $route
-     * @param int $mode
-     * @return mixed
+     * @param  RouteInterface $route
+     * @param  int $mode
+     * @return self
      */
     public function addRoute(RouteInterface $route, $mode = self::STACK_MODE_APPEND);
 
     /**
-     * @param array $routes
-     * @return mixed
+     * @param  RouteInterface[] $routes
+     * @return self
      */
     public function addRoutes(array $routes);
 
     /**
-     * @param array $routes
-     * @return mixed
+     * @param  RouteInterface[] $routes
+     * @return self
      */
     public function setRoutes(array $routes);
 

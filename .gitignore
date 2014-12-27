@@ -1,6 +1,6 @@
+config/local.config.php
 config/di/local.services.yml
 config/di/local.parameters.yml
-config/di/local.admin.services.yml
 config/di/local.admin.parameters.yml
 var/
 vendor/

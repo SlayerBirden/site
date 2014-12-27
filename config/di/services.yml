@@ -5,6 +5,10 @@
 
 services:
 
+  ioc_factory:
+    class: Maketok\App\ContainerFactory
+    factory: [Maketok\App\ContainerFactory, getInstance]
+
   adapter:
     class: Zend\Db\Adapter\Adapter
     arguments:
@@ -19,6 +23,7 @@ services:
 
   lock_stream_handler:
     class: Maketok\Util\StreamHandler
+    scope: prototype
 
   object_prop_hydrator:
     class: Maketok\Util\Hydrator\ObjectProperty
@@ -38,6 +43,9 @@ services:
   zend_db_sql:
     class: Maketok\Util\Zend\Db\Sql\Sql
     arguments: ["@adapter", ~, "@zend_sql_platform"]
+
+  config_getter:
+    class: Maketok\Util\ConfigGetter
 
   request:
     synthetic: true

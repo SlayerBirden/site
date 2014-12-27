@@ -12,5 +12,4 @@ namespace Maketok\Module;
 
 class Exception extends \Exception
 {
-
 }

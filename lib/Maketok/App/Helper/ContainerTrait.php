@@ -19,13 +19,12 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 trait ContainerTrait
 {
-
     /**
      * @return ContainerBuilder
      */
     public function getServiceContainer()
     {
-        return ContainerFactory::getServiceContainer();
+        return ContainerFactory::getInstance()->getServiceContainer();
     }
 
     /**

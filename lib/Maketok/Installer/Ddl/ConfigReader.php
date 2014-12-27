@@ -14,13 +14,14 @@ use Maketok\Installer\Ddl\Resource\Model\DdlClient;
 
 class ConfigReader implements ConfigReaderInterface
 {
-
     /**
      * @var array
      */
-    private $_tree;
-    /** @var bool */
-    private $_isMerged = false;
+    private $tree;
+    /**
+     * @var bool
+     */
+    private $isMerged = false;
 
     /**
      * {@inheritdoc}
@@ -29,7 +30,7 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function buildDependencyTree($clients)
     {
-        if (is_array($this->_tree) && !empty($this->_tree)) {
+        if (is_array($this->tree) && !empty($this->tree)) {
             throw new DependencyTreeException("Invalid context of calling method. The tree is already built.");
         }
         try {
@@ -52,34 +53,34 @@ class ConfigReader implements ConfigReaderInterface
                     'definition' => $definition,
                     'dependents' => [],
                 ];
-                if (isset($this->_tree[$table])) {
-                    if (!in_array($this->_tree[$table]['client'], $client->dependencies)) {
+                if (isset($this->tree[$table])) {
+                    if (!in_array($this->tree[$table]['client'], $client->dependencies)) {
                         throw new DependencyTreeException(
                             sprintf("Client %s tries to modify resource %s without declaring dependency.",
                                 $client->code,
                                 $table)
                         );
                     } else {
-                        $this->_tree[$table]['dependents'][] = $branch;
+                        $this->tree[$table]['dependents'][] = $branch;
                     }
                 } else {
                     if ($client->dependencies) {
                         foreach ($client->dependencies as $dependency) {
-                            if (!isset($this->_tree[$dependency])) {
+                            if (!isset($this->tree[$dependency])) {
                                 throw new DependencyTreeException(
                                     sprintf("Unresolved dependency '%s' for client %s.", $dependency, $client->code));
                             }
                         }
                     }
-                    $this->_tree[$table] = $branch;
+                    $this->tree[$table] = $branch;
                 }
             }
         }
     }
 
     /**
-     * @param DdlClient $a
-     * @param DdlClient $b
+     * @param  DdlClient $a
+     * @param  DdlClient $b
      * @return int
      */
     public function dependencyBubbleSortCallback(DdlClient $a, DdlClient $b)
@@ -112,35 +113,27 @@ class ConfigReader implements ConfigReaderInterface
 
     /**
      * {@inheritdoc}
-     */
-    public function validateDependencyTree()
-    {
-        // not in use now
-    }
-
-    /**
-     * {@inheritdoc}
      * @throws DependencyTreeException
      */
     public function mergeDependencyTree()
     {
-        if ($this->_isMerged) {
+        if ($this->isMerged) {
             return;
         }
-        if (is_null($this->_tree)) {
+        if (is_null($this->tree)) {
             throw new DependencyTreeException("Invalid context of calling method. The tree is not built yet.");
         }
-        foreach ($this->_tree as &$branch) {
+        foreach ($this->tree as &$branch) {
             $branch['definition'] = $this->recursiveMerge($branch);
             if (isset($branch['dependents'])) {
                 unset($branch['dependents']);
             }
         }
-        $this->_isMerged = true;
+        $this->isMerged = true;
     }
 
     /**
-     * @param array $branch
+     * @param  array $branch
      * @return array
      */
     public function recursiveMerge(array $branch)
@@ -151,6 +144,7 @@ class ConfigReader implements ConfigReaderInterface
                 $res = array_replace_recursive($res, $this->recursiveMerge($dBranch));
             }
         }
+
         return $res;
     }
 
@@ -167,27 +161,28 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function getIsMerged()
     {
-        return $this->_isMerged;
+        return $this->isMerged;
     }
 
     /**
      * internal getter
-     * @param null|string $table
+     * @param  null|string $table
      * @return array|null
      */
     private function getTree($table = null)
     {
-        if (!isset($this->_tree)) {
+        if (!isset($this->tree)) {
             return [];
         }
         if (is_string($table)) {
-            if (isset($this->_tree[$table])) {
-                return $this->_tree[$table];
+            if (isset($this->tree[$table])) {
+                return $this->tree[$table];
             } else {
                 return null;
             }
         }
-        return $this->_tree;
+
+        return $this->tree;
     }
 
     /**
@@ -195,13 +190,14 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function getMergedConfig()
     {
-        if (!$this->_isMerged) {
+        if (!$this->isMerged) {
             $this->mergeDependencyTree();
         }
         $config = [];
         foreach ($this->getTree() as $table => $branch) {
             $config[$table] = $branch['definition'];
         }
+
         return $config;
     }
 }

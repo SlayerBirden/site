@@ -4,7 +4,7 @@
 # file that was distributed with this source code.
 
 parameters:
-  article_model.class: modules\blog\model\Article
+  article_model.class: modules\blog\Model\Article
   article_result_set.class: Zend\Db\ResultSet\HydratingResultSet
   article_table_gateway.class: Zend\Db\TableGateway\TableGateway
-  article_table.class: modules\blog\model\ArticleTable
+  article_table.class: modules\blog\Model\ArticleTable

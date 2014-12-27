@@ -15,13 +15,13 @@ namespace Maketok\Mvc\Controller;
  */
 class AbstractBaseController extends AbstractController
 {
-
     /**
      * init
      * add base template path
      */
     public function __construct()
     {
+        parent::__construct();
         $this->addTemplatePath(AR . '/src/base/view');
     }
 }

@@ -20,9 +20,9 @@ class DdlClientType extends TableMapper
     use ContainerTrait;
 
     /**
-     * @param string $code
+     * @param  string $code
      * @return array|\ArrayObject|null
-     * @throws \Maketok\Installer\Exception
+     * @throws Exception
      */
     public function getClientByCode($code)
     {
@@ -31,6 +31,7 @@ class DdlClientType extends TableMapper
         if (!$row) {
             throw new Exception(sprintf("Could not find client with code %s.", $code));
         }
+
         return $row;
     }
 
@@ -102,6 +103,7 @@ class DdlClientType extends TableMapper
         if (array_key_exists('dependencies', $data)) {
             unset($data['dependencies']);
         }
+
         return $data;
     }
 }

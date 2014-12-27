@@ -10,12 +10,8 @@
 
 namespace Maketok\Util\Test;
 
-
 use Maketok\Util\PriorityQueue;
 
-/**
- * @coversDefaultClass \Maketok\Util\PriorityQueue
- */
 class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 {
     /** @var  PriorityQueue */
@@ -28,43 +24,40 @@ class PriorityQueueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::insert
-     * @covers ::extract
-     * @covers ::isEmpty
      */
     public function insert()
     {
         $data = 'SomeClass::staticMethod';
         $data2 = [new \stdClass(), 'method'];
-        $data3 = function() {echo 'closure';};
+        $data3 = function () {echo 'closure';};
         $this->queue->insert($data);
         $this->queue->insert($data2);
         $this->queue->insert($data3, 10);
+        $this->queue->insert($data3, -1, 'key');
 
         $this->assertEquals($data3, $this->queue->extract());
         $this->assertEquals($data, $this->queue->extract());
         $this->assertEquals($data2, $this->queue->extract());
+        $this->assertEquals($data3, $this->queue->extract());
 
         $this->assertTrue($this->queue->isEmpty());
     }
 
     /**
      * @test
-     * @covers ::remove
-     * @covers ::isEmpty
      */
     public function remove()
     {
         $data = 'SomeClass::staticMethod';
         $data2 = [new \stdClass(), 'method'];
-        $data3 = function() {echo 'closure';};
+        $data3 = function () {echo 'closure';};
         $this->queue->insert($data);
         $this->queue->insert($data2);
-        $this->queue->insert($data3, 10);
+        $this->queue->insert($data3, 10, 'testkey');
 
         $this->queue->remove('SomeClass::staticMethod');
         $this->queue->remove([new \stdClass(), 'method']);
-        $this->queue->remove(function() {echo 'closure';});
+        $this->queue->remove(null, 'testkey');
 
         $this->assertTrue($this->queue->isEmpty());
     }

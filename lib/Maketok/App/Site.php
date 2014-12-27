@@ -11,18 +11,18 @@
 namespace Maketok\App;
 
 use Maketok\App\Helper\UtilityHelperTrait;
-use Maketok\Loader\Autoload;
 use Maketok\Observer\State;
 use Maketok\Http\Request;
+use Maketok\Util\ConfigConsumer;
+use Maketok\Util\ConfigGetter;
 use Maketok\Util\RequestInterface;
 use Monolog\Logger;
 use Zend\Stdlib\ErrorHandler;
 
 /**
  * Application entry point
- * @codeCoverageIgnore
  */
-final class Site
+final class Site implements ConfigConsumer
 {
     use UtilityHelperTrait;
 
@@ -38,9 +38,15 @@ final class Site
     private $envInitialized = false;
 
     /**
+     * @var array
+     */
+    private static $config;
+
+    /**
      * launch app process
+     * @codeCoverageIgnore
      * @param string $env
-     * @param int $context
+     * @param int    $context
      */
     public function run($env = '', $context = null)
     {
@@ -51,7 +57,7 @@ final class Site
         define('AR', APPLICATION_ROOT);
         define('DS', DIRECTORY_SEPARATOR);
         define('ENV', $env);
-        ContainerFactory::setEnv($env);
+        $this->initConfig();
         if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();
         }
@@ -64,14 +70,13 @@ final class Site
         // we've done our job to init system
         // now we may or may not apply configs/or run dispatcher
         if (!($context & self::CONTEXT_SKIP_DISPATCH)) {
-            $this->getDispatcher()->notify('dispatch', new State(array(
-                'request' => $this->ioc()->get('request'),
-            )));
+            $this->getDispatcher()->notify('dispatch', new State(['request' => $this->ioc()->get('request')]));
         }
         $this->terminate();
     }
 
     /**
+     * @codeCoverageIgnore
      * @internal param StateInterface
      * @throws mixed
      */
@@ -87,6 +92,7 @@ final class Site
     }
 
     /**
+     * @codeCoverageIgnore
      * @param RequestInterface $request
      */
     public function setRequest(RequestInterface $request)
@@ -97,6 +103,7 @@ final class Site
 
     /**
      * init evn
+     * @codeCoverageIgnore
      */
     private function initEnvironment()
     {
@@ -109,9 +116,10 @@ final class Site
 
     /**
      * Custom exception handler
+     * @codeCoverageIgnore
      * @param \Exception $e
      */
-    public function maketokExceptionHandler( \Exception $e)
+    public function maketokExceptionHandler(\Exception $e)
     {
         try {
             /** @var Logger $logger */
@@ -124,18 +132,18 @@ final class Site
                     $logger->warn($e->__toString());
                 } elseif ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
                     $logger->err($e->__toString());
-                    $this->getDispatcher()->notify('application_error_triggered', new State(array(
+                    $this->getDispatcher()->notify('application_error_triggered', new State([
                         'exception' => $e,
                         'message' => $e->__toString(),
-                    )));
+                    ]));
                 }
             } else {
                 $message = sprintf("Unhandled exception\n%s", $e->__toString());
                 $logger->emergency($message);
-                $this->getDispatcher()->notify('application_error_triggered', new State(array(
+                $this->getDispatcher()->notify('application_error_triggered', new State([
                     'exception' => $e,
                     'message' => $message,
-                )));
+                ]));
             }
         } catch (\Exception $ex) {
             printf("Exception '%s' thrown within the exception handler in file %s on line %d. Previous exception: %s",
@@ -145,5 +153,54 @@ final class Site
                 $e->__toString()
             );
         }
+    }
+
+    /**
+     * get config value
+     * @param string $path
+     * @return mixed
+     */
+    public static function getConfig($path = null)
+    {
+        $path = trim($path, "/ ");
+        if ($path) {
+            $config = self::$config;
+            while (($pos = strpos($path, '/')) !== false &&
+                isset($config[substr($path, 0, $pos)]) &&
+                is_array($config[substr($path, 0, $pos)])) {
+                $config = $config[substr($path, 0, $pos)];
+                $path = substr($path, $pos + 1);
+            }
+            if (is_array($config) && array_key_exists($path, $config)) {
+                return $config[$path];
+            } else {
+                return null;
+            }
+        }
+
+        return self::$config;
+    }
+
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
+     */
+    public function initConfig()
+    {
+        $configGetter = new ConfigGetter();
+        $configs = $configGetter->getConfig(AR . '/config', 'config', 'local');
+        self::$config = [];
+        foreach ($configs as $cfg) {
+            $this->parseConfig($cfg);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
+     */
+    public function parseConfig(array $config)
+    {
+        self::$config = array_replace(self::$config, $config);
     }
 }

@@ -12,7 +12,6 @@ namespace Maketok\Installer\Ddl\Mysql\Parser;
 
 class Constraint extends AbstractParser implements ParserInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -34,12 +33,13 @@ class Constraint extends AbstractParser implements ParserInterface
             is_null($this->name)) {
             return $constraintInfo;
         }
+
         return [];
     }
 
     /**
-     * @param string $row
-     * @param array $data
+     * @param  string   $row
+     * @param  string[] $data
      * @return array
      */
     public function parseKey($row, $data)
@@ -53,15 +53,16 @@ class Constraint extends AbstractParser implements ParserInterface
         }
         $definition = $data[2];
         $definition = explode(',', $definition);
-        array_walk($definition, function(&$row) {
+        array_walk($definition, function (&$row) {
             $row = str_replace('`', '', $row);
         });
         $constraintInfo['definition'] = $definition;
+
         return $constraintInfo;
     }
 
     /**
-     * @param array $data
+     * @param  string[] $data
      * @return array
      */
     public function parseForeignKey($data)
@@ -74,6 +75,7 @@ class Constraint extends AbstractParser implements ParserInterface
         $constraintInfo['reference_column'] = $data[4];
         $constraintInfo['on_delete'] = $data[5];
         $constraintInfo['on_update'] = $data[6];
+
         return $constraintInfo;
     }
 }

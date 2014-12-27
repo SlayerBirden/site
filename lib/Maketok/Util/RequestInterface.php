@@ -10,14 +10,13 @@
 
 namespace Maketok\Util;
 
-
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 interface RequestInterface extends MessageInterface
 {
     /**
-     * @param SessionInterface $session
-     * @return mixed
+     * @param  SessionInterface $session
+     * @return void
      */
     public function setSession(SessionInterface $session);
 
@@ -27,17 +26,17 @@ interface RequestInterface extends MessageInterface
     public function getSession();
 
     /**
-     * @return array|\IteratorAggregate|\Symfony\Component\HttpFoundation\ParameterBag
+     * @return \Symfony\Component\HttpFoundation\ParameterBag
      */
     public function getAttributes();
 
     /**
-     * @return array|\IteratorAggregate|\Symfony\Component\HttpFoundation\HeaderBag
+     * @return \Symfony\Component\HttpFoundation\HeaderBag
      */
     public function getHeaders();
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getPathInfo();
 }

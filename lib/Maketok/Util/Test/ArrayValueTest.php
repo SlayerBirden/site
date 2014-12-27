@@ -10,22 +10,15 @@
 
 namespace Maketok\Util\Test;
 
-/**
- * Class ArrayValueTraitTest
- * @package Maketok\Util\Test
- * @coversDefaultClass \Maketok\Util\ArrayValueTrait
- */
-class ArrayValueTraitTest extends \PHPUnit_Framework_TestCase
+class ArrayValueTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
-     * @covers ::getIfExists
      * @dataProvider provider
      * @param string|string[] $key
-     * @param array $data
-     * @param mixed $default
-     * @param mixed $expected
+     * @param array           $data
+     * @param mixed           $default
+     * @param mixed           $expected
      */
     public function getIfExists($key, $data, $default, $expected)
     {

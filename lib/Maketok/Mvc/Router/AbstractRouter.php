@@ -11,15 +11,17 @@
 namespace Maketok\Mvc\Router;
 
 use Maketok\App\Helper\UtilityHelperTrait;
+use Maketok\App\Site;
 use Maketok\Mvc\RouteException;
-use Maketok\Util\RequestInterface;
+use Maketok\Util\ConfigConsumer;
 
-abstract class AbstractRouter implements RouterInterface
+abstract class AbstractRouter implements RouterInterface, ConfigConsumer
 {
     use UtilityHelperTrait;
 
     /**
      * init
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
@@ -27,16 +29,18 @@ abstract class AbstractRouter implements RouterInterface
     }
 
     /**
-     * @return RequestInterface
+     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getRequest()
     {
-        //pass really
+        //pass, really
         return $this->ioc()->get('request');
     }
 
     /**
-     * @return callable
+     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getResolver()
     {
@@ -51,19 +55,20 @@ abstract class AbstractRouter implements RouterInterface
         foreach ($routes as $route) {
             $this->addRoute($route);
         }
-    }
-
-    /**
-     * @param array $routes
-     * @return mixed
-     */
-    public function setRoutes(array $routes)
-    {
-        $this->clearRoutes()->addRoutes($routes);
+        return $this;
     }
 
     /**
      * {@inheritdoc}
+     */
+    public function setRoutes(array $routes)
+    {
+        return $this->clearRoutes()->addRoutes($routes);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function assemble(array $params = array())
     {
@@ -72,65 +77,59 @@ abstract class AbstractRouter implements RouterInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
-    public function source($path)
+    public function initConfig()
     {
-        $contents = $this->parseYaml($path);
-        if ($routes = $this->getIfExists('routes', $contents, false)) {
-            foreach ($routes as $route) {
-                $type = $this->getIfExists('type', $route);
-                $path = $this->getIfExists('path', $route);
-                $resolver = $this->getIfExists('resolver', $route);
-                $resolver = $this->processConfigResolver($resolver);
-                if (is_null($type) || is_null($path) || is_null($resolver)) {
-                    $this->getLogger()->err(sprintf("Invalid route definition: %s", json_encode($route)));
-                    continue;
-                }
-                try {
-                    $name = $this->getFullyQualifiedName($type);
-                    /** @var RouterInterface $routeObj */
-                    $routeObj = new $name(
-                        $path,
-                        $resolver,
-                        $this->getIfExists('defaults', $route, []),
-                        $this->getIfExists('restrictions', $route, []),
-                        $this->getIfExists('parser', $route)
-                    );
-                    $this->addRoute($routeObj);
-                } catch (RouteException $e) {
-                    $this->getLogger()->err($e->__toString());
-                }
+        $configs = $this->ioc()->get('config_getter')->getConfig(Site::getConfig('routing_provider_path'), 'routes', ENV);
+        foreach ($configs as $contents) {
+            try {
+                $this->parseConfig($contents);
+            } catch (RouteException $e) {
+                $this->getLogger()->err($e->__toString());
             }
         }
     }
 
     /**
-     * convert static resolver from config
-     * @param $definition
-     * @return callable
+     * {@inheritdoc}
+     * @throws RouteException
      */
-    public function processConfigResolver($definition)
+    public function parseConfig(array $config)
     {
-        // we can't resolve static from config
-        if (is_array($definition) && !empty($definition) && is_string(current($definition))) {
-            $className = array_shift($definition);
-            if (class_exists($className, true)) {
-                array_unshift($definition, new $className());
-            } else {
-                array_unshift($definition, $className);
-            }
+        $routes = $this->getIfExists('routes', $config, false);
+        if (!$routes) {
+            return;
         }
-        return $definition;
+        foreach ($routes as $route) {
+            $type = $this->getIfExists('type', $route);
+            $path = $this->getIfExists('path', $route);
+            $resolver = $this->getIfExists('resolver', $route);
+            if (is_null($type) || is_null($path) || is_null($resolver)) {
+                $this->getLogger()->err(sprintf("Invalid route definition: %s", json_encode($route)));
+                continue;
+            }
+            $name = $this->getFullyQualifiedName($type);
+            /** @var RouterInterface $routeObj */
+            $routeObj = new $name(
+                $path,
+                $resolver,
+                $this->getIfExists('defaults', $route, []),
+                $this->getIfExists('restrictions', $route, []),
+                $this->getIfExists('parser', $route)
+            );
+            $this->addRoute($routeObj);
+        }
     }
 
     /**
-     * @param string $type
+     * @param  string $type
      * @throws RouteException
      * @return string
      */
     protected function getFullyQualifiedName($type)
     {
-        if (!strpos($type, '\\')) {
+        if (strpos($type, '\\') === false) {
             $fullQualifiedRouteName = '\Maketok\Mvc\Router\Route\Http\\' . ucfirst($type);
         } else {
             $fullQualifiedRouteName = $type;
@@ -138,6 +137,7 @@ abstract class AbstractRouter implements RouterInterface
         if (!class_exists($fullQualifiedRouteName)) {
             throw new RouteException(sprintf("Invalid route type: %s", $type));
         }
+
         return $fullQualifiedRouteName;
     }
 }

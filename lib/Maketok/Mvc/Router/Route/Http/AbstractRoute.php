@@ -14,7 +14,6 @@ use Maketok\Util\RequestInterface;
 
 abstract class AbstractRoute
 {
-
     /** @var  RequestInterface */
     protected $request;
 
@@ -29,7 +28,7 @@ abstract class AbstractRoute
      * such as when user types url with trailing slash,
      * and the route is set up without
      *
-     * @param $string
+     * @param string $string
      * @return string
      */
     public function stripTrailingSlash($string)
@@ -46,17 +45,18 @@ abstract class AbstractRoute
     }
 
     /**
-     * @param string $path
+     * @param  string $path
      * @return $this
      */
     public function setPath($path)
     {
         $this->matchPath = $path;
+
         return $this;
     }
 
     /**
-     * @return RequestInterface
+     * @return callable
      */
     public function getResolver()
     {

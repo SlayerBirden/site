@@ -9,18 +9,13 @@
  */
 
 namespace Maketok\Util\Test;
+
 use Maketok\Util\TokenizedBagPart;
 
-/**
- * @coversDefaultClass \Maketok\Util\TokenizedBagPart
- */
 class TokenizedBagPartTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
-     * @covers ::__construct
-     * @covers ::toArray
      */
     public function toArray()
     {

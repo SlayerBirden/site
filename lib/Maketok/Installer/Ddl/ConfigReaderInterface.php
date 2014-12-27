@@ -14,21 +14,13 @@ use Maketok\Installer\ConfigReaderInterface as BaseConfigReader;
 
 interface ConfigReaderInterface extends BaseConfigReader
 {
-
     /**
      * create config tree for all clients
      *
-     * @param array|\ArrayObject $clients
+     * @param  array|\ArrayObject $clients
      * @return void
      */
     public function buildDependencyTree($clients);
-
-    /**
-     * validate tree
-     *
-     * @return void
-     */
-    public function validateDependencyTree();
 
     /**
      * compile tree, merge all branches into main branch

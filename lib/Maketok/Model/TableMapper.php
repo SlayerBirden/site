@@ -35,8 +35,8 @@ class TableMapper
 
     /**
      * @param AbstractTableGateway $tableGateway
-     * @param string|string[] $idField
-     * @param null $autoIncrement
+     * @param string|string[]      $idField
+     * @param string               $autoIncrement
      */
     public function __construct(AbstractTableGateway $tableGateway, $idField, $autoIncrement = null)
     {
@@ -55,6 +55,7 @@ class TableMapper
         if (is_null($this->idField)) {
             throw new ModelException("Id Field Name not set.");
         }
+
         return $this->idField;
     }
 
@@ -76,17 +77,19 @@ class TableMapper
     public function fetchAll()
     {
         $resultSet = $this->tableGateway->select();
+
         return $resultSet;
     }
 
     /**
      * @codeCoverageIgnore
-     * @param array|\Closure|\Zend\Db\Sql\Predicate\PredicateInterface $filter
+     * @param  array|\Closure|\Zend\Db\Sql\Predicate\PredicateInterface $filter
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function fetchFilter($filter)
     {
         $resultSet = $this->tableGateway->select($filter);
+
         return $resultSet;
     }
 
@@ -101,7 +104,7 @@ class TableMapper
 
     /**
      * @codeCoverageIgnore
-     * @param int|string|string[] $id
+     * @param  int|string|string[]     $id
      * @return array|\ArrayObject|null
      * @throws ModelException
      */
@@ -112,6 +115,7 @@ class TableMapper
         if (!$row) {
             throw new ModelException(sprintf("Could not find row with identifier %s", json_encode($id)));
         }
+
         return $row;
     }
 
@@ -127,7 +131,7 @@ class TableMapper
 
     /**
      * get Filter
-     * @param int|string|string[] $data
+     * @param  int|string|string[] $data
      * @return string[]
      */
     protected function getIdFilter($data)
@@ -150,18 +154,19 @@ class TableMapper
                 $filter[$fieldName] = $data[$fieldName];
             }
         }
+
         return $filter;
     }
 
     /**
      * @param object $model
+     * @throws ModelException
      */
     public function save($model)
     {
         try {
             $data = $this->getModelData($model);
             // possible update
-            //@codeCoverageIgnoreStart
             if (array_key_exists('updated_at', $data)) {
                 $data['updated_at'] = date("Y-m-d H:i:s");
             }
@@ -169,7 +174,6 @@ class TableMapper
             if (array_key_exists('created_at', $data) && empty($data['created_at'])) {
                 $data['created_at'] = date("Y-m-d H:i:s");
             }
-            //@codeCoverageIgnoreEnd
             // now determine update or insert
             if (is_null($this->autoIncrement) || (isset($data[$this->autoIncrement]))) {
                 $rowsAffected = $this->getGateway()->update($data, $this->getIdFilter($data));
@@ -177,12 +181,14 @@ class TableMapper
                     // either no corresponding rows exist, so we need to insert
                     // or data set is not updated compared to db entry
                     // try to insert ignore
+                    // P.S. this is only viable for the models not implementing the "Lazy" interface
                     $insert = new InsertIgnore($this->getGateway()->getTable());
                     $insert->values($data);
                     $rowsAffected = $this->getGateway()->insertWith($insert);
                     if (!$rowsAffected) {
-                        // questionable
-                        throw new ModelInfoException(sprintf("Model %s wasn't changed during save process.",
+                        // at this step it means something is wrong with the app-db link
+                        // or with app logic
+                        throw new ModelException(sprintf("Model %s wasn't changed during save process.",
                             get_class($model)));
                     } else {
                         $this->assignIncrement($model);
@@ -193,6 +199,7 @@ class TableMapper
                 $this->assignIncrement($model);
             }
         } catch (ModelInfoException $e) {
+            // the info exception is silently burried here, as it serves merely a flow regulation
         }
     }
 
@@ -209,7 +216,7 @@ class TableMapper
     }
 
     /**
-     * @param object $model
+     * @param  object $model
      * @return array
      * @throws ModelException
      */
@@ -220,7 +227,7 @@ class TableMapper
             $hydrator = $resultSet->getHydrator();
             $data = $hydrator->extract($model);
         } else {
-            throw new ModelInfoException("Unknown object to handle.");
+            throw new ModelException("Unknown object to handle.");
         }
         if ($model instanceof LazyModelInterface) {
             if (!count(array_diff_assoc($data, $model->processOrigin()))) {
@@ -230,7 +237,7 @@ class TableMapper
         }
         // do not proceed without data
         if (empty($data)) {
-            throw new ModelInfoException("Empty object data. Or invalid object to save.");
+            throw new ModelException("Empty object data. Or invalid object to save.");
         }
         return $data;
     }

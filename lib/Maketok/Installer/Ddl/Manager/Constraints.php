@@ -13,7 +13,6 @@ use Maketok\Installer\Ddl\Directives;
 
 class Constraints implements CompareInterface
 {
-
     /**
      * {@inheritdoc}
      */

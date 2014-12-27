@@ -14,7 +14,6 @@ use Maketok\Util\Exception\ParserException;
 
 class ExpressionParser implements ExpressionParserInterface
 {
-
     /**
      * @var string
      */
@@ -44,6 +43,26 @@ class ExpressionParser implements ExpressionParserInterface
     }
 
     /**
+     * @param array $restrictions
+     * @return $this
+     */
+    public function setRestrictions($restrictions)
+    {
+        $this->restrictions = $restrictions;
+        return $this;
+    }
+
+    /**
+     * @param array $parameters
+     * @return $this
+     */
+    public function setParameters($parameters)
+    {
+        $this->parameters = $parameters;
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      * @throws ParserException
      */
@@ -64,6 +83,7 @@ class ExpressionParser implements ExpressionParserInterface
                     }
             }
         }
+
         return implode($result);
     }
 
@@ -96,6 +116,7 @@ class ExpressionParser implements ExpressionParserInterface
         try {
             $tokenized = $this->tokenize($newString);
             $this->validate($tokenized);
+
             return $tokenized;
         } catch (ParserException $e) {
             // flow control exception
@@ -131,12 +152,13 @@ class ExpressionParser implements ExpressionParserInterface
         if (count($variables) != count($vParts)) {
             throw new ParserException("Can't combine variables, wrong number of placeholders.");
         }
+
         return array_combine($variables, $vParts);
     }
 
     /**
-     * @param string|string[] $delimiter
-     * @param string $string
+     * @param  string|string[] $delimiter
+     * @param  string          $string
      * @throws ParserException
      * @return string[]
      */
@@ -150,32 +172,54 @@ class ExpressionParser implements ExpressionParserInterface
         if (empty($delimiter)) {
             return [];
         }
-        $safeDelimiter = self::getSafeDelimiter($string);
+        $safeDelimiter = self::getSafeDelimiter($string, $delimiter);
         foreach ($delimiter as $d) {
             if (($pos = strpos($string, (string) $d)) === false) {
                 throw new ParserException(sprintf("Delimiter %s is not present", $d));
             }
             $string = substr_replace($string, $safeDelimiter, $pos, strlen($d));
         }
+
         return array_values(array_filter(explode($safeDelimiter, $string)));
     }
 
     /**
-     * @param $string
+     * @param  string          $string
+     * @param  string|string[] $delimiter
      * @return string
      * @throws ParserException
-     * @codeCoverageIgnore
      */
-    public static function getSafeDelimiter($string)
+    public static function getSafeDelimiter($string, $delimiter)
     {
         $roundsAllowed = 100;
+        if (!is_array($delimiter)) {
+            $delimiter = [$delimiter];
+        }
         do {
-            $delimiter = md5(uniqid());
+            $unique = md5(uniqid(), true);
             --$roundsAllowed;
-        } while ((strpos($string, $delimiter) !== false) || !$roundsAllowed);
+        } while (!$roundsAllowed ||
+            (strpos($string, $unique) !== false) ||
+            self::arrayValueContains($delimiter, $unique));
         if (!$roundsAllowed) {
             throw new ParserException("Could not find safe delimiter.");
         }
-        return $delimiter;
+
+        return $unique;
+    }
+
+    /**
+     * @param string[] $array
+     * @param string $haystack
+     * @return bool
+     */
+    public static function arrayValueContains(array $array, $haystack)
+    {
+        foreach ($array as $string) {
+            if (strpos($haystack, $string) !== false) {
+                return true;
+            }
+        }
+        return false;
     }
 }

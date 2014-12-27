@@ -11,6 +11,7 @@
 namespace Maketok\Template;
 
 use Maketok\App\Helper\ContainerTrait;
+use Maketok\App\Site;
 
 /**
  * @codeCoverageIgnore
@@ -22,19 +23,21 @@ class Twig extends AbstractEngine
     const CACHE_FOLDER = 'var/cache';
 
     /** @var object loaded template */
-    protected $_template;
+    protected $template;
 
     /**
      * @var array
      */
-    protected $_variables = array();
+    protected $variables = array();
 
     /**
      * set loader, env
+     * @param object $engine
      */
-    public function __construct()
+    public function __construct($engine)
     {
-        $this->_engine = $this->ioc()->get('twig_env');
+        $this->engine = $engine;
+        $this->loadDependencies(Site::getConfig('template_path'));
     }
 
     /**
@@ -42,7 +45,7 @@ class Twig extends AbstractEngine
      */
     public function addExtension(\Twig_Extension $extension)
     {
-        $this->_engine->addExtension($extension);
+        $this->engine->addExtension($extension);
     }
 
     /**
@@ -50,28 +53,28 @@ class Twig extends AbstractEngine
      */
     public function addPath($path)
     {
-        $this->_engine->getLoader()->addPath($path);
+        $this->engine->getLoader()->addPath($path);
     }
 
     /**
      * load the template into engine by path
-     * @param string $path
+     * @param  string $path
      * @return mixed
      */
     public function loadTemplate($path)
     {
         $this->addPath(dirname($path));
-        $this->_template = $this->_engine->loadTemplate(basename($path));
+        $this->template = $this->engine->loadTemplate(basename($path));
     }
 
     /**
      * set the array of variables to use
-     * @param array $variables
+     * @param  array $variables
      * @return mixed
      */
     public function setVariables(array $variables)
     {
-        $this->_variables = array_merge($this->_variables, $variables);
+        $this->variables = array_merge($this->variables, $variables);
     }
 
     /**
@@ -80,19 +83,19 @@ class Twig extends AbstractEngine
      */
     public function render()
     {
-        return $this->_template->render($this->_variables);
+        return $this->template->render($this->variables);
     }
 
     /**
      * include required paths into loader
-     * @param array $paths
+     * @param  array $paths
      * @return mixed
      */
     public function loadDependencies(array $paths)
     {
-        if (isset($this->_engine)) {
+        if (isset($this->engine)) {
             foreach ($paths as $path) {
-                $this->_engine->getLoader()->addPath($path);
+                $this->engine->getLoader()->addPath($path);
             }
         }
     }

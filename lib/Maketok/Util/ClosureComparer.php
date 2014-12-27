@@ -10,15 +10,19 @@
 
 namespace Maketok\Util;
 
+/**
+ * this is pretty much useless because it tries to compare the actual code of the closure
+ * unless we can come up with better idea
+ * there's no point in this component existence
+ */
 class ClosureComparer
 {
-
     /**
      * returns 0 if equal
      * 1 in all other cases
      *
-     * @param mixed $cl1
-     * @param mixed $cl2
+     * @param  mixed $cl1
+     * @param  mixed $cl2
      * @return int
      */
     public function compare($cl1, $cl2)
@@ -32,25 +36,30 @@ class ClosureComparer
         if ($reflectedClosure1->getParameters() != $reflectedClosure2->getParameters()) {
             return 1;
         }
-        $a = $this->parseClosure(
-            implode(array_slice(
-                file($reflectedClosure1->getFileName()),
-                $reflectedClosure1->getStartLine() - 1,
-                ($reflectedClosure1->getEndLine() - $reflectedClosure1->getStartLine() + 1)
-            ))
-        );
-        $b = $this->parseClosure(
-            implode(array_slice(
-                file($reflectedClosure2->getFileName()),
-                $reflectedClosure2->getStartLine() - 1,
-                ($reflectedClosure2->getEndLine() - $reflectedClosure2->getStartLine() + 1)
-            ))
-        );
-        return (int)!($a == $b);
+        $a = $this->getClosureContents($cl1);
+        $b = $this->getClosureContents($cl2);
+
+        return (int) !($a == $b);
     }
 
     /**
-     * @param mixed $var
+     * @param \Closure $closure
+     * @return string
+     */
+    public function getClosureContents(\Closure $closure)
+    {
+        $reflectedClosure = new \ReflectionFunction($closure);
+        return $this->parseClosure(
+            implode(array_slice(
+                file($reflectedClosure->getFileName()),
+                $reflectedClosure->getStartLine() - 1,
+                ($reflectedClosure->getEndLine() - $reflectedClosure->getStartLine() + 1)
+            ))
+        );
+    }
+
+    /**
+     * @param  mixed $var
      * @return bool
      */
     public function isClosure($var)
@@ -61,7 +70,7 @@ class ClosureComparer
     /**
      * return Closure body
      *
-     * @param string $contents
+     * @param  string $contents
      * @return string
      */
     public function parseClosure($contents)
@@ -74,7 +83,7 @@ class ClosureComparer
     /**
      * filter spaces
      *
-     * @param string $body
+     * @param  string $body
      * @return string
      */
     public function filterBody($body)

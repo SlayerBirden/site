@@ -12,12 +12,8 @@ namespace Maketok\Util\Test;
 
 use Maketok\Util\ClosureComparer;
 
-/**
- * @coversDefaultClass \Maketok\Util\ClosureComparer
- */
 class ClosureComparerTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var ClosureComparer
      */
@@ -30,14 +26,10 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::compare
-     * @covers ::isClosure
-     * @covers ::parseClosure
-     * @covers ::filterBody
      * @dataProvider closureProvider
      * @param mixed $c1
      * @param mixed $c2
-     * @param int $expected
+     * @param int   $expected
      */
     public function compare($c1, $c2, $expected)
     {
@@ -71,6 +63,7 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
             'echo $var';
         };
         $a1 = [];
+
         return [
             [$c1, $c2, 1],
             [$c1, $c3, 0],
@@ -84,10 +77,9 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::isClosure
      * @dataProvider variableProvider
      * @param mixed $var
-     * @param bool $expected
+     * @param bool  $expected
      */
     public function isClosure($var, $expected)
     {
@@ -109,8 +101,6 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::parseClosure
-     * @covers ::filterBody
      * @dataProvider textProvider
      * @param string $contents
      * @param string $expected
@@ -119,7 +109,6 @@ class ClosureComparerTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals($expected, $this->comparer->parseClosure($contents));
     }
-
 
     /**
      * @return array

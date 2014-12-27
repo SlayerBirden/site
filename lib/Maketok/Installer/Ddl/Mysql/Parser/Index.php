@@ -12,7 +12,6 @@ namespace Maketok\Installer\Ddl\Mysql\Parser;
 
 class Index extends AbstractParser implements ParserInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -26,13 +25,14 @@ class Index extends AbstractParser implements ParserInterface
         $indexInfo['name'] = $matches[1];
         $definition = $matches[2];
         $definition = explode(',', $definition);
-        array_walk($definition, function(&$row) {
+        array_walk($definition, function (&$row) {
             $row = str_replace('`', '', $row);
         });
         $indexInfo['definition'] = $definition;
         if (is_string($this->name) && ($indexInfo['name'] == $this->name) || is_null($this->name)) {
             return $indexInfo;
         }
+
         return [];
     }
 }

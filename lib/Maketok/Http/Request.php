@@ -18,7 +18,6 @@ use Symfony\Component\HttpFoundation\Request as HttpRequest;
  */
 class Request extends HttpRequest implements RequestInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -32,6 +31,7 @@ class Request extends HttpRequest implements RequestInterface
     public function setContent($content)
     {
         $this->content = $content;
+
         return $this;
     }
 

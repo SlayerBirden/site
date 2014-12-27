@@ -9,20 +9,14 @@
  */
 
 namespace Maketok\Util\Test;
+
 use Maketok\Util\TokenizedBag;
 use Maketok\Util\TokenizedBagPart;
 
-/**
- * @coversDefaultClass \Maketok\Util\TokenizedBag
- */
 class TokenizedBagTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
-     * @covers ::asArray
-     * @covers ::getIterator
-     * @covers ::addPart
      */
     public function testAsArray()
     {
@@ -37,8 +31,6 @@ class TokenizedBagTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::count
-     * @covers ::addPart
      */
     public function testCount()
     {

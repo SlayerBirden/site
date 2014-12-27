@@ -37,9 +37,22 @@ class AbstractController
     private $templatePaths;
 
     /**
-     * @param string|null $content
-     * @param int $code
-     * @param array|null $headers
+     * add base template path
+     */
+    public function __construct()
+    {
+        $rc = new \ReflectionClass($this);
+        $root = dirname(dirname($rc->getFileName()));
+        $view = $root . "/view";
+        if (file_exists($view) && is_dir($view)) {
+            $this->addTemplatePath($view);
+        }
+    }
+
+    /**
+     * @param  string|null $content
+     * @param  int         $code
+     * @param  array|null  $headers
      * @return Response
      */
     public function getResponse($content = null, $code = 200, array $headers = null)
@@ -47,13 +60,14 @@ class AbstractController
         if (is_null($this->response)) {
             $this->initResponse($content, $code, $headers);
         }
+
         return $this->response;
     }
 
     /**
-     * @param string|null $content
-     * @param int $code
-     * @param array|null $headers
+     * @param  string|null      $content
+     * @param  int              $code
+     * @param  array|null       $headers
      * @throws GenericException
      */
     protected function initResponse($content, $code, $headers)
@@ -70,10 +84,10 @@ class AbstractController
     }
 
     /**
-     * @param RequestInterface $request
-     * @param array $templateVars
-     * @param array $params
-     * @param int $httpCode
+     * @param  RequestInterface                           $request
+     * @param  array                                      $templateVars
+     * @param  array                                      $params
+     * @param  int                                        $httpCode
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function prepareResponse(RequestInterface $request, array $templateVars, array $params = null, $httpCode = 200)
@@ -82,11 +96,12 @@ class AbstractController
             $this->prepareContent($templateVars, $params);
             $this->initResponse($this->getContent(), $httpCode, array());
         }
+
         return $this->response->prepare($request);
     }
 
     /**
-     * @param array $templateVars
+     * @param  array $templateVars
      * @return void
      */
     public function prepareContent(array $templateVars)
@@ -112,28 +127,30 @@ class AbstractController
             'images_url' => $this->getUrl('/images/'),
             'base_url' => $this->getUrl('/', ['wts' => 1]),
             'current_url' => $this->getCurrentUrl(),
-            'session' => $this->getSession(),
-            'links' => [],
+            'path_info' => $this->getRouter()->getRequest()->getPathInfo(),
+            'session' => $this->getSession()
         ];
     }
 
     /**
-     * @param array $templateVars
+     * @param  array  $templateVars
      * @return string
      */
     public function render(array $templateVars)
     {
         $this->prepareContent($templateVars);
+
         return $this->getContent();
     }
 
     /**
-     * @param $path
+     * @param  string $path
      * @return self
      */
     public function addTemplatePath($path)
     {
         $this->templatePaths[] = $path;
+
         return $this;
     }
 
@@ -155,12 +172,13 @@ class AbstractController
     }
 
     /**
-     * @param string $template
+     * @param  string $template
      * @return $this
      */
     public function setTemplate($template)
     {
         $this->template = $template;
+
         return $this;
     }
 
@@ -182,21 +200,22 @@ class AbstractController
     }
 
     /**
-     * @param string $url
+     * @param  string           $url
      * @return RedirectResponse
      */
     protected function redirectUrl($url)
     {
-       return new RedirectResponse($url);
+        return new RedirectResponse($url);
     }
 
     /**
-     * @param string $path
+     * @param  string           $path
      * @return RedirectResponse
      */
     protected function redirect($path)
     {
         $url = $this->getUrl($path);
+
         return $this->redirectUrl($url);
     }
 
@@ -206,6 +225,7 @@ class AbstractController
     protected function returnBack()
     {
         $referer = $this->ioc()->get('request')->getHeaders()->get('referer');
+
         return $this->redirectUrl($referer);
     }
 }

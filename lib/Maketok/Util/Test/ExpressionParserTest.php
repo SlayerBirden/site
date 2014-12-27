@@ -10,23 +10,15 @@
 
 namespace Maketok\Util\Test;
 
-
 use Maketok\Util\ExpressionParser;
 use Maketok\Util\Tokenizer;
 
-/**
- * @coversDefaultClass \Maketok\Util\ExpressionParser
- */
 class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
-     * @covers ::evaluate
-     * @covers ::validate
-     * @covers ::__construct
      * @param string $exprString
-     * @param array $parameters
+     * @param array  $parameters
      * @param string $expected
      * @dataProvider expressionEvalProvider
      */
@@ -50,9 +42,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
      * @test
      * @expectedException \Exception
      * @expectedExceptionMessage One of the parameters (article_id) failed to satisfy requirements.
-     * @covers ::evaluate
-     * @covers ::validate
-     * @covers ::__construct
      */
     public function testEvaluateFail()
     {
@@ -67,15 +56,10 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::parse
-     * @covers ::validate
-     * @covers ::__construct
-     * @covers ::tokenize
-     * @covers ::strSplit
      * @param string $exprString
-     * @param array $restrictions
+     * @param array  $restrictions
      * @param string $newString
-     * @param mixed $expected
+     * @param mixed  $expected
      * @dataProvider expressionProvider
      */
     public function testParse($exprString, $newString, $restrictions, $expected)
@@ -122,12 +106,9 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::__construct
-     * @covers ::tokenize
-     * @covers ::strSplit
      * @param string $exprString
      * @param string $newString
-     * @param mixed $expected
+     * @param mixed  $expected
      * @dataProvider tokenizeProvider
      */
     public function tokenize($exprString, $newString, $expected)
@@ -150,7 +131,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::tokenize
      * @expectedException \Maketok\Util\Exception\ParserException
      * @expectedExceptionMessage String stats from wrong constant.
      */
@@ -163,8 +143,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::tokenize
-     * @covers ::strSplit
      * @expectedException \Maketok\Util\Exception\ParserException
      * @expectedExceptionMessage Can't combine variables, wrong number of placeholders.
      */
@@ -177,10 +155,9 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::strSplit
      * @param string $delimiter
      * @param string $newString
-     * @param mixed $expected
+     * @param mixed  $expected
      * @dataProvider splitProvider
      */
     public function strSplit($delimiter, $newString, $expected)
@@ -203,7 +180,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::strSplit
      * @expectedException \Maketok\Util\Exception\ParserException
      * @expectedExceptionMessage Wrong delimiter type
      * @dataProvider wrongTypeProvider
@@ -216,7 +192,6 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @covers ::strSplit
      * @expectedException \Maketok\Util\Exception\ParserException
      * @expectedExceptionMessage Delimiter $ is not present
      */
@@ -234,6 +209,29 @@ class ExpressionParserTest extends \PHPUnit_Framework_TestCase
             [new \stdClass()],
             [null],
             [fopen(__FILE__, 'r')]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider avProvider
+     * @param string $haystack
+     * @param string|string[] $delimiter
+     * @param bool $expected
+     */
+    public function arrayValueContains($haystack, $delimiter, $expected)
+    {
+        $this->assertEquals($expected, ExpressionParser::arrayValueContains($delimiter, $haystack));
+    }
+
+    /**
+     * @return array
+     */
+    public function avProvider()
+    {
+        return [
+            ['$adaasd', ['$'], true],
+            ['$adaasd', ['#'], false]
         ];
     }
 }

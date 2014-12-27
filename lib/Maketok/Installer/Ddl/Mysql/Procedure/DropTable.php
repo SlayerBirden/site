@@ -24,6 +24,7 @@ class DropTable extends AbstractProcedure implements ProcedureInterface
         }
         $tableName = $args[0];
         $table = new BaseDropTable($tableName);
+
         return $this->query($table);
     }
 }

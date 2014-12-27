@@ -3,7 +3,7 @@
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code.
 
-modules\blog\model\Article:
+modules\blog\Model\Article:
   properties:
     title:
       - NotBlank: ~

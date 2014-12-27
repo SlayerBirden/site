@@ -10,29 +10,28 @@
 
 namespace modules\blog\controller\admin;
 
-use Maketok\Module\Mvc\AbstractAdminController;
+use Maketok\Http\Request;
+use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
-use Maketok\Util\RequestInterface;
-use modules\blog\model\ArticleTable;
+use modules\blog\Model\ArticleTable;
 use Symfony\Component\Form\FormInterface;
 
 class Article extends AbstractAdminController
 {
-
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function editAction(RequestInterface $request)
+    public function editAction(Request $request)
     {
         $this->setTemplate('article.html.twig');
         $article = $this->initArticle($request);
         $form = $this->getFormFactory()->create('article', $article);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->handleArticle($form);
+            return $this->handleArticle($form);
         }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Edit Article ' . $article->title,
@@ -42,10 +41,10 @@ class Article extends AbstractAdminController
     }
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function deleteAction(RequestInterface $request)
+    public function deleteAction(Request $request)
     {
         $article = $this->initArticle($request);
         /** @var ArticleTable $articleTable */
@@ -59,11 +58,11 @@ class Article extends AbstractAdminController
     }
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \modules\blog\model\Article
      * @throws RouteException
      */
-    protected function initArticle(RequestInterface $request)
+    protected function initArticle(Request $request)
     {
         $id = $request->getAttributes()->get('id');
         if ($id === null) {
@@ -80,16 +79,16 @@ class Article extends AbstractAdminController
     }
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function newAction(RequestInterface $request)
+    public function newAction(Request $request)
     {
         $this->setTemplate('article.html.twig');
         $form = $this->getFormFactory()->create('article', null);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->handleArticle($form);
+            return $this->handleArticle($form);
         }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Add New Article ',

@@ -29,12 +29,11 @@ abstract class AbstractProcedure implements ProcedureInterface
     }
 
     /**
-     * @param SqlInterface $table
+     * @param  SqlInterface $table
      * @return mixed|string
      */
     public function query(SqlInterface $table)
     {
         return $this->sql->getSqlStringForSqlObject($table);
     }
-
 }

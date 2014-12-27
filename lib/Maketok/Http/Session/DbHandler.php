@@ -13,18 +13,15 @@ namespace Maketok\Http\Session;
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Http\Session\Resource\Model\Session;
 use Maketok\Model\TableMapper;
-use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Maketok\Installer\Ddl\ClientInterface;
 
 /**
  * Class DbHandler
- * @package Maketok\Http\Session
  * @codeCoverageIgnore
  */
 class DbHandler implements \SessionHandlerInterface, ClientInterface
 {
-
     use UtilityHelperTrait;
 
     /**
@@ -56,10 +53,12 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
     {
         try {
             $this->tableMapper->delete($session_id);
+
             return true;
         } catch (\Exception $e) {
             $this->getLogger()->err($e->__toString());
         }
+
         return false;
     }
 
@@ -75,6 +74,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
         $where = new Where();
         $where->lessThan('updated_at', $expirationDate->format('Y-m-d H:i:s'));
         $this->tableMapper->getGateway()->delete($where);
+
         return true;
     }
 
@@ -95,6 +95,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
         if ($model = $this->tableMapper->find($session_id)) {
             return $model->session_id;
         }
+
         return '';
     }
 
@@ -108,6 +109,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
         $model->session_id = $session_id;
         $model->data = $session_data;
         $this->tableMapper->save($model);
+
         return true;
     }
 

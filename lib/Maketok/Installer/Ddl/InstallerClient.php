@@ -37,8 +37,10 @@ class InstallerClient implements ClientInterface
             $file = $locator->locate($version.'.yml');
         } catch (\InvalidArgumentException $e) {
             $this->getLogger()->err($e->getMessage());
+
             return false;
         }
+
         return $ymlReader->parse($file);
     }
 

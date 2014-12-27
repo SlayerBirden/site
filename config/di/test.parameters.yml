@@ -5,3 +5,4 @@
 
 parameters:
   db_database: site_test
+  db_driver: pdo_sqlite

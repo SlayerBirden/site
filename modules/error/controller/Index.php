@@ -10,27 +10,27 @@
 
 namespace modules\error\controller;
 
-use Maketok\Module\Mvc\AbstractBaseController;
-use Maketok\Util\RequestInterface;
-use Maketok\Mvc\Error\DumperInterface;
+use Maketok\Http\Request;
+use Maketok\Mvc\Controller\AbstractBaseController;
+use Maketok\Mvc\Error\DumperTrait;
 
-class Index extends AbstractBaseController implements DumperInterface
+class Index extends AbstractBaseController
 {
+    use DumperTrait;
 
     /**
-     * @param RequestInterface $request
-     * @return \Symfony\Component\HttpFoundation\Response
+     * {@inheritdoc}
      */
-    public function norouteAction(RequestInterface $request)
+    public function norouteAction(Request $request)
     {
         $this->setTemplate('404.html.twig');
         return $this->prepareResponse($request, array('title' => 'Page Not Found'), null, 404);
     }
+
     /**
-     * @param RequestInterface $request
-     * @return \Symfony\Component\HttpFoundation\Response
+     * {@inheritdoc}
      */
-    public function errorAction(RequestInterface $request)
+    public function errorAction(Request $request)
     {
         $this->setTemplate('500.html.twig');
         $params = array(

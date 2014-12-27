@@ -10,7 +10,6 @@
 
 namespace Maketok\Util\Hydrator;
 
-
 use Maketok\Model\LazyModelInterface;
 use Zend\Stdlib\Hydrator\ObjectProperty as BaseObjectProperty;
 
@@ -19,7 +18,6 @@ use Zend\Stdlib\Hydrator\ObjectProperty as BaseObjectProperty;
  */
 class ObjectProperty extends BaseObjectProperty implements LazyHydratorInterface
 {
-
     /**
      * {@inheritdoc}
      * add setter for origin data
@@ -27,12 +25,13 @@ class ObjectProperty extends BaseObjectProperty implements LazyHydratorInterface
     public function hydrate(array $data, $object)
     {
         $object = parent::hydrate($data, $object);
+
         return $this->saveOriginState($data, $object);
     }
 
     /**
-     * @param array $data
-     * @param \ArrayObject|mixed $object
+     * @param  array              $data
+     * @param  \ArrayObject|mixed $object
      * @return mixed
      */
     public function saveOriginState(array $data, $object)
@@ -40,6 +39,7 @@ class ObjectProperty extends BaseObjectProperty implements LazyHydratorInterface
         if ($object instanceof LazyModelInterface) {
             $object->processOrigin($data);
         }
+
         return $object;
     }
 }

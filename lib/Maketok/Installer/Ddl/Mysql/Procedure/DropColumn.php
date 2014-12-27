@@ -26,7 +26,7 @@ class DropColumn extends AbstractProcedure implements ProcedureInterface
         $columnName = $args[1];
         $table = new AlterTable($tableName);
         $table->dropColumn($columnName);
+
         return $this->query($table);
     }
-
 }

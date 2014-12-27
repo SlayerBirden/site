@@ -14,7 +14,6 @@ use Maketok\Util\Exception\DirectoryException;
 
 class DirectoryHandler implements DirectoryHandlerInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -39,6 +38,7 @@ class DirectoryHandler implements DirectoryHandlerInterface
         } else {
             $res = unlink($path);
         }
+
         return $res;
     }
 
@@ -48,9 +48,9 @@ class DirectoryHandler implements DirectoryHandlerInterface
     public function mkdir($path, $permissions = 0755, $recursive = true)
     {
         $res = mkdir($path, $permissions, $recursive);
+
         return $res;
     }
-
 
     /**
      * {@inheritdoc}
@@ -62,7 +62,7 @@ class DirectoryHandler implements DirectoryHandlerInterface
         }
         $files = new \DirectoryIterator($path);
         $result = [];
-        foreach($files as $file) {
+        foreach ($files as $file) {
             /** @var \SplFileInfo $file */
             if ($file->isDot()) {
                 continue;
@@ -76,7 +76,7 @@ class DirectoryHandler implements DirectoryHandlerInterface
                 ];
             }
         }
+
         return $result;
     }
-
 }

@@ -39,6 +39,7 @@ class AddTable extends AbstractProcedure implements ProcedureInterface
             $addCon = new AddConstraint($this->sql);
             $addCon->getQuery(array($tableName, $constraintName, $constraintDefinition, $table));
         }
+
         return $this->query($table);
     }
 }

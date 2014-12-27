@@ -10,7 +10,6 @@
 
 namespace Maketok\Util\Zend\Db\Sql;
 
-
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\Adapter\ParameterContainer;
 use Zend\Db\Adapter\Platform\PlatformInterface;
@@ -27,7 +26,6 @@ use Zend\Db\Sql\TableIdentifier;
  */
 class InsertDuplicate extends Insert
 {
-
     /**
      * @var array Specification array
      */

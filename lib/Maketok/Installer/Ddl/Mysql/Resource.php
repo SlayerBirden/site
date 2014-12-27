@@ -15,6 +15,7 @@ use Maketok\Installer\Ddl\Mysql\Parser\Table;
 use Maketok\Installer\Ddl\Mysql\Procedure\ProcedureInterface;
 use Maketok\Installer\Ddl\ResourceInterface;
 use Maketok\Installer\DirectivesInterface;
+use Maketok\Installer\Exception;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Sql;
 
@@ -43,11 +44,12 @@ class Resource implements ResourceInterface
     {
         $data = $this->getTableArray($table);
         $parser = new Table($data);
+
         return $parser->parse();
     }
 
     /**
-     * @param string $table
+     * @param  string $table
      * @return array
      */
     protected function getTableArray($table)
@@ -62,11 +64,12 @@ class Resource implements ResourceInterface
             // this is case with un-existing table
             $data = [];
         }
+
         return $data;
     }
 
     /**
-     * @param string $table
+     * @param  string $table
      * @return array
      */
     protected function getStrippedTableArray($table)
@@ -74,6 +77,7 @@ class Resource implements ResourceInterface
         $data = $this->getTableArray($table);
         array_shift($data);
         array_pop($data);
+
         return $data;
     }
 
@@ -94,9 +98,9 @@ class Resource implements ResourceInterface
     }
 
     /**
-     * @param string $type
-     * @param string $table
-     * @param string $part
+     * @param  string $type
+     * @param  string $table
+     * @param  string $part
      * @return array
      */
     public function getTablePart($type, $table, $part)
@@ -111,11 +115,12 @@ class Resource implements ResourceInterface
                 return $res;
             }
         }
+
         return [];
     }
 
     /**
-     * @param string $type
+     * @param  string $type
      * @return string
      */
     public function getParserClass($type)
@@ -189,7 +194,6 @@ class Resource implements ResourceInterface
         }
     }
 
-
     /**
      * @param string $query
      */
@@ -208,5 +212,64 @@ class Resource implements ResourceInterface
     public function getProcedures()
     {
         return $this->_procedures;
+    }
+
+    /**
+     * {@inheritdoc}
+     * @throws \Maketok\Installer\Exception
+     */
+    public function processValidateMergedConfig(array &$config)
+    {
+        foreach ($config as $tableName => $definition) {
+            $needToCreateMap = false;
+            $fkMap = array();
+            if (isset($definition['constraints'])) {
+                foreach ($definition['constraints'] as $name => $constraintDef) {
+                    if (isset($constraintDef['type']) && $constraintDef['type'] == 'foreignKey') {
+                        // now check if FK has index announced
+                        $needToCreateMap = true;
+                        $fkMap[$constraintDef['column']] = $name;
+                    }
+                }
+            }
+            if ($needToCreateMap) {
+                // create index map
+                $indexMap = array();
+                if (isset($definition['indices'])) {
+                    foreach ($definition['indices'] as $name => $indexDef) {
+                        if (is_array($indexDef['definition'])) {
+                            $col = current($indexDef['definition']);
+                        } elseif (is_string($indexDef['definition'])) {
+                            $col = $indexDef['definition'];
+                        } else {
+                            throw new Exception("Unrecognizable index column definition.");
+                        }
+                        $indexMap[$col] = $name;
+                    }
+                }
+                foreach ($definition['constraints'] as $name => $constraintDef) {
+                    if (isset($constraintDef['type']) &&
+                        ($constraintDef['type'] == 'uniqueKey' || $constraintDef['type'] == 'primaryKey')) {
+                        if (is_array($constraintDef['definition'])) {
+                            $col = current($constraintDef['definition']);
+                        } elseif (is_string($constraintDef['definition'])) {
+                            $col = $constraintDef['definition'];
+                        } else {
+                            throw new Exception("Unrecognizable index column definition.");
+                        }
+                        $indexMap[$col] = $name;
+                    }
+                }
+                // check correspondence
+                foreach ($fkMap as $column => $name) {
+                    if (!isset($indexMap[$column])) {
+                        $config[$tableName]['indices'][$name] = [
+                            'type' => 'index',
+                            'definition' => [$column],
+                        ];
+                    }
+                }
+            }
+        }
     }
 }

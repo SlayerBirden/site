@@ -15,26 +15,25 @@ namespace Maketok\Template;
  */
 class Phptal extends AbstractEngine
 {
-
     /**
      * load the template into engine by path
-     * @param string $path
+     * @param  string $path
      * @return mixed
      */
     public function loadTemplate($path)
     {
-        $this->_engine = new \PHPTAL($path);
+        $this->engine = new \PHPTAL($path);
     }
 
     /**
      * set the array of variables to use
-     * @param array $variables
+     * @param  array $variables
      * @return mixed
      */
     public function setVariables(array $variables)
     {
         foreach ($variables as $key => $value) {
-            $this->_engine->$key = $value;
+            $this->engine->$key = $value;
         }
     }
 
@@ -44,12 +43,12 @@ class Phptal extends AbstractEngine
      */
     public function render()
     {
-        return $this->_engine->execute();
+        return $this->engine->execute();
     }
 
     /**
      * include required paths into loader
-     * @param array $paths
+     * @param  array $paths
      * @return mixed
      */
     public function loadDependencies(array $paths)

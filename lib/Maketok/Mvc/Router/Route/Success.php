@@ -10,16 +10,16 @@
 
 namespace Maketok\Mvc\Router\Route;
 
-
 class Success
 {
-
-    /** @var  RouteInterface */
-    protected $_route;
+    /**
+     * @var RouteInterface
+     */
+    protected $route;
 
     public function __construct(RouteInterface $route)
     {
-        $this->_route = $route;
+        $this->route = $route;
     }
 
     /**
@@ -27,16 +27,16 @@ class Success
      */
     public function getMatchedRoute()
     {
-        return $this->_route;
+        return $this->route;
     }
 
     /**
-     * @param RouteInterface $route
+     * @param  RouteInterface $route
      * @return $this
      */
     public function setMatchedRoute(RouteInterface $route)
     {
-        $this->_route = $route;
+        $this->route = $route;
         return $this;
     }
 

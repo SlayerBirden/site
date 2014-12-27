@@ -17,7 +17,6 @@ use Monolog\Handler\AbstractProcessingHandler;
  */
 class HttpStreamedHandler extends AbstractProcessingHandler
 {
-
     /**
      * Writes the record down to the log of the implementing handler
      *

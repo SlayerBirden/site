@@ -15,11 +15,10 @@ namespace Maketok\Model;
  */
 class LazyObjectPropModel implements LazyModelInterface
 {
-
     /**
      * @var array
      */
-    protected $originalData;
+    protected $originalData = [];
 
     /**
      * {@inheritdoc}
@@ -27,6 +26,7 @@ class LazyObjectPropModel implements LazyModelInterface
     public function setOrigin(array $data)
     {
         $this->originalData = $data;
+
         return $this;
     }
 

@@ -12,7 +12,6 @@ namespace Maketok\Util;
 
 class TokenizedBagPart
 {
-
     /**
      * @var string
      */
@@ -23,8 +22,8 @@ class TokenizedBagPart
     public $value;
 
     /**
-     * @param $type
-     * @param $value
+     * @param string $type
+     * @param string $value
      */
     public function __construct($type, $value)
     {

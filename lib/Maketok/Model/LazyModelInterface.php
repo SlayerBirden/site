@@ -16,7 +16,7 @@ interface LazyModelInterface
      * define strategy of getting/setting data
      * for each concrete implementation
      * this is combined setter/getter
-     * @param array|null $data
+     * @param  array|null $data
      * @return mixed
      */
     public function processOrigin(array $data = null);

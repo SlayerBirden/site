@@ -10,30 +10,12 @@
 
 namespace Maketok\Installer;
 
-use Maketok\Util\StreamHandlerInterface;
-
 interface ManagerInterface
 {
-
-    /**
-     * sets mutex adapter and stream writer as one entity
-     *
-     * @param StreamHandlerInterface $handler
-     * @return $this
-     */
-    public function setStreamHandler(StreamHandlerInterface $handler);
-
-    /**
-     * getter for stream handler
-     *
-     * @return StreamHandlerInterface
-     */
-    public function getStreamHandler();
-
     /**
      * adds client to install queue
      *
-     * @param ClientInterface $client
+     * @param  ClientInterface $client
      * @return $this
      */
     public function addClient(ClientInterface $client);
@@ -41,7 +23,7 @@ interface ManagerInterface
     /**
      * get all clients in queue
      *
-     * @return array|\ArrayObject
+     * @return ClientInterface[]
      */
     public function getClients();
 

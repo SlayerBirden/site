@@ -10,7 +10,6 @@
 
 namespace Maketok\Mvc\Router\Route\Http;
 
-
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Mvc\Router\Route\Success;
 use Maketok\Util\RequestInterface;
@@ -21,7 +20,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 class Parameterized extends AbstractRoute implements RouteInterface
 {
-
     /** @var  ExpressionParserInterface */
     protected $expressionParser;
 
@@ -36,7 +34,7 @@ class Parameterized extends AbstractRoute implements RouteInterface
 
     /**
      * @param string $path
-     * @param array $resolver
+     * @param callable|string[] $resolver
      * @param array $defaults
      * @param array $restrictions
      * @param \Maketok\Util\ExpressionParserInterface $parser
@@ -48,24 +46,23 @@ class Parameterized extends AbstractRoute implements RouteInterface
         $this->defaults = $defaults;
         $this->restrictions = $restrictions;
         if (is_null($parser)) {
-            $this->expressionParser = new ExpressionParser($this->matchPath, new Tokenizer($this->matchPath));
+            $this->expressionParser = new ExpressionParser($this->matchPath, new Tokenizer($this->matchPath), $defaults, $restrictions);
         } else {
             $this->expressionParser = $parser;
         }
     }
 
     /**
-     * @param RequestInterface $request
+     * @param  RequestInterface $request
      * @return bool|Success
      */
     public function match(RequestInterface $request)
     {
         $this->request = $request;
         $this->variables = $this->expressionParser->parse(
-            $this->stripTrailingSlash($request->getPathInfo()),
-            $this->restrictions
+            $this->stripTrailingSlash($request->getPathInfo())
         );
-        if ($this->variables !== FALSE) {
+        if ($this->variables !== false) {
             $attributes = $request->getAttributes();
             if (is_object($attributes) && ($attributes instanceof ParameterBag)) {
                 $attributes->add(array(
@@ -80,13 +77,15 @@ class Parameterized extends AbstractRoute implements RouteInterface
                     $attributes->add($this->variables);
                 }
             }
+
             return new Success($this);
         }
+
         return false;
     }
 
     /**
-     * @param array $params
+     * @param  array  $params
      * @return string
      */
     public function assemble(array $params = array())
@@ -94,7 +93,7 @@ class Parameterized extends AbstractRoute implements RouteInterface
         // defaults
         $parameters = $this->defaults;
         $parameters = array_replace($parameters, $this->variables, $params);
-
+        $this->expressionParser->setParameters($parameters);
         return $this->expressionParser->evaluate($parameters, $this->restrictions);
     }
 }

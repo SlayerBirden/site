@@ -24,6 +24,6 @@ services:
     arguments: ["@article_table_gateway", id, id]
 
   article.form.type:
-          class: modules\blog\form\ArticleType
+          class: modules\blog\Form\ArticleType
           tags:
               - { name: form.type, alias: article }

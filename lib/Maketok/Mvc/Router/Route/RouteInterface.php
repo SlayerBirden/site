@@ -14,15 +14,14 @@ use Maketok\Util\RequestInterface;
 
 interface RouteInterface
 {
-
     /**
-     * @param RequestInterface $request
+     * @param  RequestInterface $request
      * @return Success
      */
     public function match(RequestInterface $request);
 
     /**
-     * @param array $params
+     * @param  array  $params
      * @return string
      */
     public function assemble(array $params = array());

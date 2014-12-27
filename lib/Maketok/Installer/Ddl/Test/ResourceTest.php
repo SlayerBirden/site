@@ -10,15 +10,23 @@
 
 namespace Maketok\Installer\Ddl\Test;
 
-use Maketok\App\Helper\ContainerTrait;
 use Maketok\Installer\Ddl\Directives;
 use Maketok\Installer\Ddl\Mysql\Resource;
+use Maketok\Util\ConfigGetter;
+use Maketok\Util\Zend\Db\Sql\Sql;
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Platform\Platform;
 
 class ResourceTest extends \PHPUnit_Framework_TestCase
 {
-    use ContainerTrait;
-    /** @var \Maketok\Installer\Ddl\Mysql\Resource */
+    /**
+     * @var \Zend\Db\Adapter\Adapter
+     */
+    protected $adapter;
+
+    /**
+     * @var \Maketok\Installer\Ddl\Mysql\Resource
+     */
     protected $resource;
 
     /**
@@ -61,14 +69,28 @@ CREATE TABLE `test_store` (
    REFERENCES `test_website` (`website_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='Stores';
 SQL;
-        $adapter = $this->ioc()->get('adapter');
-        $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        $this->resource = new Resource($adapter, $this->ioc()->get('zend_db_sql'));
+        $getter = new ConfigGetter();
+        $optionConfigs = $getter->getConfig(AR . '/config/di', ['travis.parameters', 'local.parameters', 'test.parameters']);
+        $merged = [];
+        foreach ($optionConfigs as $config) {
+            $merged = array_replace_recursive($merged, $config);
+        }
+        $params = $merged['parameters'];
+        $driver = [
+            'driver' => 'pdo_mysql',
+            'hostname' => $params['db_host'],
+            'database' => $params['db_database'],
+            'username' => $params['db_user'],
+            'password' => $params['db_passw'],
+        ];
+        $this->adapter = new Adapter($driver);
+        $sqlObj = new Sql($this->adapter, null, new Platform($this->adapter));
+        $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $this->resource = new Resource($this->adapter, $sqlObj);
     }
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::getTable
      */
     public function testGetTable()
     {
@@ -91,7 +113,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::getColumn
      */
     public function testGetColumn()
     {
@@ -152,7 +173,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::getConstraint
      */
     public function testGetConstraint()
     {
@@ -185,7 +205,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::getIndex
      */
     public function testGetIndex()
     {
@@ -216,7 +235,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::createProcedures
      */
     public function testCreateProcedures()
     {
@@ -270,7 +288,6 @@ SQL;
 
     /**
      * @test
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::createProcedures
      */
     public function testCreateProceduresTimestamp()
     {
@@ -299,7 +316,6 @@ SQL;
      * @test
      * @expectedException \LogicException
      * @expectedExceptionMessage Wrong context of launching create procedures method
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::createProcedures
      */
     public function testCreateProceduresWrongContext()
     {
@@ -312,7 +328,6 @@ SQL;
      * @test
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Not enough parameter to change column
-     * @covers Maketok\Installer\Ddl\Mysql\Resource::createProcedures
      */
     public function testCreateProceduresWrongDirectives()
     {
@@ -335,7 +350,6 @@ SQL;
 DROP TABLE IF EXISTS `test_store`;
 DROP TABLE IF EXISTS `test_website`;
 SQL;
-        $adapter = $adapter = $this->ioc()->get('adapter');
-        $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
     }
 }

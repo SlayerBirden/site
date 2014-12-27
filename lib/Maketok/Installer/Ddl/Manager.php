@@ -10,6 +10,7 @@
 
 namespace Maketok\Installer\Ddl;
 
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Installer\AbstractManager;
 use Maketok\Installer\Ddl\Manager\Columns;
 use Maketok\Installer\Ddl\Manager\Constraints;
@@ -20,18 +21,14 @@ use Maketok\Installer\Exception;
 use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
-use Maketok\Util\ArrayValueTrait;
 use Maketok\Model\TableMapper;
+use Maketok\Util\Exception\ModelException;
+use Maketok\Util\StreamHandler;
 use Maketok\Util\StreamHandlerInterface;
-use Monolog\Logger;
 
 class Manager extends AbstractManager implements ManagerInterface
 {
-    use ArrayValueTrait;
-    /**
-     * @var Logger
-     */
-    private $_logger;
+    use UtilityHelperTrait;
     /**
      * @var DdlClientType
      */
@@ -39,28 +36,44 @@ class Manager extends AbstractManager implements ManagerInterface
 
     /**
      * Constructor
-     * @param ConfigReaderInterface $reader
-     * @param ResourceInterface $resource
-     * @param Directives $directives
+     * @param ConfigReaderInterface       $reader
+     * @param ResourceInterface           $resource
+     * @param Directives                  $directives
      * @param StreamHandlerInterface|null $handler
-     * @param Logger $logger
-     * @param TableMapper $tableMapper
+     * @param TableMapper                 $tableMapper
      */
     public function __construct(ConfigReaderInterface $reader,
                                 ResourceInterface $resource,
                                 Directives $directives,
                                 StreamHandlerInterface $handler = null,
-                                Logger $logger,
                                 TableMapper $tableMapper)
     {
-        $this->_reader = $reader;
-        $this->_streamHandler = $handler;
+        $this->reader = $reader;
+        $this->resource = $resource;
         $this->directives = $directives;
         if ($handler) {
-            $this->_resource = $resource;
+            $this->streamHandler = $handler;
         }
-        $this->_logger = $logger;
         $this->tableMapper = $tableMapper;
+    }
+
+    /**
+     * @return StreamHandlerInterface
+     */
+    public function getStreamHandler()
+    {
+        if (is_null($this->streamHandler)) {
+            $this->streamHandler = new StreamHandler();
+        }
+        return $this->streamHandler;
+    }
+
+    /**
+     * @param StreamHandlerInterface $streamHandler
+     */
+    public function setStreamHandler(StreamHandlerInterface $streamHandler)
+    {
+        $this->streamHandler = $streamHandler;
     }
 
     /**
@@ -71,18 +84,18 @@ class Manager extends AbstractManager implements ManagerInterface
         if (!($client instanceof ClientInterface)) {
             throw new Exception("Wrong client type.");
         }
-        if (is_null($this->_clients)) {
-            $this->_clients = [];
+        if (is_null($this->clients)) {
+            $this->clients = [];
         }
         $model = $this->getClientModel($client);
-        if ($model->config !== FALSE) {
+        if ($model->config !== false) {
             // only include model if it has config
-            $this->_clients[$client->getDdlCode()] = $model;
+            $this->clients[$client->getDdlCode()] = $model;
         }
     }
 
     /**
-     * @param DdlClientInterface $client
+     * @param  DdlClientInterface $client
      * @return DdlClient
      */
     public function getClientModel(DdlClientInterface $client)
@@ -101,6 +114,7 @@ class Manager extends AbstractManager implements ManagerInterface
         $model->version = $client->getDdlVersion();
         $model->dependencies = $client->getDependencies();
         $model->config = $client->getDdlConfig($model->version);
+
         return $model;
     }
 
@@ -111,35 +125,43 @@ class Manager extends AbstractManager implements ManagerInterface
     public function process()
     {
         // lock process
-        $this->_streamHandler->lock();
+        if (!$this->getStreamHandler()->lock(AR . '/var/locks/installer.ddl.lock')) {
+            $this->getLogger()->info("Installer is locked.");
+            return;
+        }
         try {
             // build tree
-            $this->_reader->buildDependencyTree($this->_clients);
-            $this->_logger->info("Dependency Tree", array(
-                'tree' => $this->_reader->getDependencyTree(),
+            $this->reader->buildDependencyTree($this->clients);
+            $this->getLogger()->info("Dependency Tree", array(
+                'tree' => $this->reader->getDependencyTree(),
             ));
             // create directives
             $this->createDirectives();
-            $this->_logger->info("Directives", array(
+            $this->getLogger()->info("Directives", array(
                 'directives' => $this->directives->asArray(),
             ));
             // create db procedures
-            $this->_resource->createProcedures($this->directives);
+            $this->resource->createProcedures($this->directives);
 
-            $this->_logger->info("Procedures", array(
-                'procedures' => $this->_resource->getProcedures(),
+            $this->getLogger()->info("Procedures", array(
+                'procedures' => $this->resource->getProcedures(),
             ));
             // run
-            $this->_resource->runProcedures();
+            $this->resource->runProcedures();
             // @TODO: create backup mechanism
-            foreach ($this->_clients as $client) {
-                $this->tableMapper->save($client);
+            foreach ($this->clients as $client) {
+                try {
+                    $this->tableMapper->save($client);
+                } catch (ModelException $e) {
+                    // right here it would probably mean no data was updated in the db
+                    // however we can possibly add logging here
+                }
             }
-            $this->_logger->info("All procedures have been completed.");
+            $this->getLogger()->info("All procedures have been completed.");
         } catch (\Exception $e) {
-            $this->_logger->err(sprintf("Exception while running DDL Installer process: %s", $e->__toString()));
+            $this->getLogger()->err(sprintf("Exception while running DDL Installer process: %s", $e->__toString()));
         }
-        $this->_streamHandler->unLock();
+        $this->getStreamHandler()->unLock();
     }
 
     /**
@@ -148,19 +170,19 @@ class Manager extends AbstractManager implements ManagerInterface
      */
     public function createDirectives()
     {
-        $config = $this->_reader->getMergedConfig();
-        $this->_logger->info("Merged Config", array(
+        $config = $this->reader->getMergedConfig();
+        $this->getLogger()->info("Merged Config", array(
             'config' => $config,
         ));
-        $this->processValidateMergedConfig($config);
-        $this->_logger->info("Processed Merged Config", array(
+        $this->resource->processValidateMergedConfig($config);
+        $this->getLogger()->info("Processed Merged Config", array(
             'config' => $config,
         ));
         foreach ($config as $table => $definition) {
             if (!isset($definition['columns']) || !is_array($definition['columns'])) {
                 throw new \LogicException(sprintf('Can not have a table `%s` without columns definition.', $table));
             }
-            $dbConfig = $this->_resource->getTable($table);
+            $dbConfig = $this->resource->getTable($table);
             // compare def with db
             if (empty($dbConfig)) {
                 // add table
@@ -179,70 +201,5 @@ class Manager extends AbstractManager implements ManagerInterface
             }
         }
         $this->directives->unique();
-    }
-
-    /**
-     * first purpose of this is to make sure FK has correspondent index record
-     * otherwise create it
-     * this is because MySQL automatically creates index record for every FK
-     * see more at http://dev.mysql.com/doc/refman/5.6/en/innodb-foreign-key-constraints.html
-     *
-     * @param array $config
-     * @return void
-     * @throws Exception
-     */
-    public function processValidateMergedConfig(array &$config)
-    {
-        foreach ($config as $tableName => $definition) {
-            $needToCreateMap = false;
-            $fkMap = array();
-            if (isset($definition['constraints'])) {
-                foreach ($definition['constraints'] as $name => $constraintDef) {
-                    if (isset($constraintDef['type']) && $constraintDef['type'] == 'foreignKey') {
-                        // now check if FK has index announced
-                        $needToCreateMap = true;
-                        $fkMap[$constraintDef['column']] = $name;
-                    }
-                }
-            }
-            if ($needToCreateMap) {
-                // create index map
-                $indexMap = array();
-                if (isset($definition['indices'])) {
-                    foreach ($definition['indices'] as $name => $indexDef) {
-                        if (is_array($indexDef['definition'])) {
-                            $col = current($indexDef['definition']);
-                        } elseif(is_string($indexDef['definition'])) {
-                            $col = $indexDef['definition'];
-                        } else {
-                            throw new Exception("Unrecognizable index column definition.");
-                        }
-                        $indexMap[$col] = $name;
-                    }
-                }
-                foreach ($definition['constraints'] as $name => $constraintDef) {
-                    if (isset($constraintDef['type']) &&
-                        ($constraintDef['type'] == 'uniqueKey' || $constraintDef['type'] == 'primaryKey')) {
-                        if (is_array($constraintDef['definition'])) {
-                            $col = current($constraintDef['definition']);
-                        } elseif(is_string($constraintDef['definition'])) {
-                            $col = $constraintDef['definition'];
-                        } else {
-                            throw new Exception("Unrecognizable index column definition.");
-                        }
-                        $indexMap[$col] = $name;
-                    }
-                }
-                // check correspondence
-                foreach ($fkMap as $column => $name) {
-                    if (!isset($indexMap[$column])) {
-                        $config[$tableName]['indices'][$name] = [
-                            'type' => 'index',
-                            'definition' => [$column],
-                        ];
-                    }
-                }
-            }
-        }
     }
 }

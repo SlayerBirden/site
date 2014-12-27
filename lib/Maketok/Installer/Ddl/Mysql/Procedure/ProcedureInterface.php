@@ -14,7 +14,6 @@ use Zend\Db\Sql\Sql;
 
 interface ProcedureInterface
 {
-
     /**
      * set sql
      * @param Sql $sql
@@ -23,7 +22,7 @@ interface ProcedureInterface
 
     /**
      * get Query
-     * @param array $args
+     * @param  array  $args
      * @return string
      */
     public function getQuery(array $args);

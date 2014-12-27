@@ -10,7 +10,6 @@
 
 namespace Maketok\Mvc\Router\Route\Http;
 
-
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Mvc\Router\Route\Success;
 use Maketok\Util\RequestInterface;
@@ -18,14 +17,13 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 class Literal extends AbstractRoute implements RouteInterface
 {
-
     /** @var  array */
     protected $defaults;
 
     /**
-     * @param string $path
+     * @param string   $path
      * @param callable $resolver
-     * @param array $defaults
+     * @param array    $defaults
      */
     public function __construct($path, $resolver,  array $defaults = [])
     {
@@ -35,7 +33,7 @@ class Literal extends AbstractRoute implements RouteInterface
     }
 
     /**
-     * @param RequestInterface $request
+     * @param  RequestInterface $request
      * @return bool|Success
      */
     public function match(RequestInterface $request)
@@ -51,13 +49,15 @@ class Literal extends AbstractRoute implements RouteInterface
                     $attributes->add($this->defaults);
                 }
             }
+
             return new Success($this);
         }
+
         return false;
     }
 
     /**
-     * @param array $params
+     * @param  array  $params
      * @return string
      */
     public function assemble(array $params = array())

@@ -19,7 +19,6 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class TemplateCompilerPass implements CompilerPassInterface
 {
-
     /**
      * {@inheritdoc}
      */
