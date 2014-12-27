@@ -13,10 +13,10 @@ namespace Maketok\Observer;
 use Maketok\App\Helper\ContainerTrait;
 use Maketok\App\Site;
 use Maketok\Util\CallableHash;
-use Maketok\Util\ConfigConsumer;
+use Maketok\Util\ConfigConsumerInterface;
 use Maketok\Util\PriorityQueue;
 
-class SubjectManager implements SubjectManagerInterface, ConfigConsumer
+class SubjectManager implements SubjectManagerInterface, ConfigConsumerInterface
 {
     use ContainerTrait;
 

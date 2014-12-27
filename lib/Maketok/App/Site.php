@@ -13,7 +13,7 @@ namespace Maketok\App;
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Observer\State;
 use Maketok\Http\Request;
-use Maketok\Util\ConfigConsumer;
+use Maketok\Util\ConfigConsumerInterface;
 use Maketok\Util\ConfigGetter;
 use Maketok\Util\RequestInterface;
 use Monolog\Logger;
@@ -22,7 +22,7 @@ use Zend\Stdlib\ErrorHandler;
 /**
  * Application entry point
  */
-final class Site implements ConfigConsumer
+final class Site implements ConfigConsumerInterface
 {
     use UtilityHelperTrait;
 

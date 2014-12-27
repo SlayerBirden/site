@@ -27,7 +27,7 @@ class Autoload
     }
 
     /**
-     * @param  string       $class
+     * @param  string $class
      * @return mixed|string
      */
     public function autoload($class)
@@ -41,7 +41,7 @@ class Autoload
         $filename = $this->getRealClassName($class);
         $resolvedName = stream_resolve_include_path($filename);
         if (false !== $resolvedName) {
-            return include $resolvedName;
+            require $resolvedName;
         }
 
         return $resolvedName;
@@ -49,6 +49,7 @@ class Autoload
 
     /**
      * @param string $class
+     * @return string
      */
     public function getRealClassName($class)
     {

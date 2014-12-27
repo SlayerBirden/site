@@ -26,7 +26,7 @@ class HttpStreamedHandler extends AbstractProcessingHandler
     protected function write(array $record)
     {
         echo (string) $record['formatted'];
-        @ob_flush();
+        ob_flush();
         flush();
     }
 }

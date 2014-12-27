@@ -157,14 +157,6 @@ class ConfigReader implements ConfigReaderInterface
     }
 
     /**
-     * @return bool
-     */
-    public function getIsMerged()
-    {
-        return $this->isMerged;
-    }
-
-    /**
      * internal getter
      * @param  null|string $table
      * @return array|null
