@@ -148,7 +148,6 @@ class Manager extends AbstractManager implements ManagerInterface
             ));
             // run
             $this->resource->runProcedures();
-            // @TODO: create backup mechanism
             foreach ($this->clients as $client) {
                 try {
                     $this->tableMapper->save($client);
