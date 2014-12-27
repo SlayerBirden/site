@@ -10,7 +10,7 @@
 
 namespace Maketok\Util;
 
-interface ConfigConsumer
+interface ConfigConsumerInterface
 {
     /**
      * initialize configuration from resources

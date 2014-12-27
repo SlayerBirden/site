@@ -13,9 +13,9 @@ namespace Maketok\Mvc\Router;
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\App\Site;
 use Maketok\Mvc\RouteException;
-use Maketok\Util\ConfigConsumer;
+use Maketok\Util\ConfigConsumerInterface;
 
-abstract class AbstractRouter implements RouterInterface, ConfigConsumer
+abstract class AbstractRouter implements RouterInterface, ConfigConsumerInterface
 {
     use UtilityHelperTrait;
 
