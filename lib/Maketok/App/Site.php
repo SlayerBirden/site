@@ -61,6 +61,7 @@ final class Site implements ConfigConsumerInterface
         if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();
         }
+        $this->initRequest();
         $this->ioc()->set('site', $this);
         $this->getDispatcher()->notify('ioc_container_initialized', new State([]));
         if ($this->ioc()->isFrozen()) {
@@ -110,8 +111,19 @@ final class Site implements ConfigConsumerInterface
         date_default_timezone_set(self::DEFAULT_TIMEZONE);
         ErrorHandler::start(\E_ALL);
         set_exception_handler([$this, 'maketokExceptionHandler']);
-        $this->setRequest(Request::createFromGlobals());
         $this->envInitialized = true;
+    }
+
+    /**
+     * init request
+     * @codeCoverageIgnore
+     */
+    private function initRequest()
+    {
+        /** @var Request $request */
+        $request = Request::createFromGlobals();
+        $request->setArea(ENV);
+        $this->setRequest($request);
     }
 
     /**

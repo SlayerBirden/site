@@ -18,6 +18,7 @@ use Maketok\Mvc\Router\Route\Http\Error;
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Mvc\Router\Route\Success;
 use Maketok\Mvc\Router\RouterInterface;
+use Maketok\Mvc\Router\Stack;
 use Maketok\Observer\State;
 use Maketok\Util\RequestInterface;
 use Maketok\Util\ResponseInterface;
@@ -49,6 +50,7 @@ class Front
     {
         $this->request = $request;
         set_exception_handler([$this, 'exceptionHandler']);
+        $this->getDispatcher()->notify('front_before_process', new State(['request' => $request]));
         /** @var Success $success */
         if ($success = $this->router->match($request)) {
             $this->getDispatcher()->notify('match_route_successful', new State(['success' => $success]));
@@ -103,6 +105,7 @@ class Front
     public function exceptionHandler(\Exception $e)
     {
         try {
+            $message = 'Oops! We are really sorry, but there was an error!';
             $dumper = $this->dumpers->pop();
             if ($e instanceof RouteException) {
                 // not found
@@ -111,15 +114,20 @@ class Front
                 $this->getDispatcher()->notify('noroute_action', new State(['front' => $this, 'dumper' => $dumper]));
             } elseif ($e instanceof \ErrorException) {
                 $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+                $message = "Oops! We couldn't find the page you searched for. Looks like it doesn't exist anymore.";
                 $errorRoute = $this->processError($e, $dumper);
             } else {
-                $code = Response::HTTP_INTERNAL_SERVER_ERROR;
-                $this->getLogger()->emergency(sprintf("Front Controller dispatch unhandled exception\n%s", $e->__toString()));
+                $code = $e->getCode();
+                if (!isset(Response::$statusTexts[$code])) {
+                    $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+                } else {
+                    $message = $e->getMessage();
+                }
                 $errorRoute = new Error($dumper, ['exception' => $e]);
             }
-            $this->launch($errorRoute->match($this->request), true, [$code]);
+            $this->launch($errorRoute->match($this->request), true, [$code, $message]);
         } catch (\Exception $ex) {
-            printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d. Trace: %s. Previous exception: %s",
+            printf("Exception '%s' thrown within the front controller exception handler in file %s on line %d.\nTrace: %s.\nPrevious exception: %s",
                 $ex->getMessage(),
                 $ex->getFile(),
                 $ex->getLine(),

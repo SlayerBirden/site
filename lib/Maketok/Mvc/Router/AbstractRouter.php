@@ -81,7 +81,12 @@ abstract class AbstractRouter implements RouterInterface, ConfigConsumerInterfac
      */
     public function initConfig()
     {
-        $configs = $this->ioc()->get('config_getter')->getConfig(Site::getConfig('routing_provider_path'), 'routes', ENV);
+        $env = $this->ioc()->get('request')->getArea();
+        $configs = $this->ioc()->get('config_getter')->getConfig(
+            Site::getConfig('routing_provider_path'),
+            'routes',
+            $env
+        );
         foreach ($configs as $contents) {
             try {
                 $this->parseConfig($contents);

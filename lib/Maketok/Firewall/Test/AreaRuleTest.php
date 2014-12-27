@@ -10,24 +10,23 @@
 
 namespace Maketok\Firewall\Test;
 
-use Maketok\Firewall\Rule\PathRule;
+use Maketok\Firewall\Rule\AreaRule;
 use Maketok\Http\Request;
 
-class PathRuleTest extends \PHPUnit_Framework_TestCase
+class AreaRuleTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
      */
     public function addBlacklist()
     {
-        $rule = new PathRule();
-        $rule->addBlacklist(0, ['test']);
-        $rule->addBlacklist(1, 'test2');
-        $rule->addBlacklist(0, 'test2');
+        $rule = new AreaRule();
+        $rule->addBlacklist(1, 'admin');
+        $rule->addBlacklist(2, 'base');
 
         $this->assertEquals([
-            0 => ['test', 'test2'],
-            1 => ['test2']
+            1 => ['admin'],
+            2 => ['base']
         ], $rule->getBlacklist());
     }
 
@@ -41,7 +40,7 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
      */
     public function isGranted($blacklist, $role, Request $request, $expected)
     {
-        $rule = new PathRule();
+        $rule = new AreaRule();
         if ($blacklist) {
             $rule->addBlacklist($blacklist[0], $blacklist[1]);
         }
@@ -54,23 +53,26 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
      */
     public function provider()
     {
+        /** @var Request $request */
+        $request = Request::create('/admin');
+        $request->setArea('admin');
         return [
             [
-                [0, ['^/admin']], // blacklist for role 0 -> restrict admin
+                [0, ['admin']], // blacklist for role 0 -> restrict admin
                 0,
-                Request::create('/admin'),
+                $request,
                 false
             ],
             [
-                [0, '^(?!/admin).*'], // restrict all but admin
+                [0, ['base, api']],
                 0,
-                Request::create('/admin'),
+                $request,
                 true
             ],
             [
-                [0, ['^/admin']],
+                [0, ['admin']],
                 1,
-                Request::create('/admin'),
+                $request,
                 true
             ]
         ];
@@ -83,7 +85,7 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
      */
     public function isGrantedNoLists()
     {
-        $rule = new PathRule();
+        $rule = new AreaRule();
         $rule->isGranted(0, new Request());
     }
 }

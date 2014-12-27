@@ -18,6 +18,32 @@ abstract class AbstractRule implements RuleInterface
     protected $blacklist = [];
 
     /**
+     * @param string $type
+     * @param int $role
+     * @param mixed $condition
+     */
+    public function __construct($type = null, $role = null, $condition = null)
+    {
+        if (!is_null($type) && !is_null($role) && !is_null($condition)) {
+            $this->addList($type, $role, $condition);
+        }
+    }
+
+    /**
+     * @param string $type
+     * @param int $role
+     * @param mixed $condition
+     */
+    public function addList($type, $role, $condition)
+    {
+        switch ($type) {
+            case 'black':
+                $this->addBlacklist($role, $condition);
+                break;
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function addBlacklist($role, $condition)

@@ -24,6 +24,11 @@ class Request extends HttpRequest implements RequestInterface
     public $attributes;
 
     /**
+     * @var string
+     */
+    protected $area;
+
+    /**
      * currently not in use
      * @param $content
      * @return $this
@@ -49,5 +54,21 @@ class Request extends HttpRequest implements RequestInterface
     public function getHeaders()
     {
         return $this->headers;
+    }
+
+    /**
+     * @param string $area
+     */
+    public function setArea($area)
+    {
+        $this->area = $area;
+    }
+
+    /**
+     * @return string
+     */
+    public function getArea()
+    {
+        return $this->area;
     }
 }

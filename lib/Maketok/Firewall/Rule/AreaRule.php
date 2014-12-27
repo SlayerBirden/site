@@ -10,11 +10,14 @@
 
 namespace Maketok\Firewall\Rule;
 
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\Firewall\FirewallException;
 use Maketok\Http\Request;
 
 class AreaRule extends  AbstractRule
 {
+    use ContainerTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -23,7 +26,9 @@ class AreaRule extends  AbstractRule
         if (empty($this->blacklist)) {
             throw new FirewallException("No lists found.");
         }
-        if (isset($this->blacklist[$role]) && is_array($this->blacklist[$role]) && in_array(ENV, $this->blacklist[$role])) {
+        if (isset($this->blacklist[$role])
+            && is_array($this->blacklist[$role])
+            && in_array($request->getArea(), $this->blacklist[$role])) {
             return false;
         }
         return true;
