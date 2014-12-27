@@ -18,7 +18,6 @@ use Maketok\Mvc\Router\Route\Http\Error;
 use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Mvc\Router\Route\Success;
 use Maketok\Mvc\Router\RouterInterface;
-use Maketok\Mvc\Router\Stack;
 use Maketok\Observer\State;
 use Maketok\Util\RequestInterface;
 use Maketok\Util\ResponseInterface;

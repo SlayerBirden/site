@@ -17,14 +17,14 @@ interface RuleInterface
     /**
      * @param int $role
      * @param mixed $condition
-     * @return mixed
+     * @return self
      */
     public function addBlacklist($role, $condition);
 
     /**
      * @param int $role
      * @param mixed $condition
-     * @return mixed
+     * @return self
      */
     public function addWhitelist($role, $condition);
 
