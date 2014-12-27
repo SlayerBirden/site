@@ -23,6 +23,13 @@ interface RuleInterface
 
     /**
      * @param int $role
+     * @param mixed $condition
+     * @return mixed
+     */
+    public function addWhitelist($role, $condition);
+
+    /**
+     * @param int $role
      * @param Request $request
      * @return bool
      */

@@ -10,24 +10,23 @@
 
 namespace Maketok\Firewall\Test;
 
-use Maketok\Firewall\Rule\PathRule;
+use Maketok\Firewall\Rule\IpRule;
 use Maketok\Http\Request;
 
-class PathRuleTest extends \PHPUnit_Framework_TestCase
+class IpRuleTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
      */
     public function addBlacklist()
     {
-        $rule = new PathRule();
-        $rule->addBlacklist(0, ['test']);
-        $rule->addBlacklist(1, 'test2');
-        $rule->addBlacklist(0, 'test2');
+        $rule = new IpRule();
+        $rule->addBlacklist(1, '1.1.1.1');
+        $rule->addBlacklist(2, '2.2.2.2');
 
         $this->assertEquals([
-            0 => ['test', 'test2'],
-            1 => ['test2']
+            1 => ['1.1.1.1'],
+            2 => ['2.2.2.2']
         ], $rule->getBlacklist());
     }
 
@@ -36,14 +35,13 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
      */
     public function addWhitelist()
     {
-        $rule = new PathRule();
-        $rule->addWhitelist(0, ['test']);
-        $rule->addWhitelist(1, 'test2');
-        $rule->addWhitelist(0, 'test2');
+        $rule = new IpRule();
+        $rule->addWhitelist(1, '1.1.1.1');
+        $rule->addWhitelist(2, '2.2.2.2');
 
         $this->assertEquals([
-            0 => ['test', 'test2'],
-            1 => ['test2']
+            1 => ['1.1.1.1'],
+            2 => ['2.2.2.2']
         ], $rule->getWhitelist());
     }
 
@@ -58,7 +56,7 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
      */
     public function isGranted($blacklist, $whitelist, $role, Request $request, $expected)
     {
-        $rule = new PathRule();
+        $rule = new IpRule();
         if ($blacklist) {
             $rule->addBlacklist($blacklist[0], $blacklist[1]);
         }
@@ -74,50 +72,52 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
      */
     public function provider()
     {
+        /** @var Request $request */
+        $request = Request::create('/admin', 'GET', [], [], [], ['REMOTE_ADDR' => '2.2.2.2']);
         return [
             [
-                [0, ['^/admin']], // blacklist for role 0 -> restrict admin
+                [0, ['2.2.2.2']], // blacklist for role 0 -> restrict admin
                 null,
                 0,
-                Request::create('/admin'),
-                false,
+                $request,
+                false
             ],
             [
-                [0, '^(?!/admin).*'], // restrict all but admin
+                [0, ['1.1.1.1']],
                 null,
                 0,
-                Request::create('/admin'),
-                true,
+                $request,
+                true
             ],
             [
-                [0, ['^/admin']],
+                [0, ['2.2.2.2']],
                 null,
                 1,
-                Request::create('/admin'),
-                true,
+                $request,
+                true
             ],
             // whitelist check precedes blacklist
             // but if both black denies white, the check is not passed
             [
-                [0, ['^/admin']],
-                [0, ['^/admin']],
+                [0, ['2.2.2.2']],
+                [0, ['2.2.2.2']],
                 0,
-                Request::create('/admin'),
-                false,
+                $request,
+                false
             ],
             [
                 null,
-                [0, ['^/admin']],
+                [0, ['2.2.2.2']],
                 0,
-                Request::create('/admin'),
-                true,
+                $request,
+                true
             ],
             [
                 null,
-                [0, ['^/admin']],
+                [0, ['2.2.2.2']],
                 1,
-                Request::create('/admin'),
-                false,
+                $request,
+                false
             ]
         ];
     }
@@ -129,7 +129,7 @@ class PathRuleTest extends \PHPUnit_Framework_TestCase
      */
     public function isGrantedNoLists()
     {
-        $rule = new PathRule();
+        $rule = new IpRule();
         $rule->isGranted(0, new Request());
     }
 }

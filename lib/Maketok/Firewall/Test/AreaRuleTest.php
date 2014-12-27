@@ -32,17 +32,36 @@ class AreaRuleTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     */
+    public function addWhitelist()
+    {
+        $rule = new AreaRule();
+        $rule->addWhitelist(1, 'admin');
+        $rule->addWhitelist(2, 'base');
+
+        $this->assertEquals([
+            1 => ['admin'],
+            2 => ['base']
+        ], $rule->getWhitelist());
+    }
+
+    /**
+     * @test
      * @dataProvider provider
      * @param string[] $blacklist
+     * @param string[] $whitelist
      * @param int $role
      * @param Request $request
      * @param boolean $expected
      */
-    public function isGranted($blacklist, $role, Request $request, $expected)
+    public function isGranted($blacklist, $whitelist, $role, Request $request, $expected)
     {
         $rule = new AreaRule();
         if ($blacklist) {
             $rule->addBlacklist($blacklist[0], $blacklist[1]);
+        }
+        if ($whitelist) {
+            $rule->addWhitelist($whitelist[0], $whitelist[1]);
         }
 
         $this->assertSame($expected, $rule->isGranted($role, $request));
@@ -59,21 +78,47 @@ class AreaRuleTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 [0, ['admin']], // blacklist for role 0 -> restrict admin
+                null,
                 0,
                 $request,
                 false
             ],
             [
-                [0, ['base, api']],
+                [0, ['base', 'api']],
+                [],
                 0,
                 $request,
                 true
             ],
             [
                 [0, ['admin']],
+                null,
                 1,
                 $request,
                 true
+            ],
+            // whitelist check precedes blacklist
+            // but if both black denies white, the check is not passed
+            [
+                [0, ['admin']],
+                [0, ['admin']],
+                0,
+                $request,
+                false
+            ],
+            [
+                null,
+                [0, ['admin']],
+                0,
+                $request,
+                true
+            ],
+            [
+                null,
+                [0, ['admin']],
+                1,
+                $request,
+                false
             ]
         ];
     }

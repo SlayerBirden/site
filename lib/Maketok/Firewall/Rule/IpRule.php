@@ -10,10 +10,13 @@
 
 namespace Maketok\Firewall\Rule;
 
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\Http\Request;
 
-class PathRule extends  AbstractRule
+class IpRule extends  AbstractRule
 {
+    use ContainerTrait;
+
     /**
      * return true if access should be granted
      * @param Request $request
@@ -22,13 +25,7 @@ class PathRule extends  AbstractRule
      */
     protected function getSpecialConditionBlack(Request $request, array $conditions)
     {
-        foreach ($conditions as $condition) {
-            $res = preg_match("#$condition#", $request->getPathInfo());
-            if ($res === 1) {
-                return false;
-            }
-        }
-        return true;
+        return !in_array($request->getClientIp(), $conditions);
     }
 
     /**
@@ -39,12 +36,6 @@ class PathRule extends  AbstractRule
      */
     protected function getSpecialConditionWhite(Request $request, array $conditions)
     {
-        foreach ($conditions as $condition) {
-            $res = preg_match("#$condition#", $request->getPathInfo());
-            if ($res === 1) {
-                return true;
-            }
-        }
-        return false;
+        return in_array($request->getClientIp(), $conditions);
     }
 }

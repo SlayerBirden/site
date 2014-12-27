@@ -61,6 +61,9 @@ class Authorization implements AuthorizationInterface, ConfigConsumerInterface
      */
     public function validate(Request $request)
     {
+        if (empty($this->rules)) {
+            return;
+        }
         $roleProvider = $this->getRoleProvider();
         if (is_null($roleProvider)) {
             $roles = [0];
@@ -68,7 +71,7 @@ class Authorization implements AuthorizationInterface, ConfigConsumerInterface
             $roles = $roleProvider->getCurrentRoles($request);
         }
         // start from latest role in stack
-        while ($roles && $role = array_pop($roles)) {
+        while ($roles && ($role = array_pop($roles)) !== null) {
             foreach ($this->getRules() as $rule) {
                 if ($rule->isGranted($role, $request)) {
                     return;
@@ -87,7 +90,7 @@ class Authorization implements AuthorizationInterface, ConfigConsumerInterface
         $env = $this->ioc()->get('request')->getArea();
         $configs = $this->ioc()->get('config_getter')->getConfig(
             Site::getConfig('firewall_config_path'),
-            'navigation',
+            'rules',
             $env
         );
         foreach ($configs as $config) {
@@ -101,15 +104,17 @@ class Authorization implements AuthorizationInterface, ConfigConsumerInterface
     public function parseConfig(array $config)
     {
         foreach ($config as $role => $configType) {
-            $blacklist = $this->getIfExists('blacklist', $configType, []);
-            foreach ($blacklist as $ruleClass => $rules) {
-                if (!class_exists($ruleClass)) {
-                    throw new FirewallException(sprintf(
-                        "Tried to create non existent rule with class '%s'.", $ruleClass
-                    ));
+            foreach (['blacklist', 'whitelist'] as $type) {
+                $blacklist = $this->getIfExists($type, $configType, []);
+                foreach ($blacklist as $ruleClass => $rules) {
+                    if (!class_exists($ruleClass)) {
+                        throw new FirewallException(sprintf(
+                            "Tried to create non existent rule with class '%s'.", $ruleClass
+                        ));
+                    }
+                    /** @var RuleInterface $rule */
+                    $this->addRule(new $ruleClass($type, $role, $rules));
                 }
-                /** @var RuleInterface $rule */
-                $this->addRule(new $ruleClass('black', $role, $rules));
             }
         }
     }
@@ -144,5 +149,13 @@ class Authorization implements AuthorizationInterface, ConfigConsumerInterface
     public function setRoleProvider(RoleProviderInterface $roleProvider)
     {
         $this->roleProvider = $roleProvider;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addWhitelist($role, $condition)
+    {
+        throw new \LogicException("Please add whitelist via 'addRule' method.");
     }
 }
