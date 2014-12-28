@@ -26,6 +26,13 @@
         <ul>{% include 'navigation.html.twig' with {'links': links} %}</ul>
     </nav>
     <section id="content">
+        {% for type, messages in session.flashbag.all() %}
+            {% for message in messages %}
+                <ul class="message {{ type }}">
+                    <li>{{ message }}</li>
+                </ul>
+            {% endfor %}
+        {% endfor %}
         {% block content %}{% endblock %}
     </section>
     <footer>

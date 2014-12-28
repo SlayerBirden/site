@@ -53,12 +53,10 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
     {
         try {
             $this->tableMapper->delete($session_id);
-
             return true;
         } catch (\Exception $e) {
             $this->getLogger()->err($e->__toString());
         }
-
         return false;
     }
 
@@ -93,9 +91,8 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
     {
         /** @var Session $model */
         if ($model = $this->tableMapper->find($session_id)) {
-            return $model->session_id;
+            return $model->data;
         }
-
         return '';
     }
 

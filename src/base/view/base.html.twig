@@ -21,6 +21,13 @@
         </header>
         <nav>{% block menu %}{% endblock %}</nav>
         <section id="content">
+            {% for type, messages in session.flashbag.all() %}
+                {% for message in messages %}
+                    <ul class="message {{ type }}">
+                        <li>{{ message }}</li>
+                    </ul>
+                {% endfor %}
+            {% endfor %}
             {% block content %}
                 <h1>{% trans %}%title%{% endtrans %}</h1>
             {% endblock %}
