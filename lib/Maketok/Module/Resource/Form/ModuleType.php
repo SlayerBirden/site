@@ -10,6 +10,7 @@
 namespace Maketok\Module\Resource\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -25,7 +26,7 @@ class ModuleType extends AbstractType
             ->add('active', 'choice', array(
                 'choices' => array('0' => 'Disabled', '1' => 'Enabled')
             ))
-            ->add('updated_at', 'text', array('read_only' => true))
+            ->add($builder->create('updated_at', 'datetime', array('read_only' => true)))
             ->add('area', 'text', array('read_only' => true))
         ;
     }

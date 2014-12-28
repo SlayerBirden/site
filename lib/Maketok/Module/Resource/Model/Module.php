@@ -14,16 +14,16 @@ use Maketok\Model\LazyObjectPropModel;
 
 class Module extends LazyObjectPropModel
 {
-    /** @var  string */
+    /** @var string */
     public $module_code;
-    /** @var  string */
+    /** @var string */
     public $version;
-    /** @var  int */
+    /** @var int */
     public $active;
-    /** @var  string data */
+    /** @var \DateTime data */
     public $updated_at;
-    /** @var  string data */
+    /** @var \DateTime data */
     public $created_at;
-    /** @var  string $area */
+    /** @var string $area */
     public $area;
 }

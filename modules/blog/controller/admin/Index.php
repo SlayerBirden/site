@@ -28,7 +28,7 @@ class Index extends AbstractAdminController
         $articles = $articleTable->fetchAll();
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Blog CRUD Management',
-            'description' => 'Articles:',
+            'description' => 'Articles',
             'articles' => $articles
         ));
     }

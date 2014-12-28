@@ -109,12 +109,13 @@ class Front
             if ($e instanceof RouteException) {
                 // not found
                 $code = Response::HTTP_NOT_FOUND;
+                $message = "Oops! We couldn't find the page you searched for. Looks like it doesn't exist anymore.";
                 $errorRoute = new Error($dumper);
                 $this->getDispatcher()->notify('noroute_action', new State(['front' => $this, 'dumper' => $dumper]));
             } elseif ($e instanceof \ErrorException) {
                 $code = Response::HTTP_INTERNAL_SERVER_ERROR;
-                $message = "Oops! We couldn't find the page you searched for. Looks like it doesn't exist anymore.";
                 $errorRoute = $this->processError($e, $dumper);
+                $this->getLogger()->err($e->__toString());
             } else {
                 $code = $e->getCode();
                 if (!isset(Response::$statusTexts[$code])) {
@@ -123,6 +124,7 @@ class Front
                     $message = $e->getMessage();
                 }
                 $errorRoute = new Error($dumper, ['exception' => $e]);
+                $this->getLogger()->err($e->__toString());
             }
             $this->launch($errorRoute->match($this->request), true, [$code, $message]);
         } catch (\Exception $ex) {

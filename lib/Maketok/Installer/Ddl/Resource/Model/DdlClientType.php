@@ -43,7 +43,7 @@ class DdlClientType extends TableMapper
     public function save($model)
     {
         /** @var DdlClient $model */
-        $dependencies = $model->dependencies;
+        $dependencies = $model->getDependencies();
         if (!$dependencies) {
             $dependencies = [];
         }
@@ -86,24 +86,5 @@ class DdlClientType extends TableMapper
             $historyModel->initializer = 'installer';
             $historyType->save($historyModel);
         }
-    }
-
-    /**
-     * @param $model
-     * @return array
-     * @throws ModelException
-     */
-    protected function getModelData($model)
-    {
-        // hardcoded exclude columns
-        $data = parent::getModelData($model);
-        if (array_key_exists('config', $data)) {
-            unset($data['config']);
-        }
-        if (array_key_exists('dependencies', $data)) {
-            unset($data['dependencies']);
-        }
-
-        return $data;
     }
 }

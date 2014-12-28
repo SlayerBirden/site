@@ -4,9 +4,6 @@
 {# file that was distributed with this source code. #}
 {% extends "base-manager.html.twig" %}
 {% block content %}
-    <div id="info" class="info">
-        <span class="important">{% trans %}%description%{% endtrans %}</span>
-    </div>
     <table>
         <tr>
             <th>{% trans %}Module Code{% endtrans %}</th>
@@ -21,7 +18,7 @@
             <td>{{ module.module_code }}</td>
             <td>{{ module.version }}</td>
             <td>{{ module.active }}</td>
-            <td>{{ module.updated_at }}</td>
+            <td>{{ module.updated_at|date("Y-m-d H:i:s") }}</td>
             <td>{{ module.area }}</td>
             <td><a href="{{ base_url }}/modules/{{ module.area }}/{{ module.module_code }}">{% trans %}Edit{% endtrans %}</a></td>
         </tr>

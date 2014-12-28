@@ -42,6 +42,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $client->expects($this->any())->method('getDdlVersion')->will($this->returnValue('0.1.0'));
         $client->expects($this->any())->method('getDdlConfig')->will($this->returnValue([]));
         $client->expects($this->any())->method('getDdlCode')->will($this->returnValue('t1'));
+        $client->expects($this->any())->method('getDependencies')->willReturn([]);
 
         $this->manager->addClient($client);
         $this->assertTrue($this->manager->hasClients());
@@ -49,13 +50,14 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         /** @var DdlClient $actual */
         $actual = current($this->manager->getClients());
         $this->assertEquals('0.1.0', $actual->version);
-        $this->assertEquals([], $actual->config);
+        $this->assertEquals([], $actual->getConfig());
         $this->assertEquals('t1', $actual->code);
 
         $client = $this->getMock('Maketok\Installer\Ddl\ClientInterface');
         $client->expects($this->any())->method('getDdlVersion')->will($this->returnValue('0.1.0'));
         $client->expects($this->any())->method('getDdlConfig')->will($this->returnValue([]));
         $client->expects($this->any())->method('getDdlCode')->will($this->returnValue('t2'));
+        $client->expects($this->any())->method('getDependencies')->willReturn([]);
 
         $this->manager->addClient($client);
         $this->assertTrue($this->manager->hasClients());
@@ -63,13 +65,14 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $clients = $this->manager->getClients();
         $actual = $clients['t2'];
         $this->assertEquals('0.1.0', $actual->version);
-        $this->assertEquals([], $actual->config);
+        $this->assertEquals([], $actual->getConfig());
         $this->assertEquals('t2', $actual->code);
 
         $client = $this->getMock('Maketok\Installer\Ddl\ClientInterface');
         $client->expects($this->any())->method('getDdlVersion')->will($this->returnValue('0.2.0'));
         $client->expects($this->any())->method('getDdlConfig')->will($this->returnValue(['bla']));
         $client->expects($this->any())->method('getDdlCode')->will($this->returnValue('t2'));
+        $client->expects($this->any())->method('getDependencies')->willReturn([]);
 
         $this->manager->addClient($client);
         $this->assertTrue($this->manager->hasClients());
@@ -77,7 +80,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $clients = $this->manager->getClients();
         $actual = $clients['t2'];
         $this->assertEquals('0.2.0', $actual->version);
-        $this->assertEquals(['bla'], $actual->config);
+        $this->assertEquals(['bla'], $actual->getConfig());
         $this->assertEquals('t2', $actual->code);
     }
 

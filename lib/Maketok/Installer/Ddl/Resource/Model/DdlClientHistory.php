@@ -22,6 +22,6 @@ class DdlClientHistory
     public $version;
     /** @var string */
     public $initializer;
-    /** @var string */
+    /** @var \DateTime */
     public $created_at;
 }

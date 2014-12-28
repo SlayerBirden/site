@@ -29,7 +29,7 @@
                 <a href="{{ base_url }}/blog/{{ article.code }}" class="general-link">{% trans %}Open{% endtrans %}</a>
             </span>
             <span class="article-comments-link">
-                <a href="{{ base_url }}/blog/{{ article.code }}#disqus_thread" class="comment-link">{% trans %}Comments{% endtrans %}</a>
+                <a href="{{ base_url }}/blog/{{ article.code }}#comments" class="comment-link">{% trans %}Comments{% endtrans %}</a>
             </span>
 
         </article>
@@ -43,14 +43,4 @@
     <span class="important">{% trans %}Hello World!{% endtrans %}</span>
 </div>
 {% endblock %}
-{% block before_body_end %}
-    <script type="text/javascript">
-        var disqus_shortname = 'maketokcom';
-        (function () {
-            var s = document.createElement('script'); s.async = true;
-            s.type = 'text/javascript';
-            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-        }());
-    </script>
-{% endblock %}
+{% block before_body_end %}{% endblock %}

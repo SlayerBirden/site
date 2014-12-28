@@ -46,7 +46,7 @@ class ConfigReader implements ConfigReaderInterface
                 throw new DependencyTreeException(sprintf("Invalid Client. Class: %s", get_class($client)));
             }
             /** @var DdlClient $client */
-            foreach ($client->config as $table => $definition) {
+            foreach ($client->getConfig() as $table => $definition) {
                 $branch = [
                     'client' => $client->code,
                     'version' => $client->version,
@@ -54,7 +54,7 @@ class ConfigReader implements ConfigReaderInterface
                     'dependents' => [],
                 ];
                 if (isset($this->tree[$table])) {
-                    if (!in_array($this->tree[$table]['client'], $client->dependencies)) {
+                    if (!in_array($this->tree[$table]['client'], $client->getDependencies())) {
                         throw new DependencyTreeException(
                             sprintf("Client %s tries to modify resource %s without declaring dependency.",
                                 $client->code,
@@ -64,12 +64,10 @@ class ConfigReader implements ConfigReaderInterface
                         $this->tree[$table]['dependents'][] = $branch;
                     }
                 } else {
-                    if ($client->dependencies) {
-                        foreach ($client->dependencies as $dependency) {
-                            if (!isset($this->tree[$dependency])) {
-                                throw new DependencyTreeException(
-                                    sprintf("Unresolved dependency '%s' for client %s.", $dependency, $client->code));
-                            }
+                    foreach ($client->getDependencies() as $dependency) {
+                        if (!isset($this->tree[$dependency])) {
+                            throw new DependencyTreeException(
+                                sprintf("Unresolved dependency '%s' for client %s.", $dependency, $client->code));
                         }
                     }
                     $this->tree[$table] = $branch;
@@ -85,14 +83,14 @@ class ConfigReader implements ConfigReaderInterface
      */
     public function dependencyBubbleSortCallback(DdlClient $a, DdlClient $b)
     {
-        if (count($a->dependencies) && !count($b->dependencies)) {
+        if (count($a->getDependencies()) && !count($b->getDependencies())) {
             return 1;
-        } elseif (!count($a->dependencies) && count($b->dependencies)) {
+        } elseif (!count($a->getDependencies()) && count($b->getDependencies())) {
             return -1;
-        } elseif (count($a->dependencies) && count($b->dependencies)) {
-            if (in_array($a->code, $b->dependencies)) {
+        } elseif (count($a->getDependencies()) && count($b->getDependencies())) {
+            if (in_array($a->code, $b->getDependencies())) {
                 return -1;
-            } elseif (in_array($b->code, $a->dependencies)) {
+            } elseif (in_array($b->code, $a->getDependencies())) {
                 return 1;
             }
         }

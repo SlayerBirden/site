@@ -135,7 +135,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function getDependencies()
     {
-        return;
+        return [];
     }
 
     /**

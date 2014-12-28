@@ -36,7 +36,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         $client1->id = 1;
         $client1->code = 'm1';
         $client1->version = '0.1.0';
-        $client1->config = [
+        $client1->setConfig([
             'modules' => [
                 'columns' => [
                     'id' => [
@@ -69,12 +69,12 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
             ]
-        ];
+        ]);
         $client2 = new DdlClient();
         $client2->id = 2;
         $client2->code = 'm2';
         $client2->version = '0.1.0';
-        $client2->config = [
+        $client2->setConfig([
             'modules' => [
                 'columns' => [
                     'id' => [
@@ -98,13 +98,13 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
             ],
-        ];
-        $client2->dependencies = ['m1'];
+        ]);
+        $client2->setDependencies(['m1']);
         $client3 = new DdlClient();
         $client3->id = 3;
         $client3->code = 'm3';
         $client3->version = '2';
-        $client3->config = [
+        $client3->setConfig([
             'modules' => [
                 'columns' => [
                     'id' => [
@@ -126,8 +126,8 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
             ],
-        ];
-        $client3->dependencies = ['m1', 'm2'];
+        ]);
+        $client3->setDependencies(['m1', 'm2']);
         $this->reader->buildDependencyTree(array($client1, $client2, $client3));
         $expected = [
             'modules' => [
@@ -255,7 +255,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         $client1->id = 1;
         $client1->code = 'm1';
         $client1->version = '0.1.0';
-        $client1->config = [
+        $client1->setConfig([
             'modules' => [
                 'columns' => [
                     'id' => [
@@ -288,13 +288,13 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
             ]
-        ];
-        $client1->dependencies = ['m0'];
+        ]);
+        $client1->setDependencies(['m0']);
         $client2 = new DdlClient();
         $client2->id = 2;
         $client2->code = 'm2';
         $client2->version = '0.1.0';
-        $client2->config = [
+        $client2->setConfig([
             'modules' => [
                 'columns' => [
                     'id' => [
@@ -318,8 +318,8 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
             ],
-        ];
-        $client2->dependencies = ['m1'];
+        ]);
+        $client2->setDependencies(['m1']);
         $this->reader->buildDependencyTree([$client1, $client2]);
     }
 
@@ -577,17 +577,17 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         $client2 = new DdlClient();
         $client2->id = 2;
         $client2->code = 'm2';
-        $client2->dependencies = ['m1'];
+        $client2->setDependencies(['m1']);
         $client3 = new DdlClient();
         $client3->id = 3;
         $client3->code = 'm3';
-        $client3->dependencies = ['m5'];
+        $client3->setDependencies(['m5']);
         $client4 = new DdlClient();
         $client4->id = 4;
         $client4->code = 'm4';
         $client5 = new DdlClient();
         $client5->code = 'm5';
-        $client5->dependencies = ['m1'];
+        $client5->setDependencies(['m1']);
 
         $clients = [$client1, $client2, $client3, $client4, $client5];
         $expected = [$client1, $client4, $client2, $client5, $client3];

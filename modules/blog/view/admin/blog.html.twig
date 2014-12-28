@@ -8,9 +8,6 @@
 {{ parent() }}
 {% endblock %}
 {% block content %}
-<div id="info" class="info">
-    <span class="important">{% trans %}%description%{% endtrans %}</span>
-</div>
 <section id="articles">
     <a class="button" href="{{ base_url }}/blog/article/new">{% trans %}Add New{% endtrans %}</a>
     <table>

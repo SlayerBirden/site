@@ -88,7 +88,7 @@ class Manager extends AbstractManager implements ManagerInterface
             $this->clients = [];
         }
         $model = $this->getClientModel($client);
-        if ($model->config !== false) {
+        if ($model->getConfig() !== false) {
             // only include model if it has config
             $this->clients[$client->getDdlCode()] = $model;
         }
@@ -112,8 +112,8 @@ class Manager extends AbstractManager implements ManagerInterface
             $model->code = $client->getDdlCode();
         }
         $model->version = $client->getDdlVersion();
-        $model->dependencies = $client->getDependencies();
-        $model->config = $client->getDdlConfig($model->version);
+        $model->setDependencies($client->getDependencies());
+        $model->setConfig($client->getDdlConfig($model->version));
 
         return $model;
     }
@@ -152,8 +152,7 @@ class Manager extends AbstractManager implements ManagerInterface
                 try {
                     $this->tableMapper->save($client);
                 } catch (ModelException $e) {
-                    // right here it would probably mean no data was updated in the db
-                    // however we can possibly add logging here
+                    $this->getLogger()->err($e->__toString());
                 }
             }
             $this->getLogger()->info("All procedures have been completed.");

@@ -10,13 +10,10 @@
     {#<link rel="stylesheet" href="{{ css_url }}form.css">#}
 {% endblock %}
 {% block content %}
-<div id="info" class="info">
-    <span class="important">{% trans %}%description%{% endtrans %}</span>
-</div>
-    <form method="post" action="{{ current_url }}">
+<form method="post" action="{{ current_url }}">
     {{ form_widget(form) }}
-        <button type="reset">{% trans %}Reset{% endtrans %}</button>
-        <button type="submit">{% trans %}Submit{% endtrans %}</button>
-        <a href="{{ base_url }}/blog">{% trans %}Back{% endtrans %}</a>
-    </form>
+    <button type="reset">{% trans %}Reset{% endtrans %}</button>
+    <button type="submit">{% trans %}Submit{% endtrans %}</button>
+    <a href="{{ base_url }}/blog">{% trans %}Back{% endtrans %}</a>
+</form>
 {% endblock %}

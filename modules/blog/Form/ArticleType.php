@@ -10,7 +10,9 @@
 
 namespace modules\blog\Form;
 
+use Maketok\Template\Symfony\Form\DataTransformer\StringToDateTimeTransformer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -26,8 +28,8 @@ class ArticleType extends AbstractType
             ->add('title', 'text', array('attr' => array('class' => 'long')))
             ->add('code', 'text')
             ->add('content', 'textarea', array('attr' => array('class' => 'long')))
-            ->add('created_at', 'text', array('required' => false))
-            ->add('updated_at', 'text', array('read_only' => true, 'required' => false))
+            ->add($builder->create('created_at', 'datetime', array('required' => false)))
+            ->add($builder->create('updated_at', 'datetime', array('read_only' => true, 'required' => false)))
             ->add('author', 'text')
         ;
     }

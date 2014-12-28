@@ -14,18 +14,18 @@ use Maketok\Model\LazyObjectPropModel;
 
 class Article extends LazyObjectPropModel
 {
-    /** @var  int */
+    /** @var int */
     public $id;
-    /** @var  string */
+    /** @var string */
     public $title;
-    /** @var  string */
+    /** @var string */
     public $code;
-    /** @var  string data */
+    /** @var \DateTime data */
     public $created_at;
-    /** @var  string data */
+    /** @var \DateTime data */
     public $updated_at;
-    /** @var  string */
+    /** @var string */
     public $author;
-    /** @var  string text */
+    /** @var string text */
     public $content;
 }

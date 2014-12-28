@@ -20,8 +20,41 @@ class DdlClient extends LazyObjectPropModel
     public $code;
     /** @var string */
     public $version;
+
     /** @var array */
-    public $config;
-    /** @var array */
-    public $dependencies;
+    private $config = [];
+    /** @var string[] */
+    private $dependencies = [];
+
+    /**
+     * @return string[]
+     */
+    public function getDependencies()
+    {
+        return $this->dependencies;
+    }
+
+    /**
+     * @param string[] $dependencies
+     */
+    public function setDependencies(array $dependencies)
+    {
+        $this->dependencies = $dependencies;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param array $config
+     */
+    public function setConfig(array $config)
+    {
+        $this->config = $config;
+    }
 }

@@ -25,8 +25,15 @@ services:
     class: Maketok\Util\StreamHandler
     scope: prototype
 
+  date_time_strategy:
+    class: Maketok\Util\Hydrator\Strategy\DateTimeStrategy
+
   object_prop_hydrator:
     class: Maketok\Util\Hydrator\ObjectProperty
+    calls:
+      - [addStrategy, [date, "@date_time_strategy"]]
+      - [addStrategy, [created_at, "@date_time_strategy"]]
+      - [addStrategy, [updated_at, "@date_time_strategy"]]
 
   logger_handler:
     class: Maketok\Util\Monolog\Handler\StreamHandler
