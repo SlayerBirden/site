@@ -168,11 +168,11 @@ class TableMapper
             $data = $this->getModelData($model);
             // possible update
             if (array_key_exists('updated_at', $data)) {
-                $data['updated_at'] = new \DateTime();
+                $data['updated_at'] = date('Y-m-d H:i:s');
             }
             // set created_at if it's not set
             if (array_key_exists('created_at', $data) && empty($data['created_at'])) {
-                $data['created_at'] = new \DateTime();
+                $data['created_at'] = date('Y-m-d H:i:s');
             }
             // now determine update or insert
             if (is_null($this->autoIncrement) || (isset($data[$this->autoIncrement]))) {

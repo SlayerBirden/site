@@ -24,4 +24,15 @@ class DateTimeStrategy extends DefaultStrategy
         }
         return $value;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function extract($value)
+    {
+        if (is_object($value) && $value instanceof \DateTime) {
+            $value = $value->format('Y-m-d H:i:s');
+        }
+        return $value;
+    }
 }
