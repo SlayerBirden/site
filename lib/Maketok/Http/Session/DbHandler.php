@@ -90,10 +90,12 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
     public function read($session_id)
     {
         /** @var Session $model */
-        if ($model = $this->tableMapper->find($session_id)) {
+        try {
+            $model = $this->tableMapper->find($session_id);
             return $model->data;
+        } catch (\Exception $e) {
+            return '';
         }
-        return '';
     }
 
     /**
@@ -101,8 +103,12 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function write($session_id, $session_data)
     {
+        try {
+            $model = $this->tableMapper->find($session_id);
+        } catch (\Exception $e) {
+            $model = $this->tableMapper->getObjectPrototype();
+        }
         /** @var Session $model */
-        $model = $this->tableMapper->getObjectPrototype();
         $model->session_id = $session_id;
         $model->data = $session_data;
         $this->tableMapper->save($model);

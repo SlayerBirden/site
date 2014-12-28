@@ -80,7 +80,6 @@ class Front
         if (!$silent) {
             $this->getDispatcher()->notify('response_send_before', new State(['response' => $response]));
         }
-        restore_exception_handler();
         if ($response && is_object($response)) {
             $response->send();
         }
@@ -112,10 +111,6 @@ class Front
                 $message = "Oops! We couldn't find the page you searched for. Looks like it doesn't exist anymore.";
                 $errorRoute = new Error($dumper);
                 $this->getDispatcher()->notify('noroute_action', new State(['front' => $this, 'dumper' => $dumper]));
-            } elseif ($e instanceof \ErrorException) {
-                $code = Response::HTTP_INTERNAL_SERVER_ERROR;
-                $errorRoute = $this->processError($e, $dumper);
-                $this->getLogger()->err($e->__toString());
             } else {
                 $code = $e->getCode();
                 if (!isset(Response::$statusTexts[$code])) {
@@ -136,26 +131,6 @@ class Front
                 $e->__toString()
             );
         }
-    }
-
-    /**
-     * @param  \ErrorException $e
-     * @param  array|callable $dumper controller to handle exceptions
-     * @return Error
-     */
-    protected function processError(\ErrorException $e, $dumper)
-    {
-        $errno = $e->getSeverity();
-        $message = sprintf("Front Controller dispatch error exception\n%s", $e->__toString());
-        if ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
-            $this->getLogger()->err($message);
-        } elseif ($errno & E_WARNING || $errno & E_USER_WARNING) {
-            $this->getLogger()->warn($message);
-        } else {
-            $this->getLogger()->notice($message);
-        }
-
-        return new Error($dumper, ['exception' => $e]);
     }
 
     /**

@@ -10,7 +10,9 @@
 
 namespace Maketok\Http\Session\Resource\Model;
 
-class Session
+use Maketok\Model\LazyObjectPropModel;
+
+class Session extends LazyObjectPropModel
 {
     public $session_id;
     public $data;

@@ -16,7 +16,6 @@ use Maketok\Http\Request;
 use Maketok\Util\ConfigConsumerInterface;
 use Maketok\Util\ConfigGetter;
 use Maketok\Util\RequestInterface;
-use Monolog\Logger;
 use Zend\Stdlib\ErrorHandler;
 
 /**
@@ -134,29 +133,12 @@ final class Site implements ConfigConsumerInterface
     public function maketokExceptionHandler(\Exception $e)
     {
         try {
-            /** @var Logger $logger */
-            $logger = $this->ioc()->get('logger');
-            if ($e instanceof \ErrorException) {
-                $errno = $e->getSeverity();
-                if ($errno & E_NOTICE || $errno & E_USER_NOTICE) {
-                    $logger->notice($e->__toString());
-                } elseif ($errno & E_WARNING || $errno & E_USER_WARNING) {
-                    $logger->warn($e->__toString());
-                } elseif ($errno & E_ERROR || $errno & E_RECOVERABLE_ERROR || $errno & E_USER_ERROR) {
-                    $logger->err($e->__toString());
-                    $this->getDispatcher()->notify('application_error_triggered', new State([
-                        'exception' => $e,
-                        'message' => $e->__toString(),
-                    ]));
-                }
-            } else {
-                $message = sprintf("Unhandled exception\n%s", $e->__toString());
-                $logger->emergency($message);
-                $this->getDispatcher()->notify('application_error_triggered', new State([
-                    'exception' => $e,
-                    'message' => $message,
-                ]));
-            }
+            $message = sprintf("Unhandled exception\n%s", $e->__toString());
+            $this->getLogger()->emergency($message);
+            $this->getDispatcher()->notify('application_error_triggered', new State([
+                'exception' => $e,
+                'message' => $message,
+            ]));
         } catch (\Exception $ex) {
             printf("Exception '%s' thrown within the exception handler in file %s on line %d. Previous exception: %s",
                 $ex->getMessage(),
