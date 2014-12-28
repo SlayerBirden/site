@@ -2,7 +2,6 @@
 {# @author Oleg Kulik <slayer.birden@gmail.com> #}
 {# For the full copyright and license information, please view the LICENSE #}
 {# file that was distributed with this source code. #}
-{% use "form_div_layout.html.twig" %}
 
 {% block form_row -%}
     <tr>
@@ -39,12 +38,6 @@
             <col width="180"/>
             <col/>
         </colgroup>
-        {#<tr>#}
-            {#<td colspan="2">#}
-                {#<a class="button back"#}
-                   {#href="{{ form.vars.attr.back_url }}">{% trans %}Return{% endtrans %}</a>#}
-            {#</td>#}
-        {#</tr>#}
         {%- if form.parent is empty and errors|length > 0 -%}
         <tr>
             <td colspan="2">
@@ -53,12 +46,6 @@
         </tr>
         {%- endif %}
         {{- block('form_inputs_rows') -}}
-        {#<tr>#}
-            {#<td colspan="2">#}
-                {#<a class="button back"#}
-                   {#href="{{ form.vars.attr.back_url }}">{% trans %}Return{% endtrans %}</a>#}
-            {#</td>#}
-        {#</tr>#}
         {{- block('form_buttons_compound') -}}
         {{- form_rest(form) -}}
     </table>
