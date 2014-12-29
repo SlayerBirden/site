@@ -29,9 +29,14 @@
                     </ul>
                 </td>
                 <td>
+                    <ul>
                     {% if not client.is_max_version %}
-                    <a href="{{ base_url }}/install/ddl/update-to-last/{{ client.id }}">{% trans %}Update To Latest Version{% endtrans %}</a>
+                        <li><a href="{{ base_url }}/install/ddl/updateto/last/{{ client.id }}">{% trans %}Update To Latest History Version{% endtrans %}</a></li>
                     {% endif %}
+                    {% if client.got_update %}
+                        <li><a href="{{ base_url }}/install/ddl/updateto/software/{{ client.id }}">{% trans %}Update To Software Version{% endtrans %}</a></li>
+                    {% endif %}
+                    </ul>
                 </td>
             </tr>
         {% else %}

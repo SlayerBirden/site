@@ -49,15 +49,17 @@ services:
       factory: ["@ddl_client_dependency_table_factory", spawnTable]
 
   ddl_client_history_table_factory:
-      class: Maketok\Model\HydratingTableFactory
+      class: Maketok\Model\ArrayTableFactory
       arguments:
         - installer_ddl_client_history
         - id
-        - Maketok\Installer\Ddl\Resource\Model\DdlClientHistory
+        - array
         - id
+        - ~
+        - "%ddl_client_history_table.class%"
 
   ddl_client_history_table:
-      class: Maketok\Model\TableMapper
+      class:  "%ddl_client_history_table.class%"
       factory: ["@ddl_client_history_table_factory", spawnTable]
 
   installer_ddl_resource:

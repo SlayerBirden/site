@@ -18,7 +18,15 @@ class ClientFilter implements FilterInterface
      * Private object properties
      * @var string[]
      */
-    protected $privateProperties = ['config', 'dependencies', 'updated_at', 'dependents'];
+    protected $privateProperties = [
+        'config',
+        'dependencies',
+        'updated_at',
+        'dependents',
+        'is_max_version',
+        'got_update',
+        'max_version',
+    ];
 
     /**
      * {@inheritdoc}

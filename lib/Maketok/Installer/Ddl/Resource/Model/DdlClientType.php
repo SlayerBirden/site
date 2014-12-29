@@ -52,6 +52,7 @@ class DdlClientType extends TableMapper
      */
     protected function afterFilters(DdlClient $row)
     {
+        // dependency
         /** @var DdlClientDependencyType $dependencyType */
         $dependencyType = $this->ioc()->get('ddl_client_dependency_table');
         /** @var DdlClientDependency[] $dependencies */
@@ -61,6 +62,10 @@ class DdlClientType extends TableMapper
             $codes[] = $dep->dependency_code;
         }
         $row->setDependencies($codes);
+        // max history
+        /** @var DdlClientHistoryType $historyType */
+        $historyType = $this->ioc()->get('ddl_client_history_table');
+        $row->max_version = $historyType->getMaxVersion($row->id);
         return $row;
     }
 
@@ -131,12 +136,13 @@ class DdlClientType extends TableMapper
         if ($oldVersion != $model->version) {
             /** @var TableMapper $historyType */
             $historyType = $this->ioc()->get('ddl_client_history_table');
-            /** @var DdlClientHistory $historyModel */
-            $historyModel = $historyType->getObjectPrototype();
-            $historyModel->client_id = $model->id;
-            $historyModel->prev_version = (is_null($oldVersion) ? '' : $oldVersion);
-            $historyModel->version = $model->version;
-            $historyModel->initializer = 'installer';
+            $historyModel = [
+                'client_id' => $model->id,
+                'prev_version' => (is_null($oldVersion) ? '' : $oldVersion),
+                'version' => $model->version,
+                'initializer' => 'installer',
+                'created_at' => null, //assign in table mapper
+            ];
             $historyType->save($historyModel);
         }
     }

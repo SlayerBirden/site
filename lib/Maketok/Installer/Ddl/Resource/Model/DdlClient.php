@@ -14,6 +14,7 @@ use Maketok\Model\LazyObjectPropModel;
 
 class DdlClient extends LazyObjectPropModel
 {
+    // active record properties
     /**
      * @var int
      */
@@ -27,6 +28,7 @@ class DdlClient extends LazyObjectPropModel
      */
     public $version;
 
+    // "private" model properties
     /**
      * @var array
      */
@@ -43,6 +45,21 @@ class DdlClient extends LazyObjectPropModel
      * @var \DateTime
      */
     public $updated_at;
+    /**
+     * If client is at it's MAX history version
+     * @var bool|int
+     */
+    public $is_max_version;
+    /**
+     * MAX history version
+     * @var string
+     */
+    public $max_version;
+    /**
+     * If client got software update (from code)
+     * @var bool|int
+     */
+    public $got_update;
 
     /**
      * @param \DateTime $updated_at

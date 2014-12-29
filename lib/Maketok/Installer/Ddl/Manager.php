@@ -35,6 +35,11 @@ class Manager extends AbstractManager implements ManagerInterface
     private $tableMapper;
 
     /**
+     * @var ClientInterface[]
+     */
+    private $softwareClients = [];
+
+    /**
      * Constructor
      * @param ConfigReaderInterface       $reader
      * @param ResourceInterface           $resource
@@ -91,6 +96,7 @@ class Manager extends AbstractManager implements ManagerInterface
         if ($model->getConfig() !== false) {
             // only include model if it has config
             $this->clients[$client->getDdlCode()] = $model;
+            $this->softwareClients[$client->getDdlCode()] = $client;
         }
     }
 
@@ -195,5 +201,13 @@ class Manager extends AbstractManager implements ManagerInterface
             }
         }
         $this->directives->unique();
+    }
+
+    /**
+     * @return ClientInterface[]
+     */
+    public function getSoftwareClients()
+    {
+        return $this->softwareClients;
     }
 }

@@ -15,6 +15,7 @@ use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\Zend\Db\Sql\InsertIgnore;
 use Zend\Db\ResultSet\HydratingResultSet;
+use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\AbstractTableGateway;
 use Maketok\Util\Zend\Db\ResultSet\HydratingResultSet as ExtendedHydratingResultSet;
 
@@ -159,7 +160,7 @@ class TableMapper
     }
 
     /**
-     * @param object $model
+     * @param mixed $model
      * @throws ModelException
      */
     public function save($model)
@@ -205,18 +206,22 @@ class TableMapper
 
     /**
      * assign increment id if suitable
-     * @param object $model
+     * @param mixed $model
      */
     protected function assignIncrement($model)
     {
         $lastInsertedId = $this->getGateway()->getLastInsertValue();
         if ($lastInsertedId && ($increment = $this->autoIncrement)) {
-            $model->$increment = $lastInsertedId;
+            if (is_object($model)) {
+                $model->$increment = $lastInsertedId;
+            } elseif (is_array($model)) {
+                $model[$increment] = $lastInsertedId;
+            }
         }
     }
 
     /**
-     * @param  object $model
+     * @param  mixed $model
      * @return array
      * @throws ModelException
      */
@@ -226,10 +231,18 @@ class TableMapper
         if ($resultSet instanceof HydratingResultSet) {
             $hydrator = $resultSet->getHydrator();
             $data = $hydrator->extract($model);
+        } elseif ($resultSet instanceof ResultSet) {
+            if (is_array($model)) {
+                return $model;
+            } elseif (is_object($model) && $model instanceof \ArrayObject) {
+                return $model->getArrayCopy();
+            } else {
+                throw new ModelException("Unsupported model type.");
+            }
         } else {
-            throw new ModelException("Unknown object to handle.");
+            throw new ModelException("Unsupported result set type.");
         }
-        if ($model instanceof LazyModelInterface) {
+        if (is_object($model) && $model instanceof LazyModelInterface) {
             $origin = $model->processOrigin();
             if (!empty($origin) && !count(array_diff_assoc($origin, $data))) {
                 // well nothing was changed
