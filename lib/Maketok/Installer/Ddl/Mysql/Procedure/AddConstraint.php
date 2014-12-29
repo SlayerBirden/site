@@ -11,12 +11,15 @@
 namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
 use Maketok\Installer\Exception;
+use Maketok\Util\ArrayValueTrait;
 use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Ddl\Constraint\ConstraintInterface;
 use Zend\Db\Sql\Ddl\Index\Index;
 
 class AddConstraint extends AbstractProcedure implements ProcedureInterface
 {
+    use ArrayValueTrait;
+
     /** @var array */
     protected $availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey', 'index'];
 
@@ -31,7 +34,7 @@ class AddConstraint extends AbstractProcedure implements ProcedureInterface
         $tableName = $args[0];
         $constraintName = $args[1];
         $constraintDefinition = $args[2];
-        $table = (isset($args[3]) ? $args[3] : new AlterTable($tableName));
+        $table = $this->getIfExists(3, $args, new AlterTable($tableName));
         if (!isset($constraintDefinition['type']) ||
             !in_array($constraintDefinition['type'], $this->availableConstraintTypes)) {
             // can't create constraint or unavailable constraint type
@@ -60,8 +63,8 @@ class AddConstraint extends AbstractProcedure implements ProcedureInterface
             $column = $constraintDefinition['column'];
             $refTable = $constraintDefinition['reference_table'];
             $refColumn = $constraintDefinition['reference_column'];
-            $onDelete = (isset($constraintDefinition['on_delete']) ? $constraintDefinition['on_delete'] : 'CASCADE');
-            $onUpdate = (isset($constraintDefinition['on_update']) ? $constraintDefinition['on_update'] : 'CASCADE');
+            $onDelete = $this->getIfExists('on_delete', $constraintDefinition, 'CASCADE');
+            $onUpdate = $this->getIfExists('on_update', $constraintDefinition, 'CASCADE');
             $constraint = new $type($constraintName, $column, $refTable, $refColumn, $onDelete, $onUpdate);
         } elseif ($constraintDefinition['type'] == 'index') {
             $constraint = new Index($constraintDefinition['definition'], $constraintName);

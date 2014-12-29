@@ -19,6 +19,7 @@ use Zend\Db\Sql\Ddl\Column\ColumnInterface;
 class AddColumn extends AbstractProcedure implements ProcedureInterface
 {
     use ArrayValueTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -30,7 +31,7 @@ class AddColumn extends AbstractProcedure implements ProcedureInterface
         $tableName = $args[0];
         $columnName = $args[1];
         $columnDefinition = $args[2];
-        $table = (isset($args[3]) ? $args[3] : new AlterTable($tableName));
+        $table = $this->getIfExists(3, $args, new AlterTable($tableName));
         $column = $this->getInitColumn($columnName, $columnDefinition);
         $table->addColumn($column);
 

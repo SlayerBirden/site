@@ -11,10 +11,13 @@
 namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
 use Maketok\Installer\Exception;
+use Maketok\Util\ArrayValueTrait;
 use Zend\Db\Sql\Ddl\CreateTable;
 
 class AddTable extends AbstractProcedure implements ProcedureInterface
 {
+    use ArrayValueTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -26,18 +29,23 @@ class AddTable extends AbstractProcedure implements ProcedureInterface
         $tableName = $args[0];
         $tableDefinition = $args[1];
         $table = new CreateTable($tableName);
-        if (!isset($tableDefinition['columns']) || !is_array($tableDefinition['columns'])) {
+        $columns = $this->getIfExists('columns', $tableDefinition, function () use ($tableName) {
             throw new Exception(sprintf('Can not create a table `%s` without columns definition.', $tableName));
-        }
-        $_columns = $tableDefinition['columns'];
-        $_constraints = isset($tableDefinition['constraints']) ? $tableDefinition['constraints'] : array();
-        foreach ($_columns as $columnName => $columnDefinition) {
+        });
+        $constraints = $this->getIfExists('constraints', $tableDefinition, []);
+        $indices = $this->getIfExists('indices', $tableDefinition, []);
+        foreach ($columns as $columnName => $columnDefinition) {
             $addCol = new AddColumn($this->sql);
             $addCol->getQuery(array($tableName, $columnName, $columnDefinition, $table));
         }
-        foreach ($_constraints as $constraintName => $constraintDefinition) {
+        foreach ($constraints as $constraintName => $constraintDefinition) {
             $addCon = new AddConstraint($this->sql);
             $addCon->getQuery(array($tableName, $constraintName, $constraintDefinition, $table));
+        }
+        foreach ($indices as $indexName => $indexDefinition) {
+            // no special class for index
+            $addCon = new AddConstraint($this->sql);
+            $addCon->getQuery(array($tableName, $indexName, $indexDefinition, $table));
         }
 
         return $this->query($table);
