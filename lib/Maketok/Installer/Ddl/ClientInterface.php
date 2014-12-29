@@ -18,7 +18,7 @@ interface ClientInterface extends BaseClientInterface
      * client register dependencies (parents)
      * it must register dependencies to change resources that were created by other clients
      *
-     * @return array
+     * @return string[]
      */
     public function getDependencies();
 
