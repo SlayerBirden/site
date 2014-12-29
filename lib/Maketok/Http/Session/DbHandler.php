@@ -71,8 +71,11 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
 
         $where = new Where();
         $where->lessThan('updated_at', $expirationDate->format('Y-m-d H:i:s'));
-        $this->tableMapper->getGateway()->delete($where);
-
+        try {
+            $this->tableMapper->getGateway()->delete($where);
+        } catch (\Exception $e) {
+            $this->getLogger()->emerg($e->__toString());
+        }
         return true;
     }
 
@@ -108,11 +111,14 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
         } catch (\Exception $e) {
             $model = $this->tableMapper->getObjectPrototype();
         }
-        /** @var Session $model */
-        $model->session_id = $session_id;
-        $model->data = $session_data;
-        $this->tableMapper->save($model);
-
+        try {
+            /** @var Session $model */
+            $model->session_id = $session_id;
+            $model->data = $session_data;
+            $this->tableMapper->save($model);
+        } catch (\Exception $e) {
+            $this->getLogger()->emerg($e->__toString());
+        }
         return true;
     }
 

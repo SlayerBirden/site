@@ -30,10 +30,14 @@ class Modules extends AbstractAdminController
     public function indexAction(Request $request)
     {
         $this->setTemplate('modules.html.twig');
-        /** @var TableMapper $moduleTable */
-        $moduleTable = $this->getSC()->get('module_table');
-        $modules = $moduleTable->fetchAll();
-
+        try {
+            /** @var TableMapper $moduleTable */
+            $moduleTable = $this->getSC()->get('module_table');
+            $modules = $moduleTable->fetchAll();
+        } catch (\Exception $e) {
+            $this->getLogger()->emerg($e->__toString());
+            $modules = [];
+        }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Modules',
             'modules' => $modules,

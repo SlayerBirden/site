@@ -230,7 +230,8 @@ class TableMapper
             throw new ModelException("Unknown object to handle.");
         }
         if ($model instanceof LazyModelInterface) {
-            if (!count(array_diff_assoc($model->processOrigin(), $data))) {
+            $origin = $model->processOrigin();
+            if (!empty($origin) && !count(array_diff_assoc($origin, $data))) {
                 // well nothing was changed
                 // only compare fields in "origin" - which are native fields
                 throw new ModelInfoException("Nothing was changed.");

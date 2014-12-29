@@ -43,9 +43,14 @@ class Install extends AbstractAdminController
      */
     public function indexAction(RequestInterface $request)
     {
-        /** @var DdlClientType $clientTable */
-        $clientTable = $this->ioc()->get('ddl_client_table');
-        $clients = $clientTable->fetchAllWithDependency();
+        try {
+            /** @var DdlClientType $clientTable */
+            $clientTable = $this->ioc()->get('ddl_client_table');
+            $clients = $clientTable->fetchAllWithDependency();
+        } catch (\Exception $e) {
+            $this->getLogger()->emerg($e->__toString());
+            $clients = [];
+        }
         $this->setTemplate('install-manager.html.twig');
         return $this->prepareResponse($request, array(
             'install_url' => $this->getUrl('install/ddl/run'),
