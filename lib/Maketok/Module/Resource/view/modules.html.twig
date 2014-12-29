@@ -23,7 +23,7 @@
             <td><a href="{{ base_url }}/modules/{{ module.area }}/{{ module.module_code }}">{% trans %}Edit{% endtrans %}</a></td>
         </tr>
     {% else %}
-        <tr><td colspan="5">No modules found in the system! Very strange, how is this message displayed than??</td></tr>
+        <tr><td colspan="6">{% trans %}No modules found in the system yet.{% endtrans %}</td></tr>
     {% endfor %}
     </table>
 {% endblock %}

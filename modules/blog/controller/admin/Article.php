@@ -36,7 +36,7 @@ class Article extends AbstractAdminController
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Edit Article ' . $article->title,
             'description' => 'Article ' . $article->title,
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ));
     }
 
@@ -93,7 +93,7 @@ class Article extends AbstractAdminController
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Add New Article ',
             'description' => 'Article Creation',
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ));
     }
 

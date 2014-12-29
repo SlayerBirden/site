@@ -14,17 +14,51 @@ use Maketok\Model\LazyObjectPropModel;
 
 class DdlClient extends LazyObjectPropModel
 {
-    /** @var int */
+    /**
+     * @var int
+     */
     public $id;
-    /** @var string */
+    /**
+     * @var string
+     */
     public $code;
-    /** @var string */
+    /**
+     * @var string
+     */
     public $version;
 
-    /** @var array */
-    private $config = [];
-    /** @var string[] */
-    private $dependencies = [];
+    /**
+     * @var array
+     */
+    public $config = [];
+    /**
+     * @var string[]
+     */
+    public $dependencies = [];
+    /**
+     * @var string[]
+     */
+    public $dependents = [];
+    /**
+     * @var \DateTime
+     */
+    public $updated_at;
+
+    /**
+     * @param \DateTime $updated_at
+     */
+    public function setUpdatedAt($updated_at)
+    {
+        $this->updated_at = $updated_at;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updated_at;
+    }
 
     /**
      * @return string[]

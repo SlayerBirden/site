@@ -48,19 +48,21 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => ['id'],
+                'definition' => ['id'],
             ],
             'UNQ_KEY_CODE' => [
                 'type' => 'uniqueKey',
-                'def' => ['code'],
-            ],
+                'definition' => ['code'],
+            ]
+        ],
+        'indices' => [
             'KEY_AUTHOR' => array(
                 'type' => 'index',
-                'def' => ['author'],
+                'definition' => ['author'],
             ),
             'KEY_DATE' => array(
                 'type' => 'index',
-                'def' => ['created_at'],
+                'definition' => ['created_at'],
             ),
         ],
     ],
@@ -100,11 +102,11 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => ['id'],
+                'definition' => ['id'],
             ],
             'UNQ_KEY_CODE' => [
                 'type' => 'uniqueKey',
-                'def' => ['code'],
+                'definition' => ['code'],
             ]
         ],
     ],
@@ -133,19 +135,19 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'def' => ['id'],
+                'definition' => ['id'],
             ],
             'FK_KEY_ARTICLE_ID' => array(
                 'type' => 'foreignKey',
-                'def' => 'article_id',
-                'referenceTable' => 'blog_article',
-                'referenceColumn' => 'id',
+                'column' => 'article_id',
+                'reference_table' => 'blog_article',
+                'reference_column' => 'id',
             ),
             'FK_KEY_CATEGORY_ID' => array(
                 'type' => 'foreignKey',
-                'def' => 'category_id',
-                'referenceTable' => 'blog_category',
-                'referenceColumn' => 'id',
+                'column' => 'category_id',
+                'reference_table' => 'blog_category',
+                'reference_column' => 'id',
             ),
         ],
     ]

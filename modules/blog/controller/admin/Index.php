@@ -29,7 +29,7 @@ class Index extends AbstractAdminController
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Blog CRUD Management',
             'description' => 'Articles',
-            'articles' => $articles
+            'articles' => $articles,
         ));
     }
 }

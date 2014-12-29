@@ -104,13 +104,13 @@ class TableMapper
 
     /**
      * @codeCoverageIgnore
-     * @param  int|string|string[]     $id
+     * @param  int|string|string[] $id
      * @return array|\ArrayObject|null
      * @throws ModelException
      */
     public function find($id)
     {
-        $resultSet = $this->getGateway()->select($this->getIdFilter($id));
+        $resultSet = $this->fetchFilter($this->getIdFilter($id));
         $row = $resultSet->current();
         if (!$row) {
             throw new ModelException(sprintf("Could not find row with identifier %s", json_encode($id)));
@@ -230,8 +230,9 @@ class TableMapper
             throw new ModelException("Unknown object to handle.");
         }
         if ($model instanceof LazyModelInterface) {
-            if (!count(array_diff_assoc($data, $model->processOrigin()))) {
+            if (!count(array_diff_assoc($model->processOrigin(), $data))) {
                 // well nothing was changed
+                // only compare fields in "origin" - which are native fields
                 throw new ModelInfoException("Nothing was changed.");
             }
         }

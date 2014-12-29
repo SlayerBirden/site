@@ -10,6 +10,7 @@
 
 namespace Maketok\Installer\Ddl\Resource\controller;
 
+use Maketok\Installer\Ddl\Resource\Model\DdlClientType;
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Util\Monolog\Handler\HttpStreamedHandler;
 use Maketok\Util\RequestInterface;
@@ -42,10 +43,15 @@ class Install extends AbstractAdminController
      */
     public function indexAction(RequestInterface $request)
     {
+        /** @var DdlClientType $clientTable */
+        $clientTable = $this->ioc()->get('ddl_client_table');
+        $clients = $clientTable->fetchAllWithDependency();
         $this->setTemplate('install-manager.html.twig');
         return $this->prepareResponse($request, array(
             'install_url' => $this->getUrl('install/ddl/run'),
-            'title' => 'Installer - Admin Management Area'
+            'title' => 'DDL - Installer - Admin Management Area',
+            'description' => 'DDL Installer',
+            'clients' => $clients,
         ));
     }
 }

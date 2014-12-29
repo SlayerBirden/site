@@ -43,7 +43,7 @@ class LazyObjectPropModel implements LazyModelInterface
      */
     public function processOrigin(array $data = null)
     {
-        if ($data) {
+        if (!is_null($data)) {
             return $this->setOrigin($data);
         } else {
             return $this->getOrigin();

@@ -102,19 +102,15 @@ class Manager extends AbstractManager implements ManagerInterface
     {
         try {
             $model = $this->tableMapper->getClientByCode($client->getDdlCode());
-        } catch (Exception $e) {
-            // when there's no record for this client yet
-            $model = new DdlClient();
-            $model->code = $client->getDdlCode();
         } catch (\Exception $e) {
+            // when there's no record for this client yet or
             // when no installer table exists
             $model = new DdlClient();
             $model->code = $client->getDdlCode();
+            $model->version = $client->getDdlVersion();
         }
-        $model->version = $client->getDdlVersion();
         $model->setDependencies($client->getDependencies());
         $model->setConfig($client->getDdlConfig($model->version));
-
         return $model;
     }
 

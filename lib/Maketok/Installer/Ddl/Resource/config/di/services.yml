@@ -5,6 +5,17 @@
 
 services:
 
+  array_string_strategy:
+    class: Maketok\Util\Hydrator\Strategy\ArrayStringStrategy
+
+  ddl_client_object_prop_hydrator:
+      class: Maketok\Util\Hydrator\ObjectProperty
+      calls:
+        - [addStrategy, [date, "@date_time_strategy"]]
+        - [addStrategy, [created_at, "@date_time_strategy"]]
+        - [addStrategy, [updated_at, "@date_time_strategy"]]
+        - [addStrategy, [dependencies, "@array_string_strategy"]]
+
   ddl_client_table_factory:
       class: Maketok\Model\HydratingTableFactory
       arguments:
@@ -13,6 +24,8 @@ services:
         - Maketok\Installer\Ddl\Resource\Model\DdlClient
         - id
         - "%ddl_client_table.class%"
+        - ~
+        - "@ddl_client_object_prop_hydrator"
 
   ddl_client_table:
       class: "%ddl_client_table.class%"
