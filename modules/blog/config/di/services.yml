@@ -27,3 +27,12 @@ services:
           class: modules\blog\Form\ArticleType
           tags:
               - { name: form.type, alias: article }
+
+  md_parser_engine:
+    class: modules\blog\Util\Markdown\Engine
+
+  twig_extension_md:
+    class: Aptoma\Twig\Extension\MarkdownExtension
+    arguments: ["@md_parser_engine"]
+    tags:
+      - { name: twig.extension }

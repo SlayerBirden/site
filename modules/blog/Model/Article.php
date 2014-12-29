@@ -28,4 +28,6 @@ class Article extends LazyObjectPropModel
     public $author;
     /** @var string text */
     public $content;
+    /** @var string text */
+    public $description;
 }

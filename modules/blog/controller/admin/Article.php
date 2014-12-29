@@ -121,7 +121,7 @@ class Article extends AbstractAdminController
             $this->getLogger()->err($e);
             $this->getSession()->getFlashBag()->add(
                 'error',
-                'There was an error processing your request. Our specialists will be looking into it.'
+                sprintf("There was an error processing your request.\nThe error text: %s", $e->getMessage())
             );
             return $this->returnBack();
         }

@@ -36,7 +36,9 @@
         "symfony/validator": "2.*",
         "symfony/expression-language": "2.*",
         "twig/twig": "~1",
-        "twig/extensions": "1.*"
+        "twig/extensions": "1.*",
+        "erusev/parsedown-extra": "~0.2",
+        "aptoma/twig-markdown": "~0.2"
     },
     "require-dev": {
         "phpunit/PHPUnit": "4.*",

@@ -10,7 +10,7 @@
 {% block content %}
     <article>
         <div class="article-title opened-article">{{ article.title }}</div>
-        <div class="article-content">{{ article.content|nl2br }}</div>
+        <div class="article-content">{{ article.content|markdown }}</div>
         <div class="article-meta">
             <span class="article-author">{{ article.author }}</span>
             <span class="article-date">{{ article.created_at|date("F jS \\a\\t g:ia") }}</span>

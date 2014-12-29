@@ -32,7 +32,7 @@ class Config extends Extension implements ConfigInterface, ClientInterface
      */
     public function getVersion()
     {
-        return '0.1.3';
+        return '0.1.4';
     }
 
     /**

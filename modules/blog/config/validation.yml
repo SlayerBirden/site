@@ -26,5 +26,12 @@ modules\blog\Model\Article:
       - DateTime: ~
     content:
       - NotBlank: ~
+    description:
+      - NotBlank: ~
+      - Length:
+          min: 2
+          max: 400
+          minMessage: "Description can not be less than {{ limit }} characters"
+          maxMessage: "Description can not be longer than {{ limit }} characters"
     author:
       - NotBlank: ~

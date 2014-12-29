@@ -23,7 +23,7 @@
                 <span class="article-author">{{ article.author }}</span>
             </div>
             {% autoescape false %}
-            <div class="article-content">{{ article.content|nl2br|truncate(400) }}</div>
+            <div class="article-content">{{ article.description|truncate(400) }}</div>
             {% endautoescape %}
             <span class="article-link">
                 <a href="{{ base_url }}/blog/{{ article.code }}" class="general-link">{% trans %}Open{% endtrans %}</a>
