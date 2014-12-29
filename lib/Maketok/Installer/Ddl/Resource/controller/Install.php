@@ -40,7 +40,7 @@ class Install extends AbstractAdminController
 
     /**
      * @param Request $request
-     * @return \Maketok\Http\Response
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updatetoAction(Request $request)
     {
