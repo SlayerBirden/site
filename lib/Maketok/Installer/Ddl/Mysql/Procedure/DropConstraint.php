@@ -29,11 +29,11 @@ class DropConstraint extends AbstractProcedure implements ProcedureInterface
         $table->dropConstraint($constraintName);
         $query = $this->query($table);
         // big thanks to MySQL for this hack!!
-        if ($type == 'foreign_key') {
+        if ($type == 'foreignKey') {
             $query = str_replace('CONSTRAINT', 'FOREIGN KEY', $query);
-        } elseif ($type == 'primary') {
+        } elseif ($type == 'primaryKey') {
             $query = str_replace('CONSTRAINT `primary`', 'PRIMARY KEY', $query);
-        } elseif ($type == 'unique' || $type == 'index') {
+        } elseif ($type == 'uniqueKey' || $type == 'index') {
             $query = str_replace('CONSTRAINT', 'INDEX', $query);
         }
 

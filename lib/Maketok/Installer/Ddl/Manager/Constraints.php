@@ -74,6 +74,7 @@ class Constraints implements CompareInterface
     /**
      * @param Directives $directives
      * @param array $constraintDefinition
+     * @throws \Maketok\Installer\Exception
      * @return bool
      */
     protected function ifNeedToReset(Directives $directives, &$constraintDefinition)
@@ -85,7 +86,9 @@ class Constraints implements CompareInterface
         foreach ($directives->changeColumns as $columnDirective) {
             $col = $this->getIfExists(1, $columnDirective, '');
             if ($refCol === $col) {
-                $constraintDefinition['reference_column'] = $this->getIfExists(2, $columnDirective);
+                if ($col != $this->getIfExists(2, $columnDirective)) {
+                    throw new Exception(sprintf("Integrity check fail. The old constraint definition %s references the column which is being renamed (%s).", json_encode($constraintDefinition), $col));
+                }
                 return true;
             }
         }

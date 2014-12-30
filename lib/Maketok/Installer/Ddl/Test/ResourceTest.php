@@ -251,9 +251,44 @@ SQL;
                             'type' => 'varchar',
                             'length' => 255
                         ],
+                        'area' => [
+                            'type' => 'varchar',
+                            'length' => 55,
+                            'nullable' => true
+                        ],
                     ],
                 ]
             ]
+        ];
+        $directives->addConstraints = [
+            [
+                'test',
+                'primary',
+                [
+                    'type' => 'primaryKey',
+                    'definition' => ['id'],
+                ]
+            ],
+            [
+                'test',
+                'UNQ_KEY_CODE_AREA',
+                [
+                    'type' => 'uniqueKey',
+                    'definition' => ['code', 'area'],
+                ]
+            ],
+            [
+                'test',
+                'FK_CODE_PARENT_CODE',
+                [
+                    'type' => 'foreignKey',
+                    'column' => 'parent_id',
+                    'reference_table' => 'modules',
+                    'reference_column' => 'reference_id',
+                    'on_delete' => 'CASCADE',
+                    'on_update' => 'CASCADE',
+                ]
+            ],
         ];
         $directives->changeColumns = [
             [
@@ -267,7 +302,45 @@ SQL;
             [
                 'test2',
                 'UNQ_KEY_OOPS',
-                'unique'
+                'uniqueKey'
+            ],
+            [
+                'test2',
+                'primary',
+                'primaryKey'
+            ],
+            [
+                'test2',
+                'FK_SOME',
+                'foreignKey'
+            ],
+        ];
+        $directives->dropColumns = [
+            [
+                'test',
+                'code',
+            ],
+        ];
+        $directives->addIndices = [
+            [
+                'test',
+                'KEY_IDX',
+                [
+                    'type' => 'index',
+                    'definition' => ['some_column'],
+                ]
+            ],
+        ];
+        $directives->dropIndices = [
+            [
+                'test',
+                'KEY_IDX',
+                'index',
+            ],
+        ];
+        $directives->dropTables = [
+            [
+                'test3',
             ],
         ];
 
@@ -276,13 +349,21 @@ SQL;
         $refProp->setAccessible(true);
         // the order is switched
         $expected = [
-            "CREATE TABLE `test` ( `id` INTEGER NOT NULL, `code` VARCHAR(255) NOT NULL )",
+            "DROP TABLE `test3`",
+            "CREATE TABLE `test` ( `id` INTEGER NOT NULL, `code` VARCHAR(255) NOT NULL, `area` VARCHAR(55) )",
             "ALTER TABLE `test2` DROP INDEX `UNQ_KEY_OOPS`",
+            "ALTER TABLE `test2` DROP PRIMARY KEY",
+            "ALTER TABLE `test2` DROP FOREIGN KEY `FK_SOME`",
+            "ALTER TABLE `test` DROP INDEX `KEY_IDX`",
+            "ALTER TABLE `test` DROP COLUMN `code`",
             "ALTER TABLE `test2` CHANGE COLUMN `oldCol` `newCol` INTEGER NOT NULL",
+            "ALTER TABLE `test` ADD CONSTRAINT `id` PRIMARY KEY (`id`)",
+            "ALTER TABLE `test` ADD CONSTRAINT `UNQ_KEY_CODE_AREA` UNIQUE (`code`, `area`)",
+            "ALTER TABLE `test` ADD CONSTRAINT `FK_CODE_PARENT_CODE` FOREIGN KEY (`parent_id`) REFERENCES `modules` (`reference_id`) ON DELETE CASCADE ON UPDATE CASCADE",
+            "ALTER TABLE `test` ADD INDEX `KEY_IDX`(`some_column`)",
         ];
         $procedures = $refProp->getValue($this->resource);
-        $this->assertCount(3, $procedures);
-        for ($i = 0; $i < 3; ++$i) {
+        for ($i = 0; $i < count($expected); ++$i) {
             $this->assertEquals($expected[$i], preg_replace('/\s+/', ' ', $procedures[$i]));
         }
     }
