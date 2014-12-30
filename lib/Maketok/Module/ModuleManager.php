@@ -213,6 +213,7 @@ class ModuleManager implements ClientInterface
 
     /**
      * @param ConfigInterface $config
+     * @throws ModelException
      */
     public function addDbModule(ConfigInterface $config)
     {
@@ -222,6 +223,17 @@ class ModuleManager implements ClientInterface
         $module->active = $config->isActive();
         $module->version = $config->getVersion();
         $module->area = $this->area;
+        $this->tableType->save($module);
+    }
+
+    /**
+     * @param Module $module
+     * @param ConfigInterface $config
+     * @throws ModelException
+     */
+    public function updateDbModule(Module $module, ConfigInterface $config)
+    {
+        $module->version = $config->getVersion();
         $this->tableType->save($module);
     }
 
@@ -251,8 +263,11 @@ class ModuleManager implements ClientInterface
             }
             // candidates for deletion
             foreach ($this->getDbModules() as $module) {
-                if (!isset($this->modules[$module->module_code])) {
+                $configModule = $this->getIfExists($module->module_code, $this->modules);
+                if (is_null($configModule)) {
                     $this->removeDbModule($module);
+                } else {
+                    $this->updateDbModule($module, $configModule);
                 }
             }
             $this->getDispatcher()->notify('modulemanager_updates_after',

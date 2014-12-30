@@ -149,6 +149,30 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function updateDbModule()
+    {
+        $config = $this->getMock('Maketok\Module\ConfigInterface');
+        $config->expects($this->any())->method('getVersion')->willReturn('1');
+
+        $module = new Module();
+        $module->module_code = 'm1';
+        $module->version = '1';
+        $module->active = true;
+        $module->area = 'test';
+        $this->tmStub->expects($this->once())->method('save')->with($this->equalTo($module));
+
+        $given = new Module();
+        $given->module_code = 'm1';
+        $given->version = '0.9';
+        $given->active = true;
+        $given->area = 'test';
+
+        $this->manager->updateDbModule($given, $config);
+    }
+
+    /**
+     * @test
+     */
     public function removeDbModule()
     {
         $module = new Module();
@@ -166,6 +190,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
             'getModuleExistsInDb',
             'addDbModule',
             'removeDbModule',
+            'updateDbModule',
             'getDbModules',
             'getActiveModules',
         ], [], '', false);
@@ -195,6 +220,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
 
         $manager->expects($this->once())->method('addDbModule')->with($st1);
         $manager->expects($this->once())->method('removeDbModule')->with($module3);
+        $manager->expects($this->atLeastOnce())->method('updateDbModule');
         /** @var ModuleManager $manager */
         $manager->updateModules();
     }
