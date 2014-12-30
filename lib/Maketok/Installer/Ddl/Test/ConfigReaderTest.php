@@ -549,7 +549,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException \Maketok\Installer\Ddl\DependencyTreeException
-     * @expectedExceptionMessage The tree is not built yet
+     * @expectedExceptionMessage The tree is not yet built
      */
     public function testMergeDependencyTreeEmpty()
     {

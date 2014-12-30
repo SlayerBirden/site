@@ -56,7 +56,8 @@ class ConfigReader implements ConfigReaderInterface
                     foreach ($client->getDependencies() as $dependency) {
                         if (!isset($this->tree[$dependency])) {
                             throw new DependencyTreeException(
-                                sprintf("Unresolved dependency '%s' for client %s.", $dependency, $client->code));
+                                sprintf("Unresolved dependency '%s' for client %s.", $dependency, $client->code)
+                            );
                         }
                     }
                     $this->tree[$table] = $branch;
@@ -131,7 +132,7 @@ class ConfigReader implements ConfigReaderInterface
             return;
         }
         if (is_null($this->tree)) {
-            throw new DependencyTreeException("Invalid context of calling method. The tree is not built yet.");
+            throw new DependencyTreeException("Invalid context of calling method. The tree is not yet built.");
         }
         foreach ($this->tree as &$branch) {
             $branch['definition'] = $this->recursiveMerge($branch);
