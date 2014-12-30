@@ -236,7 +236,8 @@ class ContainerFactory implements ConfigInterface
             /** @var StreamHandler $writer */
             $writer = $this->ioc->get('lock_stream_handler');
             $writer->writeWithLock(
-                $dumper->dump(array('class' => $this->getContainerClassName(false))), $this->getContainerFileName()
+                $dumper->dump(array('class' => $this->getContainerClassName(false))),
+                $this->getContainerFileName()
             );
         }
     }
