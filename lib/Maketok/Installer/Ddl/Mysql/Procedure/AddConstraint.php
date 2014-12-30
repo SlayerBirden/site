@@ -20,6 +20,9 @@ class AddConstraint extends AbstractProcedure implements ProcedureInterface
 {
     use ArrayValueTrait;
 
+    const DEFAULT_ON_UPDATE = 'CASCADE';
+    const DEFAULT_ON_DELETE = 'CASCADE';
+
     /** @var array */
     protected $availableConstraintTypes = ['primaryKey', 'uniqueKey', 'foreignKey', 'index'];
 

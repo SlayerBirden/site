@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Navigation;
+namespace Maketok\Tree;
 
 class Node implements NodeInterface
 {

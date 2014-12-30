@@ -10,6 +10,8 @@
 
 namespace Maketok\Navigation;
 
+use Maketok\Tree\NodeInterface;
+
 interface LinkInterface extends NodeInterface
 {
     /**
@@ -18,7 +20,7 @@ interface LinkInterface extends NodeInterface
      * @param string        $reference
      * @param int           $order
      * @param string        $title
-     * @param LinkInterface $parent
+     * @param LinkInterface|NodeInterface $parent
      */
     public function __construct($code, $reference = null, $order = null, $title = null, LinkInterface $parent = null);
 

@@ -11,6 +11,7 @@
 namespace Maketok\Installer\Ddl\Test;
 
 use Maketok\Installer\Ddl\Directives;
+use Maketok\Installer\Ddl\Mysql\Procedure\AddConstraint;
 use Maketok\Installer\Ddl\Mysql\Resource;
 use Maketok\Util\ConfigGetter;
 use Zend\Db\Adapter\Adapter;
@@ -101,7 +102,7 @@ SQL;
         $this->assertCount(3, $result['constraints']);
         $fk = end($result['constraints']);
         $this->assertNotEmpty($fk);
-        $this->assertEquals('foreign_key', $fk['type']);
+        $this->assertEquals('foreignKey', $fk['type']);
         $this->assertEquals('FK_STORE_WEBSITE', $fk['name']);
         $this->assertEquals('website_id', $fk['column']);
         $this->assertEquals('test_website', $fk['reference_table']);
@@ -178,21 +179,21 @@ SQL;
         $result = $this->resource->getConstraint('test_website', 'PRIMARY');
         $this->assertNotEmpty($result);
 
-        $this->assertEquals('primary', $result['type']);
-        $this->assertFalse(isset($result['name']));
+        $this->assertEquals('primaryKey', $result['type']);
+        $this->assertEquals('primary', $result['name']);
         $this->assertEquals(array('website_id'), $result['definition']);
 
         $result = $this->resource->getConstraint('test_website', 'code');
         $this->assertNotEmpty($result);
 
-        $this->assertEquals('unique', $result['type']);
+        $this->assertEquals('uniqueKey', $result['type']);
         $this->assertEquals('code', $result['name']);
         $this->assertEquals(array('code'), $result['definition']);
 
         $result = $this->resource->getConstraint('test_store', 'FK_STORE_WEBSITE');
         $this->assertNotEmpty($result);
 
-        $this->assertEquals('foreign_key', $result['type']);
+        $this->assertEquals('foreignKey', $result['type']);
         $this->assertEquals('FK_STORE_WEBSITE', $result['name']);
         $this->assertEquals('website_id', $result['column']);
         $this->assertEquals('test_website', $result['reference_table']);
@@ -384,6 +385,8 @@ SQL;
                         'column' => 'id',
                         'reference_table' => 'test_parent',
                         'reference_column' => 'id',
+                        'on_update' => AddConstraint::DEFAULT_ON_UPDATE,
+                        'on_delete' => AddConstraint::DEFAULT_ON_DELETE,
                     ]
                 ],
             ],
@@ -433,6 +436,8 @@ SQL;
                         'column' => 'parent_id',
                         'reference_table' => 'test_parent',
                         'reference_column' => 'id',
+                        'on_update' => AddConstraint::DEFAULT_ON_UPDATE,
+                        'on_delete' => AddConstraint::DEFAULT_ON_DELETE,
                     ]
                 ],
                 'indices' => [
