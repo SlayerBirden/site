@@ -17,54 +17,61 @@ class VersionComparer
      * should compare versions
      * for strings only!
      *
-     * @param  string                    $a
-     * @param  string                    $b
+     * @param  string                    $versionA
+     * @param  string                    $versionB
      * @throws \InvalidArgumentException
      * @return int
      */
-    public static function natRecursiveCompare($a, $b)
+    public static function natRecursiveCompare($versionA, $versionB)
     {
-        if (!is_string($a) || !is_string($b)) {
+        if (!is_string($versionA) || !is_string($versionB)) {
             throw new \InvalidArgumentException("Compared arguments must be strings.");
         }
-        if (strpos($a, '.') || strpos($b, '.')) {
-            $aA = explode('.', $a);
-            $aB = explode('.', $b);
-            self::castEqualLength($aA, $aB);
+        // if version has dot it's directed here
+        if (strpos($versionA, '.') || strpos($versionB, '.')) {
+            $versionAlist = explode('.', $versionA);
+            $versionBlist = explode('.', $versionB);
+            self::castEqualLength($versionAlist, $versionBlist);
             do {
-                $a = array_shift($aA);
-                $b = array_shift($aB);
-            } while ($a == $b && !is_null($a) && !is_null($b));
-
-            return self::natRecursiveCompare((string) $a, (string) $b);
-        } else {
-            if ((int) $a > (int) $b) {
-                return 1;
-            } elseif ((int) $b > (int) $a) {
-                return -1;
-            } else {
-                return 0;
-            }
+                $versionA = array_shift($versionAlist);
+                $versionB = array_shift($versionBlist);
+            } while ($versionA == $versionB && !is_null($versionA) && !is_null($versionB));
+            return self::natRecursiveCompare((string) $versionA, (string) $versionB);
         }
+        // this is for plain numbers
+        return self::numberCmp((int) $versionA, (int) $versionB);
+    }
+
+    /**
+     * @param int  $elementA
+     * @param int  $elementB
+     * @return int
+     */
+    public static function numberCmp($elementA, $elementB)
+    {
+        if ($elementA == $elementB) {
+            return 0;
+        }
+        return $elementA > $elementB ? 1 : -1;
     }
 
     /**
      * cast both array to equal length
-     * @param array $a
-     * @param array $b
-     * @param mixed $placeholder
+     * @param string[] $aList
+     * @param string[] $bList
+     * @param mixed    $placeholder
      */
-    public static function castEqualLength(array &$a, array &$b, $placeholder = '0')
+    public static function castEqualLength(array &$aList, array &$bList, $placeholder = '0')
     {
-        $countA = count($a);
-        $countB = count($b);
+        $countA = count($aList);
+        $countB = count($bList);
         if ($countA > $countB) {
             for ($i = $countB; $i < $countA; $i++) {
-                $b[] = $placeholder;
+                $bList[] = $placeholder;
             }
         } elseif ($countB > $countA) {
             for ($i = $countA; $i < $countB; $i++) {
-                $a[] = $placeholder;
+                $aList[] = $placeholder;
             }
         }
     }
