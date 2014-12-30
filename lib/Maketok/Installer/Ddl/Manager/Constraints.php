@@ -10,52 +10,91 @@
 namespace Maketok\Installer\Ddl\Manager;
 
 use Maketok\Installer\Ddl\Directives;
+use Maketok\Installer\Exception;
+use Maketok\Util\ArrayValueTrait;
 
 class Constraints implements CompareInterface
 {
+    use ArrayValueTrait;
+
+    const CONDITION_AND = 'and';
+    const CONDITION_OR = 'or';
+
     /**
      * {@inheritdoc}
+     * @throws \Maketok\Installer\Exception
      */
-    public function intlCompare(array $a, array $b, $tableName, Directives $directives)
+    public function intlCompare(array $constraintA, array $constraintB, $tableName, Directives $directives)
     {
-        foreach ($b as $constraintName => $constraintDefinition) {
-            if (!array_key_exists($constraintName, $a)) {
+        foreach ($constraintB as $constraintName => $constraintDefinition) {
+            $bInA = $this->getIfExists($constraintName, $constraintA);
+            if (is_null($bInA)) {
                 $directives->addProp('addConstraints',
                     [$tableName, $constraintName, $constraintDefinition]);
-            } elseif ((isset($constraintDefinition['definition']) &&
-                    $constraintDefinition['definition'] === $a[$constraintName]['definition']) || (
-                    isset($constraintDefinition['column']) &&
-                    $constraintDefinition['column'] == $a[$constraintName]['column'] &&
-                    isset($constraintDefinition['reference_table']) &&
-                    $constraintDefinition['reference_table'] == $a[$constraintName]['reference_table'] &&
-                    isset($constraintDefinition['reference_column']) &&
-                    $constraintDefinition['reference_column'] == $a[$constraintName]['reference_column'] &&
-                    (!isset($constraintDefinition['on_delete']) ||
-                        $constraintDefinition['on_delete'] == $a[$constraintName]['on_delete']) &&
-                    (!isset($constraintDefinition['on_update']) ||
-                        $constraintDefinition['on_update'] == $a[$constraintName]['on_update'])
-                )) {
+            } elseif ($this->getCompareCondition(['definition'], $constraintDefinition, $bInA)
+                || $this->getCompareCondition([
+                    'column',
+                    'reference_table',
+                    'reference_column',
+                    'on_delete',
+                    'on_delete',
+                ], $constraintDefinition, $bInA)) {
                 // now we need to check if in fact the reference column got changed
                 foreach ($directives->changeColumns as $columnDirective) {
-                    if (isset($constraintDefinition['column']) &&
-                        isset($columnDirective[1]) && // key 1 is old name
-                        $columnDirective[1] == $constraintDefinition['reference_column']) {
-                        $directives->addProp('dropConstraints', [$tableName, $constraintName, $a[$constraintName]['type']]);
-                        $directives->addProp('addConstraints',
-                            [$tableName, $constraintName, $constraintDefinition]);
+                    $refCol = $this->getIfExists('reference_column', $constraintDefinition); // if fk
+                    $col = $this->getIfExists(1, $columnDirective, '');
+                    if ($refCol === $col) {
+                        $oldType = $this->getIfExists('type', $bInA, function () {
+                            throw new Exception("Old Constraint definition doesn't have type.");
+                        });
+                        $directives->addProp('dropConstraints', [$tableName, $constraintName, $oldType]);
+                        $directives->addProp('addConstraints', [$tableName, $constraintName, $constraintDefinition]);
                     }
                 }
                 continue;
             } else {
-                $directives->addProp('dropConstraints', [$tableName, $constraintName, $a[$constraintName]['type']]);
+                $directives->addProp('dropConstraints', [$tableName, $constraintName, $constraintA[$constraintName]['type']]);
                 $directives->addProp('addConstraints',
                     [$tableName, $constraintName, $constraintDefinition]);
             }
         }
-        foreach ($a as $constraintName => $constraintDefinition) {
-            if (!array_key_exists($constraintName, $b)) {
-                $directives->addProp('dropConstraints', [$tableName, $constraintName, $constraintDefinition['type']]);
+        foreach ($constraintA as $constraintName => $constraintDefinition) {
+            $aInB = $this->getIfExists($constraintName, $constraintB);
+            $type = $this->getIfExists('type', $constraintDefinition, function () {
+                throw new Exception("Old Constraint definition doesn't have type.");
+            });
+            if (is_null($aInB)) {
+                $directives->addProp('dropConstraints', [$tableName, $constraintName, $type]);
             }
         }
+    }
+
+    /**
+     * @param string[] $keys
+     * @param array $oldDef
+     * @param array $newDef
+     * @param string $condition
+     * @return bool|mixed
+     */
+    protected function getCompareCondition(array $keys, array $oldDef, array $newDef, $condition = self::CONDITION_AND)
+    {
+        $conditions = [];
+        foreach ($keys as $key) {
+            $old = $this->getIfExists($key, $oldDef);
+            $new = $this->getIfExists($key, $newDef);
+            $conditions[] = $old == $new;
+        }
+        if ($condition === self::CONDITION_AND) {
+            $result = true;
+            while (($res = array_pop($conditions)) !== null) {
+                $result &= $res;
+            }
+        } else {
+            $result = false;
+            while (($res = array_pop($condition)) !== null) {
+                $result |= $res;
+            }
+        }
+        return $result;
     }
 }

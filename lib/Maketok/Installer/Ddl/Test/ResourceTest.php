@@ -271,7 +271,7 @@ SQL;
         ];
 
         $this->resource->createProcedures($directives);
-        $refProp = new \ReflectionProperty(get_class($this->resource), '_procedures');
+        $refProp = new \ReflectionProperty(get_class($this->resource), 'procedures');
         $refProp->setAccessible(true);
         // the order is switched
         $expected = [
@@ -301,7 +301,7 @@ SQL;
         ];
 
         $this->resource->createProcedures($directives);
-        $refProp = new \ReflectionProperty(get_class($this->resource), '_procedures');
+        $refProp = new \ReflectionProperty(get_class($this->resource), 'procedures');
         $refProp->setAccessible(true);
         // the order is switched
         $expected = [
@@ -339,6 +339,114 @@ SQL;
             ],
         ];
         $this->resource->createProcedures($directives);
+    }
+
+    /**
+     * @test
+     */
+    public function processValidateMergedConfig()
+    {
+        // validate that INDEX for FK is NOT added if one exists already
+        $config1 = [
+            'modules' => [
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                    'UNQ_KEY_CODE' => [
+                        'type' => 'uniqueKey',
+                        'definition' => ['code'],
+                    ],
+                    'FK_KEY_TEST' => [
+                        'type' => 'foreignKey',
+                        'column' => 'id',
+                        'reference_table' => 'test_parent',
+                        'reference_column' => 'id',
+                    ]
+                ],
+            ],
+        ];
+        $this->resource->processValidateMergedConfig($config1);
+        $this->assertSame([
+            'modules' => [
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                    'UNQ_KEY_CODE' => [
+                        'type' => 'uniqueKey',
+                        'definition' => ['code'],
+                    ],
+                    'FK_KEY_TEST' => [
+                        'type' => 'foreignKey',
+                        'column' => 'id',
+                        'reference_table' => 'test_parent',
+                        'reference_column' => 'id',
+                    ]
+                ],
+            ],
+        ], $config1);
+
+        // assert THAT index IS added when none exists
+        $config1 = [
+            'modules' => [
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                    'UNQ_KEY_CODE' => [
+                        'type' => 'uniqueKey',
+                        'definition' => ['code'],
+                    ],
+                    'FK_KEY_TEST' => [
+                        'type' => 'foreignKey',
+                        'column' => 'parent_id',
+                        'reference_table' => 'test_parent',
+                        'reference_column' => 'id',
+                    ]
+                ],
+                'indices' => [
+                    'KEY_TEST' => [
+                        'type' => 'index',
+                        'definition' => ['date']
+                    ]
+                ]
+            ],
+        ];
+        $this->resource->processValidateMergedConfig($config1);
+        $this->assertSame([
+            'modules' => [
+                'constraints' => [
+                    'primary' => [
+                        'type' => 'primaryKey',
+                        'definition' => ['id'],
+                    ],
+                    'UNQ_KEY_CODE' => [
+                        'type' => 'uniqueKey',
+                        'definition' => ['code'],
+                    ],
+                    'FK_KEY_TEST' => [
+                        'type' => 'foreignKey',
+                        'column' => 'parent_id',
+                        'reference_table' => 'test_parent',
+                        'reference_column' => 'id',
+                    ]
+                ],
+                'indices' => [
+                    'KEY_TEST' => [
+                        'type' => 'index',
+                        'definition' => ['date']
+                    ],
+                    'FK_KEY_TEST' => [
+                        'type' => 'index',
+                        'definition' => ['parent_id']
+                    ],
+                ]
+            ],
+        ], $config1);
     }
 
     /**

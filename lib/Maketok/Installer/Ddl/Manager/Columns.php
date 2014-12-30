@@ -10,32 +10,36 @@
 namespace Maketok\Installer\Ddl\Manager;
 
 use Maketok\Installer\Ddl\Directives;
+use Maketok\Util\ArrayValueTrait;
 
 class Columns implements CompareInterface
 {
+    use ArrayValueTrait;
     /**
      * {@inheritdoc}
      */
-    public function intlCompare(array $a, array $b, $tableName, Directives $directives)
+    public function intlCompare(array $columnA, array $columnB, $tableName, Directives $directives)
     {
-        $_changeMap = [];
-        foreach ($b as $columnName => $columnDefinition) {
-            if (!array_key_exists($columnName, $a) && !isset($columnDefinition['old_name'])) {
+        $changeMap = [];
+        foreach ($columnB as $columnName => $columnDefinition) {
+            $bInA = $this->getIfExists($columnName, $columnA);
+            $oldName = $this->getIfExists('old_name', $columnDefinition);
+            if (is_null($bInA) && is_null($oldName)) {
                 $directives->addProp('addColumns', [$tableName, $columnName, $columnDefinition]);
-            } elseif (isset($columnDefinition['old_name']) && is_string($columnDefinition['old_name'])) {
+            } elseif (is_string($oldName)) {
                 $directives->addProp('changeColumns', [
                     $tableName,
-                    $columnDefinition['old_name'],
+                    $oldName,
                     $columnName,
                     $columnDefinition,
                 ]);
-                $_changeMap[$columnDefinition['old_name']] = $tableName;
-            } elseif ($columnDefinition == $a[$columnName]) { // not strict compare because scalar types may differ
+                $changeMap[$oldName] = $tableName;
+            } elseif ($columnDefinition == $bInA) { // not strict compare because scalar types may differ
                 continue;
             } else {
                 // now we need to make sure new definitions contain same keys as old ones
                 $newDefinition = $columnDefinition;
-                $oldDefinition = $a[$columnName];
+                $oldDefinition = $bInA;
                 foreach ($oldDefinition as $key => $value) {
                     if (!isset($newDefinition[$key])) {
                         unset($oldDefinition[$key]);
@@ -48,8 +52,9 @@ class Columns implements CompareInterface
                 }
             }
         }
-        foreach ($a as $columnName => $columnDefinition) {
-            if (!array_key_exists($columnName, $b) && !isset($_changeMap[$columnName])) {
+        foreach ($columnA as $columnName => $columnDefinition) {
+            $aInB = $this->getIfExists($columnName, $columnB);
+            if (is_null($aInB) && !isset($changeMap[$columnName])) {
                 $directives->addProp('dropColumns', [$tableName, $columnName]);
             }
         }
