@@ -13,9 +13,8 @@ namespace Maketok\Installer\Ddl\Test;
 use Maketok\Installer\Ddl\Directives;
 use Maketok\Installer\Ddl\Mysql\Resource;
 use Maketok\Util\ConfigGetter;
-use Maketok\Util\Zend\Db\Sql\Sql;
 use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Platform\Platform;
+use Zend\Db\Sql\Sql;
 
 class ResourceTest extends \PHPUnit_Framework_TestCase
 {
@@ -84,7 +83,7 @@ SQL;
             'password' => $params['db_passw'],
         ];
         $this->adapter = new Adapter($driver);
-        $sqlObj = new Sql($this->adapter, null, new Platform($this->adapter));
+        $sqlObj = new Sql($this->adapter);
         $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         $this->resource = new Resource($this->adapter, $sqlObj);
     }
@@ -248,7 +247,8 @@ SQL;
                             'type' => 'integer',
                         ],
                         'code' => [
-                            'type' => 'varchar'
+                            'type' => 'varchar',
+                            'length' => 255
                         ],
                     ],
                 ]
@@ -275,7 +275,7 @@ SQL;
         $refProp->setAccessible(true);
         // the order is switched
         $expected = [
-            "CREATE TABLE `test` ( `id` INTEGER NOT NULL, `code` VARCHAR NOT NULL )",
+            "CREATE TABLE `test` ( `id` INTEGER NOT NULL, `code` VARCHAR(255) NOT NULL )",
             "ALTER TABLE `test2` DROP INDEX `UNQ_KEY_OOPS`",
             "ALTER TABLE `test2` CHANGE COLUMN `oldCol` `newCol` INTEGER NOT NULL",
         ];

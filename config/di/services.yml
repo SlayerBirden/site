@@ -43,13 +43,9 @@ services:
     class: Monolog\Logger
     arguments: ["application_logger", ["@logger_handler"]]
 
-  zend_sql_platform:
-    class: Zend\Db\Sql\Platform\Platform
-    arguments: ["@adapter"]
-
   zend_db_sql:
-    class: Maketok\Util\Zend\Db\Sql\Sql
-    arguments: ["@adapter", ~, "@zend_sql_platform"]
+    class: Zend\Db\Sql\Sql
+    arguments: ["@adapter"]
 
   config_getter:
     class: Maketok\Util\ConfigGetter
