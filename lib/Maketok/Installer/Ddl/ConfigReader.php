@@ -33,19 +33,8 @@ class ConfigReader implements ConfigReaderInterface
         if (is_array($this->tree) && !empty($this->tree)) {
             throw new DependencyTreeException("Invalid context of calling method. The tree is already built.");
         }
-        try {
-            usort($clients, array($this, 'dependencyBubbleSortCallback'));
-        } catch (\Exception $e) {
-            // for now suppress the error. It will be revealed later
-        }
+        usort($clients, array($this, 'dependencyBubbleSortCallback'));
         foreach ($clients as $client) {
-            if (!is_object($client)) {
-                throw new DependencyTreeException(sprintf("Invalid Client. Type: %s", gettype($client)));
-            }
-            if (!($client instanceof DdlClient)) {
-                throw new DependencyTreeException(sprintf("Invalid Client. Class: %s", get_class($client)));
-            }
-            /** @var DdlClient $client */
             foreach ($client->getConfig() as $table => $definition) {
                 $branch = [
                     'client' => $client->code,
@@ -67,7 +56,8 @@ class ConfigReader implements ConfigReaderInterface
                     foreach ($client->getDependencies() as $dependency) {
                         if (!isset($this->tree[$dependency])) {
                             throw new DependencyTreeException(
-                                sprintf("Unresolved dependency '%s' for client %s.", $dependency, $client->code));
+                                sprintf("Unresolved dependency '%s' for client %s.", $dependency, $client->code)
+                            );
                         }
                     }
                     $this->tree[$table] = $branch;
@@ -142,7 +132,7 @@ class ConfigReader implements ConfigReaderInterface
             return;
         }
         if (is_null($this->tree)) {
-            throw new DependencyTreeException("Invalid context of calling method. The tree is not built yet.");
+            throw new DependencyTreeException("Invalid context of calling method. The tree is not yet built.");
         }
         foreach ($this->tree as &$branch) {
             $branch['definition'] = $this->recursiveMerge($branch);

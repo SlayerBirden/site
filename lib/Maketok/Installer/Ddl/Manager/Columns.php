@@ -47,8 +47,7 @@ class Columns implements CompareInterface
                 }
                 // not strict compare because scalar types may differ
                 if (!($oldDefinition == $newDefinition)) {
-                    $directives->addProp('changeColumns',
-                        [$tableName, $columnName, $columnName, $newDefinition]);
+                    $directives->addProp('changeColumns', [$tableName, $columnName, $columnName, $newDefinition]);
                 }
             }
         }

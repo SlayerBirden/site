@@ -12,6 +12,7 @@ namespace Maketok\Installer\Ddl\Mysql;
 
 use Maketok\Installer\Ddl\Mysql\Parser\ParserInterface;
 use Maketok\Installer\Ddl\Mysql\Parser\Table;
+use Maketok\Installer\Ddl\Mysql\Procedure\AddConstraint;
 use Maketok\Installer\Ddl\Mysql\Procedure\ProcedureInterface;
 use Maketok\Installer\Ddl\ResourceInterface;
 use Maketok\Installer\DirectivesInterface;
@@ -231,6 +232,9 @@ class Resource implements ResourceInterface
     {
         foreach ($config as $tableName => $definition) {
             $constraints = $this->getIfExists('constraints', $definition, []);
+            if (!empty($constraints)) {
+                $config[$tableName]['constraints'] = $constraints = $this->addFKOptions($constraints);
+            }
             $indices = $this->getIfExists('indices', $definition, []);
             $fkMap = $this->getKeyMap($constraints, 'type', ['foreignKey']);
             if (count($fkMap)) {
@@ -249,6 +253,24 @@ class Resource implements ResourceInterface
                 }
             }
         }
+    }
+
+    /**
+     * @param array $constraints
+     * @return array
+     */
+    protected function addFKOptions(array $constraints)
+    {
+        foreach ($constraints as $name => &$def) {
+            $type = $this->getIfExists('type', $def);
+            $onUpdate = $this->getIfExists('on_update', $def);
+            $onDelete = $this->getIfExists('on_delete', $def);
+            if ('foreignKey' === $type && !$onUpdate && !$onDelete) {
+                $def['on_update'] = AddConstraint::DEFAULT_ON_UPDATE;
+                $def['on_delete'] = AddConstraint::DEFAULT_ON_DELETE;
+            }
+        }
+        return $constraints;
     }
 
     /**

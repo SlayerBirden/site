@@ -10,12 +10,14 @@
 
 namespace Maketok\Navigation;
 
+use Maketok\Tree\Node;
+
 /**
  * Class Link
  * @package Maketok\Navigation
- * @method LinkInterface[] traverse(NodeInterface $node = null)
+ * @method LinkInterface[] traverse(\Maketok\Tree\NodeInterface $node = null)
  * @method LinkInterface getRoot
- * @method LinkInterface addChild(NodeInterface $node)
+ * @method LinkInterface addChild(\Maketok\Tree\NodeInterface $node)
  */
 class Link extends Node implements LinkInterface
 {

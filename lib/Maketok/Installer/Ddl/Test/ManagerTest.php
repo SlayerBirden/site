@@ -98,6 +98,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                 'columns' => [
                     'id' => [
                         'type' => 'integer',
+                        'length' => 5
                     ],
                     'code' => [
                         'type' => 'varchar',
@@ -107,6 +108,10 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                     'version' => [
                         'type' => 'varchar',
                         'length' => 255,
+                    ],
+                    'reference_id' => [
+                        'type' => 'integer',
+                        'length' => 15,
                     ],
                 ],
                 'constraints' => [
@@ -119,6 +124,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                         'definition' => ['code'],
                     ],
                 ],
+                'indices' => [
+                    'KEY_ALIAS' => [
+                        'definition' => ['version']
+                    ]
+                ],
             ],
             'test' => [
                 'columns' => [
@@ -128,12 +138,23 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                     'code' => [
                         'type' => 'varchar'
                     ],
+                    'parent_id' => [
+                        'type' => 'integer'
+                    ],
                 ],
                 'constraints' => [
                     'primary' => [
                         'type' => 'primaryKey',
                         'definition' => ['id'],
                     ],
+                    'FK_KEY_TEST' => [
+                        'type' => 'foreignKey',
+                        'column' => 'parent_id',
+                        'reference_table' => 'modules',
+                        'reference_column' => 'reference_id',
+                        'on_delete' => 'CASCADE',
+                        'on_update' => 'CASCADE',
+                    ]
                 ],
             ],
         ];
@@ -161,12 +182,20 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                             'type' => 'varchar',
                             'length' => 255,
                         ],
+                        'reference_id' => [
+                            'type' => 'integer',
+                        ],
                     ],
                     'constraints' => [
                         'primary' => [
                             'type' => 'primaryKey',
                             'definition' => ['id'],
                         ],
+                    ],
+                    'indices' => [
+                        'KEY_ALIAS' => [
+                            'definition' => ['alias']
+                        ]
                     ],
                 ]],
                 ['test', [
@@ -177,12 +206,28 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                         'code' => [
                             'type' => 'varchar'
                         ],
+                        'parent_id' => [
+                            'type' => 'integer'
+                        ],
                     ],
                     'constraints' => [
                         'primary' => [
                             'type' => 'primaryKey',
                             'definition' => ['id'],
                         ],
+                        'FK_KEY_TEST' => [
+                            'type' => 'foreignKey',
+                            'column' => 'parent_id',
+                            'reference_table' => 'modules',
+                            'reference_column' => 'reference_id',
+                            'on_delete' => 'CASCADE',
+                            'on_update' => 'CASCADE',
+                        ]
+                    ],
+                    'indices' => [
+                        'KEY_CODE' => [
+                            'definition' => ['code']
+                        ]
                     ],
                 ]],
             ]));
@@ -193,9 +238,92 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         /** @var Directives $expectedDirectives */
         $expectedDirectives = $this->manager->getDirectives();
         $this->assertCount(1, $expectedDirectives->addColumns);
-        $this->assertCount(1, $expectedDirectives->changeColumns);
+        $this->assertCount(3, $expectedDirectives->changeColumns);
         $this->assertCount(1, $expectedDirectives->dropColumns);
-        $this->assertCount(1, $expectedDirectives->addConstraints);
+        $this->assertCount(2, $expectedDirectives->addConstraints);
+        $this->assertCount(1, $expectedDirectives->dropConstraints);
+        $this->assertCount(1, $expectedDirectives->addIndices);
+        $this->assertCount(2, $expectedDirectives->dropIndices);
+    }
+
+
+    /**
+     * @test
+     * @expectedException \Maketok\Installer\Exception
+     * @expectedExceptionMessage Integrity check fail.
+     */
+    public function testCreateDirectivesIntegrityViolation()
+    {
+        $refProp = new \ReflectionProperty(get_class($this->manager), 'reader');
+        $refProp->setAccessible(true);
+
+        $mock = $this->getMock('Maketok\Installer\Ddl\ConfigReader');
+        $merged = [
+            'modules' => [
+                'columns' => [
+                    'ref' => [
+                        'type' => 'integer',
+                        'old_name' => 'reference_id',
+                    ],
+                ],
+            ],
+            'test' => [
+                'columns' => [
+                    'parent_id' => [
+                        'type' => 'integer'
+                    ],
+                ],
+                'constraints' => [
+                    'FK_KEY_TEST' => [
+                        'type' => 'foreignKey',
+                        'column' => 'parent_id',
+                        'reference_table' => 'modules',
+                        'reference_column' => 'reference_id',
+                        'on_delete' => 'CASCADE',
+                        'on_update' => 'CASCADE',
+                    ]
+                ],
+            ],
+        ];
+        $mock->expects($this->any())
+            ->method('getMergedConfig')
+            ->will($this->returnValue($merged));
+        $refProp->setValue($this->manager, $mock);
+
+        $refPropRes = new \ReflectionProperty(get_class($this->manager), 'resource');
+        $refPropRes->setAccessible(true);
+        $mock = $this->getMock('Maketok\Installer\Ddl\Mysql\Resource', [], [], '', false);
+        $mock->expects($this->any())
+            ->method('getTable')
+            ->will($this->returnValueMap([
+                ['modules', [
+                    'columns' => [
+                        'reference_id' => [
+                            'type' => 'integer',
+                        ],
+                    ],
+                ]],
+                ['test', [
+                    'columns' => [
+                        'parent_id' => [
+                            'type' => 'integer'
+                        ],
+                    ],
+                    'constraints' => [
+                        'FK_KEY_TEST' => [
+                            'type' => 'foreignKey',
+                            'column' => 'parent_id',
+                            'reference_table' => 'modules',
+                            'reference_column' => 'reference_id',
+                            'on_delete' => 'CASCADE',
+                            'on_update' => 'CASCADE',
+                        ]
+                    ],
+                ]],
+            ]));
+        $refPropRes->setValue($this->manager, $mock);
+
+        $this->manager->createDirectives();
     }
 
     /**

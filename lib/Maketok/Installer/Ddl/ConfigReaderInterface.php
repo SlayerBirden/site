@@ -17,7 +17,7 @@ interface ConfigReaderInterface extends BaseConfigReader
     /**
      * create config tree for all clients
      *
-     * @param  array|\ArrayObject $clients
+     * @param  array|\ArrayObject|\Maketok\Installer\Ddl\Resource\Model\DdlClient[] $clients
      * @return void
      */
     public function buildDependencyTree($clients);

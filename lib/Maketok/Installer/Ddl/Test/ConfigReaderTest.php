@@ -237,16 +237,6 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException \Maketok\Installer\Ddl\DependencyTreeException
-     */
-    public function testRebuildTree()
-    {
-        $this->reader->buildDependencyTree(['m1' => [], 'm2' => []]);
-        $this->reader->buildDependencyTree([]);
-    }
-
-    /**
-     * @test
-     * @expectedException \Maketok\Installer\Ddl\DependencyTreeException
      * @expectedExceptionMessage Unresolved dependency
      */
     public function testBuildWrongTree()
@@ -559,7 +549,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException \Maketok\Installer\Ddl\DependencyTreeException
-     * @expectedExceptionMessage The tree is not built yet
+     * @expectedExceptionMessage The tree is not yet built
      */
     public function testMergeDependencyTreeEmpty()
     {

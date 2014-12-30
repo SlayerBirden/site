@@ -14,6 +14,9 @@
         <testsuite name="app">
             <directory>../lib/Maketok/App/Test/</directory>
         </testsuite>
+        <testsuite name="tree">
+            <directory>../lib/Maketok/Tree/Test</directory>
+        </testsuite>
         <testsuite name="nav">
             <directory>../lib/Maketok/Navigation/Test</directory>
         </testsuite>

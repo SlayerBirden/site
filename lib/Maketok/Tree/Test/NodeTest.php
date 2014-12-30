@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Navigation\Test;
+namespace Maketok\Tree\Test;
 
-use Maketok\Navigation\Node;
+use Maketok\Tree\Node;
 
 class NodeTest extends \PHPUnit_Framework_TestCase
 {
