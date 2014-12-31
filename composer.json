@@ -50,7 +50,8 @@
             "Zend\\Db\\": "lib/",
             "admin\\": "src/",
             "base\\": "src/",
-            "modules\\": "./"
+            "modules\\": "./",
+            "tests\\": "./"
         }
     }
 }
