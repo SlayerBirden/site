@@ -10,27 +10,32 @@
 namespace Maketok\Installer\Ddl\Manager;
 
 use Maketok\Installer\Ddl\Directives;
+use Maketok\Util\ArrayValueTrait;
 
 class Indices implements CompareInterface
 {
+    use ArrayValueTrait;
     /**
      * {@inheritdoc}
      */
-    public function intlCompare(array $a, array $b, $tableName, Directives $directives)
+    public function intlCompare(array $indexA, array $indexB, $tableName, Directives $directives)
     {
-        foreach ($b as $indexName => $indexDefinition) {
-            if (!array_key_exists($indexName, $a)) {
+        foreach ($indexB as $indexName => $indexDefinition) {
+            $bInA = $this->getIfExists($indexName, $indexA);
+            $new = $this->getIfExists('definition', $indexDefinition);
+            $old = $this->getIfExists('definition', $bInA);
+            if (is_null($bInA)) {
                 $directives->addProp('addIndices', [$tableName, $indexName, $indexDefinition]);
-            } elseif ($indexDefinition['definition'] === $a[$indexName]['definition']) {
+            } elseif ($new === $old) {
                 continue;
             } else {
                 $directives->addProp('dropIndices', [$tableName, $indexDefinition]);
-                $directives->addProp('addIndices',
-                    [$tableName, $indexName, $indexDefinition]);
+                $directives->addProp('addIndices', [$tableName, $indexName, $indexDefinition]);
             }
         }
-        foreach ($a as $indexName => $indexDefinition) {
-            if (!array_key_exists($indexName, $b)) {
+        foreach ($indexA as $indexName => $indexDefinition) {
+            $aInB = $this->getIfExists($indexName, $indexB);
+            if (is_null($aInB)) {
                 $directives->addProp('dropIndices', [$tableName, $indexName]);
             }
         }

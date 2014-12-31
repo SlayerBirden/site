@@ -12,28 +12,38 @@ namespace Maketok\Installer\Ddl\Mysql;
 
 use Maketok\Installer\Ddl\Mysql\Parser\ParserInterface;
 use Maketok\Installer\Ddl\Mysql\Parser\Table;
+use Maketok\Installer\Ddl\Mysql\Procedure\AddConstraint;
 use Maketok\Installer\Ddl\Mysql\Procedure\ProcedureInterface;
 use Maketok\Installer\Ddl\ResourceInterface;
 use Maketok\Installer\DirectivesInterface;
 use Maketok\Installer\Exception;
+use Maketok\Util\ArrayValueTrait;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Sql;
 
 class Resource implements ResourceInterface
 {
-    /** @var \Zend\Db\Adapter\Adapter  */
-    protected $_adapter;
-
+    use ArrayValueTrait;
+    /**
+     * @var \Zend\Db\Adapter\Adapter
+     */
+    protected $adapter;
     /**
      * @var \Zend\Db\Sql\Sql
      */
-    private $sql;
-    /** @var array|\Iterator */
-    private $_procedures;
+    protected $sql;
+    /**
+     * @var array|\Iterator
+     */
+    protected $procedures;
 
+    /**
+     * @param Adapter $adapter
+     * @param Sql $sql
+     */
     public function __construct(Adapter $adapter, Sql $sql)
     {
-        $this->_adapter = $adapter;
+        $this->adapter = $adapter;
         $this->sql = $sql;
     }
 
@@ -55,7 +65,7 @@ class Resource implements ResourceInterface
     protected function getTableArray($table)
     {
         try {
-            $result = $this->_adapter->query(
+            $result = $this->adapter->query(
                 "SHOW CREATE TABLE `$table`", Adapter::QUERY_MODE_EXECUTE);
             $data = $result->current();
             $data = $data->getArrayCopy();
@@ -143,16 +153,16 @@ class Resource implements ResourceInterface
      */
     public function createProcedures(DirectivesInterface $directives)
     {
-        if (isset($this->_procedures)) {
+        if (isset($this->procedures)) {
             throw new \LogicException("Wrong context of launching create procedures method. The procedures are already created.");
         }
-        $this->_procedures = [];
+        $this->procedures = [];
         foreach ($directives as $type => $list) {
             $className = $this->getProcedureClassNameFromType($type);
             /** @var ProcedureInterface $procedureClass */
             $procedureClass = new $className($this->sql);
             foreach ($list as $item) {
-                $this->_procedures[] = $procedureClass->getQuery($item);
+                $this->procedures[] = $procedureClass->getQuery($item);
             }
         }
     }
@@ -182,14 +192,14 @@ class Resource implements ResourceInterface
      */
     public function runProcedures()
     {
-        if (is_null($this->_procedures)) {
+        if (is_null($this->procedures)) {
             throw new \LogicException("Wrong context of using runProcedures. Procedures are not created yet.");
         }
-        if (!(is_array($this->_procedures) ||
-            (is_object($this->_procedures) && $this->_procedures instanceof \Iterator))) {
+        if (!(is_array($this->procedures) ||
+            (is_object($this->procedures) && $this->procedures instanceof \Iterator))) {
             throw new \LogicException("Unknown type of procedures.");
         }
-        foreach ($this->_procedures as $query) {
+        foreach ($this->procedures as $query) {
             $this->commit($query);
         }
     }
@@ -199,8 +209,8 @@ class Resource implements ResourceInterface
      */
     private function commit($query)
     {
-        $adapter = $this->_adapter;
-        $this->_adapter->query(
+        $adapter = $this->adapter;
+        $this->adapter->query(
             $query,
             $adapter::QUERY_MODE_EXECUTE
         );
@@ -211,7 +221,7 @@ class Resource implements ResourceInterface
      */
     public function getProcedures()
     {
-        return $this->_procedures;
+        return $this->procedures;
     }
 
     /**
@@ -221,45 +231,17 @@ class Resource implements ResourceInterface
     public function processValidateMergedConfig(array &$config)
     {
         foreach ($config as $tableName => $definition) {
-            $needToCreateMap = false;
-            $fkMap = array();
-            if (isset($definition['constraints'])) {
-                foreach ($definition['constraints'] as $name => $constraintDef) {
-                    if (isset($constraintDef['type']) && $constraintDef['type'] == 'foreignKey') {
-                        // now check if FK has index announced
-                        $needToCreateMap = true;
-                        $fkMap[$constraintDef['column']] = $name;
-                    }
-                }
+            $constraints = $this->getIfExists('constraints', $definition, []);
+            if (!empty($constraints)) {
+                $config[$tableName]['constraints'] = $constraints = $this->addFKOptions($constraints);
             }
-            if ($needToCreateMap) {
+            $indices = $this->getIfExists('indices', $definition, []);
+            $fkMap = $this->getKeyMap($constraints, 'type', ['foreignKey']);
+            if (count($fkMap)) {
                 // create index map
-                $indexMap = array();
-                if (isset($definition['indices'])) {
-                    foreach ($definition['indices'] as $name => $indexDef) {
-                        if (is_array($indexDef['definition'])) {
-                            $col = current($indexDef['definition']);
-                        } elseif (is_string($indexDef['definition'])) {
-                            $col = $indexDef['definition'];
-                        } else {
-                            throw new Exception("Unrecognizable index column definition.");
-                        }
-                        $indexMap[$col] = $name;
-                    }
-                }
-                foreach ($definition['constraints'] as $name => $constraintDef) {
-                    if (isset($constraintDef['type']) &&
-                        ($constraintDef['type'] == 'uniqueKey' || $constraintDef['type'] == 'primaryKey')) {
-                        if (is_array($constraintDef['definition'])) {
-                            $col = current($constraintDef['definition']);
-                        } elseif (is_string($constraintDef['definition'])) {
-                            $col = $constraintDef['definition'];
-                        } else {
-                            throw new Exception("Unrecognizable index column definition.");
-                        }
-                        $indexMap[$col] = $name;
-                    }
-                }
+                $indexMap = $this->getKeyMap($indices, null, [], 'definition', [$this, 'getFirstEl']);
+                $indexFromConstraint = $this->getKeyMap($constraints, 'type', ['uniqueKey', 'primaryKey'], 'definition', [$this, 'getFirstEl']);
+                $indexMap = array_replace($indexMap, $indexFromConstraint);
                 // check correspondence
                 foreach ($fkMap as $column => $name) {
                     if (!isset($indexMap[$column])) {
@@ -271,5 +253,66 @@ class Resource implements ResourceInterface
                 }
             }
         }
+    }
+
+    /**
+     * @param array $constraints
+     * @return array
+     */
+    protected function addFKOptions(array $constraints)
+    {
+        foreach ($constraints as $name => &$def) {
+            $type = $this->getIfExists('type', $def);
+            $onUpdate = $this->getIfExists('on_update', $def);
+            $onDelete = $this->getIfExists('on_delete', $def);
+            if ('foreignKey' === $type && !$onUpdate && !$onDelete) {
+                $def['on_update'] = AddConstraint::DEFAULT_ON_UPDATE;
+                $def['on_delete'] = AddConstraint::DEFAULT_ON_DELETE;
+            }
+        }
+        return $constraints;
+    }
+
+    /**
+     * @param mixed $value
+     * @return string
+     */
+    protected function getFirstEl($value)
+    {
+        if (is_array($value)) {
+            return current($value);
+        }
+        return $value;
+    }
+
+    /**
+     * @param array $config
+     * @param string $matchKey
+     * @param string[] $matchedValues
+     * @param string $columnKey
+     * @param callable $columnGetStrat
+     * @return \string[]
+     */
+    protected function getKeyMap(array $config, $matchKey, array $matchedValues, $columnKey = 'column', callable $columnGetStrat = null)
+    {
+        $map = [];
+        foreach ($config as $name => $def) {
+            if (!is_null($matchKey)) {
+                $key = $this->getIfExists($matchKey, $def, function () use ($matchKey) {
+                    throw new Exception(sprintf("Can not get key to match against - '%s'.", $matchKey));
+                });
+                if (!in_array($key, $matchedValues)) {
+                    continue;
+                }
+            }
+            $column = $this->getIfExists($columnKey, $def, function () use ($columnKey) {
+                throw new Exception(sprintf("Definition doesn't have '%s' - column key.", $columnKey));
+            });
+            if (!is_null($columnGetStrat)) {
+                $column = call_user_func($columnGetStrat, $column);
+            }
+            $map[$column] = $name;
+        }
+        return $map;
     }
 }

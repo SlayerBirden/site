@@ -6,31 +6,34 @@
 <phpunit bootstrap="bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="installer">
-            <directory>../lib/Maketok/Installer/Ddl/Test/</directory>
+            <directory>./Maketok/Installer/Ddl/</directory>
         </testsuite>
         <testsuite name="util">
-            <directory>../lib/Maketok/Util/Test/</directory>
+            <directory>./Maketok/Util/</directory>
         </testsuite>
         <testsuite name="app">
-            <directory>../lib/Maketok/App/Test/</directory>
+            <directory>./Maketok/App/</directory>
+        </testsuite>
+        <testsuite name="tree">
+            <directory>./Maketok/Tree/</directory>
         </testsuite>
         <testsuite name="nav">
-            <directory>../lib/Maketok/Navigation/Test</directory>
+            <directory>./Maketok/Navigation/</directory>
         </testsuite>
         <testsuite name="observer">
-            <directory>../lib/Maketok/Observer/Test</directory>
+            <directory>./Maketok/Observer/</directory>
         </testsuite>
         <testsuite name="firewall">
-            <directory>../lib/Maketok/Firewall/Test</directory>
+            <directory>./Maketok/Firewall/</directory>
         </testsuite>
         <testsuite name="module">
-            <directory>../lib/Maketok/Module/Test</directory>
+            <directory>./Maketok/Module/</directory>
         </testsuite>
         <testsuite name="mvc">
-            <directory>../lib/Maketok/Mvc/Test</directory>
+            <directory>./Maketok/Mvc/</directory>
         </testsuite>
         <testsuite name="maketok">
-            <directory>../lib/Maketok/</directory>
+            <directory>./</directory>
         </testsuite>
     </testsuites>
 </phpunit>

@@ -25,11 +25,16 @@ class Index extends AbstractAdminController
         $this->setTemplate('blog.html.twig');
         /** @var ArticleTable $articleTable */
         $articleTable = $this->getSC()->get('article_table');
-        $articles = $articleTable->fetchAll();
+        try {
+            $articles = $articleTable->fetchAll();
+        } catch (\Exception $e) {
+            $this->getLogger()->err($e->__toString());
+            $articles = [];
+        }
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Blog CRUD Management',
-            'description' => 'Articles:',
-            'articles' => $articles
+            'description' => 'Articles',
+            'articles' => $articles,
         ));
     }
 }

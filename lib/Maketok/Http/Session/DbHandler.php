@@ -53,12 +53,10 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
     {
         try {
             $this->tableMapper->delete($session_id);
-
             return true;
         } catch (\Exception $e) {
             $this->getLogger()->err($e->__toString());
         }
-
         return false;
     }
 
@@ -73,8 +71,11 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
 
         $where = new Where();
         $where->lessThan('updated_at', $expirationDate->format('Y-m-d H:i:s'));
-        $this->tableMapper->getGateway()->delete($where);
-
+        try {
+            $this->tableMapper->getGateway()->delete($where);
+        } catch (\Exception $e) {
+            $this->getLogger()->emerg($e->__toString());
+        }
         return true;
     }
 
@@ -92,11 +93,12 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
     public function read($session_id)
     {
         /** @var Session $model */
-        if ($model = $this->tableMapper->find($session_id)) {
-            return $model->session_id;
+        try {
+            $model = $this->tableMapper->find($session_id);
+            return $model->data;
+        } catch (\Exception $e) {
+            return '';
         }
-
-        return '';
     }
 
     /**
@@ -104,12 +106,19 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function write($session_id, $session_data)
     {
-        /** @var Session $model */
-        $model = $this->tableMapper->getObjectPrototype();
-        $model->session_id = $session_id;
-        $model->data = $session_data;
-        $this->tableMapper->save($model);
-
+        try {
+            $model = $this->tableMapper->find($session_id);
+        } catch (\Exception $e) {
+            $model = $this->tableMapper->getObjectPrototype();
+        }
+        try {
+            /** @var Session $model */
+            $model->session_id = $session_id;
+            $model->data = $session_data;
+            $this->tableMapper->save($model);
+        } catch (\Exception $e) {
+            $this->getLogger()->emerg($e->__toString());
+        }
         return true;
     }
 
@@ -135,7 +144,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function getDependencies()
     {
-        return;
+        return [];
     }
 
     /**

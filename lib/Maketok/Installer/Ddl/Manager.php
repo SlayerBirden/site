@@ -35,6 +35,11 @@ class Manager extends AbstractManager implements ManagerInterface
     private $tableMapper;
 
     /**
+     * @var ClientInterface[]
+     */
+    private $softwareClients = [];
+
+    /**
      * Constructor
      * @param ConfigReaderInterface       $reader
      * @param ResourceInterface           $resource
@@ -88,9 +93,10 @@ class Manager extends AbstractManager implements ManagerInterface
             $this->clients = [];
         }
         $model = $this->getClientModel($client);
-        if ($model->config !== false) {
+        if ($model->getConfig() !== false) {
             // only include model if it has config
             $this->clients[$client->getDdlCode()] = $model;
+            $this->softwareClients[$client->getDdlCode()] = $client;
         }
     }
 
@@ -102,19 +108,15 @@ class Manager extends AbstractManager implements ManagerInterface
     {
         try {
             $model = $this->tableMapper->getClientByCode($client->getDdlCode());
-        } catch (Exception $e) {
-            // when there's no record for this client yet
-            $model = new DdlClient();
-            $model->code = $client->getDdlCode();
         } catch (\Exception $e) {
+            // when there's no record for this client yet or
             // when no installer table exists
             $model = new DdlClient();
             $model->code = $client->getDdlCode();
+            $model->version = $client->getDdlVersion();
         }
-        $model->version = $client->getDdlVersion();
-        $model->dependencies = $client->getDependencies();
-        $model->config = $client->getDdlConfig($model->version);
-
+        $model->setDependencies($client->getDependencies());
+        $model->setConfig($client->getDdlConfig($model->version));
         return $model;
     }
 
@@ -148,13 +150,11 @@ class Manager extends AbstractManager implements ManagerInterface
             ));
             // run
             $this->resource->runProcedures();
-            // @TODO: create backup mechanism
             foreach ($this->clients as $client) {
                 try {
                     $this->tableMapper->save($client);
                 } catch (ModelException $e) {
-                    // right here it would probably mean no data was updated in the db
-                    // however we can possibly add logging here
+                    $this->getLogger()->err($e->__toString());
                 }
             }
             $this->getLogger()->info("All procedures have been completed.");
@@ -201,5 +201,13 @@ class Manager extends AbstractManager implements ManagerInterface
             }
         }
         $this->directives->unique();
+    }
+
+    /**
+     * @return ClientInterface[]
+     */
+    public function getSoftwareClients()
+    {
+        return $this->softwareClients;
     }
 }

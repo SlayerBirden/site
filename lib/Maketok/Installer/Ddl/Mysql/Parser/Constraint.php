@@ -10,8 +10,11 @@
 
 namespace Maketok\Installer\Ddl\Mysql\Parser;
 
+use Maketok\Util\ArrayValueTrait;
+
 class Constraint extends AbstractParser implements ParserInterface
 {
+    use ArrayValueTrait;
     /**
      * {@inheritdoc}
      */
@@ -24,16 +27,14 @@ class Constraint extends AbstractParser implements ParserInterface
         } elseif (preg_match('/^CONSTRAINT `(\S+)` FOREIGN KEY \(`(\S+)`\) REFERENCES `(\S+)` \(`(\S+)`\) ON DELETE (CASCADE|RESTRICT|SET NULL|NO ACTION) ON UPDATE (CASCADE|RESTRICT|SET NULL|NO ACTION)/', $row, $matches)) {
             $constraintInfo = $this->parseForeignKey($matches);
         }
-        if ((isset($constraintInfo['name']) &&
-                is_string($this->name) &&
-                $constraintInfo['name'] == $this->name) ||
-            (isset($constraintInfo['type']) &&
-                $constraintInfo['type'] == 'primary' &&
-                strtolower($this->name) == 'primary') ||
-            is_null($this->name)) {
+        $cName = $this->getIfExists('name', $constraintInfo);
+        $cType = $this->getIfExists('type', $constraintInfo);
+        if (is_null($this->name) || $this->name == $cName) {
             return $constraintInfo;
         }
-
+        if (strtolower($this->name) === 'primary' && 'primaryKey' == $cType) {
+            return $constraintInfo;
+        }
         return [];
     }
 
@@ -46,9 +47,10 @@ class Constraint extends AbstractParser implements ParserInterface
     {
         $constraintInfo = array();
         if (strpos($row, 'PRIMARY') !== false) {
-            $constraintInfo['type'] = 'primary';
+            $constraintInfo['name'] = 'primary';
+            $constraintInfo['type'] = 'primaryKey';
         } else {
-            $constraintInfo['type'] = 'unique';
+            $constraintInfo['type'] = 'uniqueKey';
             $constraintInfo['name'] = $data[1];
         }
         $definition = $data[2];
@@ -68,7 +70,7 @@ class Constraint extends AbstractParser implements ParserInterface
     public function parseForeignKey($data)
     {
         $constraintInfo = array();
-        $constraintInfo['type'] = 'foreign_key';
+        $constraintInfo['type'] = 'foreignKey';
         $constraintInfo['name'] = $data[1];
         $constraintInfo['column'] = $data[2];
         $constraintInfo['reference_table'] = $data[3];

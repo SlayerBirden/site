@@ -111,8 +111,13 @@ class SubjectManager implements SubjectManagerInterface, ConfigConsumerInterface
      */
     public function initConfig()
     {
-        foreach ($this->ioc()->get('config_getter')
-                     ->getConfig(Site::getConfig('subscribers_config_path'), 'subscribers', ENV) as $config) {
+        $env = $this->ioc()->get('request')->getArea();
+        $configs = $this->ioc()->get('config_getter')->getConfig(
+            Site::getConfig('subscribers_config_path'),
+            'subscribers',
+            $env
+        );
+        foreach ($configs as $config) {
             $this->parseConfig($config);
         }
     }

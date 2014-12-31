@@ -10,22 +10,32 @@
 
 namespace Maketok\Firewall\Rule;
 
-use Maketok\Firewall\FirewallException;
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\Http\Request;
 
 class AreaRule extends  AbstractRule
 {
+    use ContainerTrait;
+
     /**
-     * {@inheritdoc}
+     * return true if access should be granted
+     * @param Request $request
+     * @param array $conditions
+     * @return bool
      */
-    public function isGranted($role, Request $request)
+    protected function getSpecialConditionBlack(Request $request, array $conditions)
     {
-        if (empty($this->blacklist)) {
-            throw new FirewallException("No lists found.");
-        }
-        if (isset($this->blacklist[$role]) && is_array($this->blacklist[$role]) && in_array(ENV, $this->blacklist[$role])) {
-            return false;
-        }
-        return true;
+        return !in_array($request->getArea(), $conditions);
+    }
+
+    /**
+     * return true if access should be granted
+     * @param Request $request
+     * @param array $conditions
+     * @return bool
+     */
+    protected function getSpecialConditionWhite(Request $request, array $conditions)
+    {
+        return in_array($request->getArea(), $conditions);
     }
 }

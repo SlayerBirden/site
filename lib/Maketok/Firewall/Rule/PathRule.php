@@ -10,27 +10,41 @@
 
 namespace Maketok\Firewall\Rule;
 
-use Maketok\Firewall\FirewallException;
 use Maketok\Http\Request;
 
 class PathRule extends  AbstractRule
 {
     /**
-     * {@inheritdoc}
+     * return true if access should be granted
+     * @param Request $request
+     * @param array $conditions
+     * @return bool
      */
-    public function isGranted($role, Request $request)
+    protected function getSpecialConditionBlack(Request $request, array $conditions)
     {
-        if (empty($this->blacklist)) {
-            throw new FirewallException("No lists found.");
-        }
-        if (isset($this->blacklist[$role]) && is_array($this->blacklist[$role])) {
-            foreach ($this->blacklist[$role] as $condition) {
-                $res = preg_match("#$condition#", $request->getPathInfo());
-                if ($res === 1) {
-                    return false;
-                }
+        foreach ($conditions as $condition) {
+            $res = preg_match("#$condition#", $request->getPathInfo());
+            if ($res === 1) {
+                return false;
             }
         }
         return true;
+    }
+
+    /**
+     * return true if access should be granted
+     * @param Request $request
+     * @param array $conditions
+     * @return bool
+     */
+    protected function getSpecialConditionWhite(Request $request, array $conditions)
+    {
+        foreach ($conditions as $condition) {
+            $res = preg_match("#$condition#", $request->getPathInfo());
+            if ($res === 1) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -5,6 +5,21 @@
 
 services:
 
+  array_string_strategy:
+    class: Maketok\Util\Hydrator\Strategy\ArrayStringStrategy
+
+  ddl_client_model_hydrator_filter:
+    class: Maketok\Installer\Ddl\Resource\Model\Hydrator\Filter\ClientFilter
+
+  ddl_client_object_prop_hydrator:
+      class: Maketok\Util\Hydrator\ObjectProperty
+      calls:
+        - [addStrategy, [date, "@date_time_strategy"]]
+        - [addStrategy, [created_at, "@date_time_strategy"]]
+        - [addStrategy, [updated_at, "@date_time_strategy"]]
+        - [addStrategy, [dependencies, "@array_string_strategy"]]
+        - [addFilter, [client_filter, "@ddl_client_model_hydrator_filter"]]
+
   ddl_client_table_factory:
       class: Maketok\Model\HydratingTableFactory
       arguments:
@@ -13,6 +28,8 @@ services:
         - Maketok\Installer\Ddl\Resource\Model\DdlClient
         - id
         - "%ddl_client_table.class%"
+        - ~
+        - "@ddl_client_object_prop_hydrator"
 
   ddl_client_table:
       class: "%ddl_client_table.class%"
@@ -32,15 +49,17 @@ services:
       factory: ["@ddl_client_dependency_table_factory", spawnTable]
 
   ddl_client_history_table_factory:
-      class: Maketok\Model\HydratingTableFactory
+      class: Maketok\Model\ArrayTableFactory
       arguments:
         - installer_ddl_client_history
         - id
-        - Maketok\Installer\Ddl\Resource\Model\DdlClientHistory
+        - array
         - id
+        - ~
+        - "%ddl_client_history_table.class%"
 
   ddl_client_history_table:
-      class: Maketok\Model\TableMapper
+      class:  "%ddl_client_history_table.class%"
       factory: ["@ddl_client_history_table_factory", spawnTable]
 
   installer_ddl_resource:

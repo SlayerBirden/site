@@ -8,16 +8,13 @@
 {{ parent() }}
 {% endblock %}
 {% block content %}
-<div id="info" class="info">
-    <span class="important">{% trans %}%description%{% endtrans %}</span>
-</div>
 <section id="articles">
     <a class="button" href="{{ base_url }}/blog/article/new">{% trans %}Add New{% endtrans %}</a>
     <table>
         <tr>
             <th>{% trans %}Title{% endtrans %}</th>
             <th>{% trans %}Code{% endtrans %}</th>
-            <th>{% trans %}Content{% endtrans %}</th>
+            <th>{% trans %}Description Excerpt{% endtrans %}</th>
             <th>{% trans %}Author{% endtrans %}</th>
             <th>{% trans %}Created At{% endtrans %}</th>
             <th>{% trans %}Updated At{% endtrans %}</th>
@@ -27,7 +24,7 @@
         <tr>
             <td>{{ article.title }}</td>
             <td>{{ article.code }}</td>
-            <td>{{ article.content|truncate(50) }}</td>
+            <td>{{ article.description|truncate(50) }}</td>
             <td>{{ article.author }}</td>
             <td>{{ article.created_at|date("F jS \\a\\t g:ia") }}</td>
             <td>{{ article.updated_at|date("F jS \\a\\t g:ia") }}</td>

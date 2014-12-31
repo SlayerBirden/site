@@ -22,7 +22,6 @@ use Zend\Uri\UriFactory;
 
 /**
  * Utility belt (R)
- * @package Maketok\App\Helper
  */
 trait UtilityHelperTrait
 {

@@ -70,7 +70,7 @@ class ContainerFactory implements ConfigInterface
         if (is_null($this->ioc)) {
             // get cached file
             $file = $this->getContainerFileName();
-            if (file_exists($file) && !$this->getDebug()) {
+            if (file_exists($file) && !$this->isDebug()) {
                 require_once $file;
                 $class = $this->getContainerClassName();
                 $this->ioc = new $class();
@@ -87,7 +87,7 @@ class ContainerFactory implements ConfigInterface
     /**
      * @return bool
      */
-    public function getDebug()
+    public function isDebug()
     {
         return Site::getConfig('debug');
     }
@@ -231,12 +231,13 @@ class ContainerFactory implements ConfigInterface
     {
         $file = $this->getContainerFileName();
         // dump only if another dump doesn't exist or if debug mode
-        if (!file_exists($file) || $this->getDebug()) {
+        if (!file_exists($file) || $this->isDebug()) {
             $dumper = new PhpDumper($this->ioc);
             /** @var StreamHandler $writer */
             $writer = $this->ioc->get('lock_stream_handler');
             $writer->writeWithLock(
-                $dumper->dump(array('class' => $this->getContainerClassName(false))), $this->getContainerFileName()
+                $dumper->dump(array('class' => $this->getContainerClassName(false))),
+                $this->getContainerFileName()
             );
         }
     }

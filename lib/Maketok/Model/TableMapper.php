@@ -15,6 +15,7 @@ use Maketok\Util\Exception\ModelException;
 use Maketok\Util\Exception\ModelInfoException;
 use Maketok\Util\Zend\Db\Sql\InsertIgnore;
 use Zend\Db\ResultSet\HydratingResultSet;
+use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\AbstractTableGateway;
 use Maketok\Util\Zend\Db\ResultSet\HydratingResultSet as ExtendedHydratingResultSet;
 
@@ -104,13 +105,13 @@ class TableMapper
 
     /**
      * @codeCoverageIgnore
-     * @param  int|string|string[]     $id
+     * @param  int|string|string[] $id
      * @return array|\ArrayObject|null
      * @throws ModelException
      */
     public function find($id)
     {
-        $resultSet = $this->getGateway()->select($this->getIdFilter($id));
+        $resultSet = $this->fetchFilter($this->getIdFilter($id));
         $row = $resultSet->current();
         if (!$row) {
             throw new ModelException(sprintf("Could not find row with identifier %s", json_encode($id)));
@@ -159,21 +160,13 @@ class TableMapper
     }
 
     /**
-     * @param object $model
+     * @param mixed $model
      * @throws ModelException
      */
     public function save($model)
     {
         try {
             $data = $this->getModelData($model);
-            // possible update
-            if (array_key_exists('updated_at', $data)) {
-                $data['updated_at'] = date("Y-m-d H:i:s");
-            }
-            // set created_at if it's not set
-            if (array_key_exists('created_at', $data) && empty($data['created_at'])) {
-                $data['created_at'] = date("Y-m-d H:i:s");
-            }
             // now determine update or insert
             if (is_null($this->autoIncrement) || (isset($data[$this->autoIncrement]))) {
                 $rowsAffected = $this->getGateway()->update($data, $this->getIdFilter($data));
@@ -188,8 +181,7 @@ class TableMapper
                     if (!$rowsAffected) {
                         // at this step it means something is wrong with the app-db link
                         // or with app logic
-                        throw new ModelException(sprintf("Model %s wasn't changed during save process.",
-                            get_class($model)));
+                        throw new ModelException(sprintf("Model %s wasn't changed during save process.", get_class($model)));
                     } else {
                         $this->assignIncrement($model);
                     }
@@ -205,18 +197,22 @@ class TableMapper
 
     /**
      * assign increment id if suitable
-     * @param object $model
+     * @param mixed $model
      */
     protected function assignIncrement($model)
     {
         $lastInsertedId = $this->getGateway()->getLastInsertValue();
         if ($lastInsertedId && ($increment = $this->autoIncrement)) {
-            $model->$increment = $lastInsertedId;
+            if (is_object($model)) {
+                $model->$increment = $lastInsertedId;
+            } elseif (is_array($model)) {
+                $model[$increment] = $lastInsertedId;
+            }
         }
     }
 
     /**
-     * @param  object $model
+     * @param  mixed $model
      * @return array
      * @throws ModelException
      */
@@ -226,18 +222,46 @@ class TableMapper
         if ($resultSet instanceof HydratingResultSet) {
             $hydrator = $resultSet->getHydrator();
             $data = $hydrator->extract($model);
-        } else {
-            throw new ModelException("Unknown object to handle.");
-        }
-        if ($model instanceof LazyModelInterface) {
-            if (!count(array_diff_assoc($data, $model->processOrigin()))) {
-                // well nothing was changed
-                throw new ModelInfoException("Nothing was changed.");
+            if ($model instanceof LazyModelInterface) {
+                $origin = $model->processOrigin();
+                if (!empty($origin) && !count(array_diff_assoc($origin, $data))) {
+                    // well nothing was changed
+                    // only compare fields in "origin" - which are native fields
+                    throw new ModelInfoException("Nothing was changed.");
+                }
             }
+        } elseif ($resultSet instanceof ResultSet) {
+            if (is_array($model)) {
+                $data = $model;
+            } elseif (is_object($model) && $model instanceof \ArrayObject) {
+                $data = $model->getArrayCopy();
+            } else {
+                throw new ModelException("Unsupported model type.");
+            }
+        } else {
+            throw new ModelException("Unsupported result set type.");
         }
+        return $this->afterGetProcessing($data);
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     * @throws ModelException
+     */
+    protected function afterGetProcessing(array $data)
+    {
         // do not proceed without data
         if (empty($data)) {
             throw new ModelException("Empty object data. Or invalid object to save.");
+        }
+        // possible update
+        if (array_key_exists('updated_at', $data)) {
+            $data['updated_at'] = date('Y-m-d H:i:s');
+        }
+        // set created_at if it's not set
+        if (array_key_exists('created_at', $data) && empty($data['created_at'])) {
+            $data['created_at'] = date('Y-m-d H:i:s');
         }
         return $data;
     }

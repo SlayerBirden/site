@@ -94,8 +94,13 @@ class Navigation implements NavigationInterface, ConfigConsumerInterface
     public function initConfig()
     {
         $tree = [];
-        foreach ($this->ioc()->get('config_getter')
-                     ->getConfig(Site::getConfig('navigation_config_path'), 'navigation', ENV) as $config) {
+        $env = $this->ioc()->get('request')->getArea();
+        $configs = $this->ioc()->get('config_getter')->getConfig(
+            Site::getConfig('navigation_config_path'),
+            'navigation',
+            $env
+        );
+        foreach ($configs as $config) {
             $tree = array_replace_recursive($tree, $config);
         }
         $config = $this->getIfExists($this->code, $tree, []);

@@ -10,3 +10,9 @@ routes:
   - type: literal
     path: /install/ddl
     resolver: [Maketok\Installer\Ddl\Resource\controller\Install, indexAction]
+  - type: parameterized
+    path: /install/ddl/updateto/{type}/{id}
+    resolver: [Maketok\Installer\Ddl\Resource\controller\Install, updatetoAction]
+    restrictions:
+        id: "^\d+$"
+        type: "^[a-zA-Z0-9_.-]+$"

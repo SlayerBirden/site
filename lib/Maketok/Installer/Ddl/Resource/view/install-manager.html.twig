@@ -5,7 +5,44 @@
 {% extends "base-manager.html.twig" %}
 {% block content %}
     {{ parent() }}
-    <button onclick="openPopup('{{ install_url }}');">{% trans %}Run DDL Installer{% endtrans %}</button>
+    <button onclick="openPopup('{{ install_url }}');">{% trans %}Launch DDL Installer{% endtrans %}</button>
+    <table>
+        <tr>
+            <th>{% trans %}Client Code{% endtrans %}</th>
+            <th>{% trans %}Version{% endtrans %}</th>
+            <th>{% trans %}Last Updated At{% endtrans %}</th>
+            <th>{% trans %}Dependencies{% endtrans %}</th>
+            <th>{% trans %}Actions{% endtrans %}</th>
+        </tr>
+        {% for client in clients %}
+            <tr>
+                <td>{{ client.code }}</td>
+                <td>{{ client.version }}</td>
+                <td>{{ client.updated_at|date("Y-m-d H:i:s") }}</td>
+                <td>
+                    <ul>
+                    {% for code in client.dependencies %}
+                        <li>{{ code }}</li>
+                    {% else %}
+                        <li>{% trans %}No dependencies found.{% endtrans %}</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                    {% if not client.is_max_version %}
+                        <li><a href="{{ base_url }}/install/ddl/updateto/last/{{ client.id }}">{% trans %}Update To Latest History Version{% endtrans %}</a></li>
+                    {% endif %}
+                    {% if client.got_update %}
+                        <li><a href="{{ base_url }}/install/ddl/updateto/software/{{ client.id }}">{% trans %}Update To Software Version{% endtrans %}</a></li>
+                    {% endif %}
+                    </ul>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="5">{% trans %}No Clients Found Yet. You can launch the installer.{% endtrans %}</td></tr>
+        {% endfor %}
+    </table>
     <script type="application/javascript">
         function openPopup(url) {
             var specs = {

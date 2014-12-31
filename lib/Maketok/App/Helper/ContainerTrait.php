@@ -13,7 +13,7 @@ namespace Maketok\App\Helper;
 use Maketok\App\ContainerFactory;
 
 /**
- * Trait that adds IoC getter
+ * Trait that adds IoC Container getter
  * @codeCoverageIgnore
  */
 trait ContainerTrait

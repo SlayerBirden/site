@@ -24,13 +24,15 @@ trait ArrayValueTrait
             while (!is_null($simpleKey = array_shift($key)) && is_array($data)) {
                 $data = $this->getIfExists($simpleKey, $data, $default);
             }
-
             return $data;
         } else {
             if (array_key_exists($key, $data)) {
                 return $data[$key];
             }
-
+            // run closure if one given
+            if (is_object($default) && $default instanceof \Closure) {
+                return $default();
+            }
             return $default;
         }
     }

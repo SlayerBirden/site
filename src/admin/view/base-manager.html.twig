@@ -15,13 +15,24 @@
 <body>
 <div id="wrapper">
     <header>
+        <a href="{{ base_url }}" class="logo"><strong>{% trans %}Maketok Admin Management Area{% endtrans %}</strong></a>
         {% block search %}{% endblock %}
         {% block customer_area %}{% endblock %}
+        <div id="info" class="info">
+            <h1>{% trans %}%description%{% endtrans %}</h1>
+        </div>
     </header>
     <nav>
         <ul>{% include 'navigation.html.twig' with {'links': links} %}</ul>
     </nav>
     <section id="content">
+        {% for type, messages in session.flashbag.all() %}
+            {% for message in messages %}
+                <ul class="message {{ type }}">
+                    <li>{{ message }}</li>
+                </ul>
+            {% endfor %}
+        {% endfor %}
         {% block content %}{% endblock %}
     </section>
     <footer>

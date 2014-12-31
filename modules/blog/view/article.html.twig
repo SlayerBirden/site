@@ -10,24 +10,13 @@
 {% block content %}
     <article>
         <div class="article-title opened-article">{{ article.title }}</div>
-        <div class="article-content">{{ article.content|nl2br }}</div>
+        <div class="article-content">{{ article.content|markdown }}</div>
         <div class="article-meta">
             <span class="article-author">{{ article.author }}</span>
             <span class="article-date">{{ article.created_at|date("F jS \\a\\t g:ia") }}</span>
             <span class="hide">id: {{ article.id }}</span>
         </div>
     </article>
-    <div id="disqus_thread"></div>
-    <script type="text/javascript">
-        var disqus_shortname = 'maketokcom';
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 {% endblock %}
 {% block footer %}
     <div class="footer-content">

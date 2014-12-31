@@ -36,7 +36,7 @@ class Article extends AbstractAdminController
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Edit Article ' . $article->title,
             'description' => 'Article ' . $article->title,
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ));
     }
 
@@ -93,7 +93,7 @@ class Article extends AbstractAdminController
         return $this->prepareResponse($request, array(
             'title' => 'Maketok Admin - Add New Article ',
             'description' => 'Article Creation',
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ));
     }
 
@@ -121,7 +121,7 @@ class Article extends AbstractAdminController
             $this->getLogger()->err($e);
             $this->getSession()->getFlashBag()->add(
                 'error',
-                'There was an error processing your request. Our specialists will be looking into it.'
+                sprintf("There was an error processing your request.\nThe error text: %s", $e->getMessage())
             );
             return $this->returnBack();
         }

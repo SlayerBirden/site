@@ -6,3 +6,4 @@
 parameters:
   ddl_client_table.class: Maketok\Installer\Ddl\Resource\Model\DdlClientType
   ddl_client_dependency_table.class: Maketok\Installer\Ddl\Resource\Model\DdlClientDependencyType
+  ddl_client_history_table.class: Maketok\Installer\Ddl\Resource\Model\DdlClientHistoryType
