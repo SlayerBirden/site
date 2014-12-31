@@ -11,31 +11,37 @@
 namespace modules\error\controller;
 
 use Maketok\Http\Request;
+use Maketok\Http\Response;
 use Maketok\Mvc\Controller\AbstractBaseController;
-use Maketok\Mvc\Error\DumperTrait;
 
 class Index extends AbstractBaseController
 {
-    use DumperTrait;
+    /**
+     * @var int[]
+     */
+    protected $availableCodes = [
+        403,
+        404,
+        500,
+    ];
 
     /**
-     * {@inheritdoc}
+     * @param Request $request
+     * @param int $httpCode
+     * @param string $message
+     * @return Response
      */
-    public function norouteAction(Request $request)
+    public function dump(Request $request, $httpCode, $message = null)
     {
-        $this->setTemplate('404.html.twig');
-        return $this->prepareResponse($request, array('title' => 'Page Not Found'), null, 404);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function errorAction(Request $request)
-    {
-        $this->setTemplate('500.html.twig');
-        $params = array(
-            'title' => 'Internal Error',
-        );
-        return $this->prepareResponse($request, $params, null, 500);
+        $title = Response::$statusTexts[$httpCode];
+        if (in_array($httpCode, $this->availableCodes)) {
+            $this->setTemplate("$httpCode.html.twig");
+        } else {
+            $this->setTemplate("500.html.twig");
+        }
+        return $this->prepareResponse($request, [
+            'title' => $title,
+            'message' => $message,
+        ], null, $httpCode);
     }
 }
