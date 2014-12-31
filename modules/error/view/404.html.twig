@@ -7,10 +7,6 @@
 {{ parent() }}
 {% endblock %}
 {% block content %}
-    {% trans %}Oops! We couldn't find anything here. Try again.{% endtrans %}
+    {% trans %}Oops! We couldn't find anything here. Maybe the address you used is outdated.{% endtrans %}
 {% endblock %}
-{% block footer %}
-<div class="footer-content">
-    <span class="important">{% trans %}Hello World!{% endtrans %}</span>
-</div>
-{% endblock %}
+{% block footer %}{% endblock %}
