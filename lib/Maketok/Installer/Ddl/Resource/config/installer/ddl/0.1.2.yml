@@ -18,10 +18,10 @@ installer_ddl_client:
   constraints:
     primary:
       type: primaryKey
-      definition: [id]
+      definition: id
     UNQ_KEY_CODE:
       type: uniqueKey
-      definition: [code]
+      definition: code
 
 installer_ddl_client_dependency:
   columns:
@@ -38,7 +38,7 @@ installer_ddl_client_dependency:
   constraints:
     primary:
       type: primaryKey
-      definition: [id]
+      definition: id
     UNQ_KEY_CLIENT_DEPENDENCY:
       type: uniqueKey
       definition: [client_id, dependency_code]
@@ -71,7 +71,7 @@ installer_ddl_client_history:
   constraints:
     primary:
       type: primaryKey
-      definition: [id]
+      definition: id
     FK_KEY_CLIENT_ID:
       type: foreignKey
       column: client_id

@@ -236,7 +236,7 @@ class Resource implements ResourceInterface
                 $config[$tableName]['constraints'] = $constraints = $this->addFKOptions($constraints);
             }
             $indices = $this->getIfExists('indices', $definition, []);
-            $fkMap = $this->getKeyMap($constraints, 'type', ['foreignKey']);
+            $fkMap = $this->getKeyMap($constraints, 'type', ['foreignKey'], 'column', [$this, 'getSerialized']);
             if (count($fkMap)) {
                 // create index map
                 $indexMap = $this->getKeyMap($indices, null, [], 'definition', [$this, 'getFirstEl']);
@@ -244,10 +244,16 @@ class Resource implements ResourceInterface
                 $indexMap = array_replace($indexMap, $indexFromConstraint);
                 // check correspondence
                 foreach ($fkMap as $column => $name) {
-                    if (!isset($indexMap[$column])) {
+                    $column = unserialize($column);
+                    if (is_array($column)) {
+                        $columnToMatch = reset($column);
+                    } else {
+                        $columnToMatch = $column;
+                    }
+                    if (!isset($indexMap[$columnToMatch])) {
                         $config[$tableName]['indices'][$name] = [
                             'type' => 'index',
-                            'definition' => [$column],
+                            'definition' => $column,
                         ];
                     }
                 }
@@ -283,6 +289,15 @@ class Resource implements ResourceInterface
             return current($value);
         }
         return $value;
+    }
+
+    /**
+     * @param mixed $value
+     * @return string
+     */
+    protected function getSerialized($value)
+    {
+        return serialize($value);
     }
 
     /**

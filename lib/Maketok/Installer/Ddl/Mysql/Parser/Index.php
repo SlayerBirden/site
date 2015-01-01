@@ -23,12 +23,7 @@ class Index extends AbstractParser implements ParserInterface
             return $indexInfo;
         }
         $indexInfo['name'] = $matches[1];
-        $definition = $matches[2];
-        $definition = explode(',', $definition);
-        array_walk($definition, function (&$row) {
-            $row = str_replace('`', '', $row);
-        });
-        $indexInfo['definition'] = $definition;
+        $indexInfo['definition'] = $this->parseColumns($matches[2]);
         if (is_string($this->name) && ($indexInfo['name'] == $this->name) || is_null($this->name)) {
             return $indexInfo;
         }

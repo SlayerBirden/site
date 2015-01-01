@@ -21,7 +21,16 @@ return [
         'attach' => [
             [[$ioc->get('module_manager'), 'updateModules'], 20],
             [[$ioc->get('module_manager'), 'processModules'], 15],
-            [[$ioc->get('module_manager'), 'addInstallerSubscribers'], 10]
+        ]
+    ],
+    'installer_before_process' => [
+        'attach' => [
+            [['modules_add_to_installer' => [$ioc->get('module_manager'), 'addInstallerSubscribers']], 0]
+        ]
+    ],
+    'software_clients_getter_create' => [
+        'attach' => [
+            [['modules_software_add_to_installer' => [$ioc->get('module_manager'), 'addInstallerSoftware']], 0]
         ]
     ]
 ];

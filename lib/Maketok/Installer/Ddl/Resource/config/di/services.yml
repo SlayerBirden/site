@@ -72,10 +72,6 @@ services:
   installer_ddl_directives:
       class: Maketok\Installer\Ddl\Directives
 
-  installer_ddl_client:
-      class: Maketok\Installer\Ddl\InstallerClient
-      scope: prototype
-
   installer_ddl_manager:
       class: Maketok\Installer\Ddl\Manager
       arguments:
@@ -84,7 +80,3 @@ services:
         - "@installer_ddl_directives"
         - "@lock_stream_handler="
         - "@ddl_client_table"
-      calls:
-        - [addClient, ["@session_save_handler"]]
-        - [addClient, ["@installer_ddl_client="]]
-        - [addClient, ["@module_manager"]]

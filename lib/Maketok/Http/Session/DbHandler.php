@@ -135,7 +135,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function getDdlConfig($version)
     {
-        return include __DIR__ . '/Resource/config/installer/ddl/' . $version . '.php';
+        return current($this->ioc()->get('config_getter')->getConfig(__DIR__.'/Resource/config/installer/ddl', $version));
     }
 
     /**
@@ -152,7 +152,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function getDdlVersion()
     {
-        return '0.1.0';
+        return '0.1.1';
     }
 
     /**

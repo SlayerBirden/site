@@ -11,6 +11,7 @@
 namespace Maketok\Installer\Ddl;
 
 use Maketok\App\Helper\UtilityHelperTrait;
+use Maketok\App\Site;
 use Maketok\Installer\AbstractManager;
 use Maketok\Installer\Ddl\Manager\Columns;
 use Maketok\Installer\Ddl\Manager\Constraints;
@@ -22,6 +23,7 @@ use Maketok\Installer\ManagerInterface;
 use Maketok\Installer\ClientInterface as BaseClientInterface;
 use Maketok\Installer\Ddl\ClientInterface as DdlClientInterface;
 use Maketok\Model\TableMapper;
+use Maketok\Observer\State;
 use Maketok\Util\Exception\ModelException;
 use Maketok\Util\StreamHandler;
 use Maketok\Util\StreamHandlerInterface;
@@ -37,15 +39,15 @@ class Manager extends AbstractManager implements ManagerInterface
     /**
      * @var ClientInterface[]
      */
-    private $softwareClients = [];
+    private $softwareClients;
 
     /**
      * Constructor
-     * @param ConfigReaderInterface       $reader
-     * @param ResourceInterface           $resource
-     * @param Directives                  $directives
+     * @param ConfigReaderInterface $reader
+     * @param ResourceInterface $resource
+     * @param Directives $directives
      * @param StreamHandlerInterface|null $handler
-     * @param TableMapper                 $tableMapper
+     * @param TableMapper $tableMapper
      */
     public function __construct(ConfigReaderInterface $reader,
                                 ResourceInterface $resource,
@@ -96,8 +98,18 @@ class Manager extends AbstractManager implements ManagerInterface
         if ($model->getConfig() !== false) {
             // only include model if it has config
             $this->clients[$client->getDdlCode()] = $model;
-            $this->softwareClients[$client->getDdlCode()] = $client;
         }
+    }
+
+    /**
+     * @param ClientInterface $client
+     */
+    public function addSoftwareClient(ClientInterface $client)
+    {
+        if (is_null($this->softwareClients)) {
+            $this->softwareClients = [];
+        }
+        $this->softwareClients[$client->getDdlCode()] = $client;
     }
 
     /**
@@ -121,6 +133,43 @@ class Manager extends AbstractManager implements ManagerInterface
     }
 
     /**
+     * add configured clients prior to install process
+     * @param bool $addSoftware
+     * @throws Exception
+     */
+    protected function addConfiguredClients($addSoftware = false)
+    {
+        $clients = Site::getConfig('installer_ddl_clients');
+        if (empty($clients) || !is_array($clients)) {
+            return;
+        }
+        foreach ($clients as $client) {
+            $client = $this->parseClient($client);
+            if ($addSoftware) {
+                $this->addSoftwareClient($client);
+            } else {
+                $this->addClient($client);
+            }
+        }
+    }
+
+    /**
+     * @param string $clientDefinition
+     * @return object
+     */
+    protected function parseClient($clientDefinition)
+    {
+        if (is_string($clientDefinition)) {
+            if ((strpos($clientDefinition, '@')) === 0) {
+                return $this->ioc()->get(str_replace('@', '', $clientDefinition));
+            } else {
+                return new $clientDefinition();
+            }
+        }
+        return $clientDefinition;
+    }
+
+    /**
      * This is where all clients are processed
      * @return void
      */
@@ -132,6 +181,8 @@ class Manager extends AbstractManager implements ManagerInterface
             return;
         }
         try {
+            $this->addConfiguredClients();
+            $this->getDispatcher()->notify('installer_before_process', new State());
             // build tree
             $this->reader->buildDependencyTree($this->clients);
             $this->getLogger()->info("Dependency Tree", array(
@@ -208,6 +259,10 @@ class Manager extends AbstractManager implements ManagerInterface
      */
     public function getSoftwareClients()
     {
+        if (is_null($this->softwareClients)) {
+            $this->addConfiguredClients(true); // software
+            $this->getDispatcher()->notify('software_clients_getter_create', new State());
+        }
         return $this->softwareClients;
     }
 }

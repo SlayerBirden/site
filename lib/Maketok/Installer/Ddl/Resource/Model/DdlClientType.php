@@ -164,7 +164,7 @@ class DdlClientType extends TableMapper
         )->join(
             'installer_ddl_client_dependency',
             'installer_ddl_client.id = installer_ddl_client_dependency.client_id',
-            ['dependencies' => new Expression('GROUP_CONCAT(dependency_code)')],
+            ['dependencies' => new Expression('GROUP_CONCAT(DISTINCT(dependency_code))')],
             'left'
         )->group('installer_ddl_client.id');
         return $this->getGateway()->selectWith($select);

@@ -49,5 +49,10 @@ return [
     ],
     'firewall_config_path' => [
         AR . '/config/firewall',
+    ],
+    'installer_ddl_clients' => [
+        'Maketok\Installer\Ddl\InstallerClient',
+        '@session_save_handler',
+        '@module_manager',
     ]
 ];

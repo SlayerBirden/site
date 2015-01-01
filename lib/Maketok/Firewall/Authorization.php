@@ -15,6 +15,7 @@ use Maketok\App\Site;
 use Maketok\Firewall\Rule\RuleInterface;
 use Maketok\Http\Request;
 use Maketok\Http\Response;
+use Maketok\Observer\State;
 use Maketok\Util\ConfigConsumerInterface;
 
 class Authorization implements AuthorizationInterface, ConfigConsumerInterface
@@ -78,6 +79,11 @@ class Authorization implements AuthorizationInterface, ConfigConsumerInterface
                 }
             }
         }
+        // the flow may be altered here
+        $this->getDispatcher()->notify(
+            'firewall_user_forbidden',
+            new State(['role_provider' => $roleProvider])
+        );
         throw new AccessDeniedException("Access denied for current entity.", Response::HTTP_FORBIDDEN);
     }
 

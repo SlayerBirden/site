@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 return array(
-    $this->getDdlCode() => array(
+    'session_storage' => array(
         'columns' => array(
             'session_id' => array(
                 'type' => 'varchar',
@@ -24,7 +24,7 @@ return array(
         'constraints' => array(
             'primary' => array(
                 'type' => 'primaryKey',
-                'definition' => ['session_id'],
+                'definition' => 'session_id',
             )
         ),
     )

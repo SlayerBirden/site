@@ -135,12 +135,18 @@ final class Site implements ConfigConsumerInterface
         try {
             $message = sprintf("Unhandled exception\n%s", $e->__toString());
             $this->getLogger()->emergency($message);
-            $this->getDispatcher()->notify('application_error_triggered', new State([
-                'exception' => $e,
-                'message' => $message,
-            ]));
+            $this->getDispatcher()->notify(
+                'application_error_triggered',
+                new State(
+                    [
+                        'exception' => $e,
+                        'message' => $message,
+                    ]
+                )
+            );
         } catch (\Exception $ex) {
-            printf("Exception '%s' thrown within the exception handler in file %s on line %d. Previous exception: %s",
+            printf(
+                "Exception '%s' thrown within the exception handler in file %s on line %d. Previous exception: %s",
                 $ex->getMessage(),
                 $ex->getFile(),
                 $ex->getLine(),

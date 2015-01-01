@@ -22,9 +22,9 @@ class Constraint extends AbstractParser implements ParserInterface
     {
         $row = trim($this->row);
         $constraintInfo = [];
-        if (preg_match('/^(?:PRIMARY KEY|UNIQUE KEY).?(?:`(\S+)`)?.?\((\S+)\)/', $row, $matches)) {
+        if (preg_match('/^(?:PRIMARY KEY|UNIQUE KEY).?(?:`(\S+)`)?.?\(([a-z0-9`_ ,]+)\)/', $row, $matches)) {
             $constraintInfo = $this->parseKey($row, $matches);
-        } elseif (preg_match('/^CONSTRAINT `(\S+)` FOREIGN KEY \(`(\S+)`\) REFERENCES `(\S+)` \(`(\S+)`\) ON DELETE (CASCADE|RESTRICT|SET NULL|NO ACTION) ON UPDATE (CASCADE|RESTRICT|SET NULL|NO ACTION)/', $row, $matches)) {
+        } elseif (preg_match('/^CONSTRAINT `(\S+)` FOREIGN KEY \(([a-z0-9`_ ,]+)\) REFERENCES `(\S+)` \(([a-z0-9`_ ,]+)\) ON DELETE (CASCADE|RESTRICT|SET NULL|NO ACTION) ON UPDATE (CASCADE|RESTRICT|SET NULL|NO ACTION)/', $row, $matches)) {
             $constraintInfo = $this->parseForeignKey($matches);
         }
         $cName = $this->getIfExists('name', $constraintInfo);
@@ -53,12 +53,7 @@ class Constraint extends AbstractParser implements ParserInterface
             $constraintInfo['type'] = 'uniqueKey';
             $constraintInfo['name'] = $data[1];
         }
-        $definition = $data[2];
-        $definition = explode(',', $definition);
-        array_walk($definition, function (&$row) {
-            $row = str_replace('`', '', $row);
-        });
-        $constraintInfo['definition'] = $definition;
+        $constraintInfo['definition'] = $this->parseColumns($data[2]);
 
         return $constraintInfo;
     }
@@ -72,9 +67,9 @@ class Constraint extends AbstractParser implements ParserInterface
         $constraintInfo = array();
         $constraintInfo['type'] = 'foreignKey';
         $constraintInfo['name'] = $data[1];
-        $constraintInfo['column'] = $data[2];
+        $constraintInfo['column'] = $this->parseColumns($data[2]);
         $constraintInfo['reference_table'] = $data[3];
-        $constraintInfo['reference_column'] = $data[4];
+        $constraintInfo['reference_column'] = $this->parseColumns($data[4]);
         $constraintInfo['on_delete'] = $data[5];
         $constraintInfo['on_update'] = $data[6];
 

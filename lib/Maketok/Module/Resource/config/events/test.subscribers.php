@@ -21,7 +21,12 @@ return [
         'detach' => [
             [$ioc->get('module_manager'), 'updateModules'],
             [$ioc->get('module_manager'), 'processModules'],
-            [$ioc->get('module_manager'), 'addInstallerSubscribers']
         ]
+    ],
+    'installer_before_process' => [
+        'detach' => ['modules_add_to_installer']
+    ],
+    'software_clients_getter_create' => [
+        'detach' => ['modules_software_add_to_installer']
     ]
 ];

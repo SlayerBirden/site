@@ -81,12 +81,15 @@ class AddConstraint extends AbstractProcedure implements ProcedureInterface
     }
 
     /**
-     * @param  string[] $def
+     * @param  string[]|string $def
      * @return string
      */
     public function getPKName($def)
     {
         $name = [];
+        if (is_scalar($def)) {
+            return (string) $def;
+        }
         foreach ($def as $colName) {
             $name[] = $colName;
         }

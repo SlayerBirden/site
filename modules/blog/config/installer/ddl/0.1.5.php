@@ -43,26 +43,30 @@ return [
             'content' => [
                 'type' => 'text',
                 'nullable' => false,
+            ],
+            'description' => [
+                'type' => 'text',
+                'nullable' => false,
             ]
         ],
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'definition' => ['id'],
+                'definition' => 'id',
             ],
             'UNQ_KEY_CODE' => [
                 'type' => 'uniqueKey',
-                'definition' => ['code'],
+                'definition' => 'code',
             ]
         ],
         'indices' => [
             'KEY_AUTHOR' => array(
                 'type' => 'index',
-                'definition' => ['author'],
+                'definition' => 'author',
             ),
             'KEY_DATE' => array(
                 'type' => 'index',
-                'definition' => ['created_at'],
+                'definition' => 'created_at',
             )
         ]
     ],
@@ -102,11 +106,11 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'definition' => ['id'],
+                'definition' => 'id',
             ],
             'UNQ_KEY_CODE' => [
                 'type' => 'uniqueKey',
-                'definition' => ['code'],
+                'definition' => 'code',
             ]
         ]
     ],
@@ -135,7 +139,7 @@ return [
         'constraints' => [
             'primary' => [
                 'type' => 'primaryKey',
-                'definition' => ['id'],
+                'definition' => 'id',
             ],
             'FK_KEY_ARTICLE_ID' => array(
                 'type' => 'foreignKey',
