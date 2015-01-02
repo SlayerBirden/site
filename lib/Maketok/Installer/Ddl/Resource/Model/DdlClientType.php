@@ -74,7 +74,7 @@ class DdlClientType extends TableMapper
      * @throws ModelException
      * also save dependency and history
      */
-    public function save($model)
+    public function save(&$model)
     {
         try {
             $this->getGateway()->getAdapter()->getDriver()->getConnection()->beginTransaction();

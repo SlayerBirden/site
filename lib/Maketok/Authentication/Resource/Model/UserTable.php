@@ -20,7 +20,7 @@ class UserTable extends TableMapper
     /**
      * {@inheritdoc}
      */
-    public function save($model)
+    public function save(&$model)
     {
         try {
             $this->getGateway()->getAdapter()->getDriver()->getConnection()->beginTransaction();
@@ -44,13 +44,14 @@ class UserTable extends TableMapper
     {
         /** @var TableMapper $userDataTable */
         $userDataTable = $this->ioc()->get('auth_user_data_table');
-        $userDataTable->save([
+        $data = [
             'user_id' => $model->id,
             'firstname' => $model->firstname,
             'lastname' => $model->lastname,
             'password_hash' => $model->password_hash,
             'updated_at' => null,
-        ]);
+        ];
+        $userDataTable->save($data);
     }
 
     /**
@@ -62,11 +63,12 @@ class UserTable extends TableMapper
         /** @var TableMapper $userRolesTable */
         $userRolesTable = $this->ioc()->get('auth_user_role_table');
         foreach ($model->roles as $roleId) {
-            $userRolesTable->save([
+            $data = [
                 'user_id' => $model->id,
                 'role_id' => $roleId,
                 'updated_at' => null,
-            ]);
+            ];
+            $userRolesTable->save($data);
         }
     }
 }
