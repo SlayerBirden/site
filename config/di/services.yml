@@ -35,6 +35,9 @@ services:
       - [addStrategy, [created_at, "@date_time_strategy"]]
       - [addStrategy, [updated_at, "@date_time_strategy"]]
 
+  array_string_strategy:
+    class: Maketok\Util\Hydrator\Strategy\ArrayStringStrategy
+
   logger_handler:
     class: Maketok\Util\Monolog\Handler\StreamHandler
     arguments: ["%log_dir%site.log", 100]

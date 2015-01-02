@@ -8,13 +8,8 @@
  * file that was distributed with this source code.
  */
 
-$iocFactory = \Maketok\App\ContainerFactory::getInstance();
-$ioc = $iocFactory->getServiceContainer();
+namespace Maketok\Authentication;
 
-return [
-    'front_before_process' => [
-        'attach' => [
-            [[$ioc->get('firewall'), 'validate'], 99],
-        ]
-    ]
-];
+class AuthException extends \Exception
+{
+}

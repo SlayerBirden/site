@@ -68,7 +68,6 @@ roles:
         id:
           type: integer
           nullable: false
-          auto_increment: true
           unsigned: true
         title:
           type: varchar

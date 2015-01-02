@@ -10,7 +10,16 @@
 
 namespace Maketok\Authentication;
 
+use Maketok\Http\Request;
+
 interface AuthenticationManagerInterface
 {
-
+    /**
+     * Main auth method. Manager will work with identity providers
+     * to get/authenticate current entity
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function authenticate(Request $request);
 }

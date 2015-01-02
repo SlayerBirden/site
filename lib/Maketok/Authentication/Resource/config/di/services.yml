@@ -1,0 +1,82 @@
+# This is a part of Maketok site package.
+# @author Oleg Kulik <slayer.birden@gmail.com>
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+services:
+
+  auth_model_hydrator_filter:
+    class: Maketok\Authentication\Resource\Model\Hydrator\Filter\UserFilter
+
+  auth_object_prop_hydrator:
+      class: Maketok\Util\Hydrator\ObjectProperty
+      calls:
+        - [addStrategy, [created_at, "@date_time_strategy"]]
+        - [addStrategy, [updated_at, "@date_time_strategy"]]
+        - [addStrategy, [roles, "@array_string_strategy"]]
+        - [addFilter, [user_filter, "@auth_model_hydrator_filter"]]
+
+# auth user table ===========================================
+  auth_user_table:
+      class: Maketok\Authentication\Provider\DataBaseProvider
+      factory: ["@auth_user_table_factory", spawnTable]
+
+  auth_user_table_factory:
+      class: Maketok\Model\HydratingTableFactory
+      arguments:
+          - users
+          - id
+          - Maketok\Authentication\Resource\Model\User
+          - id
+          - Maketok\Authentication\Resource\Model\UserTable
+          - ~
+          - "@auth_object_prop_hydrator"
+
+# auth user_data table =======================================
+  auth_user_data_table:
+      class: Maketok\Model\TableMapper
+      factory: ["@auth_user_data_factory", spawnTable]
+
+  auth_user_data_factory:
+      class: Maketok\Model\ArrayTableFactory
+      arguments:
+          - user_data
+          - id
+          - array
+          - id
+
+# auth role table ============================================
+  auth_role_table:
+      class: Maketok\Model\TableMapper
+      factory: ["@auth_role_table_factory", spawnTable]
+
+  auth_role_table_factory:
+      class: Maketok\Model\ArrayTableFactory
+      arguments:
+          - roles
+          - id
+          - array
+
+# auth user_roles table =======================================
+  auth_user_role_table:
+      class: Maketok\Model\TableMapper
+      factory: ["@auth_user_role_table_factory", spawnTable]
+
+  auth_user_role_table_factory:
+      class: Maketok\Model\ArrayTableFactory
+      arguments:
+          - user_roles
+          - id
+          - array
+          - id
+# =============================================================
+
+  db_auth_provider:
+      class: Maketok\Authentication\Provider\DataBaseProvider
+      arguments:
+          - "@db_auth_table"
+
+  auth:
+      class: Maketok\Authentication\Authentication
+      calls:
+        - [setProvider, ["@db_auth_provider"]]

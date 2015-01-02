@@ -10,7 +10,38 @@
 
 namespace Maketok\Authentication;
 
-interface IdentityManagerInterface
+interface IdentityManagerInterface extends AuthenticationManagerInterface
 {
+    /**
+     * @return IdentityInterface|null
+     */
+    public function getCurrentIdentity();
 
+    /**
+     * @param IdentityInterface $identity
+     * @return self
+     */
+    public function setCurrentIdentity(IdentityInterface $identity);
+
+    /**
+     * logout current identity
+     * @return void
+     */
+    public function logout();
+
+    /**
+     * @param IdentityProviderInterface $provider
+     * @return self
+     */
+    public function setProvider(IdentityProviderInterface $provider);
+
+    /**
+     * @return IdentityProviderInterface|null
+     */
+    public function getProvider();
+
+    /**
+     * @return void
+     */
+    public function unsetProvider();
 }

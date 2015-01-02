@@ -10,11 +10,16 @@
 
 namespace tests\Maketok\Util;
 
+use Maketok\App\Helper\ContainerTrait;
+use Maketok\Model\ArrayTableFactory;
 use Maketok\Model\TableMapper;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\HydratingResultSet;
 
 class TableMapperTest extends \PHPUnit_Framework_TestCase
 {
+    use ContainerTrait;
+
     /** @var TableMapper */
     protected $table;
 
@@ -200,5 +205,116 @@ class TableMapperTest extends \PHPUnit_Framework_TestCase
         $this->table = new TableMapper($tg, 'id', 'id');
         $this->table->save($object);
         $this->assertEquals(4, $object->id);
+    }
+
+    /**
+     * prepare storage
+     */
+    public function setUp()
+    {
+        /** @var \Zend\Db\Adapter\Adapter $adapter */
+        $adapter = $this->ioc()->get('adapter');
+        $query = <<<'SQL'
+CREATE TABLE t1 (
+  id INTEGER PRIMARY KEY ASC,
+  name TEXT,
+  created_at TEXT,
+  author TEXT
+)
+SQL;
+        $adapter->query($query, Adapter::QUERY_MODE_EXECUTE);
+        $factory = new ArrayTableFactory('t1', 'id', 'array', 'id');
+        $this->table = $factory->spawnTable();
+    }
+
+    /**
+     * remove storage
+     */
+    public function tearDown()
+    {
+        /** @var \Zend\Db\Adapter\Adapter $adapter */
+        $adapter = $this->ioc()->get('adapter');
+        $adapter->query('DROP TABLE t1', Adapter::QUERY_MODE_EXECUTE);
+    }
+
+    /**
+     * save/find process
+     * @test
+     */
+    public function save()
+    {
+        $tm = $this->table;
+        $data = [
+            'name' => 'Sherlock',
+            'author' => 'Arthur',
+            'created_at' => null,
+        ];
+        $tm->save($data);
+
+        $data = $tm->find(1);
+        $this->assertNotEmpty($data);
+        $this->assertEquals('Sherlock', $data['name']);
+    }
+
+    /**
+     * save/fetch process
+     * @test
+     */
+    public function fetchFilter()
+    {
+        $tm = $this->table;
+        $data = [
+            'name' => 'Sherlock',
+            'author' => 'Arthur',
+            'created_at' => null,
+        ];
+        $tm->save($data);
+
+        $resultSet = $tm->fetchFilter(['author' => 'Arthur']);
+        $this->assertTrue($resultSet->count() === 1);
+        $data = $resultSet->current();
+        $this->assertEquals('Sherlock', $data['name']);
+    }
+
+    /**
+     * delete process
+     * @test
+     */
+    public function delete()
+    {
+        $tm = $this->table;
+        $data = [
+            'name' => 'Sherlock',
+            'author' => 'Arthur',
+            'created_at' => null,
+        ];
+        $tm->save($data);
+
+        $tm->delete($data);
+        $this->assertTrue($tm->isDeleted($data));
+
+        $resultSet = $tm->fetchFilter(['author' => 'Arthur']);
+        $this->assertTrue($resultSet->count() === 0);
+    }
+
+    /**
+     * try to save deleted entity
+     * @test
+     * @expectedException \Maketok\Util\Exception\ModelException
+     * @expectedExceptionMessage The model is already deleted.
+     */
+    public function saveDeleted()
+    {
+        $tm = $this->table;
+        $data = [
+            'name' => 'Sherlock',
+            'author' => 'Arthur',
+            'created_at' => null,
+        ];
+        $tm->save($data);
+
+        $tm->delete($data);
+        $data['author'] = 'Conan';
+        $tm->save($data);
     }
 }

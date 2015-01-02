@@ -10,19 +10,14 @@
 
 namespace Maketok\Authentication;
 
-use Maketok\Http\Request;
-
-interface IdentityProviderInterface
+interface IdentityInterface
 {
     /**
-     * get Identity by request
-     * @param Request $request
-     * @return IdentityInterface
+     * @return int[]
      */
-    public function provide(Request $request);
-
+    public function getRoles();
     /**
-     * @return bool
+     * @return string
      */
-    public function isStateless();
+    public function getUsername();
 }

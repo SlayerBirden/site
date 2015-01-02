@@ -245,7 +245,7 @@ class ModuleManager implements ClientInterface
      */
     public function removeDbModule(Module $module)
     {
-        $this->tableType->delete($module->module_code);
+        $this->tableType->delete($module);
     }
 
     /**

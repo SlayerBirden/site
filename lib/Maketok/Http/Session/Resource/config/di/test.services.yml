@@ -5,7 +5,9 @@
 
 services:
 
-  firewall:
-      class: Maketok\Firewall\Authorization
-      calls:
-        - [initConfig]
+  session_storage:
+    class: Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage
+
+  session_manager:
+    class: Maketok\Http\Session
+    arguments: ["@session_storage"]

@@ -35,6 +35,11 @@ class TableMapper
     protected $autoIncrement;
 
     /**
+     * @var array
+     */
+    protected $deleted;
+
+    /**
      * @param AbstractTableGateway $tableGateway
      * @param string|string[]      $idField
      * @param string               $autoIncrement
@@ -47,7 +52,6 @@ class TableMapper
     }
 
     /**
-     * @codeCoverageIgnore
      * @return string|string[]
      * @throws ModelException
      */
@@ -62,7 +66,6 @@ class TableMapper
 
     /**
      * alias
-     * @codeCoverageIgnore
      * @return string|string[]
      * @throws ModelException
      */
@@ -72,8 +75,7 @@ class TableMapper
     }
 
     /**
-     * @codeCoverageIgnore
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Zend\Db\ResultSet\AbstractResultSet|\Zend\Db\ResultSet\HydratingResultSet
      */
     public function fetchAll()
     {
@@ -83,7 +85,6 @@ class TableMapper
     }
 
     /**
-     * @codeCoverageIgnore
      * @param  array|\Closure|\Zend\Db\Sql\Predicate\PredicateInterface $filter
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
@@ -104,7 +105,6 @@ class TableMapper
     }
 
     /**
-     * @codeCoverageIgnore
      * @param  int|string|string[] $id
      * @return array|\ArrayObject|null
      * @throws ModelException
@@ -121,13 +121,52 @@ class TableMapper
     }
 
     /**
-     * @codeCoverageIgnore
      * delete entry by identifier
-     * @param string|int|string[] $id
+     * @param mixed $model
      */
-    public function delete($id)
+    public function delete($model)
     {
-        $this->getGateway()->delete($this->getIdFilter($id));
+        $modelKey = $this->getModelKey($model);
+        $this->getGateway()->delete($modelKey);
+        $this->deleted[] = $modelKey;
+    }
+
+    /**
+     * @param mixed $model
+     * @return bool
+     * @throws ModelException
+     */
+    public function isDeleted($model)
+    {
+        if (empty($this->deleted)) {
+            return false;
+        }
+        $modelKey = $this->getModelKey($model);
+        return in_array($modelKey, $this->deleted);
+    }
+
+    /**
+     * @param mixed $model
+     * @return string
+     * @throws ModelException
+     */
+    public function getModelKey($model)
+    {
+        $id = $this->idf();
+        $key = [];
+        if (!is_array($id)) {
+            $id = [$id];
+        }
+        foreach ($id as $field) {
+            if (is_object($model)) {
+                $key[$field] = $model->$field;
+            } elseif (is_array($model)) {
+                $key[$field] = $this->getIfExists($field, $model);
+            } else {
+                throw new ModelException("Can't recognize model type.");
+            }
+        }
+        return $key;
     }
 
     /**
@@ -163,8 +202,14 @@ class TableMapper
      * @param mixed $model
      * @throws ModelException
      */
-    public function save($model)
+    public function save(&$model)
     {
+        if ($this->isDeleted($model)) {
+            throw new ModelException(sprintf(
+                "The model is already deleted. Signature: %s",
+                json_encode($this->getModelKey($model))
+            ));
+        }
         try {
             $data = $this->getModelData($model);
             // now determine update or insert
@@ -199,7 +244,7 @@ class TableMapper
      * assign increment id if suitable
      * @param mixed $model
      */
-    protected function assignIncrement($model)
+    protected function assignIncrement(&$model)
     {
         $lastInsertedId = $this->getGateway()->getLastInsertValue();
         if ($lastInsertedId && ($increment = $this->autoIncrement)) {

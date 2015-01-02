@@ -177,7 +177,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
     {
         $module = new Module();
         $module->module_code = 'm1';
-        $this->tmStub->expects($this->once())->method('delete')->with($this->equalTo('m1'));
+        $this->tmStub->expects($this->once())->method('delete')->with($this->equalTo($module));
         $this->manager->removeDbModule($module);
     }
 
