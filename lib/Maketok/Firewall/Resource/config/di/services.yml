@@ -7,5 +7,6 @@ services:
 
   firewall:
       class: Maketok\Firewall\Authorization
+      arguments: ["@auth"]
       calls:
         - [initConfig]

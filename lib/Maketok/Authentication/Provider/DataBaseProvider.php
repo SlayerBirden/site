@@ -10,15 +10,19 @@
 
 namespace Maketok\Authentication\Provider;
 
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\Authentication\AuthException;
 use Maketok\Authentication\IdentityProviderInterface;
 use Maketok\Authentication\Resource\Model\User;
 use Maketok\Http\Request;
+use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Model\TableMapper;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 
-class DataBaseProvider implements IdentityProviderInterface
+class DataBaseProvider implements IdentityProviderInterface, ClientInterface
 {
+    use ContainerTrait;
+
     /**
      * @var TableMapper
      */
@@ -81,5 +85,43 @@ class DataBaseProvider implements IdentityProviderInterface
     public function setEncoder(PasswordEncoderInterface $encoder)
     {
         $this->encoder = $encoder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDependencies()
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDdlVersion()
+    {
+        return '0.1.0';
+    }
+
+    /**
+     * get client config to install
+     *
+     * @param  string $version
+     * @return array|bool
+     */
+    public function getDdlConfig($version)
+    {
+        return current($this->ioc()->get('config_getter')->getConfig(dirname(__DIR__) . "/Resource/config/installer/ddl", $version));
+    }
+
+    /**
+     * get client identifier
+     * must be unique
+     *
+     * @return string
+     */
+    public function getDdlCode()
+    {
+        return 'auth_provider_db';
     }
 }

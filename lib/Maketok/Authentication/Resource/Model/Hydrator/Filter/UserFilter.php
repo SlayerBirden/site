@@ -12,7 +12,7 @@ namespace Maketok\Authentication\Resource\Model\Hydrator\Filter;
 
 use Zend\Stdlib\Hydrator\Filter\FilterInterface;
 
-class ClientFilter implements FilterInterface
+class UserFilter implements FilterInterface
 {
     /**
      * Private object properties

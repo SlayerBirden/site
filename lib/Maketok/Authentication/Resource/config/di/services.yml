@@ -74,9 +74,13 @@ services:
   db_auth_provider:
       class: Maketok\Authentication\Provider\DataBaseProvider
       arguments:
-          - "@db_auth_table"
+          - "@auth_user_table"
 
   auth:
       class: Maketok\Authentication\Authentication
       calls:
         - [setProvider, ["@db_auth_provider"]]
+
+  auth_controller:
+      class: Maketok\Authentication\Resource\controller\AuthController
+      arguments: ["@auth"]

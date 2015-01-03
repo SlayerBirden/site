@@ -19,6 +19,7 @@ return [
         AR . '/lib/Maketok/Observer/Resource/config/di',
         AR . '/lib/Maketok/Navigation/Resource/config/di',
         AR . '/lib/Maketok/Firewall/Resource/config/di',
+        AR . '/lib/Maketok/Authentication/Resource/config/di',
     ],
     'iod_compiler_pass' => [
         new \Maketok\Template\TemplateCompilerPass(),
@@ -41,6 +42,7 @@ return [
         AR . '/lib/Maketok/Module/Resource/config/events',
         AR . '/lib/Maketok/Mvc/Resource/config/events',
         AR . '/lib/Maketok/Firewall/Resource/config/events',
+        AR . '/lib/Maketok/Authentication/Resource/config/events',
     ],
     'navigation_config_path' => [
         AR . '/config/navigation',
@@ -54,5 +56,6 @@ return [
         'Maketok\Installer\Ddl\InstallerClient',
         '@session_save_handler',
         '@module_manager',
+        '@db_auth_provider',
     ]
 ];

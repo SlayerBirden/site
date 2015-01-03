@@ -14,13 +14,15 @@ use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\App\Site;
 use Maketok\Firewall\Rule\RuleInterface;
 use Maketok\Http\Request;
-use Maketok\Http\Response;
 use Maketok\Observer\State;
+use Maketok\Observer\SubjectManagerInterface;
 use Maketok\Util\ConfigConsumerInterface;
 
 class Authorization implements AuthorizationInterface, ConfigConsumerInterface
 {
-    use UtilityHelperTrait;
+    use UtilityHelperTrait {
+        getDispatcher as iocGetDispatcher;
+    }
 
     /**
      * @var RuleInterface[]
@@ -30,6 +32,10 @@ class Authorization implements AuthorizationInterface, ConfigConsumerInterface
      * @var RoleProviderInterface
      */
     protected $roleProvider;
+    /**
+     * @var SubjectManagerInterface
+     */
+    protected $dispatcher;
 
     /**
      * @param RoleProviderInterface $roleProvider
@@ -82,9 +88,27 @@ class Authorization implements AuthorizationInterface, ConfigConsumerInterface
         // the flow may be altered here
         $this->getDispatcher()->notify(
             'firewall_user_forbidden',
-            new State(['role_provider' => $roleProvider])
+            new State(['request' => $request, 'role_provider' => $roleProvider])
         );
-        throw new AccessDeniedException("Access denied for current entity.", Response::HTTP_FORBIDDEN);
+    }
+
+    /**
+     * @return \Maketok\Observer\SubjectManagerInterface
+     */
+    public function getDispatcher()
+    {
+        if (isset($this->dispatcher)) {
+            return $this->dispatcher;
+        }
+        return $this->iocGetDispatcher();
+    }
+
+    /**
+     * @param SubjectManagerInterface $dispatcher
+     */
+    public function setDispatcher(SubjectManagerInterface $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
     }
 
     /**
