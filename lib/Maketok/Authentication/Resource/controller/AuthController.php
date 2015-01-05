@@ -53,6 +53,7 @@ class AuthController extends AbstractBaseController
      * @param Request $request
      * @param RoleProviderInterface $roleProvider
      * @param SubjectInterface $subject
+     * @throws FlowException
      */
     public function resolve(Request $request, RoleProviderInterface $roleProvider, SubjectInterface $subject)
     {

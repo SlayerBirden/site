@@ -90,6 +90,7 @@ class DataBaseProvider implements IdentityProviderInterface, ClientInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getDependencies()
     {
@@ -98,6 +99,7 @@ class DataBaseProvider implements IdentityProviderInterface, ClientInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getDdlVersion()
     {
@@ -105,10 +107,8 @@ class DataBaseProvider implements IdentityProviderInterface, ClientInterface
     }
 
     /**
-     * get client config to install
-     *
-     * @param  string $version
-     * @return array|bool
+     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getDdlConfig($version)
     {
@@ -116,10 +116,8 @@ class DataBaseProvider implements IdentityProviderInterface, ClientInterface
     }
 
     /**
-     * get client identifier
-     * must be unique
-     *
-     * @return string
+     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getDdlCode()
     {

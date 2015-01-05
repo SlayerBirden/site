@@ -27,6 +27,7 @@ class UserFilter implements FilterInterface
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function filter($property)
     {
