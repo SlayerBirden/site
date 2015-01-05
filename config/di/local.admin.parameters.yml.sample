@@ -4,4 +4,4 @@
 # file that was distributed with this source code.
 
 parameters:
-  base_url: http://mysite.com:8888
+  base_url: http://admin.mysite.com
