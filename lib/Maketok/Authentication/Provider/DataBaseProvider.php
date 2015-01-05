@@ -43,6 +43,7 @@ class DataBaseProvider implements IdentityProviderInterface, ClientInterface
 
     /**
      * {@inheritdoc}
+     * @throws AuthException
      */
     public function provide(Request $request)
     {

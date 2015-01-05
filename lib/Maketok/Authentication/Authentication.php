@@ -10,14 +10,15 @@
 
 namespace Maketok\Authentication;
 
-use Maketok\App\Helper\ContainerTrait;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Firewall\AuthorizationInterface;
 use Maketok\Firewall\RoleProviderInterface;
 use Maketok\Http\Request;
+use Maketok\Observer\State;
 
 class Authentication implements IdentityManagerInterface, RoleProviderInterface
 {
-    use ContainerTrait;
+    use UtilityHelperTrait;
 
     /**
      * @var IdentityProviderInterface
@@ -31,6 +32,7 @@ class Authentication implements IdentityManagerInterface, RoleProviderInterface
 
     /**
      * {@inheritdoc}
+     * @throws AuthException
      */
     public function authenticate(Request $request)
     {
@@ -41,6 +43,7 @@ class Authentication implements IdentityManagerInterface, RoleProviderInterface
         // request identity
         $identity = $this->provider->provide($request);
         if ($identity) {
+            $this->getDispatcher()->notify('auth_attempt_success', new State(['user' => $identity]));
             $this->setCurrentIdentity($identity);
         }
     }
@@ -59,11 +62,13 @@ class Authentication implements IdentityManagerInterface, RoleProviderInterface
      */
     public function getCurrentIdentity()
     {
-        $provider = $this->getProvider();
-        if ($provider && !$provider->isStateless()) {
-            $identity = $this->getStorage()->get('current_identity');
-            if ($identity) {
-                $this->setCurrentIdentity($identity);
+        if (!$this->hasCurrentIdentity()) {
+            $provider = $this->getProvider();
+            if ($provider && !$provider->isStateless()) {
+                $identity = $this->getStorage()->get('current_identity');
+                if ($identity) {
+                    $this->setCurrentIdentity($identity);
+                }
             }
         }
         return $this->currentIdentity;
@@ -126,5 +131,13 @@ class Authentication implements IdentityManagerInterface, RoleProviderInterface
         $this->getStorage()->set('current_identity', $identity);
         $this->currentIdentity = $identity;
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasCurrentIdentity()
+    {
+        return !is_null($this->currentIdentity);
     }
 }

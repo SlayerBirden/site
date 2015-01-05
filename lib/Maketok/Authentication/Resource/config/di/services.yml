@@ -84,3 +84,8 @@ services:
   auth_controller:
       class: Maketok\Authentication\Resource\controller\AuthController
       arguments: ["@auth"]
+
+  login.form.type:
+    class: Maketok\Authentication\Resource\Form\LoginType
+    tags:
+      - { name: form.type, alias: login }

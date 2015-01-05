@@ -20,10 +20,6 @@ class SubscriberBag implements \IteratorAggregate
      */
     public $subscriber;
     /**
-     * @var SubjectInterface
-     */
-    public $subject;
-    /**
      * @var string unique id
      */
     public $code;
@@ -31,12 +27,10 @@ class SubscriberBag implements \IteratorAggregate
     /**
      * @param string $code
      * @param callable $subscriber
-     * @param SubjectInterface $subject
      */
-    public function __construct($code, $subscriber, SubjectInterface $subject)
+    public function __construct($code, callable $subscriber)
     {
         $this->subscriber = $subscriber;
-        $this->subject = $subject;
         $this->code = $code;
     }
 

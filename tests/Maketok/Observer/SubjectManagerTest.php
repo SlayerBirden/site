@@ -52,12 +52,16 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
     public function testNoPropagation()
     {
         $manager = new SubjectManager();
+        $subject = new Subject('simpleEvent');
         $mock = $this->getMock('MuteStub', ['doSomething']);
-        $mock->expects($this->once())->method('doSomething');
+        $mock->expects($this->once())
+            ->method('doSomething')
+            ->will($this->returnCallback(function ($subject) {
+                $subject->setShouldStopPropagation(true);
+            }));
         $mock2 = $this->getMock('MuteStub', ['doSomethingElse']);
         $mock2->expects($this->never())->method('doSomethingElse');
-        $subject = new Subject('simpleEvent');
-        $manager->attach($subject->setShouldStopPropagation(1), [$mock, 'doSomething'], 999);
+        $manager->attach($subject, [$mock, 'doSomething'], 999);
         $manager->attach('simpleEvent', [$mock2, 'doSomethingElse'], 2);
         $manager->notify('simpleEvent', new State());
     }
@@ -70,13 +74,17 @@ class SubjectManagerTest extends \PHPUnit_Framework_TestCase
         $manager = new SubjectManager();
         $mock = $this->getMock('MuteStub', ['doSomething']);
         $mock->expects($this->once())->method('doSomething');
+        $mock->expects($this->once())
+            ->method('doSomething')
+            ->will($this->returnCallback(function ($subject) {
+                $subject->setShouldStopPropagation(true);
+            }));
         $mock2 = $this->getMock('MuteStub', ['doSomethingElse']);
         $mock2->expects($this->never())->method('doSomethingElse');
         $subject = new Subject('simpleEvent');
         $manager->attach($subject, new SubscriberBag(
             'test',
-            [$mock, 'doSomething'],
-            $subject->setShouldStopPropagation(1)
+            [$mock, 'doSomething']
         ), 999);
         $manager->attach('simpleEvent', [$mock2, 'doSomethingElse'], 2);
         $manager->notify('simpleEvent', new State());

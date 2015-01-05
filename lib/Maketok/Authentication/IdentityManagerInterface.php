@@ -18,6 +18,11 @@ interface IdentityManagerInterface extends AuthenticationManagerInterface
     public function getCurrentIdentity();
 
     /**
+     * @return bool
+     */
+    public function hasCurrentIdentity();
+
+    /**
      * @param IdentityInterface $identity
      * @return self
      */

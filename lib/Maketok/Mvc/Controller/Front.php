@@ -12,6 +12,7 @@ namespace Maketok\Mvc\Controller;
 
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Http\Response;
+use Maketok\Mvc\FlowException;
 use Maketok\Mvc\GenericException;
 use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\Http\Error;
@@ -77,12 +78,24 @@ class Front
     public function launch(Success $success, $silent = false, $parameters = [])
     {
         $response = $this->launchAction($success->getResolver(), $success->getMatchedRoute(), $parameters);
+        if ($response) {
+            $this->sendResponse($response, $silent);
+        }
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param bool $silent
+     */
+    public function sendResponse(ResponseInterface $response, $silent = false)
+    {
         if (!$silent) {
-            $this->getDispatcher()->notify('response_send_before', new State(['response' => $response]));
+            $this->getDispatcher()->notify(
+                'response_send_before',
+                new State(['request' => $this->request, 'response' => $response])
+            );
         }
-        if ($response && is_object($response)) {
-            $response->send();
-        }
+        $response->send();
     }
 
     /**
@@ -103,6 +116,10 @@ class Front
     public function exceptionHandler(\Exception $e)
     {
         try {
+            // a way to regulate flow; do not take any actions
+            if ($e instanceof FlowException) {
+                return;
+            }
             $message = 'Oops! We are really sorry, but there was an error!';
             $dumper = $this->dumpers->pop();
             if ($e instanceof RouteException) {
