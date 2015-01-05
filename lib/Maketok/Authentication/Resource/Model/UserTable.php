@@ -12,6 +12,8 @@ namespace Maketok\Authentication\Resource\Model;
 
 use Maketok\App\Helper\ContainerTrait;
 use Maketok\Model\TableMapper;
+use Zend\Db\Sql\Predicate\Expression;
+use Zend\Db\Sql\Select;
 
 class UserTable extends TableMapper
 {
@@ -70,5 +72,25 @@ class UserTable extends TableMapper
             ];
             $userRolesTable->save($data);
         }
+    }
+
+    /**
+     * @param string $username
+     * @return User|null
+     */
+    public function getUserByUsername($username)
+    {
+        $select = $this->getGateway()->getSql()->select();
+        $select->join('user_data', "users.id = user_data.user_id")
+            ->join(
+                'users_roles',
+                "users.id = users_roles.user_id",
+                ['roles' => new Expression("GROUP_CONCAT('role_id')")]
+            )->where(['username' => $username]);
+        $resultSet = $this->getGateway()->selectWith($select);
+        if ($resultSet->count()) {
+            return $resultSet->current();
+        }
+        return null;
     }
 }

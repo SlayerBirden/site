@@ -38,6 +38,7 @@ user_data:
         user_id:
           type: integer
           nullable: false
+          unsigned: true
         firstname:
           type: varchar
           length: 255
@@ -91,23 +92,25 @@ users_roles:
           auto_increment: true
           unsigned: true
         user_id:
-          type: varchar
-          length: 255
+          type: integer
           nullable: false
+          unsigned: true
         role_id:
-          type: datetime
+          type: integer
+          nullable: false
+          unsigned: true
         updated_at:
           type: datetime
     constraints:
         primary:
           type: primaryKey
           definition: id
-        FK_USER_ID_USERS_ID:
+        FK_USER_ROLES_ID_USERS_ID:
           type: foreignKey
           column: user_id
           reference_table: users
           reference_column: id
-        FK_ROLE_ID_ROLES_ID:
+        FK_USER_ROLES_ID_ROLES_ID:
           type: foreignKey
           column: role_id
           reference_table: roles

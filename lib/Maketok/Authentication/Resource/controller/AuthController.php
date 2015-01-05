@@ -10,15 +10,17 @@
 
 namespace Maketok\Authentication\Resource\controller;
 
+use Maketok\Authentication\AuthException;
 use Maketok\Authentication\IdentityManagerInterface;
 use Maketok\Firewall\RoleProviderInterface;
 use Maketok\Http\Request;
 use Maketok\Http\Response;
-use Maketok\Mvc\Controller\AbstractBaseController;
+use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\FlowException;
+use Maketok\Mvc\Router\Route\Http\Literal;
 use Maketok\Observer\SubjectInterface;
 
-class AuthController extends AbstractBaseController
+class AuthController extends AbstractAdminController
 {
     /**
      * @var IdentityManagerInterface
@@ -28,9 +30,14 @@ class AuthController extends AbstractBaseController
     /**
      * @param IdentityManagerInterface $auth
      */
-    public function __construct(IdentityManagerInterface $auth)
+    public function __construct(IdentityManagerInterface $auth = null)
     {
-        $this->auth = $auth;
+        parent::__construct();
+        if ($auth) {
+            $this->auth = $auth;
+        } else {
+            $this->auth = $this->ioc()->get('auth');
+        }
     }
 
     /**
@@ -83,12 +90,25 @@ class AuthController extends AbstractBaseController
      */
     public function loginAction(Request $request)
     {
+        $this->setTemplate('login.html.twig');
         $form = $this->getFormFactory()->create('login');
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->getAuth()->authenticate($request);
+            try {
+                $this->getAuth()->authenticate($request);
+            } catch (AuthException $e) {
+                $this->addSessionMessage('error', $e->getMessage());
+            } catch (\Exception $e) {
+                $this->getLogger()->err($e->__toString());
+                $this->addSessionMessage('error', 'Error while logging in.');
+            }
             return $this->returnBack();
         }
-        return new Response('show form', Response::HTTP_UNAUTHORIZED);
+        $request->getAttributes()->add(['_route' => new Literal('/login', [$this, 'loginAction'])]);
+        return $this->prepareResponse($request, array(
+            'title' => 'Maketok Admin - Log In',
+            'description' => 'Log In form',
+            'form' => $form->createView()
+        ), null, Response::HTTP_UNAUTHORIZED);
     }
 }

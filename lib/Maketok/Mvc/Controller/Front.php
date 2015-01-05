@@ -12,6 +12,7 @@ namespace Maketok\Mvc\Controller;
 
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Http\Response;
+use Symfony\Component\HttpFoundation\Response as BaseHttpResponse;
 use Maketok\Mvc\FlowException;
 use Maketok\Mvc\GenericException;
 use Maketok\Mvc\RouteException;
@@ -84,10 +85,10 @@ class Front
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param BaseHttpResponse $response
      * @param bool $silent
      */
-    public function sendResponse(ResponseInterface $response, $silent = false)
+    public function sendResponse(BaseHttpResponse $response, $silent = false)
     {
         if (!$silent) {
             $this->getDispatcher()->notify(

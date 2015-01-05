@@ -30,6 +30,7 @@ return [
         AR . '/config/routes',
         AR . '/lib/Maketok/Module/Resource/config/routes',
         AR . '/lib/Maketok/Installer/Ddl/Resource/config/routes',
+        AR . '/lib/Maketok/Authentication/Resource/config/routes',
     ],
     'modules_dir' => AR . '/modules',
     'template_path' => [

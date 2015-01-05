@@ -71,10 +71,16 @@ services:
           - id
 # =============================================================
 
+  auth_provider_encoder:
+      class: Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder
+      arguments: [12]
+
   db_auth_provider:
       class: Maketok\Authentication\Provider\DataBaseProvider
       arguments:
           - "@auth_user_table"
+      calls:
+          - [setEncoder, ["@auth_provider_encoder"]]
 
   auth:
       class: Maketok\Authentication\Authentication

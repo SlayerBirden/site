@@ -10,10 +10,10 @@
 
 namespace Maketok\Authentication\Provider;
 
-use Maketok\App\Helper\ContainerTrait;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Authentication\AuthException;
 use Maketok\Authentication\IdentityProviderInterface;
-use Maketok\Authentication\Resource\Model\User;
+use Maketok\Authentication\Resource\Model\UserTable;
 use Maketok\Http\Request;
 use Maketok\Installer\Ddl\ClientInterface;
 use Maketok\Model\TableMapper;
@@ -21,10 +21,10 @@ use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 
 class DataBaseProvider implements IdentityProviderInterface, ClientInterface
 {
-    use ContainerTrait;
+    use UtilityHelperTrait;
 
     /**
-     * @var TableMapper
+     * @var UserTable
      */
     private $pwTable;
 
@@ -47,18 +47,18 @@ class DataBaseProvider implements IdentityProviderInterface, ClientInterface
      */
     public function provide(Request $request)
     {
-        $username = $request->request->get('username');
-        $password = $request->request->get('password');
+        $loginData = $request->request->get('login', []);
+        $username = $this->getIfExists('username', $loginData);
+        $password = $this->getIfExists('password', $loginData);
+        $confirmation = $this->getIfExists('confirm', $loginData);
         if (is_null($username) || is_null($password)) {
             throw new AuthException("Username or password is not set.");
         }
-        $resultSet = $this->pwTable->fetchFilter(['username' => $username]);
-        if (!$resultSet->count()) {
-            throw new AuthException("Invalid username or password.");
+        if ($password !== $confirmation) {
+            throw new AuthException("Password doesn't match confirmation.");
         }
-        /** @var User $user */
-        $user = $resultSet->current();
-        if (!$this->getEncoder()->isPasswordValid($user->password_hash, $password, false)) {
+        $user = $this->pwTable->getUserByUsername($username);
+        if (!$user || !$this->getEncoder()->isPasswordValid($user->password_hash, $password, false)) {
             throw new AuthException("Invalid username or password.");
         }
         return $user;

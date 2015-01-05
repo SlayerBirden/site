@@ -23,7 +23,7 @@ class DataBaseProviderTest extends \PHPUnit_Framework_TestCase
     use UtilityHelperTrait;
 
     /**
-     * @var \Maketok\Model\TableMapper
+     * @var \Maketok\Authentication\Resource\Model\UserTableMock
      */
     protected $tableMapper;
 
@@ -47,7 +47,7 @@ CREATE TABLE t1 (
 )
 SQL;
         $adapter->query($query, Adapter::QUERY_MODE_EXECUTE);
-        $factory = new HydratingTableFactory('t1', 'id', new User(), 'id');
+        $factory = new HydratingTableFactory('t1', 'id', new User(), 'id', 'Maketok\Authentication\Resource\Model\UserTableMock');
         $this->tableMapper = $factory->spawnTable();
     }
 
@@ -73,7 +73,9 @@ SQL;
         $this->tableMapper->save($user);
         $dbProvider = new DataBaseProvider($this->tableMapper);
         $dbProvider->setEncoder(new PlaintextPasswordEncoder());
-        $request = Request::create('/login_post', 'POST', ['username' => 'oleg', 'password' => 'test123']);
+        $request = Request::create('/login_post', 'POST', [
+            'login' => ['username' => 'oleg', 'password' => 'test123', 'confirm' => 'test123']
+        ]);
 
         $provided = $dbProvider->provide($request);
         $this->assertEquals($user->username, $provided->getUsername());
