@@ -18,7 +18,9 @@ class AlterTable extends AbstractSql implements SqlInterface
     const ADD_CONSTRAINTS  = 'addConstraints';
     const CHANGE_COLUMNS   = 'changeColumns';
     const DROP_COLUMNS     = 'dropColumns';
-    const DROP_CONSTRAINTS = 'dropConstraints';
+    const DROP_FK          = 'dropFK';
+    const DROP_INDEXES     = 'dropIndexes';
+    const DROP_PK          = 'dropPK';
     const TABLE            = 'table';
 
     /**
@@ -44,7 +46,17 @@ class AlterTable extends AbstractSql implements SqlInterface
     /**
      * @var array
      */
-    protected $dropConstraints = array();
+    protected $dropFk = array();
+
+    /**
+     * @var array
+     */
+    protected $dropIndex = array();
+
+    /**
+     * @var array
+     */
+    protected $dropPk = array();
 
     /**
      * Specifications for Sql String generation
@@ -72,9 +84,19 @@ class AlterTable extends AbstractSql implements SqlInterface
                 array(1 => "ADD %1\$s,\n", 'combinedby' => ""),
             )
         ),
-        self::DROP_CONSTRAINTS  => array(
+        self::DROP_PK  => array(
             "%1\$s" => array(
-                array(1 => "DROP CONSTRAINT %1\$s,\n", 'combinedby' => ""),
+                array(1 => "DROP PRIMARY KEY,\n", 'combinedby' => ""),
+            )
+        ),
+        self::DROP_FK  => array(
+            "%1\$s" => array(
+                array(1 => "DROP FOREIGN KEY %1\$s,\n", 'combinedby' => ""),
+            )
+        ),
+        self::DROP_INDEXES  => array(
+            "%1\$s" => array(
+                array(1 => "DROP INDEX %1\$s,\n", 'combinedby' => ""),
             )
         )
     );
@@ -141,9 +163,31 @@ class AlterTable extends AbstractSql implements SqlInterface
      * @param  string $name
      * @return self
      */
-    public function dropConstraint($name)
+    public function dropFk($name)
     {
-        $this->dropConstraints[] = $name;
+        $this->dropFk[] = $name;
+
+        return $this;
+    }
+
+    /**
+     * @param  string $name
+     * @return self
+     */
+    public function dropIndex($name)
+    {
+        $this->dropIndex[] = $name;
+
+        return $this;
+    }
+
+    /**
+     * @param  string|null $name
+     * @return self
+     */
+    public function dropPk($name = null)
+    {
+        $this->dropPk[] = $name;
 
         return $this;
     }
@@ -171,7 +215,9 @@ class AlterTable extends AbstractSql implements SqlInterface
             self::DROP_COLUMNS => $this->dropColumns,
             self::CHANGE_COLUMNS => $this->changeColumns,
             self::ADD_CONSTRAINTS => $this->addConstraints,
-            self::DROP_CONSTRAINTS => $this->dropConstraints,
+            self::DROP_PK => $this->dropPk,
+            self::DROP_FK => $this->dropFk,
+            self::DROP_INDEXES => $this->dropIndex,
         );
 
         return (isset($key) && array_key_exists($key, $rawState)) ? $rawState[$key] : $rawState;
@@ -225,10 +271,30 @@ class AlterTable extends AbstractSql implements SqlInterface
         return array($sqls);
     }
 
-    protected function processDropConstraints(PlatformInterface $adapterPlatform = null)
+    protected function processDropPK(PlatformInterface $adapterPlatform = null)
     {
         $sqls = array();
-        foreach ($this->dropConstraints as $constraint) {
+        foreach ($this->dropPk as $constraint) {
+            $sqls[] = $adapterPlatform->quoteIdentifier($constraint);
+        }
+
+        return array($sqls);
+    }
+
+    protected function processDropFK(PlatformInterface $adapterPlatform = null)
+    {
+        $sqls = array();
+        foreach ($this->dropFk as $constraint) {
+            $sqls[] = $adapterPlatform->quoteIdentifier($constraint);
+        }
+
+        return array($sqls);
+    }
+
+    protected function processDropIndexes(PlatformInterface $adapterPlatform = null)
+    {
+        $sqls = array();
+        foreach ($this->dropIndex as $constraint) {
             $sqls[] = $adapterPlatform->quoteIdentifier($constraint);
         }
 

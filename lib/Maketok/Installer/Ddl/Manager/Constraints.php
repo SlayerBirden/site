@@ -57,7 +57,7 @@ class Constraints implements CompareInterface
             if ($fkEqual && !$this->ifNeedToReset($directives, $constraintDefinition)) {
                 continue;
             }
-            $directives->addProp('dropConstraints', [$tableName, $constraintName, $oldType]);
+            $this->dropCorrectConstraint($directives, $oldType, $tableName, $constraintName);
             $directives->addProp('addConstraints', [$tableName, $constraintName, $constraintDefinition]);
         }
         foreach ($constraintA as $constraintName => $constraintDefinition) {
@@ -66,8 +66,29 @@ class Constraints implements CompareInterface
                 throw new Exception("Old Constraint definition doesn't have type.");
             });
             if (empty($aInB)) {
-                $directives->addProp('dropConstraints', [$tableName, $constraintName, $type]);
+                $this->dropCorrectConstraint($directives, $type, $tableName, $constraintName);
             }
+        }
+    }
+
+    /**
+     * @param Directives $directives
+     * @param string $type
+     * @param string $tableName
+     * @param string $constraintName
+     */
+    protected function dropCorrectConstraint($directives, $type, $tableName, $constraintName)
+    {
+        switch ($type) {
+            case 'foreignKey':
+                $directives->addProp('dropFks', [$tableName, $constraintName]);
+                break;
+            case 'uniqueKey':
+                $directives->addProp('dropIndices', [$tableName, $constraintName]);
+                break;
+            case 'primaryKey':
+                $directives->addProp('dropPks', [$tableName]);
+                break;
         }
     }
 

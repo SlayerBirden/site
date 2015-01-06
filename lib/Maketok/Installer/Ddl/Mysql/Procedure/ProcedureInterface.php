@@ -10,6 +10,7 @@
 
 namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
+use Maketok\Installer\Ddl\Mysql\Resource;
 use Zend\Db\Sql\Sql;
 
 interface ProcedureInterface
@@ -18,7 +19,7 @@ interface ProcedureInterface
      * set sql
      * @param Sql $sql
      */
-    public function __construct(Sql $sql);
+    public function __construct(Sql $sql, Resource $resource);
 
     /**
      * get Query
@@ -26,4 +27,11 @@ interface ProcedureInterface
      * @return string
      */
     public function getQuery(array $args);
+
+    /**
+     * get signature for query
+     * @param  array  $args
+     * @return string
+     */
+    public function getQuerySignature(array $args);
 }

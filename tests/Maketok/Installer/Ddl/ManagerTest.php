@@ -241,7 +241,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(3, $expectedDirectives->changeColumns);
         $this->assertCount(1, $expectedDirectives->dropColumns);
         $this->assertCount(2, $expectedDirectives->addConstraints);
-        $this->assertCount(1, $expectedDirectives->dropConstraints);
+        $this->assertCount(1, $expectedDirectives->dropFks);
         $this->assertCount(1, $expectedDirectives->addIndices);
         $this->assertCount(2, $expectedDirectives->dropIndices);
     }

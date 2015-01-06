@@ -19,6 +19,7 @@ use Maketok\Installer\DirectivesInterface;
 use Maketok\Installer\Exception;
 use Maketok\Util\ArrayValueTrait;
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Sql;
 
 class Resource implements ResourceInterface
@@ -36,6 +37,10 @@ class Resource implements ResourceInterface
      * @var array|\Iterator
      */
     protected $procedures;
+    /**
+     * @var AlterTable[]
+     */
+    protected $alterTable = [];
 
     /**
      * @param Adapter $adapter
@@ -45,6 +50,18 @@ class Resource implements ResourceInterface
     {
         $this->adapter = $adapter;
         $this->sql = $sql;
+    }
+
+    /**
+     * @param string $tableName
+     * @return AlterTable
+     */
+    public function alterTableFactory($tableName)
+    {
+        if (!isset($this->alterTable[$tableName])) {
+            $this->alterTable[$tableName] = new AlterTable($tableName);
+        }
+        return $this->alterTable[$tableName];
     }
 
     /**
@@ -159,10 +176,10 @@ class Resource implements ResourceInterface
         $this->procedures = [];
         foreach ($directives as $type => $list) {
             $className = $this->getProcedureClassNameFromType($type);
-            /** @var ProcedureInterface $procedureClass */
-            $procedureClass = new $className($this->sql);
+            /** @var ProcedureInterface $procedureObject */
+            $procedureObject = new $className($this->sql, $this);
             foreach ($list as $item) {
-                $this->procedures[] = $procedureClass->getQuery($item);
+                $this->procedures[$procedureObject->getQuerySignature($item)] = $procedureObject->getQuery($item);
             }
         }
     }
@@ -174,14 +191,8 @@ class Resource implements ResourceInterface
     public function getProcedureClassNameFromType($type)
     {
         $prefix = 'Maketok\Installer\Ddl\Mysql\Procedure\\';
-        if ($type == 'addIndices') {
-            $base = 'AddConstraint';
-        } elseif ($type == 'dropIndices') {
-            $base = 'DropConstraint';
-        } else {
-            // ucfirst + strip last "s"
-            $base = ucfirst(substr($type, 0, strlen($type) - 1));
-        }
+        // ucfirst + strip last "s"
+        $base = ucfirst(substr($type, 0, strlen($type) - 1));
 
         return $prefix . $base;
     }

@@ -12,24 +12,22 @@ namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
 use Zend\Db\Sql\Ddl\AlterTable;
 
-class ChangeColumn extends AddColumn implements ProcedureInterface
+class DropIndice extends AbstractProcedure implements ProcedureInterface
 {
     /**
      * {@inheritdoc}
      */
     public function getQuery(array $args)
     {
-        if (!isset($args[0]) || !isset($args[1]) || !isset($args[2]) || !isset($args[3])) {
-            throw new \InvalidArgumentException("Not enough parameter to change column.");
+        if (!isset($args[0]) || !isset($args[1])) {
+            throw new \InvalidArgumentException("Not enough parameter to drop constraint.");
         }
         $tableName = $args[0];
-        $oldName = $args[1];
-        $newName = $args[2];
-        $newDefinition = $args[3];
+        $constraintName = $args[1];
         $table = $this->resource->alterTableFactory($tableName);
-        $column = $this->getInitColumn($newName, $newDefinition);
-        $table->changeColumn($oldName, $column);
+        $table->dropIndex($constraintName);
+        $query = $this->query($table);
 
-        return $this->query($table);
+        return $query;
     }
 }

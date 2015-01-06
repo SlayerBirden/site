@@ -31,7 +31,7 @@ class AddColumn extends AbstractProcedure implements ProcedureInterface
         $tableName = $args[0];
         $columnName = $args[1];
         $columnDefinition = $args[2];
-        $table = $this->getIfExists(3, $args, new AlterTable($tableName));
+        $table = $this->getIfExists(3, $args, $this->resource->alterTableFactory($tableName));
         $column = $this->getInitColumn($columnName, $columnDefinition);
         $table->addColumn($column);
 

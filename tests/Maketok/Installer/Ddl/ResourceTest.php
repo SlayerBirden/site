@@ -298,21 +298,18 @@ SQL;
                 ['type' => 'integer']
             ],
         ];
-        $directives->dropConstraints = [
-            [
-                'test2',
-                'UNQ_KEY_OOPS',
-                'uniqueKey'
-            ],
-            [
-                'test2',
-                'primary',
-                'primaryKey'
-            ],
+        $directives->dropFks = [
             [
                 'test2',
                 'FK_SOME',
                 'foreignKey'
+            ],
+        ];
+        $directives->dropPks = [
+            [
+                'test2',
+                'primary',
+                'primaryKey'
             ],
         ];
         $directives->dropColumns = [
@@ -337,6 +334,11 @@ SQL;
                 'KEY_IDX',
                 'index',
             ],
+            [
+                'test2',
+                'UNQ_KEY_OOPS',
+                'uniqueKey'
+            ],
         ];
         $directives->dropTables = [
             [
@@ -351,20 +353,14 @@ SQL;
         $expected = [
             "DROP TABLE `test3`",
             "CREATE TABLE `test` ( `id` INTEGER NOT NULL, `code` VARCHAR(255) NOT NULL, `area` VARCHAR(55) )",
-            "ALTER TABLE `test2` DROP INDEX `UNQ_KEY_OOPS`",
-            "ALTER TABLE `test2` DROP PRIMARY KEY",
-            "ALTER TABLE `test2` DROP FOREIGN KEY `FK_SOME`",
-            "ALTER TABLE `test` DROP INDEX `KEY_IDX`",
-            "ALTER TABLE `test` DROP COLUMN `code`",
-            "ALTER TABLE `test2` CHANGE COLUMN `oldCol` `newCol` INTEGER NOT NULL",
-            "ALTER TABLE `test` ADD CONSTRAINT `id` PRIMARY KEY (`id`)",
-            "ALTER TABLE `test` ADD CONSTRAINT `UNQ_KEY_CODE_AREA` UNIQUE (`code`, `area`)",
-            "ALTER TABLE `test` ADD CONSTRAINT `FK_CODE_PARENT_CODE` FOREIGN KEY (`parent_id`) REFERENCES `modules` (`reference_id`) ON DELETE CASCADE ON UPDATE CASCADE",
-            "ALTER TABLE `test` ADD INDEX `KEY_IDX`(`some_column`)",
+            "ALTER TABLE `test2` CHANGE COLUMN `oldCol` `newCol` INTEGER NOT NULL, DROP PRIMARY KEY, DROP FOREIGN KEY `FK_SOME`, DROP INDEX `UNQ_KEY_OOPS`",
+            "ALTER TABLE `test` DROP COLUMN `code`, ADD CONSTRAINT `id` PRIMARY KEY (`id`), ADD CONSTRAINT `UNQ_KEY_CODE_AREA` UNIQUE (`code`, `area`), ADD CONSTRAINT `FK_CODE_PARENT_CODE` FOREIGN KEY (`parent_id`) REFERENCES `modules` (`reference_id`) ON DELETE CASCADE ON UPDATE CASCADE, ADD INDEX `KEY_IDX`(`some_column`), DROP INDEX `KEY_IDX`",
         ];
         $procedures = $refProp->getValue($this->resource);
+        reset($procedures);
         for ($i = 0; $i < count($expected); ++$i) {
-            $this->assertEquals($expected[$i], preg_replace('/\s+/', ' ', $procedures[$i]));
+            $this->assertEquals($expected[$i], preg_replace('/\s+/', ' ', current($procedures)));
+            next($procedures);
         }
     }
 
@@ -391,7 +387,7 @@ SQL;
         ];
         $procedures = $refProp->getValue($this->resource);
         $this->assertCount(1, $procedures);
-        $this->assertEquals($expected[0], preg_replace('/\s+/', ' ', $procedures[0]));
+        $this->assertEquals($expected[0], preg_replace('/\s+/', ' ', current($procedures)));
     }
 
     /**
@@ -524,9 +520,7 @@ SQL;
             "ALTER TABLE `test` ADD CONSTRAINT `FK_CODE_PARENT_CODE` FOREIGN KEY (`parent_id`, `website`) REFERENCES `modules` (`reference_id`, `website`) ON DELETE CASCADE ON UPDATE CASCADE",
         ];
         $procedures = $refProp->getValue($this->resource);
-        for ($i = 0; $i < count($expected); ++$i) {
-            $this->assertEquals($expected[$i], preg_replace('/\s+/', ' ', $procedures[$i]));
-        }
+        $this->assertEquals($expected[0], preg_replace('/\s+/', ' ', current($procedures)));
     }
 
     /**
