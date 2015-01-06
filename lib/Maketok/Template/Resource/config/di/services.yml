@@ -13,8 +13,6 @@ services:
 
   validator_builder:
     class: Symfony\Component\Validator\ValidatorBuilder
-    calls:
-      - [addYamlMappings, ["@=service('service_container').hasParameter('validator_builder.yml.config.paths') ? parameter('validator_builder.yml.config.paths') : []"]]
 
   validator:
     class: Symfony\Component\Validator\Validator

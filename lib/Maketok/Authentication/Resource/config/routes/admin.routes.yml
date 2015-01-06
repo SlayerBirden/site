@@ -7,3 +7,21 @@ routes:
   - type: literal
     path: /login
     resolver: [Maketok\Authentication\Resource\controller\AuthController, loginAction]
+  - type: literal
+    path: /auth/users/create
+    resolver: [Maketok\Authentication\Resource\controller\AuthController, createAction]
+  - type: parameterized
+    path: /auth/users/edit/{id}
+    resolver: [Maketok\Authentication\Resource\controller\AuthController, editAction]
+    defaults: []
+    restrictions:
+        id: ^\d+$
+  - type: parameterized
+    path: /auth/users/delete/{id}
+    resolver: [Maketok\Authentication\Resource\controller\AuthController, deleteAction]
+    defaults: []
+    restrictions:
+        id: ^\d+$
+  - type: literal
+    path: /auth/users
+    resolver: [Maketok\Authentication\Resource\controller\AuthController, usersAction]

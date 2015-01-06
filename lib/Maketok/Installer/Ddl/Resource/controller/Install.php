@@ -62,7 +62,7 @@ class Install extends AbstractAdminController
             }
             $this->addSessionMessage('success', "Successful update. Please run the installer now.");
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
             $this->addSessionMessage('error', sprintf("There was an error\n%s.", $e->getMessage()));
         }
         return $this->returnBack();
@@ -107,7 +107,7 @@ class Install extends AbstractAdminController
             $clientTable = $this->ioc()->get('ddl_client_table');
             $clients = $clientTable->fetchAllWithDependency();
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
             $clients = [];
         }
         $templateClients = [];

@@ -49,6 +49,7 @@ return [
         AR . '/config/navigation',
         AR . '/lib/Maketok/Module/Resource/config/navigation',
         AR . '/lib/Maketok/Installer/Ddl/Resource/config/navigation',
+        AR . '/lib/Maketok/Authentication/Resource/config/navigation',
     ],
     'firewall_config_path' => [
         AR . '/config/firewall',

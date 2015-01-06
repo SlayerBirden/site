@@ -205,12 +205,12 @@ class Manager extends AbstractManager implements ManagerInterface
                 try {
                     $this->tableMapper->save($client);
                 } catch (ModelException $e) {
-                    $this->getLogger()->err($e->__toString());
+                    $this->getLogger()->err($e);
                 }
             }
             $this->getLogger()->info("All procedures have been completed.");
         } catch (\Exception $e) {
-            $this->getLogger()->err(sprintf("Exception while running DDL Installer process: %s", $e->__toString()));
+            $this->getLogger()->err(sprintf("Exception while running DDL Installer process: %s", $e));
         }
         $this->getStreamHandler()->unLock();
     }

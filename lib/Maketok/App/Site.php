@@ -133,7 +133,7 @@ final class Site implements ConfigConsumerInterface
     public function maketokExceptionHandler(\Exception $e)
     {
         try {
-            $message = sprintf("Unhandled exception\n%s", $e->__toString());
+            $message = sprintf("Unhandled exception\n%s", $e);
             $this->getLogger()->emergency($message);
             $this->getDispatcher()->notify(
                 'application_error_triggered',
@@ -150,7 +150,7 @@ final class Site implements ConfigConsumerInterface
                 $ex->getMessage(),
                 $ex->getFile(),
                 $ex->getLine(),
-                $e->__toString()
+                $e
             );
         }
     }

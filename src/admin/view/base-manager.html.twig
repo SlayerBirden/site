@@ -22,9 +22,11 @@
             <h1>{% trans %}%description%{% endtrans %}</h1>
         </div>
     </header>
-    <nav>
-        <ul>{% include 'navigation.html.twig' with {'links': links} %}</ul>
-    </nav>
+    {% block nav %}
+        <nav>
+            <ul>{% include 'navigation.html.twig' with {'links': links} %}</ul>
+        </nav>
+    {% endblock %}
     <section id="content">
         {% for type, messages in session.flashbag.all() %}
             {% for message in messages %}

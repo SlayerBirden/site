@@ -12,7 +12,7 @@ namespace Maketok\Authentication\Resource\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class LoginType extends AbstractType
+class CreateAdminUserType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -20,7 +20,10 @@ class LoginType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('username', 'text')
-            ->add('password', 'password');
+            ->add('password', 'password')
+            ->add('confirm', 'password', ['label' => 'Confirm Password'])
+            ->add('firstname', 'text')
+            ->add('lastname', 'text');
     }
 
     /**
@@ -28,6 +31,6 @@ class LoginType extends AbstractType
      */
     public function getName()
     {
-        return 'login';
+        return 'create_admin';
     }
 }

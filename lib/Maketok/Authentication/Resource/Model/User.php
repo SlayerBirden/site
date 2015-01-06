@@ -48,6 +48,16 @@ class User implements IdentityInterface
     public $roles;
 
     /**
+     * @var string
+     */
+    protected $password;
+
+    /**
+     * @var string
+     */
+    protected $confirm;
+
+    /**
      * {@inheritdoc}
      */
     public function getRoles()
@@ -61,5 +71,37 @@ class User implements IdentityInterface
     public function getUsername()
     {
         return $this->username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfirm()
+    {
+        return $this->confirm;
+    }
+
+    /**
+     * @param string $confirm
+     */
+    public function setConfirm($confirm)
+    {
+        $this->confirm = $confirm;
     }
 }

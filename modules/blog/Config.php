@@ -19,6 +19,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Validator\ValidatorBuilder;
 
 /**
  * @codeCoverageIgnore
@@ -68,6 +69,10 @@ class Config extends Extension implements ConfigInterface, ClientInterface
      */
     public function initListeners()
     {
+        // add validation here
+        /** @var ValidatorBuilder $builder */
+        $builder = $this->ioc()->get('validator_builder');
+        $builder->addYamlMappings([__DIR__ . '/config/validation/validation.yml']);
         return;
     }
 
@@ -90,17 +95,6 @@ class Config extends Extension implements ConfigInterface, ClientInterface
         );
         $loader->load('parameters.yml');
         $loader->load('services.yml');
-        // validator config files
-        $validatorYmlConfigPaths = [];
-        if ($container->hasParameter('validator_builder.yml.config.paths')) {
-            $validatorYmlConfigPaths = $container->getParameter('validator_builder.yml.config.paths');
-        }
-        if (!array($validatorYmlConfigPaths)) {
-            $this->getLogger()->error("Wrong parameter type for validator_builder.yml.config.paths.");
-            return;
-        }
-        $validatorYmlConfigPaths[] = __DIR__. DS .'config' . DS . 'validation.yml';
-        $container->setParameter('validator_builder.yml.config.paths', $validatorYmlConfigPaths);
     }
 
     /**

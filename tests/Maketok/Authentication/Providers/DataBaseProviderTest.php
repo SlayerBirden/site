@@ -74,7 +74,7 @@ SQL;
         $dbProvider = new DataBaseProvider($this->tableMapper);
         $dbProvider->setEncoder(new PlaintextPasswordEncoder());
         $request = Request::create('/login_post', 'POST', [
-            'login' => ['username' => 'oleg', 'password' => 'test123', 'confirm' => 'test123']
+            'login' => ['username' => 'oleg', 'password' => 'test123']
         ]);
 
         $provided = $dbProvider->provide($request);

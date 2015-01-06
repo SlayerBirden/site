@@ -4,9 +4,6 @@
 {# file that was distributed with this source code. #}
 {# note: this is blog index #}
 {% extends "base-manager.html.twig" %}
-{% block head %}
-{{ parent() }}
-{% endblock %}
 {% block content %}
 <section id="articles">
     <a class="button" href="{{ base_url }}/blog/article/new">{% trans %}Add New{% endtrans %}</a>

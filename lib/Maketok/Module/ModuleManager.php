@@ -110,7 +110,7 @@ class ModuleManager implements ClientInterface
             $module->version = $version;
             $this->tableType->save($module);
         } catch (ModelException $e) {
-            $this->getLogger()->err($e->__toString());
+            $this->getLogger()->err($e);
             $this->addSessionMessage('error', 'Could not update to version.');
         }
     }
@@ -278,7 +278,7 @@ class ModuleManager implements ClientInterface
                 new State(array('active_modules' => $this->getActiveModules()))
             );
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
         }
     }
 
@@ -295,7 +295,7 @@ class ModuleManager implements ClientInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
         }
     }
 
@@ -312,7 +312,7 @@ class ModuleManager implements ClientInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
         }
     }
 
@@ -348,7 +348,7 @@ class ModuleManager implements ClientInterface
                 new State(['active_modules' => $this->getActiveModules()])
             );
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
         }
     }
 

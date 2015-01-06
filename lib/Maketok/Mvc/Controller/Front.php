@@ -137,7 +137,7 @@ class Front
                     $message = $e->getMessage();
                 }
                 $errorRoute = new Error($dumper, ['exception' => $e]);
-                $this->getLogger()->err($e->__toString());
+                $this->getLogger()->err($e);
             }
             $this->launch($errorRoute->match($this->request), true, [$code, $message]);
         } catch (\Exception $ex) {
@@ -146,7 +146,7 @@ class Front
                 $ex->getFile(),
                 $ex->getLine(),
                 $ex->getTraceAsString(),
-                $e->__toString()
+                $e
             );
         }
     }

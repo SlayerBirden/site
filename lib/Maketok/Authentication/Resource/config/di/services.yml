@@ -95,3 +95,8 @@ services:
     class: Maketok\Authentication\Resource\Form\LoginType
     tags:
       - { name: form.type, alias: login }
+
+  create_admin.form.type:
+    class: Maketok\Authentication\Resource\Form\CreateAdminUserType
+    tags:
+      - { name: form.type, alias: create_admin }

@@ -5,10 +5,6 @@
 {# note: this is blog index #}
 {% extends "base-manager.html.twig" %}
 {% form_theme form 'maketok-form_table_layout.html.twig' %}
-{% block head %}
-{{ parent() }}
-    {#<link rel="stylesheet" href="{{ css_url }}form.css">#}
-{% endblock %}
 {% block content %}
 <form method="post" action="{{ current_url }}">
     {{ form_widget(form) }}

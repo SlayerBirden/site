@@ -50,12 +50,8 @@ class DataBaseProvider implements IdentityProviderInterface, ClientInterface
         $loginData = $request->request->get('login', []);
         $username = $this->getIfExists('username', $loginData);
         $password = $this->getIfExists('password', $loginData);
-        $confirmation = $this->getIfExists('confirm', $loginData);
         if (is_null($username) || is_null($password)) {
             throw new AuthException("Username or password is not set.");
-        }
-        if ($password !== $confirmation) {
-            throw new AuthException("Password doesn't match confirmation.");
         }
         $user = $this->pwTable->getUserByUsername($username);
         if (!$user || !$this->getEncoder()->isPasswordValid($user->password_hash, $password, false)) {
