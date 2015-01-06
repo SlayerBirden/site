@@ -5,17 +5,6 @@
 
 services:
 
-  auth_model_hydrator_filter:
-    class: Maketok\Authentication\Resource\Model\Hydrator\Filter\UserFilter
-
-  auth_object_prop_hydrator:
-      class: Maketok\Util\Hydrator\ObjectProperty
-      calls:
-        - [addStrategy, [created_at, "@date_time_strategy"]]
-        - [addStrategy, [updated_at, "@date_time_strategy"]]
-        - [addStrategy, [roles, "@array_string_strategy"]]
-        - [addFilter, [user_filter, "@auth_model_hydrator_filter"]]
-
 # auth user table ===========================================
   auth_user_table:
       class: Maketok\Authentication\Provider\DataBaseProvider
@@ -30,7 +19,18 @@ services:
           - id
           - Maketok\Authentication\Resource\Model\UserTable
           - ~
-          - "@auth_object_prop_hydrator"
+          - "@auth_user_object_prop_hydrator"
+
+  auth_user_model_hydrator_filter:
+    class: Maketok\Authentication\Resource\Model\Hydrator\Filter\UserFilter
+
+  auth_user_object_prop_hydrator:
+      class: Maketok\Util\Hydrator\ObjectProperty
+      calls:
+        - [addStrategy, [created_at, "@date_time_strategy"]]
+        - [addStrategy, [updated_at, "@date_time_strategy"]]
+        - [addStrategy, [roles, "@array_string_strategy"]]
+        - [addFilter, [user_filter, "@auth_user_model_hydrator_filter"]]
 
 # auth user_data table =======================================
   auth_user_data_table:
@@ -65,7 +65,7 @@ services:
   auth_user_role_table_factory:
       class: Maketok\Model\ArrayTableFactory
       arguments:
-          - user_roles
+          - users_roles
           - id
           - array
           - id
@@ -96,7 +96,16 @@ services:
     tags:
       - { name: form.type, alias: login }
 
-  create_admin.form.type:
-    class: Maketok\Authentication\Resource\Form\CreateAdminUserType
+  create_user.form.type:
+    class: Maketok\Authentication\Resource\Form\CreateUserType
     tags:
-      - { name: form.type, alias: create_admin }
+      - { name: form.type, alias: create_user }
+
+  create_user_role.form.type:
+    class: Maketok\Authentication\Resource\Form\CreateUserRoleType
+    tags:
+      - { name: form.type, alias: create_user_role }
+# current password validator
+  security.validator.user_password:
+      class: Maketok\Authentication\Resource\Validator
+      arguments: ["@auth", "@auth_provider_encoder"]

@@ -53,11 +53,6 @@ class User implements IdentityInterface
     protected $password;
 
     /**
-     * @var string
-     */
-    protected $confirm;
-
-    /**
      * {@inheritdoc}
      */
     public function getRoles()
@@ -90,18 +85,10 @@ class User implements IdentityInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function getConfirm()
+    public function getPasswordHash()
     {
-        return $this->confirm;
-    }
-
-    /**
-     * @param string $confirm
-     */
-    public function setConfirm($confirm)
-    {
-        $this->confirm = $confirm;
+        return $this->password_hash;
     }
 }

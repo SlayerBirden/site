@@ -226,7 +226,7 @@ class TableMapper
                     if (!$rowsAffected) {
                         // at this step it means something is wrong with the app-db link
                         // or with app logic
-                        throw new ModelException(sprintf("Model %s wasn't changed during save process.", get_class($model)));
+                        throw new ModelException(sprintf("Model wasn't changed during save process."));
                     } else {
                         $this->assignIncrement($model);
                     }

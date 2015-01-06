@@ -130,7 +130,7 @@ class UserTable extends TableMapper
         )->join(
             'users_roles',
             "users.id = users_roles.user_id",
-            ['roles' => new Expression("GROUP_CONCAT(users_roles.role_id)")],
+            ['roles' => new Expression("GROUP_CONCAT(DISTINCT(users_roles.role_id))")],
             Select::JOIN_LEFT
         )->group('users.id');
         return $select;

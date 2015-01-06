@@ -7,21 +7,41 @@ routes:
   - type: literal
     path: /login
     resolver: [Maketok\Authentication\Resource\controller\AuthController, loginAction]
+# users
   - type: literal
     path: /auth/users/create
-    resolver: [Maketok\Authentication\Resource\controller\AuthController, createAction]
+    resolver: [Maketok\Authentication\Resource\controller\UserController, createAction]
   - type: parameterized
     path: /auth/users/edit/{id}
-    resolver: [Maketok\Authentication\Resource\controller\AuthController, editAction]
+    resolver: [Maketok\Authentication\Resource\controller\UserController, editAction]
     defaults: []
     restrictions:
         id: ^\d+$
   - type: parameterized
     path: /auth/users/delete/{id}
-    resolver: [Maketok\Authentication\Resource\controller\AuthController, deleteAction]
+    resolver: [Maketok\Authentication\Resource\controller\UserController, deleteAction]
     defaults: []
     restrictions:
         id: ^\d+$
   - type: literal
     path: /auth/users
-    resolver: [Maketok\Authentication\Resource\controller\AuthController, usersAction]
+    resolver: [Maketok\Authentication\Resource\controller\UserController, usersAction]
+# roles
+  - type: literal
+    path: /auth/roles/new
+    resolver: [Maketok\Authentication\Resource\controller\RoleController, newAction]
+  - type: parameterized
+    path: /auth/roles/edit/{id}
+    resolver: [Maketok\Authentication\Resource\controller\RoleController, editAction]
+    defaults: []
+    restrictions:
+        id: ^\d+$
+  - type: parameterized
+    path: /auth/roles/delete/{id}
+    resolver: [Maketok\Authentication\Resource\controller\RoleController, deleteAction]
+    defaults: []
+    restrictions:
+        id: ^\d+$
+  - type: literal
+    path: /auth/roles
+    resolver: [Maketok\Authentication\Resource\controller\RoleController, rolesAction]

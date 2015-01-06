@@ -16,8 +16,14 @@ interface IdentityInterface
      * @return int[]
      */
     public function getRoles();
+
     /**
      * @return string
      */
     public function getUsername();
+
+    /**
+     * @return string
+     */
+    public function getPasswordHash();
 }

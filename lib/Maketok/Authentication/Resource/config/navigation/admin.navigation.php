@@ -10,10 +10,15 @@
 
 return [
     'topmenu' => [
-        'auth' => [
+        'auth_users' => [
             'href' => '/auth/users',
             'order' => 20,
             'title' => 'Users',
+        ],
+        'auth_roles' => [
+            'href' => '/auth/roles',
+            'order' => 30,
+            'title' => 'User Roles',
         ]
     ]
 ];
