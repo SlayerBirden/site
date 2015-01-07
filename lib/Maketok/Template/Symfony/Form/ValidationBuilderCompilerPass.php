@@ -9,37 +9,31 @@
  */
 
 namespace Maketok\Template\Symfony\Form;
-
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Maketok\App\Site;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * @codeCoverageIgnore
  */
-class FormExtensionCompilerPass implements CompilerPassInterface
+class ValidationBuilderCompilerPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('form_builder')) {
+        if (!$container->hasDefinition('validator_builder')) {
             return;
         }
 
         $definition = $container->getDefinition(
-            'form_builder'
+            'validator_builder'
         );
 
-        $taggedServices = $container->findTaggedServiceIds(
-            'form.extension'
+        $definition->addMethodCall(
+            'addYamlMappings',
+            array(Site::getConfig('validation_yaml_mapping_path'))
         );
-        foreach ($taggedServices as $id => $attributes) {
-            $definition->addMethodCall(
-                'addExtension',
-                array(new Reference($id))
-            );
-        }
     }
 }

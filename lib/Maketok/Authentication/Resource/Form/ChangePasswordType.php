@@ -26,9 +26,8 @@ class ChangePasswordType extends AbstractType
                 'required' => true,
                 'first_options'  => array('label' => 'Password'),
                 'second_options' => array('label' => 'Repeat Password'),
-                'mapped' => false,
             ))
-            ->add('old_password', 'text', ['label' => 'Current Password', 'mapped' => false]);
+            ->add('old_password', 'password', ['label' => 'Current Admin Password']);
     }
 
     /**

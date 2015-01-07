@@ -3,6 +3,7 @@
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code.
 
+# base user
 Maketok\Authentication\Resource\Model\User:
   properties:
     username:
@@ -11,7 +12,7 @@ Maketok\Authentication\Resource\Model\User:
           pattern: "/^[a-zA-Z0-9_.-]+$/"
           message: "Please provide only alphaberical characters plus [_.-]"
       - Length:
-          min: 5
+          min: 3
           max: 30
           minMessage: "Username can not be less than {{ limit }} characters"
           maxMessage: "Username can not be longer than {{ limit }} characters"
@@ -19,19 +20,34 @@ Maketok\Authentication\Resource\Model\User:
         - NotBlank: ~
     lastname:
         - NotBlank: ~
-    old_password:
-        - NotBlank: ~
-        - Symfony\Component\Security\Core\Validator\Constraints\UserPassword:
-            message: "Wrong value for your current password"
-    created_at:
-      - DateTime: ~
-    updated_at:
-      - DateTime: ~
-# for change password form
+# new user
+Maketok\Authentication\Resource\Model\NewUser:
+  properties:
     password:
       - NotBlank: ~
       - Length:
-          min: 5
+          min: 6
           max: 30
           minMessage: "Password can not be less than {{ limit }} characters"
           maxMessage: "Password can not be longer than {{ limit }} characters"
+# change password
+Maketok\Authentication\Resource\Model\ChangePassword:
+  properties:
+      old_password:
+          - NotBlank: ~
+          - Symfony\Component\Security\Core\Validator\Constraints\UserPassword:
+              message: "Wrong value for your current password"
+      password:
+        - NotBlank: ~
+        - Length:
+            min: 6
+            max: 30
+            minMessage: "Password can not be less than {{ limit }} characters"
+            maxMessage: "Password can not be longer than {{ limit }} characters"
+# edit
+Maketok\Authentication\Resource\Model\EditUser:
+  properties:
+      old_password:
+          - NotBlank: ~
+          - Symfony\Component\Security\Core\Validator\Constraints\UserPassword:
+              message: "Wrong value for your current password"

@@ -21,10 +21,12 @@ return [
         AR . '/lib/Maketok/Firewall/Resource/config/di',
         AR . '/lib/Maketok/Authentication/Resource/config/di',
     ],
-    'iod_compiler_pass' => [
+    'ioc_compiler_pass' => [
         new \Maketok\Template\TemplateCompilerPass(),
-        new \Maketok\Template\Symfony\Form\FormExtensionCompilerPass,
-        new \Maketok\Template\Symfony\Form\FormTypeCompilerPass,
+        new \Maketok\Template\Symfony\Form\FormExtensionCompilerPass(),
+        new \Maketok\Template\Symfony\Form\FormTypeCompilerPass(),
+        new \Maketok\Template\Symfony\Form\ValidationBuilderCompilerPass(),
+        new \Maketok\Template\Symfony\Form\AddConstraintValidatorPass(),
     ],
     'routing_provider_path' => [
         AR . '/config/routes',
@@ -59,5 +61,8 @@ return [
         '@session_save_handler',
         '@module_manager',
         '@db_auth_provider',
+    ],
+    'validation_yaml_mapping_path' => [
+        AR . '/lib/Maketok/Authentication/Resource/config/validation/validation.yml',
     ]
 ];

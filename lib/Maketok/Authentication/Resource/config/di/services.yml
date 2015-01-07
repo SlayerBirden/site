@@ -9,15 +9,43 @@ services:
   auth_user_table:
       class: Maketok\Authentication\Provider\DataBaseProvider
       factory: ["@auth_user_table_factory", spawnTable]
+  auth_user_edit_table:
+      class: Maketok\Authentication\Provider\DataBaseProvider
+      factory: ["@auth_user_edit_table_factory", spawnTable]
+  auth_user_password_change_table:
+      class: Maketok\Authentication\Provider\DataBaseProvider
+      factory: ["@auth_user_password_change_table_factory", spawnTable]
 
   auth_user_table_factory:
       class: Maketok\Model\HydratingTableFactory
       arguments:
           - users
           - id
-          - Maketok\Authentication\Resource\Model\User
+          - Maketok\Authentication\Resource\Model\NewUser
           - id
           - Maketok\Authentication\Resource\Model\UserTable
+          - ~
+          - "@auth_user_object_prop_hydrator"
+
+  auth_user_edit_table_factory:
+      class: Maketok\Model\HydratingTableFactory
+      arguments:
+          - users
+          - id
+          - Maketok\Authentication\Resource\Model\EditUser
+          - id
+          - Maketok\Authentication\Resource\Model\UserTable
+          - ~
+          - "@auth_user_object_prop_hydrator"
+
+  auth_user_password_change_table_factory:
+      class: Maketok\Model\HydratingTableFactory
+      arguments:
+          - users
+          - id
+          - Maketok\Authentication\Resource\Model\EditUser
+          - id
+          - Maketok\Authentication\Resource\Model\ChangePassword
           - ~
           - "@auth_user_object_prop_hydrator"
 
@@ -41,9 +69,8 @@ services:
       class: Maketok\Model\ArrayTableFactory
       arguments:
           - user_data
-          - id
+          - user_id
           - array
-          - id
 
 # auth role table ============================================
   auth_role_table:
@@ -66,9 +93,8 @@ services:
       class: Maketok\Model\ArrayTableFactory
       arguments:
           - users_roles
-          - id
+          - [user_id, role_id]
           - array
-          - id
 # =============================================================
 
   auth_provider_encoder:
@@ -101,11 +127,18 @@ services:
     tags:
       - { name: form.type, alias: create_user }
 
+  edit_user.form.type:
+    class: Maketok\Authentication\Resource\Form\EditUserType
+    tags:
+      - { name: form.type, alias: edit_user }
+
   create_user_role.form.type:
     class: Maketok\Authentication\Resource\Form\CreateUserRoleType
     tags:
       - { name: form.type, alias: create_user_role }
 # current password validator
-  security.validator.user_password:
-      class: Maketok\Authentication\Resource\Validator
+  auth.validator.user_password:
+      class: Maketok\Authentication\Resource\Validator\UserPasswordValidator
       arguments: ["@auth", "@auth_provider_encoder"]
+      tags:
+          - { name: validator.constraint_validator, alias: security.validator.user_password }

@@ -46,6 +46,10 @@ class UserPasswordValidator extends ConstraintValidator
         }
 
         $user = $this->identityManager->getCurrentIdentity();
+        // if there's no user we don't need to validate
+        if (is_null($user)) {
+            return;
+        }
 
         if (!$user instanceof IdentityInterface) {
             throw new ConstraintDefinitionException('The User object must implement the UserInterface interface.');

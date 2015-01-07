@@ -1,0 +1,107 @@
+# This is a part of Maketok site package.
+# @author Oleg Kulik <slayer.birden@gmail.com>
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+# user entities
+users:
+    columns:
+        id:
+          type: integer
+          nullable: false
+          auto_increment: true
+          unsigned: true
+        username:
+          type: varchar
+          length: 255
+          nullable: false
+        created_at:
+          type: datetime
+        updated_at:
+          type: datetime
+    constraints:
+        primary:
+          type: primaryKey
+          definition: id
+        UNQ_KEY_UNAME:
+          type: uniqueKey
+          definition: username
+
+# user data
+user_data:
+    columns:
+        user_id:
+          type: integer
+          nullable: false
+          unsigned: true
+        firstname:
+          type: varchar
+          length: 255
+          nullable: true
+        lastname:
+          type: varchar
+          length: 255
+          nullable: true
+        password_hash:
+          type: varchar
+          length: 255
+          nullable: false
+        updated_at:
+          type: datetime
+    constraints:
+        primary:
+          type: primaryKey
+          definition: user_id
+        FK_USER_ID_USERS_ID:
+          type: foreignKey
+          column: user_id
+          reference_table: users
+          reference_column: id
+
+# roles
+roles:
+    columns:
+        id:
+          type: integer
+          nullable: false
+          unsigned: true
+        title:
+          type: varchar
+          length: 255
+          nullable: false
+        created_at:
+          type: datetime
+        updated_at:
+          type: datetime
+    constraints:
+        primary:
+          type: primaryKey
+          definition: id
+
+# connection table
+users_roles:
+    columns:
+        user_id:
+          type: integer
+          nullable: false
+          unsigned: true
+        role_id:
+          type: integer
+          nullable: false
+          unsigned: true
+        updated_at:
+          type: datetime
+    constraints:
+        primary:
+          type: primaryKey
+          definition: [user_id, role_id]
+        FK_USER_ROLES_ID_USERS_ID:
+          type: foreignKey
+          column: user_id
+          reference_table: users
+          reference_column: id
+        FK_USER_ROLES_ID_ROLES_ID:
+          type: foreignKey
+          column: role_id
+          reference_table: roles
+          reference_column: id

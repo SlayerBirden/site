@@ -12,15 +12,17 @@ namespace Maketok\Authentication\Resource\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class CreateUserRoleType extends AbstractType
+class EditUserType extends AbstractType
 {
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('id', 'text')
-            ->add('title', 'text');
+        $builder->add('username', 'text')
+            ->add('firstname', 'text')
+            ->add('lastname', 'text')
+            ->add('old_password', 'password', ['label' => 'Current Password']);
     }
 
     /**
@@ -28,6 +30,6 @@ class CreateUserRoleType extends AbstractType
      */
     public function getName()
     {
-        return 'create_user_role';
+        return 'edit_user';
     }
 }

@@ -11,8 +11,14 @@ services:
     tags:
       - { name: form.extension }
 
+  validator.validator_factory:
+    class: Symfony\Bundle\FrameworkBundle\Validator\ConstraintValidatorFactory
+    arguments: ["@container", []]
+
   validator_builder:
     class: Symfony\Component\Validator\ValidatorBuilder
+    calls:
+        - [setConstraintValidatorFactory, ["@validator.validator_factory"]]
 
   validator:
     class: Symfony\Component\Validator\Validator

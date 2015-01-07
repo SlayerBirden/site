@@ -11,8 +11,9 @@
 namespace Maketok\Authentication\Resource\Model;
 
 use Maketok\Authentication\IdentityInterface;
+use Maketok\Model\LazyObjectPropModel;
 
-class User implements IdentityInterface
+class User extends LazyObjectPropModel implements IdentityInterface
 {
     /**
      * @var int (auto increment)
@@ -48,11 +49,6 @@ class User implements IdentityInterface
     public $roles;
 
     /**
-     * @var string
-     */
-    protected $password;
-
-    /**
      * {@inheritdoc}
      */
     public function getRoles()
@@ -66,22 +62,6 @@ class User implements IdentityInterface
     public function getUsername()
     {
         return $this->username;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * @param string $password
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
     }
 
     /**

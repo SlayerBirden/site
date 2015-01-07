@@ -62,6 +62,7 @@ final class Site implements ConfigConsumerInterface
         }
         $this->initRequest();
         $this->ioc()->set('site', $this);
+        $this->ioc()->set('container', $this->ioc());
         $this->getDispatcher()->notify('ioc_container_initialized', new State([]));
         if ($this->ioc()->isFrozen()) {
             // container can be already compiled

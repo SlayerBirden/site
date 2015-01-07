@@ -12,9 +12,11 @@ namespace Maketok\Authentication\Resource\controller;
 
 use Maketok\Authentication\AuthException;
 use Maketok\Authentication\Provider\DataBaseProvider;
-use Maketok\Authentication\Resource\Model\User;
+use Maketok\Authentication\Resource\Model\ChangePassword;
+use Maketok\Authentication\Resource\Model\NewUser;
 use Maketok\Authentication\Resource\Model\UserTable;
 use Maketok\Http\Request;
+use Maketok\Model\TableMapper;
 use Maketok\Mvc\Controller\AbstractAdminController;
 use Maketok\Mvc\RouteException;
 use Maketok\Util\Exception\ModelException;
@@ -30,60 +32,67 @@ class UserController extends AbstractAdminController
     public function createAction(Request $request)
     {
         $this->setTemplate('user.create.html.twig');
-        $form = $this->getFormFactory()->create('create_user', new User());
-        $form->handleRequest($request);
-        if ($form->isValid()) {
-            return $this->handleUser($form);
+        $form = $this->getFormFactory()->create('create_user', new NewUser());
+        $response = $this->handleUser($request, $form, $this->ioc()->get('auth_user_table'));
+        if (!$response) {
+            $response = $this->prepareResponse($request, [
+                'title' => 'Maketok Admin - Create New User',
+                'description' => 'User Creation',
+                'form' => $form->createView(),
+            ]);
         }
-        return $this->prepareResponse($request, [
-            'title' => 'Maketok Admin - Create New User',
-            'description' => 'User Creation',
-            'form' => $form->createView(),
-        ]);
+
+        return $response;
     }
 
     /**
      * handle form request
+     * @param Request $request
      * @param FormInterface $form
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @param TableMapper $table
+     * @return bool|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    protected function handleUser(FormInterface $form)
+    protected function handleUser(Request $request, FormInterface $form, TableMapper $table)
     {
-        /** @var UserTable $userTable */
-        $userTable = $this->ioc()->get('auth_user_table');
         try {
-            $data = $form->getData();
-            $this->validateUser($data);
-            $userTable->save($data);
-            $this->getSession()->getFlashBag()->add('success', 'The user was saved successfully!');
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $data = $form->getData();
+                $this->validateUser($data);
+                $table->save($data);
+                $this->addSessionMessage('success', 'The user was saved successfully!');
+                return $this->redirect('auth/users/');
+            }
         } catch (ModelInfoException $e) {
-            $this->getSession()->getFlashBag()->add(
+            $this->addSessionMessage(
                 'warning',
                 $e->getMessage()
             );
         } catch (\Exception $e) {
             $this->getLogger()->err($e);
-            $this->getSession()->getFlashBag()->add(
+            $this->addSessionMessage(
                 'error',
                 sprintf("There was an error processing your request.\nThe error text: %s", $e->getMessage())
             );
-            return $this->returnBack();
         }
-        return $this->redirect('auth/users/');
+        return false;
     }
 
     /**
-     * @param User $user
+     * @param NewUser|ChangePassword $user
      * @throws AuthException
      */
-    protected function validateUser(User $user)
+    protected function validateUser($user)
     {
+        if (!($user instanceof NewUser) && !($user instanceof ChangePassword)) {
+            return;
+        }
         // validation of password vs confirmation is happening in form validation extension
         $provider = $this->ioc()->get('auth')->getProvider();
         if ($provider instanceof DataBaseProvider) {
-            $user->password_hash = $provider->getEncoder()->encodePassword($user->getPassword(), false);
+            $user->password_hash = $provider->getEncoder()->encodePassword($user->password, false);
         } else {
-            $user->password_hash = $user->getPassword();
+            $user->password_hash = $user->password;
         }
     }
 
@@ -94,18 +103,22 @@ class UserController extends AbstractAdminController
      */
     public function editAction(Request $request)
     {
+        /** @var UserTable $table */
+        $table = $this->ioc()->get('auth_user_edit_table');
         $this->setTemplate('user.create.html.twig');
-        $user = $this->initUser($request);
-        $form = $this->getFormFactory()->create('create_user', $user);
-        $form->handleRequest($request);
-        if ($form->isValid()) {
-            return $this->handleUser($form);
+        $user = $this->initUser($request, $table);
+        $form = $this->getFormFactory()->create('edit_user', $user);
+
+        $response = $this->handleUser($request, $form, $table);
+        if (!$response) {
+            $response = $this->prepareResponse($request, [
+                'title' => 'Maketok Admin - Edit User ' . $user->firstname,
+                'description' => 'User ' . $user->firstname,
+                'form' => $form->createView(),
+            ]);
         }
-        return $this->prepareResponse($request, [
-            'title' => 'Maketok Admin - Edit User ' . $user->firstname,
-            'description' => 'User ' . $user->firstname,
-            'form' => $form->createView(),
-        ]);
+
+        return $response;
     }
 
     /**
@@ -115,11 +128,12 @@ class UserController extends AbstractAdminController
      */
     public function deleteAction(Request $request)
     {
-        $user = $this->initUser($request);
         /** @var UserTable $userTable */
         $userTable = $this->ioc()->get('auth_user_table');
+        $user = $this->initUser($request, $userTable);
         try {
             $userTable->delete($user);
+            $this->addSessionMessage('success', "The user was deleted!");
         } catch (\Exception $e) {
             $this->getLogger()->error(sprintf("Could not remove user #%d", $user->id));
         }
@@ -153,17 +167,15 @@ class UserController extends AbstractAdminController
      * @return \Maketok\Authentication\Resource\Model\User
      * @throws RouteException
      */
-    protected function initUser(Request $request)
+    protected function initUser(Request $request, TableMapper $table)
     {
         $id = $request->getAttributes()->get('id');
         if ($id === null) {
             // route exception will lead to 404
             throw new RouteException("Can not process user without id.");
         }
-        /** @var UserTable $articleTable */
-        $articleTable = $this->ioc()->get('auth_user_table');
         try {
-            return $articleTable->find($id);
+            return $table->find($id);
         } catch (ModelException $e) {
             throw new RouteException("Could not find user by id.");
         }

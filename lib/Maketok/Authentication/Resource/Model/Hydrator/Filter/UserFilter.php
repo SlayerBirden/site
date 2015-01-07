@@ -23,6 +23,8 @@ class UserFilter implements FilterInterface
         'firstname',
         'lastname',
         'password_hash',
+        'password',
+        'old_password',
     ];
 
     /**
