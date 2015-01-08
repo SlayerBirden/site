@@ -13,6 +13,9 @@ namespace Maketok\Template\Symfony\Form;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
+/**
+ * @codeCoverageIgnore
+ */
 class AddConstraintValidatorPass implements CompilerPassInterface
 {
     /**
