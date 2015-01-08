@@ -12,4 +12,8 @@ namespace Maketok\Authentication\Resource\Model;
 
 class ChangePassword extends EditUser
 {
+    /**
+     * @var string
+     */
+    public $password;
 }

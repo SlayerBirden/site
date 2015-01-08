@@ -43,9 +43,9 @@ services:
       arguments:
           - users
           - id
-          - Maketok\Authentication\Resource\Model\EditUser
-          - id
           - Maketok\Authentication\Resource\Model\ChangePassword
+          - id
+          - Maketok\Authentication\Resource\Model\UserTable
           - ~
           - "@auth_user_object_prop_hydrator"
 
@@ -131,6 +131,11 @@ services:
     class: Maketok\Authentication\Resource\Form\EditUserType
     tags:
       - { name: form.type, alias: edit_user }
+
+  change_password.form.type:
+    class: Maketok\Authentication\Resource\Form\ChangePasswordType
+    tags:
+      - { name: form.type, alias: change_password }
 
   create_user_role.form.type:
     class: Maketok\Authentication\Resource\Form\CreateUserRoleType

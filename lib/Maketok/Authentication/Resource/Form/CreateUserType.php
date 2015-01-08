@@ -9,11 +9,13 @@
  */
 namespace Maketok\Authentication\Resource\Form;
 
+use Maketok\App\Helper\ContainerTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class CreateUserType extends AbstractType
 {
+    use ContainerTrait;
     /**
      * {@inheritdoc}
      */
@@ -22,6 +24,13 @@ class CreateUserType extends AbstractType
         $builder->add('username', 'text')
             ->add('firstname', 'text')
             ->add('lastname', 'text')
+            ->add('roles', 'model', [
+                'table' => $this->ioc()->get('auth_role_table'),
+                'property' => '[title]',
+                'id_field' => '[id]',
+                'expanded' => false,
+                'multiple' => true,
+            ])
             ->add('password', 'repeated', array(
                 'type' => 'password',
                 'invalid_message' => 'The password fields must match.',

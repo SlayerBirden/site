@@ -123,6 +123,31 @@ class UserController extends AbstractAdminController
 
     /**
      * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws RouteException
+     */
+    public function changePasswordAction(Request $request)
+    {
+        /** @var UserTable $table */
+        $table = $this->ioc()->get('auth_user_password_change_table');
+        $this->setTemplate('user.create.html.twig');
+        $user = $this->initUser($request, $table);
+        $form = $this->getFormFactory()->create('change_password', $user);
+
+        $response = $this->handleUser($request, $form, $table);
+        if (!$response) {
+            $response = $this->prepareResponse($request, [
+                'title' => 'Maketok Admin - Change User Password ' . $user->firstname,
+                'description' => 'Password for User ' . $user->firstname,
+                'form' => $form->createView(),
+            ]);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws RouteException
      */

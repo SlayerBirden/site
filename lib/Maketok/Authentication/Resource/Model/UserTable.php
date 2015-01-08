@@ -13,6 +13,7 @@ namespace Maketok\Authentication\Resource\Model;
 use Maketok\App\Helper\ContainerTrait;
 use Maketok\Model\TableMapper;
 use Maketok\Util\Exception\ModelException;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Zend\Db\Sql\Predicate\Expression;
 use Zend\Db\Sql\Select;
 
@@ -65,10 +66,23 @@ class UserTable extends TableMapper
     {
         /** @var TableMapper $userRolesTable */
         $userRolesTable = $this->ioc()->get('auth_user_role_table');
+        /** @var TableMapper $roleTable */
+        $roleTable = $this->ioc()->get('auth_role_table');
         if (!$model->roles) {
             return;
         }
         foreach ($model->roles as $roleId) {
+            // now there may be role models here (or arrays)
+            if (is_object($roleId)) {
+                $idField = $roleTable->getIdField();
+                $propertyAccessor = new PropertyAccessor();
+                $roleId = $propertyAccessor->getValue($roleId, $idField);
+            } elseif (is_array($roleId)) {
+                // support for PropertyAccessor to use array
+                $idField = '[' . $roleTable->getIdField() . ']';
+                $propertyAccessor = new PropertyAccessor();
+                $roleId = $propertyAccessor->getValue($roleId, $idField);
+            }
             $data = [
                 'user_id' => $model->id,
                 'role_id' => $roleId,

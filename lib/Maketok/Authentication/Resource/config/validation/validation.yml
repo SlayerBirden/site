@@ -33,10 +33,7 @@ Maketok\Authentication\Resource\Model\NewUser:
 # change password
 Maketok\Authentication\Resource\Model\ChangePassword:
   properties:
-      old_password:
-          - NotBlank: ~
-          - Symfony\Component\Security\Core\Validator\Constraints\UserPassword:
-              message: "Wrong value for your current password"
+      # old_password is inherited form EditUser
       password:
         - NotBlank: ~
         - Length:

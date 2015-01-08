@@ -20,6 +20,7 @@ return [
         AR . '/lib/Maketok/Navigation/Resource/config/di',
         AR . '/lib/Maketok/Firewall/Resource/config/di',
         AR . '/lib/Maketok/Authentication/Resource/config/di',
+        AR . '/lib/Maketok/Model/Resource/config/di',
     ],
     'ioc_compiler_pass' => [
         new \Maketok\Template\TemplateCompilerPass(),

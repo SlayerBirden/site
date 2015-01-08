@@ -9,11 +9,13 @@
  */
 namespace Maketok\Authentication\Resource\Form;
 
+use Maketok\App\Helper\ContainerTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class EditUserType extends AbstractType
 {
+    use ContainerTrait;
     /**
      * {@inheritdoc}
      */
@@ -22,6 +24,13 @@ class EditUserType extends AbstractType
         $builder->add('username', 'text')
             ->add('firstname', 'text')
             ->add('lastname', 'text')
+            ->add('roles', 'model', [
+                'table' => $this->ioc()->get('auth_role_table'),
+                'property' => '[title]',
+                'id_field' => '[id]',
+                'expanded' => false,
+                'multiple' => true,
+            ])
             ->add('old_password', 'password', ['label' => 'Current Password']);
     }
 

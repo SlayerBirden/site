@@ -23,6 +23,12 @@ routes:
     defaults: []
     restrictions:
         id: ^\d+$
+  - type: parameterized
+    path: /auth/users/change_password/{id}
+    resolver: [Maketok\Authentication\Resource\controller\UserController, changePasswordAction]
+    defaults: []
+    restrictions:
+        id: ^\d+$
   - type: literal
     path: /auth/users
     resolver: [Maketok\Authentication\Resource\controller\UserController, usersAction]
