@@ -50,11 +50,10 @@ class ModelChoiceList extends ObjectChoiceList
         if (empty($entities)) {
             // required for traversing the entities later (ResultSet doesn't support 'rewind')
             $resultSet = $this->tableMapper->fetchAll();
+            $entities = [];
             foreach ($resultSet as $entity) {
                 $entities[] = $entity;
             }
-        } else {
-            $entities = [];
         }
         $this->preferredEntities = $preferredEntities;
         if (is_null($valuePath)) {

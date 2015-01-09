@@ -118,7 +118,19 @@ class UserTable extends TableMapper
         $select->where(['users.id' => $id]);
         $resultSet = $this->getGateway()->selectWith($select);
         if ($resultSet->count()) {
-            return $resultSet->current();
+            /** @var User $data */
+            $data = $resultSet->current();
+            if ($data->roles) {
+                /** @var TableMapper $roleTable */
+                $roleTable = $this->ioc()->get('auth_role_table');
+                $roles = [];
+                // fill roles
+                foreach ($data->roles as $roleId) {
+                    $roles[] = $roleTable->find($roleId);
+                }
+                $data->roles = $roles;
+            }
+            return $data;
         }
         throw new ModelException(sprintf("Could not find row with identifier %s", json_encode($id)));
     }

@@ -30,6 +30,7 @@ class CreateUserType extends AbstractType
                 'id_field' => '[id]',
                 'expanded' => false,
                 'multiple' => true,
+                'required' => false,
             ])
             ->add('password', 'repeated', array(
                 'type' => 'password',

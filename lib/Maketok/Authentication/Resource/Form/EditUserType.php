@@ -30,6 +30,7 @@ class EditUserType extends AbstractType
                 'id_field' => '[id]',
                 'expanded' => false,
                 'multiple' => true,
+                'required' => false,
             ])
             ->add('old_password', 'password', ['label' => 'Current Password']);
     }

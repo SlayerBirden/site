@@ -20,6 +20,8 @@ class CreateUserRoleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('id', 'text')
+            ->add('created_at', 'hidden')
+            ->add('updated_at', 'hidden')
             ->add('title', 'text');
     }
 

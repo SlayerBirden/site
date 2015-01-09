@@ -44,7 +44,7 @@ class AddTable extends AbstractProcedure implements ProcedureInterface
         }
         foreach ($indices as $indexName => $indexDefinition) {
             // no special class for index
-            $addCon = new AddConstraint($this->sql, $this->resource);
+            $addCon = new AddIndice($this->sql, $this->resource);
             $addCon->getQuery(array($tableName, $indexName, $indexDefinition, $table));
         }
 

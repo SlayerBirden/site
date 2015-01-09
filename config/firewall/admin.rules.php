@@ -13,8 +13,8 @@ return [
         'blacklist' => [
             'Maketok\Firewall\Rule\AreaRule' => ['admin']
         ],
-//        'whitelist' => [
-//            'Maketok\Firewall\Rule\IpRule' => ['127.0.0.1']
-//        ],
+        'whitelist' => [
+            'Maketok\Firewall\Rule\IpRule' => ['127.0.0.1']
+        ],
     ]
 ];
