@@ -45,6 +45,8 @@ class Authentication implements IdentityManagerInterface, RoleProviderInterface
         if ($identity) {
             $this->getDispatcher()->notify('auth_attempt_success', new State(['user' => $identity]));
             $this->setCurrentIdentity($identity);
+        } else {
+            $this->getDispatcher()->notify('auth_attempt_failure', new State(['user' => $identity]));
         }
     }
 
