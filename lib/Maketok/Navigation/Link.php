@@ -187,6 +187,7 @@ class Link extends Node implements LinkInterface
         }
         $res = [
             $link->getCode() => [
+                'code' => $link->getCode(),
                 'href' => $link->getReference(),
                 'title' => $link->getTitle(),
                 'children' => []

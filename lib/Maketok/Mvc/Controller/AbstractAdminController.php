@@ -44,7 +44,7 @@ abstract class AbstractAdminController extends AbstractController
     public function getDefaults()
     {
         $defaults = parent::getDefaults();
-        $defaults['links'] = $this->ioc()->get('topmenu')->getNavigation();
+        $defaults['topmenu'] = $this->ioc()->get('topmenu')->getNavigation();
         return $defaults;
     }
 }

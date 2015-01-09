@@ -35,7 +35,8 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
                     'B' => [
                         'href' => null,
                         'title' => null,
-                        'children' => []
+                        'children' => [],
+                        'code' => 'B',
                     ],
                     'C' => [
                         'href' => null,
@@ -44,11 +45,14 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
                             'D' => [
                                 'href' => null,
                                 'title' => null,
-                                'children' => []
+                                'children' => [],
+                                'code' => 'D',
                             ]
-                        ]
+                        ],
+                        'code' => 'C',
                     ]
-                ]
+                ],
+                'code' => 'A',
             ]
         ], $nav->getNavigation());
     }
@@ -115,7 +119,8 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
             'A' => [
                 'href' => null,
                 'title' => null,
-                'children' => []
+                'children' => [],
+                'code' => 'A',
             ]
         ], $nav->getNavigation());
     }
@@ -151,9 +156,11 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
                     'B' => [
                         'href' => '/linkB',
                         'title' => 'Link B',
-                        'children' => []
+                        'children' => [],
+                        'code' => 'B',
                     ]
-                ]
+                ],
+                'code' => 'A',
             ]
         ];
         $nav = new Navigation('test');

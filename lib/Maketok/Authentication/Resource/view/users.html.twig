@@ -5,9 +5,9 @@
 {# note: this is blog index #}
 {% extends "base-manager.html.twig" %}
 {% block content %}
-<section id="users">
-    <a class="button" href="{{ base_url }}/auth/users/create">{% trans %}Add New User{% endtrans %}</a>
-    <table>
+<div class="table-responsive">
+    <a class="btn btn-primary" role="button" href="{{ base_url }}/auth/users/create">{% trans %}Add New User{% endtrans %}</a>
+    <table class="table">
         <tr>
             <th>{% trans %}Username{% endtrans %}</th>
             <th>{% trans %}First Name{% endtrans %}</th>
@@ -26,9 +26,12 @@
             <td>{{ user.created_at|date("Y-m-d H:i:s") }}</td>
             <td>{{ user.updated_at|date("Y-m-d H:i:s") }}</td>
             <td>
-                <a href="{{ base_url }}/auth/users/edit/{{ user.id }}">{% trans %}Edit{% endtrans %}</a>
-                <a href="{{ base_url }}/auth/users/change_password/{{ user.id }}">{% trans %}Change Password{% endtrans %}</a>
-                <a href="{{ base_url }}/auth/users/delete/{{ user.id }}"
+                <a class="btn btn-default btn-xs" role="button"
+                   href="{{ base_url }}/auth/users/edit/{{ user.id }}">{% trans %}Edit{% endtrans %}</a>
+                <a class="btn btn-default btn-xs" role="button"
+                   href="{{ base_url }}/auth/users/change_password/{{ user.id }}">{% trans %}Change Password{% endtrans %}</a>
+                <a class="btn btn-default btn-xs" role="button"
+                   href="{{ base_url }}/auth/users/delete/{{ user.id }}"
                    onclick="return window.confirm('{% trans %}Are you sure you want to delete the user?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
             </td>
         </tr>
@@ -36,5 +39,5 @@
         <tr><td colspan="7">No users exist yet!</td></tr>
     {% endfor %}
     </table>
-</section>
+</div>
 {% endblock %}

@@ -162,14 +162,17 @@ class LinkTest extends \PHPUnit_Framework_TestCase
                     'test2' => [
                         'href' => '#2',
                         'title' => null,
-                        'children' => []
+                        'children' => [],
+                        'code' => 'test2',
                     ],
                     'test1' => [
                         'href' => '#1',
                         'title' => null,
-                        'children' => []
+                        'children' => [],
+                        'code' => 'test1',
                     ]
-                ]
+                ],
+                'code' => 'test',
             ]
         ], $link->asArray());
     }

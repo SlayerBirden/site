@@ -8,3 +8,4 @@ public/cov
 tests/site_test
 public/.htaccess
 admin/.htaccess
+node_modules

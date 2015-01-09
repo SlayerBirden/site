@@ -5,9 +5,9 @@
 {# note: this is blog index #}
 {% extends "base-manager.html.twig" %}
 {% block content %}
-<section id="articles">
-    <a class="button" href="{{ base_url }}/blog/article/new">{% trans %}Add New{% endtrans %}</a>
-    <table>
+<div class="table-responsive">
+    <a class="btn btn-primary" role="button" href="{{ base_url }}/blog/article/new">{% trans %}Add New{% endtrans %}</a>
+    <table class="table">
         <tr>
             <th>{% trans %}Title{% endtrans %}</th>
             <th>{% trans %}Code{% endtrans %}</th>
@@ -23,11 +23,13 @@
             <td>{{ article.code }}</td>
             <td>{{ article.description|truncate(50) }}</td>
             <td>{{ article.author }}</td>
-            <td>{{ article.created_at|date("F jS \\a\\t g:ia") }}</td>
-            <td>{{ article.updated_at|date("F jS \\a\\t g:ia") }}</td>
+            <td>{{ article.created_at|date("Y-m-d H:i:s") }}</td>
+            <td>{{ article.updated_at|date("Y-m-d H:i:s") }}</td>
             <td>
-                <a href="{{ base_url }}/blog/article/edit/{{ article.id }}">{% trans %}Edit{% endtrans %}</a>
-                <a href="{{ base_url }}/blog/article/delete/{{ article.id }}"
+                <a class="btn btn-default btn-xs" role="button"
+                   href="{{ base_url }}/blog/article/edit/{{ article.id }}">{% trans %}Edit{% endtrans %}</a>
+                <a class="btn btn-default btn-xs" role="button"
+                   href="{{ base_url }}/blog/article/delete/{{ article.id }}"
                    onclick="return window.confirm('{% trans %}Are you sure you want to remove this article?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
             </td>
         </tr>
@@ -35,5 +37,5 @@
         <tr><td colspan="7">No articles found in the system! You really need to add one.</td></tr>
     {% endfor %}
     </table>
-</section>
+</div>
 {% endblock %}
