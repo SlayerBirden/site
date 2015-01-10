@@ -20,9 +20,14 @@ Maketok\Authentication\Resource\Model\User:
         - NotBlank: ~
     lastname:
         - NotBlank: ~
+    old_password:
+        - NotBlank: ~
+        - Symfony\Component\Security\Core\Validator\Constraints\UserPassword:
+            message: "Wrong value for your current password"
 # new user
 Maketok\Authentication\Resource\Model\NewUser:
   properties:
+    # old_password is inherited form User
     password:
       - NotBlank: ~
       - Length:
@@ -33,7 +38,7 @@ Maketok\Authentication\Resource\Model\NewUser:
 # change password
 Maketok\Authentication\Resource\Model\ChangePassword:
   properties:
-      # old_password is inherited form EditUser
+      # old_password is inherited form User
       password:
         - NotBlank: ~
         - Length:
@@ -41,10 +46,4 @@ Maketok\Authentication\Resource\Model\ChangePassword:
             max: 30
             minMessage: "Password can not be less than {{ limit }} characters"
             maxMessage: "Password can not be longer than {{ limit }} characters"
-# edit
-Maketok\Authentication\Resource\Model\EditUser:
-  properties:
-      old_password:
-          - NotBlank: ~
-          - Symfony\Component\Security\Core\Validator\Constraints\UserPassword:
-              message: "Wrong value for your current password"
+# edit inherits old_password from User

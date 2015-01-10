@@ -238,7 +238,6 @@ class Link extends Node implements LinkInterface
         } elseif ($uri->isValidRelative()) {
             return $this->getUrl($uri->getPath());
         } else {
-            $this->getLogger()->err(sprintf("Unrecognizable url: %s", $href));
             return '';
         }
     }

@@ -12,8 +12,4 @@ namespace Maketok\Authentication\Resource\Model;
 
 class EditUser extends User
 {
-    /**
-     * @var string
-     */
-    public $old_password;
 }

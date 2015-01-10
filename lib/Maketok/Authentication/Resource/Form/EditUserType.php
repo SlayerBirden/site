@@ -9,13 +9,25 @@
  */
 namespace Maketok\Authentication\Resource\Form;
 
-use Maketok\App\Helper\ContainerTrait;
+use Maketok\Model\TableMapper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class EditUserType extends AbstractType
 {
-    use ContainerTrait;
+    /**
+     * @var TableMapper
+     */
+    private $roleTable;
+
+    /**
+     * @param TableMapper $roleTable
+     */
+    public function __construct(TableMapper $roleTable)
+    {
+        $this->roleTable = $roleTable;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -25,14 +37,14 @@ class EditUserType extends AbstractType
             ->add('firstname', 'text')
             ->add('lastname', 'text')
             ->add('roles', 'model', [
-                'table' => $this->ioc()->get('auth_role_table'),
+                'table' => $this->roleTable,
                 'property' => '[title]',
                 'id_field' => '[id]',
                 'expanded' => false,
                 'multiple' => true,
                 'required' => false,
             ])
-            ->add('old_password', 'password', ['label' => 'Current Password']);
+            ->add('old_password', 'password', ['label' => 'Current User Password']);
     }
 
     /**

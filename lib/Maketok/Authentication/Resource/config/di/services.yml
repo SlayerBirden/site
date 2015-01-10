@@ -124,11 +124,13 @@ services:
 
   create_user.form.type:
     class: Maketok\Authentication\Resource\Form\CreateUserType
+    arguments: ["@auth_role_table"]
     tags:
       - { name: form.type, alias: create_user }
 
   edit_user.form.type:
     class: Maketok\Authentication\Resource\Form\EditUserType
+    arguments: ["@auth_role_table"]
     tags:
       - { name: form.type, alias: edit_user }
 

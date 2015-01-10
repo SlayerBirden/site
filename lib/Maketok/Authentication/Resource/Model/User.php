@@ -47,6 +47,10 @@ class User extends LazyObjectPropModel implements IdentityInterface
      * @var int[]
      */
     public $roles;
+    /**
+     * @var string
+     */
+    public $old_password;
 
     /**
      * {@inheritdoc}
