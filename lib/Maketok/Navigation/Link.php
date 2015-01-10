@@ -10,7 +10,9 @@
 
 namespace Maketok\Navigation;
 
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Tree\Node;
+use Zend\Uri\UriFactory;
 
 /**
  * Class Link
@@ -21,6 +23,7 @@ use Maketok\Tree\Node;
  */
 class Link extends Node implements LinkInterface
 {
+    use UtilityHelperTrait;
     /**
      * @var mixed|string
      */
@@ -190,7 +193,9 @@ class Link extends Node implements LinkInterface
                 'code' => $link->getCode(),
                 'href' => $link->getReference(),
                 'title' => $link->getTitle(),
-                'children' => []
+                'children' => [],
+                'is_active' => $this->isActive(),
+                'full_reference' => $this->getFullReference(),
             ]
         ];
         foreach ($link->getChildren() as $child) {
@@ -198,5 +203,43 @@ class Link extends Node implements LinkInterface
         }
 
         return $res;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        $baseUri = UriFactory::factory($this->ioc()->getParameter('base_url'));
+        $uriRef = UriFactory::factory((string) $this->getFullReference());
+        $currentUri = UriFactory::factory((string) $this->getCurrentUrl());
+
+        $equalHosts = $uriRef->getHost() === $currentUri->getHost();
+        $strippedCurrentPath = str_replace($baseUri->getPath(), '', $currentUri->getPath());
+        $strippedRefPath = str_replace($baseUri->getPath(), '', $uriRef->getPath());
+        $currentContainsStripped = !empty($strippedRefPath)
+            && ($strippedRefPath !== '/')
+            && strpos($strippedCurrentPath, $strippedRefPath) !== false;
+        $pathsEquals = $uriRef->getPath() == $currentUri->getPath();
+
+        return $equalHosts && ($currentContainsStripped || $pathsEquals);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullReference()
+    {
+        $href = $this->getReference();
+        // determine what kind of data we have
+        $uri = UriFactory::factory((string) $href);
+        if ($uri->isValid() && $uri->isAbsolute()) {
+            return $uri->toString();
+        } elseif ($uri->isValidRelative()) {
+            return $this->getUrl($uri->getPath());
+        } else {
+            $this->getLogger()->err(sprintf("Unrecognizable url: %s", $href));
+            return '';
+        }
     }
 }

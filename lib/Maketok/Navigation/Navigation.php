@@ -10,16 +10,14 @@
 
 namespace Maketok\Navigation;
 
-use Maketok\App\Helper\ContainerTrait;
+use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\App\Site;
 use Maketok\Navigation\Dumper\DumperInterface;
-use Maketok\Util\ArrayValueTrait;
 use Maketok\Util\ConfigConsumerInterface;
 
 class Navigation implements NavigationInterface, ConfigConsumerInterface
 {
-    use ArrayValueTrait;
-    use ContainerTrait;
+    use UtilityHelperTrait;
 
     /**
      * @var LinkInterface

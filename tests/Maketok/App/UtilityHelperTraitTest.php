@@ -32,11 +32,13 @@ class UtilityHelperTraitTest extends \PHPUnit_Framework_TestCase
     public function urlProvider()
     {
         return [
-            ['home/url', null, 'http://example.com', 'http://example.com/home/url/'],
-            ['/home/url', null, 'http://example.com', 'http://example.com/home/url/'],
-            ['home/url/', null, 'http://example.com', 'http://example.com/home/url/'],
+            ['home/url', [], 'http://example.com', 'http://example.com/home/url/'],
+            ['/home/url', [], 'http://example.com', 'http://example.com/home/url/'],
+            ['home/url/', [], 'http://example.com', 'http://example.com/home/url/'],
             ['home/url/', ['wts' => 1], 'http://example.com', 'http://example.com/home/url'],
-            ['home/url/', ['wts' => 0], 'http://example.com', 'http://example.com/home/url/']
+            ['home/url/', ['wts' => 0], 'http://example.com', 'http://example.com/home/url/'],
+            ['home/url/', [], 'http://example.com/admin', 'http://example.com/admin/home/url/'],
+            ['home/url/', ['clear_path' => 1], 'http://example.com/admin', 'http://example.com/home/url/'],
         ];
     }
 }

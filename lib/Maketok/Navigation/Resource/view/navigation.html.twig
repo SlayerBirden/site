@@ -3,7 +3,7 @@
 {# For the full copyright and license information, please view the LICENSE #}
 {# file that was distributed with this source code. #}
 {% for link in links %}
-    <li class="{{ link.code }}{% if link.children %} dropdown{% endif %}{% if ((link.href in path_info) and (link.href != '/')) or (current_url == link.href) %} active{% endif %}">
+    <li class="{{ link.code }}{% if link.children %} dropdown{% endif %}{% if link.is_active %} active{% endif %}">
         {% if link.children %}
             <a href="{{ link.href }}"
                class="dropdown-toggle{% if (path_info == link.href) or (current_url == link.href) %} active{% endif %}"
@@ -14,7 +14,7 @@
                 {% include "navigation.html.twig" with {'links': link.children} %}
             </ul>
         {% elseif link.href %}
-            <a href="{{ link.href }}" title="{{ link.title }}">{{ link.title }}</a>
+            <a href="{{ link.full_reference }}" title="{{ link.title }}">{{ link.title }}</a>
         {% else %}
             <span class="navbar-text">{{ link.title }}</span>
         {% endif %}

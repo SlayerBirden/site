@@ -13,8 +13,8 @@
     <title>{{ title }}</title>
     {% block head %}
         <!-- Bootstrap core CSS -->
-        <link href="{{ css_url }}bootstrap.min.css" rel="stylesheet">
-        <link href="{{ css_url }}bootstrap-theme.min.css" rel="stylesheet">
+        <link href="{{ base_css_url }}bootstrap.min.css" rel="stylesheet">
+        <link href="{{ base_css_url }}bootstrap-theme.min.css" rel="stylesheet">
         <link href="{{ css_url }}base.css" rel="stylesheet">
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -76,8 +76,8 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{{ js_url }}jquery.min.js"></script>
-    <script src="{{ js_url }}bootstrap.min.js"></script>
+    <script src="{{ base_js_url }}jquery.min.js"></script>
+    <script src="{{ base_js_url }}bootstrap.min.js"></script>
     {% block before_body_end %}{% endblock %}
 </body>
 </html>
