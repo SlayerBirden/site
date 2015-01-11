@@ -28,7 +28,7 @@ class Index extends AbstractAdminController
         try {
             $articles = $articleTable->fetchAll();
         } catch (\Exception $e) {
-            $this->getLogger()->err($e->__toString());
+            $this->getLogger()->err($e);
             $articles = [];
         }
         return $this->prepareResponse($request, array(

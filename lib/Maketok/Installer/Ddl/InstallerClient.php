@@ -11,8 +11,6 @@
 namespace Maketok\Installer\Ddl;
 
 use Maketok\App\Helper\UtilityHelperTrait;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Yaml\Yaml;
 
 class InstallerClient implements ClientInterface
 {
@@ -23,7 +21,7 @@ class InstallerClient implements ClientInterface
      */
     public function getDdlVersion()
     {
-        return '0.1.1';
+        return '0.1.2';
     }
 
     /**
@@ -31,17 +29,7 @@ class InstallerClient implements ClientInterface
      */
     public function getDdlConfig($version)
     {
-        $locator = new FileLocator(__DIR__.'/Resource/config/installer/ddl');
-        $ymlReader = new Yaml();
-        try {
-            $file = $locator->locate($version.'.yml');
-        } catch (\InvalidArgumentException $e) {
-            $this->getLogger()->err($e->getMessage());
-
-            return false;
-        }
-
-        return $ymlReader->parse($file);
+        return current($this->ioc()->get('config_getter')->getConfig(__DIR__ . "/Resource/config/installer/ddl", $version));
     }
 
     /**

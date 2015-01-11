@@ -29,14 +29,14 @@ class Indices implements CompareInterface
             } elseif ($new === $old) {
                 continue;
             } else {
-                $directives->addProp('dropIndices', [$tableName, $indexDefinition]);
+                $directives->addProp('dropIndices', [$tableName, $indexDefinition, 'index']);
                 $directives->addProp('addIndices', [$tableName, $indexName, $indexDefinition]);
             }
         }
         foreach ($indexA as $indexName => $indexDefinition) {
             $aInB = $this->getIfExists($indexName, $indexB);
             if (is_null($aInB)) {
-                $directives->addProp('dropIndices', [$tableName, $indexName]);
+                $directives->addProp('dropIndices', [$tableName, $indexName, 'index']);
             }
         }
     }

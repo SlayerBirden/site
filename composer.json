@@ -48,6 +48,8 @@
         "psr-0": {
             "Maketok\\": "lib/",
             "Zend\\Db\\": "lib/",
+            "Symfony\\Bundle\\": "lib/",
+            "Symfony\\Component\\Form\\": "lib/",
             "admin\\": "src/",
             "base\\": "src/",
             "modules\\": "./",

@@ -74,7 +74,7 @@ class DdlClientType extends TableMapper
      * @throws ModelException
      * also save dependency and history
      */
-    public function save($model)
+    public function save(&$model)
     {
         try {
             $this->getGateway()->getAdapter()->getDriver()->getConnection()->beginTransaction();
@@ -164,7 +164,7 @@ class DdlClientType extends TableMapper
         )->join(
             'installer_ddl_client_dependency',
             'installer_ddl_client.id = installer_ddl_client_dependency.client_id',
-            ['dependencies' => new Expression('GROUP_CONCAT(dependency_code)')],
+            ['dependencies' => new Expression('GROUP_CONCAT(DISTINCT(dependency_code))')],
             'left'
         )->group('installer_ddl_client.id');
         return $this->getGateway()->selectWith($select);

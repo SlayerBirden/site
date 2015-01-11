@@ -13,7 +13,7 @@ return [
         'home' => [
             'href' => '/',
             'order' => 0,
-            'title' => 'Home',
+            'title' => 'Dashboard',
         ]
     ]
 ];

@@ -35,7 +35,10 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
                     'B' => [
                         'href' => null,
                         'title' => null,
-                        'children' => []
+                        'children' => [],
+                        'code' => 'B',
+                        'is_active' => true,
+                        'full_reference' => '',
                     ],
                     'C' => [
                         'href' => null,
@@ -44,11 +47,20 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
                             'D' => [
                                 'href' => null,
                                 'title' => null,
-                                'children' => []
+                                'children' => [],
+                                'code' => 'D',
+                                'is_active' => true,
+                                'full_reference' => '',
                             ]
-                        ]
+                        ],
+                        'code' => 'C',
+                        'is_active' => true,
+                        'full_reference' => '',
                     ]
-                ]
+                ],
+                'code' => 'A',
+                'is_active' => true,
+                'full_reference' => '',
             ]
         ], $nav->getNavigation());
     }
@@ -115,7 +127,10 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
             'A' => [
                 'href' => null,
                 'title' => null,
-                'children' => []
+                'children' => [],
+                'code' => 'A',
+                'is_active' => true,
+                'full_reference' => '',
             ]
         ], $nav->getNavigation());
     }
@@ -151,9 +166,15 @@ class NavigationTest extends \PHPUnit_Framework_TestCase
                     'B' => [
                         'href' => '/linkB',
                         'title' => 'Link B',
-                        'children' => []
+                        'children' => [],
+                        'code' => 'B',
+                        'is_active' => false,
+                        'full_reference' => 'http://mysite.com/linkB/',
                     ]
-                ]
+                ],
+                'code' => 'A',
+                'is_active' => false,
+                'full_reference' => 'http://mysite.com/linkA/',
             ]
         ];
         $nav = new Navigation('test');

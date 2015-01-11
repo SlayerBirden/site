@@ -5,3 +5,7 @@ config/di/local.admin.parameters.yml
 var/
 vendor/
 public/cov
+tests/site_test
+public/.htaccess
+public/admin/.htaccess
+node_modules

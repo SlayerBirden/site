@@ -50,9 +50,9 @@ class Article extends AbstractAdminController
         /** @var ArticleTable $articleTable */
         $articleTable = $this->getSC()->get('article_table');
         try {
-            $articleTable->delete($article->id);
+            $articleTable->delete($article);
         } catch (\Exception $e) {
-            $this->getSC()->get('logger')->error(sprintf("Could not remove article #%d", $article->id));
+            $this->getLogger()->error(sprintf("Could not remove article #%d", $article->id));
         }
         return $this->redirect('/blog');
     }
@@ -107,7 +107,8 @@ class Article extends AbstractAdminController
         /** @var ArticleTable $articleTable */
         $articleTable = $this->getSC()->get('article_table');
         try {
-            $articleTable->save($form->getData());
+            $data = $form->getData();
+            $articleTable->save($data);
             $this->getSession()->getFlashBag()->add(
                 'success',
                 'The article was saved successfully!'

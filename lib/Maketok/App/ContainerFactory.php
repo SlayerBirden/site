@@ -105,7 +105,7 @@ class ContainerFactory implements ConfigInterface
      */
     public function getCompilerPasses()
     {
-        return Site::getConfig('iod_compiler_pass');
+        return Site::getConfig('ioc_compiler_pass');
     }
 
     /**

@@ -35,19 +35,29 @@ class AddTable extends AbstractProcedure implements ProcedureInterface
         $constraints = $this->getIfExists('constraints', $tableDefinition, []);
         $indices = $this->getIfExists('indices', $tableDefinition, []);
         foreach ($columns as $columnName => $columnDefinition) {
-            $addCol = new AddColumn($this->sql);
+            $addCol = new AddColumn($this->sql, $this->resource);
             $addCol->getQuery(array($tableName, $columnName, $columnDefinition, $table));
         }
         foreach ($constraints as $constraintName => $constraintDefinition) {
-            $addCon = new AddConstraint($this->sql);
+            $addCon = new AddConstraint($this->sql, $this->resource);
             $addCon->getQuery(array($tableName, $constraintName, $constraintDefinition, $table));
         }
         foreach ($indices as $indexName => $indexDefinition) {
             // no special class for index
-            $addCon = new AddConstraint($this->sql);
+            $addCon = new AddIndice($this->sql, $this->resource);
             $addCon->getQuery(array($tableName, $indexName, $indexDefinition, $table));
         }
 
         return $this->query($table);
+    }
+
+    /**
+     * get signature for query
+     * @param  array $args
+     * @return string
+     */
+    public function getQuerySignature(array $args)
+    {
+        return $args[0] . md5(microtime(true));// must be unique
     }
 }

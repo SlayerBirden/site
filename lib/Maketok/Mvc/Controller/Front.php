@@ -12,6 +12,8 @@ namespace Maketok\Mvc\Controller;
 
 use Maketok\App\Helper\UtilityHelperTrait;
 use Maketok\Http\Response;
+use Symfony\Component\HttpFoundation\Response as BaseHttpResponse;
+use Maketok\Mvc\FlowException;
 use Maketok\Mvc\GenericException;
 use Maketok\Mvc\RouteException;
 use Maketok\Mvc\Router\Route\Http\Error;
@@ -77,12 +79,24 @@ class Front
     public function launch(Success $success, $silent = false, $parameters = [])
     {
         $response = $this->launchAction($success->getResolver(), $success->getMatchedRoute(), $parameters);
+        if ($response) {
+            $this->sendResponse($response, $silent);
+        }
+    }
+
+    /**
+     * @param BaseHttpResponse $response
+     * @param bool $silent
+     */
+    public function sendResponse(BaseHttpResponse $response, $silent = false)
+    {
         if (!$silent) {
-            $this->getDispatcher()->notify('response_send_before', new State(['response' => $response]));
+            $this->getDispatcher()->notify(
+                'response_send_before',
+                new State(['request' => $this->request, 'response' => $response])
+            );
         }
-        if ($response && is_object($response)) {
-            $response->send();
-        }
+        $response->send();
     }
 
     /**
@@ -103,6 +117,10 @@ class Front
     public function exceptionHandler(\Exception $e)
     {
         try {
+            // a way to regulate flow; do not take any actions
+            if ($e instanceof FlowException) {
+                return;
+            }
             $message = 'Oops! We are really sorry, but there was an error!';
             $dumper = $this->dumpers->pop();
             if ($e instanceof RouteException) {
@@ -119,7 +137,7 @@ class Front
                     $message = $e->getMessage();
                 }
                 $errorRoute = new Error($dumper, ['exception' => $e]);
-                $this->getLogger()->err($e->__toString());
+                $this->getLogger()->err($e);
             }
             $this->launch($errorRoute->match($this->request), true, [$code, $message]);
         } catch (\Exception $ex) {
@@ -128,7 +146,7 @@ class Front
                 $ex->getFile(),
                 $ex->getLine(),
                 $ex->getTraceAsString(),
-                $e->__toString()
+                $e
             );
         }
     }

@@ -82,8 +82,6 @@ class AuthorizationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException \Maketok\Firewall\AccessDeniedException
-     * @expectedExceptionMessage Access denied for current entity.
      */
     public function validateRestrict()
     {
@@ -92,6 +90,9 @@ class AuthorizationTest extends \PHPUnit_Framework_TestCase
         $auth->addRule($rule);
         $request = new Request();
         $request->setArea('admin');
+        $dispatcherMock = $this->getMock('Maketok\Observer\SubjectManagerInterface');
+        $dispatcherMock->expects($this->once())->method('notify')->with($this->equalTo('firewall_user_forbidden'));
+        $auth->setDispatcher($dispatcherMock);
 
         $auth->validate($request);
     }

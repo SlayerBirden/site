@@ -1,0 +1,37 @@
+{# This is a part of Maketok site package. #}
+{# @author Oleg Kulik <slayer.birden@gmail.com> #}
+{# For the full copyright and license information, please view the LICENSE #}
+{# file that was distributed with this source code. #}
+{# note: this is blog index #}
+{% extends "base-manager.html.twig" %}
+{% block content %}
+<div class="table-responsive">
+    <a class="btn btn-primary" role="button" href="{{ base_url }}/auth/roles/new">{% trans %}Add New User Role{% endtrans %}</a>
+    <table class="table">
+        <tr>
+            <th>{% trans %}Role Id{% endtrans %}</th>
+            <th>{% trans %}Title{% endtrans %}</th>
+            <th>{% trans %}Created At{% endtrans %}</th>
+            <th>{% trans %}Updated At{% endtrans %}</th>
+            <th>{% trans %}Actions{% endtrans %}</th>
+        </tr>
+    {% for role in roles %}
+        <tr>
+            <td>{{ role.id }}</td>
+            <td>{{ role.title }}</td>
+            <td>{{ role.created_at|date("Y-m-d H:i:s") }}</td>
+            <td>{{ role.updated_at|date("Y-m-d H:i:s") }}</td>
+            <td>
+                <a  class="btn btn-default btn-xs" role="button"
+                    href="{{ base_url }}/auth/roles/edit/{{ role.id }}">{% trans %}Edit{% endtrans %}</a>
+                <a  class="btn btn-default btn-xs" role="button"
+                    href="{{ base_url }}/auth/roles/delete/{{ role.id }}"
+                   onclick="return window.confirm('{% trans %}Are you sure you want to delete the role?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7">No roles exist yet!</td></tr>
+    {% endfor %}
+    </table>
+</div>
+{% endblock %}

@@ -53,7 +53,7 @@ trait UtilityHelperTrait
      * @param  string $baseUrl
      * @return string
      */
-    public function getUrl($path, array $config = null, $baseUrl = null)
+    public function getUrl($path, array $config = [], $baseUrl = null)
     {
         // @codeCoverageIgnoreStart
         if (is_null($baseUrl)) {
@@ -65,8 +65,13 @@ trait UtilityHelperTrait
         $path = '/' . ltrim($path, '/');
         // remove right path delimiter
         $path = rtrim($path, '/');
-        if (!isset($config['wts']) || !$config['wts']) { // config Without Trailing Slash
+        $wts = $this->getIfExists('wts', $config, false);
+        if (!$wts) { // config Without Trailing Slash
             $path  = $path . '/';
+        }
+        $clearPath = $this->getIfExists('clear_path', $config, false);
+        if (!$clearPath) {
+            $path = rtrim($uri->getPath(), '/') . $path;
         }
         $uri->setPath($path);
 
@@ -82,8 +87,11 @@ trait UtilityHelperTrait
     {
         /** @var RouteInterface $route */
         $route = $this->ioc()->get('request')->attributes->get('_route');
+        if ($route) {
+            return $this->getUrl($route->assemble());
+        }
 
-        return $this->getUrl($route->assemble());
+        return '';
     }
 
     /**

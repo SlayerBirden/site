@@ -28,12 +28,10 @@ class State implements StateInterface, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function __construct($data = null)
+    public function __construct($data = [])
     {
-        if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                $this->$key = $value;
-            }
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
         }
     }
 
@@ -76,6 +74,8 @@ class State implements StateInterface, \IteratorAggregate
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->data);
+        $data = $this->data;
+        $data['subject'] = $this->getSubject();
+        return new \ArrayIterator($data);
     }
 }

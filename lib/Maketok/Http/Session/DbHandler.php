@@ -55,7 +55,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
             $this->tableMapper->delete($session_id);
             return true;
         } catch (\Exception $e) {
-            $this->getLogger()->err($e->__toString());
+            $this->getLogger()->err($e);
         }
         return false;
     }
@@ -74,7 +74,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
         try {
             $this->tableMapper->getGateway()->delete($where);
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
         }
         return true;
     }
@@ -117,7 +117,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
             $model->data = $session_data;
             $this->tableMapper->save($model);
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
         }
         return true;
     }
@@ -135,7 +135,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function getDdlConfig($version)
     {
-        return include __DIR__ . '/Resource/config/installer/ddl/' . $version . '.php';
+        return current($this->ioc()->get('config_getter')->getConfig(__DIR__.'/Resource/config/installer/ddl', $version));
     }
 
     /**
@@ -152,7 +152,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function getDdlVersion()
     {
-        return '0.1.0';
+        return '0.1.1';
     }
 
     /**

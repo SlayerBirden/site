@@ -35,7 +35,7 @@ class Modules extends AbstractAdminController
             $moduleTable = $this->getSC()->get('module_table');
             $modules = $moduleTable->fetchAll();
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
             $modules = [];
         }
         return $this->prepareResponse($request, array(
@@ -59,7 +59,8 @@ class Modules extends AbstractAdminController
             /** @var TableMapper $moduleTable */
             $moduleTable = $this->getSC()->get('module_table');
             try {
-                $moduleTable->save($form->getData());
+                $data = $form->getData();
+                $moduleTable->save($data);
                 $this->getSession()->getFlashBag()->add(
                     'success',
                     'The module was updated successfully!'

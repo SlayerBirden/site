@@ -91,7 +91,7 @@ abstract class AbstractRouter implements RouterInterface, ConfigConsumerInterfac
             try {
                 $this->parseConfig($contents);
             } catch (RouteException $e) {
-                $this->getLogger()->err($e->__toString());
+                $this->getLogger()->err($e);
             }
         }
     }

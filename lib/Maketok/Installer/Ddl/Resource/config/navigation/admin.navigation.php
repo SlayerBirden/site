@@ -13,6 +13,7 @@ return [
         'installer' => [
             'order' => 10,
             'title' => 'Installer',
+            'href'  => '/install',
             'children' => [
                 'ddl' => [
                     'href' => '/install/ddl',

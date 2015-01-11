@@ -4,7 +4,8 @@
 {# file that was distributed with this source code. #}
 {% extends "base-manager.html.twig" %}
 {% block content %}
-    <table>
+<div class="table-responsive">
+    <table class="table">
         <tr>
             <th>{% trans %}Module Code{% endtrans %}</th>
             <th>{% trans %}Version{% endtrans %}</th>
@@ -26,4 +27,5 @@
         <tr><td colspan="6">{% trans %}No modules found in the system yet.{% endtrans %}</td></tr>
     {% endfor %}
     </table>
+</div>
 {% endblock %}

@@ -29,8 +29,14 @@
         <testsuite name="module">
             <directory>./Maketok/Module/</directory>
         </testsuite>
+        <testsuite name="model">
+            <directory>./Maketok/Model/</directory>
+        </testsuite>
         <testsuite name="mvc">
             <directory>./Maketok/Mvc/</directory>
+        </testsuite>
+        <testsuite name="auth">
+            <directory>./Maketok/Authentication/</directory>
         </testsuite>
         <testsuite name="maketok">
             <directory>./</directory>

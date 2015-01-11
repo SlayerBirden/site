@@ -1,0 +1,56 @@
+# This is a part of Maketok site package.
+# @author Oleg Kulik <slayer.birden@gmail.com>
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+routes:
+  - type: literal
+    path: /login
+    resolver: [Maketok\Authentication\Resource\controller\AuthController, loginAction]
+  - type: literal
+    path: /logout
+    resolver: [Maketok\Authentication\Resource\controller\AuthController, logoutAction]
+# users
+  - type: literal
+    path: /auth/users/create
+    resolver: [Maketok\Authentication\Resource\controller\UserController, createAction]
+  - type: parameterized
+    path: /auth/users/edit/{id}
+    resolver: [Maketok\Authentication\Resource\controller\UserController, editAction]
+    defaults: []
+    restrictions:
+        id: ^\d+$
+  - type: parameterized
+    path: /auth/users/delete/{id}
+    resolver: [Maketok\Authentication\Resource\controller\UserController, deleteAction]
+    defaults: []
+    restrictions:
+        id: ^\d+$
+  - type: parameterized
+    path: /auth/users/change_password/{id}
+    resolver: [Maketok\Authentication\Resource\controller\UserController, changePasswordAction]
+    defaults: []
+    restrictions:
+        id: ^\d+$
+  - type: literal
+    path: /auth/users
+    resolver: [Maketok\Authentication\Resource\controller\UserController, usersAction]
+# roles
+  - type: literal
+    path: /auth/roles/new
+    resolver: [Maketok\Authentication\Resource\controller\RoleController, newAction]
+  - type: parameterized
+    path: /auth/roles/edit/{id}
+    resolver: [Maketok\Authentication\Resource\controller\RoleController, editAction]
+    defaults: []
+    restrictions:
+        id: ^\d+$
+  - type: parameterized
+    path: /auth/roles/delete/{id}
+    resolver: [Maketok\Authentication\Resource\controller\RoleController, deleteAction]
+    defaults: []
+    restrictions:
+        id: ^\d+$
+  - type: literal
+    path: /auth/roles
+    resolver: [Maketok\Authentication\Resource\controller\RoleController, rolesAction]

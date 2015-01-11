@@ -110,7 +110,7 @@ class ModuleManager implements ClientInterface
             $module->version = $version;
             $this->tableType->save($module);
         } catch (ModelException $e) {
-            $this->getLogger()->err($e->__toString());
+            $this->getLogger()->err($e);
             $this->addSessionMessage('error', 'Could not update to version.');
         }
     }
@@ -196,9 +196,10 @@ class ModuleManager implements ClientInterface
                 sprintf("Could not file Module config '%s' in directory %s", $this->configName, $dir);
             };
         }
-        $this->getDispatcher()->notify('module_list_exists', new State([
-            'modules' => $this->modules
-        ]));
+        $this->getDispatcher()->notify(
+            'module_list_exists',
+            new State(['modules' => $this->modules])
+        );
     }
 
     /**
@@ -217,8 +218,10 @@ class ModuleManager implements ClientInterface
      */
     public function addDbModule(ConfigInterface $config)
     {
+        /** @var \Maketok\Util\Zend\Db\ResultSet\HydratingResultSet $resultSet */
+        $resultSet = $this->tableType->getGateway()->getResultSetPrototype();
         /** @var Module $module */
-        $module = $this->tableType->getGateway()->getResultSetPrototype()->getObjectPrototype();
+        $module = $resultSet->getObjectPrototype();
         $module->module_code = $config->getCode();
         $module->active = $config->isActive();
         $module->version = $config->getVersion();
@@ -242,7 +245,7 @@ class ModuleManager implements ClientInterface
      */
     public function removeDbModule(Module $module)
     {
-        $this->tableType->delete($module->module_code);
+        $this->tableType->delete($module);
     }
 
     /**
@@ -270,10 +273,12 @@ class ModuleManager implements ClientInterface
                     $this->updateDbModule($module, $configModule);
                 }
             }
-            $this->getDispatcher()->notify('modulemanager_updates_after',
-                new State(array('active_modules' => $this->getActiveModules())));
+            $this->getDispatcher()->notify(
+                'modulemanager_updates_after',
+                new State(array('active_modules' => $this->getActiveModules()))
+            );
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
         }
     }
 
@@ -290,7 +295,24 @@ class ModuleManager implements ClientInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
+        }
+    }
+
+    /**
+     * add installer subscribers
+     * @codeCoverageIgnore
+     */
+    public function addInstallerSoftware()
+    {
+        try {
+            foreach ($this->getActiveModules() as $config) {
+                if ($config instanceof Installer\Ddl\ClientInterface) {
+                    $this->ioc()->get('installer_ddl_manager')->addSoftwareClient($config);
+                }
+            }
+        } catch (\Exception $e) {
+            $this->getLogger()->emerg($e);
         }
     }
 
@@ -304,23 +326,29 @@ class ModuleManager implements ClientInterface
         }
         try {
             // process active modules
-            $this->getDispatcher()->notify('modulemanager_process_before',
-                new State(array('active_modules' => $this->getActiveModules())));
+            $this->getDispatcher()->notify(
+                'modulemanager_process_before',
+                new State(['active_modules' => $this->getActiveModules()])
+            );
             foreach ($this->getActiveModules() as $config) {
                 // events
                 /** @var ConfigInterface $config */
                 $config->initListeners();
             }
-            $this->getDispatcher()->notify('modulemanager_init_listeners_after',
-                new State(array('active_modules' => $this->getActiveModules())));
+            $this->getDispatcher()->notify(
+                'modulemanager_init_listeners_after',
+                new State(['active_modules' => $this->getActiveModules()])
+            );
             foreach ($this->getActiveModules() as $config) {
                 // routes
                 $config->initRoutes();
             }
-            $this->getDispatcher()->notify('modulemanager_process_after',
-                new State(array('active_modules' => $this->getActiveModules())));
+            $this->getDispatcher()->notify(
+                'modulemanager_process_after',
+                new State(['active_modules' => $this->getActiveModules()])
+            );
         } catch (\Exception $e) {
-            $this->getLogger()->emerg($e->__toString());
+            $this->getLogger()->emerg($e);
         }
     }
 
@@ -339,7 +367,7 @@ class ModuleManager implements ClientInterface
      */
     public function getDdlVersion()
     {
-        return '0.2.3';
+        return '0.2.4';
     }
 
     /**

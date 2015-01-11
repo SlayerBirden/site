@@ -19,6 +19,9 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class FormExtensionCompilerPass implements CompilerPassInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition('form_builder')) {

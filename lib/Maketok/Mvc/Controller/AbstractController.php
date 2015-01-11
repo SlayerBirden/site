@@ -122,9 +122,16 @@ class AbstractController
     public function getDefaults()
     {
         return [
-            'css_url' => $this->getUrl('/css/'),
-            'js_url' => $this->getUrl('/js/'),
-            'images_url' => $this->getUrl('/images/'),
+            'css_url' => $this->getUrl('/dist/css/'),
+            'js_url' => $this->getUrl('/dist/js/'),
+            'fonts_url' => $this->getUrl('/dist/fonts/'),
+            'dist_url' => $this->getUrl('/dist/'),
+            'images_url' => $this->getUrl('/dist/images/'),
+            'base_css_url' => $this->getUrl('/dist/css/', ['clear_path' => 1]),
+            'base_js_url' => $this->getUrl('/dist/js/', ['clear_path' => 1]),
+            'base_fonts_url' => $this->getUrl('/dist/fonts/', ['clear_path' => 1]),
+            'base_dist_url' => $this->getUrl('/dist/', ['clear_path' => 1]),
+            'base_images_url' => $this->getUrl('/dist/images/', ['clear_path' => 1]),
             'base_url' => $this->getUrl('/', ['wts' => 1]),
             'current_url' => $this->getCurrentUrl(),
             'path_info' => $this->getRouter()->getRequest()->getPathInfo(),

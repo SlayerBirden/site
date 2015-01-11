@@ -7,39 +7,80 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Maketok Site Engine">
+    <meta name="author" content="Oleg Kulik">
+    <link rel="icon" href="{{ base_images_url }}/favicon.ico">
     <title>{{ title }}</title>
     {% block head %}
-        {#<link rel="stylesheet" href="{{ css_url }}style.css">#}
+        <!-- Bootstrap core CSS -->
+        <link href="{{ base_css_url }}bootstrap.min.css" rel="stylesheet">
+        <link href="{{ base_css_url }}bootstrap-theme.min.css" rel="stylesheet">
+        <link href="{{ css_url }}base.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
     {% endblock %}
 </head>
 <body>
-<div id="wrapper">
+    {% block nav %}
+        <nav class="navbar navbar-inverse navbar-static-top">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{ base_url }}">Maketok</a>
+                </div>
+                <div class="navbar-right">
+                    {% block search %}{% endblock %}
+                    {% include 'user-area.html.twig' with {'user': user} %}
+                </div>
+                <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="nav navbar-nav">{% include 'navigation.html.twig' with {'links': topmenu} %}</ul>
+                </div>
+            </div>
+        </nav>
+    {% endblock %}
     <header>
-        <a href="{{ base_url }}" class="logo"><strong>{% trans %}Maketok Admin Management Area{% endtrans %}</strong></a>
-        {% block search %}{% endblock %}
-        {% block customer_area %}{% endblock %}
-        <div id="info" class="info">
-            <h1>{% trans %}%description%{% endtrans %}</h1>
+        <div class="container">
+            <div id="info" class="info">
+                <h1>{% trans %}%description%{% endtrans %}</h1>
+            </div>
         </div>
     </header>
-    <nav>
-        <ul>{% include 'navigation.html.twig' with {'links': links} %}</ul>
-    </nav>
-    <section id="content">
+    <div class="container-fluid">
         {% for type, messages in session.flashbag.all() %}
             {% for message in messages %}
-                <ul class="message {{ type }}">
-                    <li>{{ message }}</li>
+                <ul class="list-unstyled">
+                    <li class="alert alert-{{ type }} alert-dismissable">
+                        <button type="button" class="close"
+                                data-dismiss="alert"
+                                aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ message }}
+                    </li>
                 </ul>
             {% endfor %}
         {% endfor %}
         {% block content %}{% endblock %}
-    </section>
+    </div>
     <footer>
+        <div class="container">
         {% block footer %}{% endblock %}
         {% trans %}&copy; 2014 <a href="http://maketok.com">maketok.com</a>.{% endtrans %}
+        </div>
     </footer>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ base_js_url }}jquery.min.js"></script>
+    <script src="{{ base_js_url }}bootstrap.min.js"></script>
     {% block before_body_end %}{% endblock %}
-</div>
 </body>
 </html>

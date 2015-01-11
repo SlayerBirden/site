@@ -27,4 +27,14 @@ class DropTable extends AbstractProcedure implements ProcedureInterface
 
         return $this->query($table);
     }
+
+    /**
+     * get signature for query
+     * @param  array $args
+     * @return string
+     */
+    public function getQuerySignature(array $args)
+    {
+        return $args[0] . md5(microtime(true));// must be unique
+    }
 }

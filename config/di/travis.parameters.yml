@@ -8,4 +8,5 @@ parameters:
   db_passw:
   db_host: localhost
   db_database: site_test
-  db_driver: pdo_mysql
+  db_driver: pdo_sqlite
+  base_url: http://mysite.com

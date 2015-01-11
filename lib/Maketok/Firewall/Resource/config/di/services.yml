@@ -4,7 +4,9 @@
 # file that was distributed with this source code.
 
 services:
-  auth:
+
+  firewall:
       class: Maketok\Firewall\Authorization
+      arguments: ["@auth"]
       calls:
         - [initConfig]

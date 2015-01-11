@@ -1,0 +1,151 @@
+# This is a part of Maketok site package.
+# @author Oleg Kulik <slayer.birden@gmail.com>
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+services:
+
+# auth user table ===========================================
+  auth_user_table:
+      class: Maketok\Authentication\Provider\DataBaseProvider
+      factory: ["@auth_user_table_factory", spawnTable]
+  auth_user_edit_table:
+      class: Maketok\Authentication\Provider\DataBaseProvider
+      factory: ["@auth_user_edit_table_factory", spawnTable]
+  auth_user_password_change_table:
+      class: Maketok\Authentication\Provider\DataBaseProvider
+      factory: ["@auth_user_password_change_table_factory", spawnTable]
+
+  auth_user_table_factory:
+      class: Maketok\Model\HydratingTableFactory
+      arguments:
+          - users
+          - id
+          - Maketok\Authentication\Resource\Model\NewUser
+          - id
+          - Maketok\Authentication\Resource\Model\UserTable
+          - ~
+          - "@auth_user_object_prop_hydrator"
+
+  auth_user_edit_table_factory:
+      class: Maketok\Model\HydratingTableFactory
+      arguments:
+          - users
+          - id
+          - Maketok\Authentication\Resource\Model\EditUser
+          - id
+          - Maketok\Authentication\Resource\Model\UserTable
+          - ~
+          - "@auth_user_object_prop_hydrator"
+
+  auth_user_password_change_table_factory:
+      class: Maketok\Model\HydratingTableFactory
+      arguments:
+          - users
+          - id
+          - Maketok\Authentication\Resource\Model\ChangePassword
+          - id
+          - Maketok\Authentication\Resource\Model\UserTable
+          - ~
+          - "@auth_user_object_prop_hydrator"
+
+  auth_user_model_hydrator_filter:
+    class: Maketok\Authentication\Resource\Model\Hydrator\Filter\UserFilter
+
+  auth_user_object_prop_hydrator:
+      class: Maketok\Util\Hydrator\ObjectProperty
+      calls:
+        - [addStrategy, [created_at, "@date_time_strategy"]]
+        - [addStrategy, [updated_at, "@date_time_strategy"]]
+        - [addStrategy, [roles, "@array_string_strategy"]]
+        - [addFilter, [user_filter, "@auth_user_model_hydrator_filter"]]
+
+# auth user_data table =======================================
+  auth_user_data_table:
+      class: Maketok\Model\TableMapper
+      factory: ["@auth_user_data_factory", spawnTable]
+
+  auth_user_data_factory:
+      class: Maketok\Model\ArrayTableFactory
+      arguments:
+          - user_data
+          - user_id
+          - array
+
+# auth role table ============================================
+  auth_role_table:
+      class: Maketok\Model\TableMapper
+      factory: ["@auth_role_table_factory", spawnTable]
+
+  auth_role_table_factory:
+      class: Maketok\Model\ArrayTableFactory
+      arguments:
+          - roles
+          - id
+          - array
+
+# auth user_roles table =======================================
+  auth_user_role_table:
+      class: Maketok\Model\TableMapper
+      factory: ["@auth_user_role_table_factory", spawnTable]
+
+  auth_user_role_table_factory:
+      class: Maketok\Model\ArrayTableFactory
+      arguments:
+          - users_roles
+          - [user_id, role_id]
+          - array
+# =============================================================
+
+  auth_provider_encoder:
+      class: Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder
+      arguments: [12]
+
+  db_auth_provider:
+      class: Maketok\Authentication\Provider\DataBaseProvider
+      arguments:
+          - "@auth_user_table"
+      calls:
+          - [setEncoder, ["@auth_provider_encoder"]]
+
+  auth:
+      class: Maketok\Authentication\Authentication
+      calls:
+        - [setProvider, ["@db_auth_provider"]]
+
+  auth_controller:
+      class: Maketok\Authentication\Resource\controller\AuthController
+      arguments: ["@auth"]
+
+  login.form.type:
+    class: Maketok\Authentication\Resource\Form\LoginType
+    tags:
+      - { name: form.type, alias: login }
+
+  create_user.form.type:
+    class: Maketok\Authentication\Resource\Form\CreateUserType
+    arguments: ["@auth_role_table"]
+    tags:
+      - { name: form.type, alias: create_user }
+
+  edit_user.form.type:
+    class: Maketok\Authentication\Resource\Form\EditUserType
+    arguments: ["@auth_role_table"]
+    tags:
+      - { name: form.type, alias: edit_user }
+
+  change_password.form.type:
+    class: Maketok\Authentication\Resource\Form\ChangePasswordType
+    tags:
+      - { name: form.type, alias: change_password }
+
+  create_user_role.form.type:
+    class: Maketok\Authentication\Resource\Form\CreateUserRoleType
+    tags:
+      - { name: form.type, alias: create_user_role }
+# current password validator
+  auth.validator.user_password:
+      class: Maketok\Authentication\Resource\Validator\UserPasswordValidator
+      arguments: ["@auth", "@auth_provider_encoder"]
+      tags:
+          - { name: validator.constraint_validator, alias: security.validator.user_password }

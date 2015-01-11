@@ -1,0 +1,43 @@
+{# This is a part of Maketok site package. #}
+{# @author Oleg Kulik <slayer.birden@gmail.com> #}
+{# For the full copyright and license information, please view the LICENSE #}
+{# file that was distributed with this source code. #}
+{# note: this is blog index #}
+{% extends "base-manager.html.twig" %}
+{% block content %}
+<div class="table-responsive">
+    <a class="btn btn-primary" role="button" href="{{ base_url }}/auth/users/create">{% trans %}Add New User{% endtrans %}</a>
+    <table class="table">
+        <tr>
+            <th>{% trans %}Username{% endtrans %}</th>
+            <th>{% trans %}First Name{% endtrans %}</th>
+            <th>{% trans %}Last Name{% endtrans %}</th>
+            <th>{% trans %}Roles{% endtrans %}</th>
+            <th>{% trans %}Created At{% endtrans %}</th>
+            <th>{% trans %}Updated At{% endtrans %}</th>
+            <th>{% trans %}Actions{% endtrans %}</th>
+        </tr>
+    {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.firstname }}</td>
+            <td>{{ user.lastname }}</td>
+            <td>{{ user.roles|join(',') }}</td>
+            <td>{{ user.created_at|date("Y-m-d H:i:s") }}</td>
+            <td>{{ user.updated_at|date("Y-m-d H:i:s") }}</td>
+            <td>
+                <a class="btn btn-default btn-xs" role="button"
+                   href="{{ base_url }}/auth/users/edit/{{ user.id }}">{% trans %}Edit{% endtrans %}</a>
+                <a class="btn btn-default btn-xs" role="button"
+                   href="{{ base_url }}/auth/users/change_password/{{ user.id }}">{% trans %}Change Password{% endtrans %}</a>
+                <a class="btn btn-default btn-xs" role="button"
+                   href="{{ base_url }}/auth/users/delete/{{ user.id }}"
+                   onclick="return window.confirm('{% trans %}Are you sure you want to delete the user?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7">No users exist yet!</td></tr>
+    {% endfor %}
+    </table>
+</div>
+{% endblock %}

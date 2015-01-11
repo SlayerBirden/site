@@ -29,4 +29,21 @@ abstract class AbstractParser implements ParserInterface
         $this->row = $row;
         $this->name = $name;
     }
+
+    /**
+     * @param string $columns
+     * @return array
+     */
+    protected function parseColumns($columns)
+    {
+        $columns = explode(',', $columns);
+        array_walk($columns, function (&$row) {
+            $row = str_replace('`', '', trim($row));
+        });
+        if (count($columns) === 1) {
+            $columns = reset($columns);
+        }
+        return $columns;
+    }
+
 }

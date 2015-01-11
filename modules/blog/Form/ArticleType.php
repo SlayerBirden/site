@@ -23,10 +23,10 @@ class ArticleType extends AbstractType
     {
         $builder
             ->add('id', 'hidden')
-            ->add('title', 'text', array('attr' => array('class' => 'long')))
+            ->add('title', 'text')
             ->add('code', 'text')
-            ->add('content', 'textarea', array('attr' => array('class' => 'long')))
-            ->add('description', 'textarea', array('attr' => array('class' => 'long')))
+            ->add('content', 'textarea', array('attr' => array('rows' => 20)))
+            ->add('description', 'textarea')
             ->add($builder->create('created_at', 'datetime', array('required' => false)))
             ->add($builder->create('updated_at', 'datetime', array('read_only' => true, 'required' => false)))
             ->add('author', 'text')

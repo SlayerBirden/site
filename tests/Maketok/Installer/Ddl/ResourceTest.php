@@ -181,14 +181,14 @@ SQL;
 
         $this->assertEquals('primaryKey', $result['type']);
         $this->assertEquals('primary', $result['name']);
-        $this->assertEquals(array('website_id'), $result['definition']);
+        $this->assertEquals('website_id', $result['definition']);
 
         $result = $this->resource->getConstraint('test_website', 'code');
         $this->assertNotEmpty($result);
 
         $this->assertEquals('uniqueKey', $result['type']);
         $this->assertEquals('code', $result['name']);
-        $this->assertEquals(array('code'), $result['definition']);
+        $this->assertEquals('code', $result['definition']);
 
         $result = $this->resource->getConstraint('test_store', 'FK_STORE_WEBSITE');
         $this->assertNotEmpty($result);
@@ -266,7 +266,7 @@ SQL;
                 'primary',
                 [
                     'type' => 'primaryKey',
-                    'definition' => ['id'],
+                    'definition' => 'id',
                 ]
             ],
             [
@@ -298,21 +298,18 @@ SQL;
                 ['type' => 'integer']
             ],
         ];
-        $directives->dropConstraints = [
-            [
-                'test2',
-                'UNQ_KEY_OOPS',
-                'uniqueKey'
-            ],
-            [
-                'test2',
-                'primary',
-                'primaryKey'
-            ],
+        $directives->dropFks = [
             [
                 'test2',
                 'FK_SOME',
                 'foreignKey'
+            ],
+        ];
+        $directives->dropPks = [
+            [
+                'test2',
+                'primary',
+                'primaryKey'
             ],
         ];
         $directives->dropColumns = [
@@ -327,7 +324,7 @@ SQL;
                 'KEY_IDX',
                 [
                     'type' => 'index',
-                    'definition' => ['some_column'],
+                    'definition' => 'some_column',
                 ]
             ],
         ];
@@ -336,6 +333,11 @@ SQL;
                 'test',
                 'KEY_IDX',
                 'index',
+            ],
+            [
+                'test2',
+                'UNQ_KEY_OOPS',
+                'uniqueKey'
             ],
         ];
         $directives->dropTables = [
@@ -351,20 +353,14 @@ SQL;
         $expected = [
             "DROP TABLE `test3`",
             "CREATE TABLE `test` ( `id` INTEGER NOT NULL, `code` VARCHAR(255) NOT NULL, `area` VARCHAR(55) )",
-            "ALTER TABLE `test2` DROP INDEX `UNQ_KEY_OOPS`",
-            "ALTER TABLE `test2` DROP PRIMARY KEY",
-            "ALTER TABLE `test2` DROP FOREIGN KEY `FK_SOME`",
-            "ALTER TABLE `test` DROP INDEX `KEY_IDX`",
-            "ALTER TABLE `test` DROP COLUMN `code`",
-            "ALTER TABLE `test2` CHANGE COLUMN `oldCol` `newCol` INTEGER NOT NULL",
-            "ALTER TABLE `test` ADD CONSTRAINT `id` PRIMARY KEY (`id`)",
-            "ALTER TABLE `test` ADD CONSTRAINT `UNQ_KEY_CODE_AREA` UNIQUE (`code`, `area`)",
-            "ALTER TABLE `test` ADD CONSTRAINT `FK_CODE_PARENT_CODE` FOREIGN KEY (`parent_id`) REFERENCES `modules` (`reference_id`) ON DELETE CASCADE ON UPDATE CASCADE",
-            "ALTER TABLE `test` ADD INDEX `KEY_IDX`(`some_column`)",
+            "ALTER TABLE `test2` CHANGE COLUMN `oldCol` `newCol` INTEGER NOT NULL, DROP PRIMARY KEY, DROP FOREIGN KEY `FK_SOME`, DROP INDEX `UNQ_KEY_OOPS`",
+            "ALTER TABLE `test` DROP COLUMN `code`, ADD CONSTRAINT `id` PRIMARY KEY (`id`), ADD CONSTRAINT `UNQ_KEY_CODE_AREA` UNIQUE (`code`, `area`), ADD CONSTRAINT `FK_CODE_PARENT_CODE` FOREIGN KEY (`parent_id`) REFERENCES `modules` (`reference_id`) ON DELETE CASCADE ON UPDATE CASCADE, ADD INDEX `KEY_IDX`(`some_column`), DROP INDEX `KEY_IDX`",
         ];
         $procedures = $refProp->getValue($this->resource);
+        reset($procedures);
         for ($i = 0; $i < count($expected); ++$i) {
-            $this->assertEquals($expected[$i], preg_replace('/\s+/', ' ', $procedures[$i]));
+            $this->assertEquals($expected[$i], preg_replace('/\s+/', ' ', current($procedures)));
+            next($procedures);
         }
     }
 
@@ -391,7 +387,7 @@ SQL;
         ];
         $procedures = $refProp->getValue($this->resource);
         $this->assertCount(1, $procedures);
-        $this->assertEquals($expected[0], preg_replace('/\s+/', ' ', $procedures[0]));
+        $this->assertEquals($expected[0], preg_replace('/\s+/', ' ', current($procedures)));
     }
 
     /**
@@ -424,6 +420,110 @@ SQL;
     }
 
     /**
+     * Multiple Columns FK related tests
+     * @test
+     */
+    public function testMultipleColumnFK()
+    {
+        $deleteSql = $sql = <<<'SQL'
+DROP TABLE IF EXISTS `test_t2`;
+DROP TABLE IF EXISTS `test_t1`;
+SQL;
+        $sql = <<<'SQL'
+CREATE TABLE IF NOT EXISTS `test_t1` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `area` varchar(32) NOT NULL DEFAULT 'base',
+  `name` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`, `area`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='t1';
+
+CREATE TABLE IF NOT EXISTS `test_t2` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` smallint(5) unsigned DEFAULT '0',
+  `area` varchar(32) NOT NULL DEFAULT 'base',
+  PRIMARY KEY (`id`),
+  CONSTRAINT `FK_STORE_T1` FOREIGN KEY (`parent_id`, `area`)
+   REFERENCES `test_t1` (`id`, `area`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='t2';
+SQL;
+        $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+
+        $pk = $this->resource->getConstraint('test_t1', 'primary');
+        $this->assertNotEmpty($pk);
+        $this->assertEquals(['id', 'area'], $pk['definition']);
+
+        $result = $this->resource->getConstraint('test_t2', 'FK_STORE_T1');
+        $this->assertNotEmpty($result);
+
+        $this->assertEquals(['parent_id', 'area'], $result['column']);
+        $this->assertEquals(['id', 'area'], $result['reference_column']);
+
+        $this->adapter->query($deleteSql, Adapter::QUERY_MODE_EXECUTE);
+
+        //=============================================== test auto index creation
+        // assert THAT index IS added when none exists
+        $config1 = [
+            'modules' => [
+                'constraints' => [
+                    'FK_KEY_TEST' => [
+                        'type' => 'foreignKey',
+                        'column' => ['parent_id', 'website'],
+                        'reference_table' => 'test_parent',
+                        'reference_column' => ['id', 'website'],
+                    ]
+                ],
+            ],
+        ];
+        $this->resource->processValidateMergedConfig($config1);
+        $this->assertSame([
+            'modules' => [
+                'constraints' => [
+                    'FK_KEY_TEST' => [
+                        'type' => 'foreignKey',
+                        'column' => ['parent_id', 'website'],
+                        'reference_table' => 'test_parent',
+                        'reference_column' => ['id', 'website'],
+                        'on_update' => AddConstraint::DEFAULT_ON_UPDATE,
+                        'on_delete' => AddConstraint::DEFAULT_ON_DELETE,
+                    ]
+                ],
+                'indices' => [
+                    'FK_KEY_TEST' => [
+                        'type' => 'index',
+                        'definition' => ['parent_id', 'website']
+                    ],
+                ]
+            ],
+        ], $config1);
+        //============================ procedure test
+        $directives = new Directives();
+        $directives->addConstraints = [
+            [
+                'test',
+                'FK_CODE_PARENT_CODE',
+                [
+                    'type' => 'foreignKey',
+                    'column' => ['parent_id', 'website'],
+                    'reference_table' => 'modules',
+                    'reference_column' => ['reference_id', 'website'],
+                    'on_delete' => 'CASCADE',
+                    'on_update' => 'CASCADE',
+                ]
+            ],
+        ];
+
+        $this->resource->createProcedures($directives);
+        $refProp = new \ReflectionProperty(get_class($this->resource), 'procedures');
+        $refProp->setAccessible(true);
+        // the order is switched
+        $expected = [
+            "ALTER TABLE `test` ADD CONSTRAINT `FK_CODE_PARENT_CODE` FOREIGN KEY (`parent_id`, `website`) REFERENCES `modules` (`reference_id`, `website`) ON DELETE CASCADE ON UPDATE CASCADE",
+        ];
+        $procedures = $refProp->getValue($this->resource);
+        $this->assertEquals($expected[0], preg_replace('/\s+/', ' ', current($procedures)));
+    }
+
+    /**
      * @test
      */
     public function processValidateMergedConfig()
@@ -434,11 +534,11 @@ SQL;
                 'constraints' => [
                     'primary' => [
                         'type' => 'primaryKey',
-                        'definition' => ['id'],
+                        'definition' => 'id',
                     ],
                     'UNQ_KEY_CODE' => [
                         'type' => 'uniqueKey',
-                        'definition' => ['code'],
+                        'definition' => 'code',
                     ],
                     'FK_KEY_TEST' => [
                         'type' => 'foreignKey',
@@ -455,11 +555,11 @@ SQL;
                 'constraints' => [
                     'primary' => [
                         'type' => 'primaryKey',
-                        'definition' => ['id'],
+                        'definition' => 'id',
                     ],
                     'UNQ_KEY_CODE' => [
                         'type' => 'uniqueKey',
-                        'definition' => ['code'],
+                        'definition' => 'code',
                     ],
                     'FK_KEY_TEST' => [
                         'type' => 'foreignKey',
@@ -479,11 +579,11 @@ SQL;
                 'constraints' => [
                     'primary' => [
                         'type' => 'primaryKey',
-                        'definition' => ['id'],
+                        'definition' => 'id',
                     ],
                     'UNQ_KEY_CODE' => [
                         'type' => 'uniqueKey',
-                        'definition' => ['code'],
+                        'definition' => 'code',
                     ],
                     'FK_KEY_TEST' => [
                         'type' => 'foreignKey',
@@ -495,7 +595,7 @@ SQL;
                 'indices' => [
                     'KEY_TEST' => [
                         'type' => 'index',
-                        'definition' => ['date']
+                        'definition' => 'date'
                     ]
                 ]
             ],
@@ -506,11 +606,11 @@ SQL;
                 'constraints' => [
                     'primary' => [
                         'type' => 'primaryKey',
-                        'definition' => ['id'],
+                        'definition' => 'id',
                     ],
                     'UNQ_KEY_CODE' => [
                         'type' => 'uniqueKey',
-                        'definition' => ['code'],
+                        'definition' => 'code',
                     ],
                     'FK_KEY_TEST' => [
                         'type' => 'foreignKey',
@@ -524,11 +624,11 @@ SQL;
                 'indices' => [
                     'KEY_TEST' => [
                         'type' => 'index',
-                        'definition' => ['date']
+                        'definition' => 'date'
                     ],
                     'FK_KEY_TEST' => [
                         'type' => 'index',
-                        'definition' => ['parent_id']
+                        'definition' => 'parent_id'
                     ],
                 ]
             ],

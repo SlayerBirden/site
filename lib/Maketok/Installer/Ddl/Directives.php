@@ -30,7 +30,9 @@ class Directives implements DirectivesInterface
     /** @var array */
     public $addConstraints = [];
     /** @var array */
-    public $dropConstraints = [];
+    public $dropFks = [];
+    /** @var array */
+    public $dropPks = [];
     /** @var array */
     public $addIndices = [];
     /** @var array */
@@ -95,7 +97,8 @@ class Directives implements DirectivesInterface
         return [
             'dropTables' => $this->dropTables,
             'addTables' => $this->addTables,
-            'dropConstraints' => $this->dropConstraints,
+            'dropFks' => $this->dropFks,
+            'dropPks' => $this->dropPks,
             'dropIndices' => $this->dropIndices,
             'dropColumns' => $this->dropColumns,
             'addColumns' => $this->addColumns,

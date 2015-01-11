@@ -10,10 +10,12 @@
 
 namespace tests\Maketok\Navigation;
 
+use Maketok\App\Helper\ContainerTrait;
 use Maketok\Navigation\Link;
 
 class LinkTest extends \PHPUnit_Framework_TestCase
 {
+    use ContainerTrait;
     /**
      * @test
      */
@@ -162,15 +164,84 @@ class LinkTest extends \PHPUnit_Framework_TestCase
                     'test2' => [
                         'href' => '#2',
                         'title' => null,
-                        'children' => []
+                        'children' => [],
+                        'code' => 'test2',
+                        'is_active' => false,
+                        'full_reference' => 'http://mysite.com/',
                     ],
                     'test1' => [
                         'href' => '#1',
                         'title' => null,
-                        'children' => []
+                        'children' => [],
+                        'code' => 'test1',
+                        'is_active' => false,
+                        'full_reference' => 'http://mysite.com/',
                     ]
-                ]
+                ],
+                'code' => 'test',
+                'is_active' => true,
+                'full_reference' => '',
             ]
         ], $link->asArray());
+    }
+
+    /**
+     * @test
+     * @dataProvider activeProvider
+     * @param string $href
+     * @param string $url
+     * @param bool $expected
+     */
+    public function isActive($href, $url, $expected)
+    {
+        $mocked = $this->getMock('Maketok\Navigation\Link', ['getCurrentUrl', 'getUrl'], ['test1', $href, 9]);
+        $mocked->expects($this->any())->method('getCurrentUrl')->willReturn($url);
+        $mocked->expects($this->any())->method('getUrl')->willReturnMap([
+            ['test', [], null, 'http://site.com/test/'],
+            ['test/', [], null, 'http://site.com/test/'],
+            ['test/new', [], null, 'http://site.com/test/new/'],
+        ]);
+        /** @var Link $mocked */
+        $this->assertEquals($expected, $mocked->isActive());
+    }
+
+    /**
+     * @return array
+     */
+    public function activeProvider()
+    {
+        return [
+            ['test', 'http://site.com/test/', true],
+            ['test/', 'http://site.com/test/new', true],
+            ['test/new', 'http://site.com/test/n/', false],
+            ['http://site.com', 'http://site.com/test/', false],
+            ['http://site.com/test', 'http://site.com/test/', true],
+            ['http://site.com/test/', 'http://site.com/test/new', true],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider refProvider
+     * @param string $href
+     * @param string $expected
+     */
+    public function getFullReference($href, $expected)
+    {
+        $link1 = new Link('test1', $href, 9);
+        $this->assertEquals($expected, $link1->getFullReference());
+    }
+
+    /**
+     * @return array
+     */
+    public function refProvider()
+    {
+        $baseUrl = $this->ioc()->getParameter('base_url');
+        return [
+            ['#1', $baseUrl . '/'],
+            ['test', $baseUrl . '/test/'],
+            ['http://site.com', 'http://site.com'],
+        ];
     }
 }

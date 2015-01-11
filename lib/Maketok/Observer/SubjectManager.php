@@ -21,20 +21,47 @@ class SubjectManager implements SubjectManagerInterface, ConfigConsumerInterface
     use ContainerTrait;
 
     /**
-     * @var PriorityQueue[]
+     * @var \SplObjectStorage|PriorityQueue[]
      */
-    private $subscribers = array();
+    private $subscribers;
+
+    /**
+     * @var SubjectInterface[]
+     */
+    private $subjects = [];
+
+    /**
+     * init sub array
+     */
+    public function __construct()
+    {
+        $this->subscribers = new \SplObjectStorage();
+    }
 
     /**
      * {@inheritdoc}
      */
     public function attach($subject, $subscriber, $priority)
     {
-        if (!isset($this->subscribers[(string) $subject])) {
-            $this->subscribers[(string) $subject] = new PriorityQueue();
+        $subject = $this->resolveSubject($subject);
+        if (!isset($this->subscribers[$subject])) {
+            $this->subscribers[$subject] = new PriorityQueue();
         }
         $sub = $this->resolveSubscriber($subscriber, $subject);
-        $this->subscribers[(string) $subject]->insert($sub, $priority, $sub->code);
+        $this->subscribers[$subject]->insert($sub, $priority, $sub->code);
+    }
+
+    /**
+     * @param mixed $subject
+     * @return SubjectInterface
+     */
+    protected function resolveSubject($subject)
+    {
+        if (!isset($this->subjects[(string) $subject])) {
+            $subject = new Subject((string) $subject);
+            $this->subjects[$subject->__toString()] = $subject;
+        }
+        return $this->subjects[(string) $subject];
     }
 
     /**
@@ -42,8 +69,9 @@ class SubjectManager implements SubjectManagerInterface, ConfigConsumerInterface
      */
     public function detach($subject, $subscriber)
     {
-        if (isset($this->subscribers[(string) $subject])) {
-            $this->subscribers[(string) $subject]->remove($this->resolveSubscriber($subscriber, $subject));
+        $subject = $this->resolveSubject($subject);
+        if (isset($this->subscribers[$subject])) {
+            $this->subscribers[$subject]->remove($this->resolveSubscriber($subscriber, $subject));
         }
     }
 
@@ -52,6 +80,7 @@ class SubjectManager implements SubjectManagerInterface, ConfigConsumerInterface
      */
     public function notify($subject, StateInterface $state)
     {
+        $subject = $this->resolveSubject($subject);
         if (isset($this->subscribers[$subject])) {
             /** @var PriorityQueue $_subQueue */
             $subQueue = $this->subscribers[$subject];
@@ -59,11 +88,12 @@ class SubjectManager implements SubjectManagerInterface, ConfigConsumerInterface
                 /** @var SubscriberBag $subBag */
                 $subBag = $subQueue->extract();
                 $arguments = [];
+                $state->setSubject($subject);
                 foreach ($state as $argument) {
                     $arguments[] = $argument;
                 }
                 call_user_func_array($subBag->subscriber, $arguments);
-                if ($subBag->subject->getShouldStopPropagation()) {
+                if ($subject->getShouldStopPropagation()) {
                     break;
                 }
             }
@@ -72,7 +102,7 @@ class SubjectManager implements SubjectManagerInterface, ConfigConsumerInterface
 
     /**
      * @param  mixed $subscriber
-     * @param  mixed $subject
+     * @param  SubjectInterface $subject
      * @throws \InvalidArgumentException
      * @return SubscriberBag
      */
@@ -85,19 +115,15 @@ class SubjectManager implements SubjectManagerInterface, ConfigConsumerInterface
                 throw new \InvalidArgumentException(sprintf("Can't find subscriber by id %s.", $subscriber));
             }
         }
-        // from now on we don't need string sub
-        if (!is_object($subject) || !($subject instanceof SubjectInterface)) {
-            $subject = new Subject((string) $subject);
-        }
         if (is_array($subscriber) && !is_callable($subscriber)) {
             // id => sub pair
             if (is_callable(current($subscriber))) {
-                return new SubscriberBag(key($subscriber), current($subscriber), $subject);
+                return new SubscriberBag(key($subscriber), current($subscriber));
             }
         } elseif (is_callable($subscriber)) {
             // only sub
             $hasher = new CallableHash();
-            return new SubscriberBag($hasher->getHash($subscriber), $subscriber, $subject);
+            return new SubscriberBag($hasher->getHash($subscriber), $subscriber);
         } elseif (is_object($subscriber) && ($subscriber instanceof SubscriberBag)) {
             // bag already
             return $subscriber;

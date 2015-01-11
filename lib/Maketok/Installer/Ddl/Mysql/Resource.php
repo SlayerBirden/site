@@ -19,6 +19,7 @@ use Maketok\Installer\DirectivesInterface;
 use Maketok\Installer\Exception;
 use Maketok\Util\ArrayValueTrait;
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Sql;
 
 class Resource implements ResourceInterface
@@ -36,6 +37,10 @@ class Resource implements ResourceInterface
      * @var array|\Iterator
      */
     protected $procedures;
+    /**
+     * @var AlterTable[]
+     */
+    protected $alterTable = [];
 
     /**
      * @param Adapter $adapter
@@ -45,6 +50,18 @@ class Resource implements ResourceInterface
     {
         $this->adapter = $adapter;
         $this->sql = $sql;
+    }
+
+    /**
+     * @param string $tableName
+     * @return AlterTable
+     */
+    public function alterTableFactory($tableName)
+    {
+        if (!isset($this->alterTable[$tableName])) {
+            $this->alterTable[$tableName] = new AlterTable($tableName);
+        }
+        return $this->alterTable[$tableName];
     }
 
     /**
@@ -159,10 +176,10 @@ class Resource implements ResourceInterface
         $this->procedures = [];
         foreach ($directives as $type => $list) {
             $className = $this->getProcedureClassNameFromType($type);
-            /** @var ProcedureInterface $procedureClass */
-            $procedureClass = new $className($this->sql);
+            /** @var ProcedureInterface $procedureObject */
+            $procedureObject = new $className($this->sql, $this);
             foreach ($list as $item) {
-                $this->procedures[] = $procedureClass->getQuery($item);
+                $this->procedures[$procedureObject->getQuerySignature($item)] = $procedureObject->getQuery($item);
             }
         }
     }
@@ -174,14 +191,8 @@ class Resource implements ResourceInterface
     public function getProcedureClassNameFromType($type)
     {
         $prefix = 'Maketok\Installer\Ddl\Mysql\Procedure\\';
-        if ($type == 'addIndices') {
-            $base = 'AddConstraint';
-        } elseif ($type == 'dropIndices') {
-            $base = 'DropConstraint';
-        } else {
-            // ucfirst + strip last "s"
-            $base = ucfirst(substr($type, 0, strlen($type) - 1));
-        }
+        // ucfirst + strip last "s"
+        $base = ucfirst(substr($type, 0, strlen($type) - 1));
 
         return $prefix . $base;
     }
@@ -236,7 +247,7 @@ class Resource implements ResourceInterface
                 $config[$tableName]['constraints'] = $constraints = $this->addFKOptions($constraints);
             }
             $indices = $this->getIfExists('indices', $definition, []);
-            $fkMap = $this->getKeyMap($constraints, 'type', ['foreignKey']);
+            $fkMap = $this->getKeyMap($constraints, 'type', ['foreignKey'], 'column', [$this, 'getSerialized']);
             if (count($fkMap)) {
                 // create index map
                 $indexMap = $this->getKeyMap($indices, null, [], 'definition', [$this, 'getFirstEl']);
@@ -244,10 +255,16 @@ class Resource implements ResourceInterface
                 $indexMap = array_replace($indexMap, $indexFromConstraint);
                 // check correspondence
                 foreach ($fkMap as $column => $name) {
-                    if (!isset($indexMap[$column])) {
+                    $column = unserialize($column);
+                    if (is_array($column)) {
+                        $columnToMatch = reset($column);
+                    } else {
+                        $columnToMatch = $column;
+                    }
+                    if (!isset($indexMap[$columnToMatch])) {
                         $config[$tableName]['indices'][$name] = [
                             'type' => 'index',
-                            'definition' => [$column],
+                            'definition' => $column,
                         ];
                     }
                 }
@@ -283,6 +300,15 @@ class Resource implements ResourceInterface
             return current($value);
         }
         return $value;
+    }
+
+    /**
+     * @param mixed $value
+     * @return string
+     */
+    protected function getSerialized($value)
+    {
+        return serialize($value);
     }
 
     /**

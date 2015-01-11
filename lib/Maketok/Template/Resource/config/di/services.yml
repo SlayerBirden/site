@@ -11,10 +11,14 @@ services:
     tags:
       - { name: form.extension }
 
+  validator.validator_factory:
+    class: Symfony\Bundle\FrameworkBundle\Validator\ConstraintValidatorFactory
+    arguments: ["@container", []]
+
   validator_builder:
     class: Symfony\Component\Validator\ValidatorBuilder
     calls:
-      - [addYamlMappings, ["@=service('service_container').hasParameter('validator_builder.yml.config.paths') ? parameter('validator_builder.yml.config.paths') : []"]]
+        - [setConstraintValidatorFactory, ["@validator.validator_factory"]]
 
   validator:
     class: Symfony\Component\Validator\Validator

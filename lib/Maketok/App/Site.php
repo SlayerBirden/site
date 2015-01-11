@@ -62,6 +62,7 @@ final class Site implements ConfigConsumerInterface
         }
         $this->initRequest();
         $this->ioc()->set('site', $this);
+        $this->ioc()->set('container', $this->ioc());
         $this->getDispatcher()->notify('ioc_container_initialized', new State([]));
         if ($this->ioc()->isFrozen()) {
             // container can be already compiled
@@ -133,18 +134,24 @@ final class Site implements ConfigConsumerInterface
     public function maketokExceptionHandler(\Exception $e)
     {
         try {
-            $message = sprintf("Unhandled exception\n%s", $e->__toString());
+            $message = sprintf("Unhandled exception\n%s", $e);
             $this->getLogger()->emergency($message);
-            $this->getDispatcher()->notify('application_error_triggered', new State([
-                'exception' => $e,
-                'message' => $message,
-            ]));
+            $this->getDispatcher()->notify(
+                'application_error_triggered',
+                new State(
+                    [
+                        'exception' => $e,
+                        'message' => $message,
+                    ]
+                )
+            );
         } catch (\Exception $ex) {
-            printf("Exception '%s' thrown within the exception handler in file %s on line %d. Previous exception: %s",
+            printf(
+                "Exception '%s' thrown within the exception handler in file %s on line %d. Previous exception: %s",
                 $ex->getMessage(),
                 $ex->getFile(),
                 $ex->getLine(),
-                $e->__toString()
+                $e
             );
         }
     }
