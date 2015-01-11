@@ -41,6 +41,7 @@ CREATE TABLE t1 (
   firstname TEXT,
   lastname TEXT,
   password_hash TEXT,
+  old_password TEXT,
   created_at TEXT,
   updated_at TEXT,
   roles TEXT
