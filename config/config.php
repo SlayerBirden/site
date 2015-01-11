@@ -40,6 +40,7 @@ return [
         AR . '/lib/Maketok/Template/Resource/view/Form',
         AR . '/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Resources/views/Form',
         AR . '/lib/Maketok/Navigation/Resource/view',
+        AR . '/lib/Maketok/Authentication/Resource/view',
     ],
     'subscribers_config_path' => [
         AR . '/lib/Maketok/App/Resource/config/events',

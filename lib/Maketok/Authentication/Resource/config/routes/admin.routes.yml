@@ -7,6 +7,9 @@ routes:
   - type: literal
     path: /login
     resolver: [Maketok\Authentication\Resource\controller\AuthController, loginAction]
+  - type: literal
+    path: /logout
+    resolver: [Maketok\Authentication\Resource\controller\AuthController, logoutAction]
 # users
   - type: literal
     path: /auth/users/create

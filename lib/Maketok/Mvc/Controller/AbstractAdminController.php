@@ -45,6 +45,7 @@ abstract class AbstractAdminController extends AbstractController
     {
         $defaults = parent::getDefaults();
         $defaults['topmenu'] = $this->ioc()->get('topmenu')->getNavigation();
+        $defaults['user'] = $this->ioc()->get('auth')->getCurrentIdentity();
         return $defaults;
     }
 }

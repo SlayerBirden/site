@@ -24,21 +24,12 @@
     {% endblock %}
 </head>
 <body>
-    <header>
-        <div class="container">
-            {% block search %}{% endblock %}
-            {% block customer_area %}{% endblock %}
-            <div id="info" class="info">
-                <h1>{% trans %}%description%{% endtrans %}</h1>
-            </div>
-        </div>
-    </header>
     {% block nav %}
-        <nav class="navbar navbar-inverse navbar-fixed-top">
+        <nav class="navbar navbar-inverse navbar-static-top">
             <div class="container-fluid">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -46,12 +37,23 @@
                     </button>
                     <a class="navbar-brand" href="{{ base_url }}">Maketok</a>
                 </div>
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <div class="navbar-right">
+                    {% block search %}{% endblock %}
+                    {% include 'user-area.html.twig' with {'user': user} %}
+                </div>
+                <div class="collapse navbar-collapse" id="navbar">
                     <ul class="nav navbar-nav">{% include 'navigation.html.twig' with {'links': topmenu} %}</ul>
                 </div>
             </div>
         </nav>
     {% endblock %}
+    <header>
+        <div class="container">
+            <div id="info" class="info">
+                <h1>{% trans %}%description%{% endtrans %}</h1>
+            </div>
+        </div>
+    </header>
     <div class="container-fluid">
         {% for type, messages in session.flashbag.all() %}
             {% for message in messages %}

@@ -115,4 +115,14 @@ class AuthController extends AbstractAdminController
             'form' => $form->createView()
         ], null, Response::HTTP_UNAUTHORIZED);
     }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function logoutAction()
+    {
+        $this->getAuth()->logout();
+        $this->addSessionMessage('success', 'You have been logged out.');
+        return $this->redirect('/');
+    }
 }
