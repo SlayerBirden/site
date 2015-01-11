@@ -8,6 +8,7 @@
  * file that was distributed with this source code.
  */
 namespace Symfony\Bundle\FrameworkBundle\Validator;
+
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;

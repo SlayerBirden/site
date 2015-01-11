@@ -11,7 +11,6 @@
 namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
 use Maketok\Util\ArrayValueTrait;
-use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Ddl\Constraint\ConstraintInterface;
 use Zend\Db\Sql\Ddl\Index\Index;
 
