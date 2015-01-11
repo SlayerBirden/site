@@ -53,7 +53,7 @@ class CallableHashTest extends \PHPUnit_Framework_TestCase
             [$cl1, $cl3, false],
             [[$muteStub, 'doSomething'], $cl1, false],
             [$muteStub, $muteStub2, true],
-            ['\Maketok\Util\Test\MuteStub::StaticMethod', '\Maketok\Util\Test\MuteStub::StaticMethod', true],
+            ['\Maketok\Util\Test\MuteStub::staticMethod', '\Maketok\Util\Test\MuteStub::staticMethod', true],
         ];
     }
 }
