@@ -93,7 +93,7 @@ class MuteStub
     /**
      * static method
      */
-    public static function StaticMethod()
+    public static function staticMethod()
     {
     }
 }
