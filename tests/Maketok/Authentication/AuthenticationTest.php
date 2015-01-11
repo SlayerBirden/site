@@ -107,6 +107,6 @@ class AuthenticationTest extends \PHPUnit_Framework_TestCase
         $user->roles = [0, 1];
         $auth->setCurrentIdentity($user);
 
-        $this->assertEquals([0,1], $auth->getCurrentRoles($request));
+        $this->assertEquals([0, 1], $auth->getCurrentRoles($request));
     }
 }

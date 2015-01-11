@@ -12,7 +12,6 @@ namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
 use Maketok\Installer\Exception;
 use Maketok\Util\ArrayValueTrait;
-use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Ddl\Constraint\ConstraintInterface;
 
 class AddConstraint extends AbstractProcedure implements ProcedureInterface

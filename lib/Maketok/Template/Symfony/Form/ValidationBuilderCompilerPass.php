@@ -9,6 +9,7 @@
  */
 
 namespace Maketok\Template\Symfony\Form;
+
 use Maketok\App\Site;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

@@ -45,5 +45,4 @@ abstract class AbstractParser implements ParserInterface
         }
         return $columns;
     }
-
 }

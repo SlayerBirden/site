@@ -11,7 +11,6 @@
 namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
 use Maketok\Util\ArrayValueTrait;
-use Zend\Db\Sql\Ddl\AlterTable;
 use Zend\Db\Sql\Ddl\Column\AbstractLengthColumn;
 use Zend\Db\Sql\Ddl\Column\AbstractPrecisionColumn;
 use Zend\Db\Sql\Ddl\Column\ColumnInterface;

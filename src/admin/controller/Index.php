@@ -15,7 +15,6 @@ use Maketok\Util\RequestInterface;
 
 class Index extends AbstractAdminController
 {
-
     /**
      * @param RequestInterface $request
      * @return \Symfony\Component\HttpFoundation\Response

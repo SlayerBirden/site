@@ -10,8 +10,6 @@
 
 namespace Maketok\Installer\Ddl\Mysql\Procedure;
 
-use Zend\Db\Sql\Ddl\AlterTable;
-
 class DropIndice extends AbstractProcedure implements ProcedureInterface
 {
     /**
