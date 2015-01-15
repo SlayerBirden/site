@@ -44,6 +44,8 @@ class Authentication implements IdentityManagerInterface, RoleProviderInterface
         $identity = $this->provider->provide($request);
         if ($identity) {
             $this->getDispatcher()->notify('auth_attempt_success', new State(['user' => $identity]));
+            $this->getStorage()->migrate();
+            $this->getStorage()->set('current_identity', $identity);
             $this->setCurrentIdentity($identity);
         } else {
             $this->getDispatcher()->notify('auth_attempt_failure', new State(['user' => $identity]));
@@ -84,7 +86,7 @@ class Authentication implements IdentityManagerInterface, RoleProviderInterface
         $this->currentIdentity = null;
         $provider = $this->getProvider();
         if ($provider && !$provider->isStateless()) {
-            $this->getStorage()->remove('current_identity');
+            $this->getStorage()->invalidate();
         }
     }
 
@@ -130,7 +132,6 @@ class Authentication implements IdentityManagerInterface, RoleProviderInterface
      */
     public function setCurrentIdentity(IdentityInterface $identity)
     {
-        $this->getStorage()->set('current_identity', $identity);
         $this->currentIdentity = $identity;
         return $this;
     }
