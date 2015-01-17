@@ -95,6 +95,9 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
         /** @var Session $model */
         try {
             $model = $this->tableMapper->find($session_id);
+            if ($this->isExpired($model)) {
+                return '';
+            }
             return $model->data;
         } catch (\Exception $e) {
             return '';
@@ -102,10 +105,20 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
     }
 
     /**
+     * @param Session $session
+     * @return bool
+     */
+    protected function isExpired(Session $session)
+    {
+        return $session->updated_at->add($session->lifetime) <= new \DateTime('now');
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function write($session_id, $session_data)
     {
+        $maxLifetime = (int) ini_get('session.gc_maxlifetime');
         try {
             $model = $this->tableMapper->find($session_id);
         } catch (\Exception $e) {
@@ -115,6 +128,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
             /** @var Session $model */
             $model->session_id = $session_id;
             $model->data = $session_data;
+            $model->lifetime = new \DateInterval("PT{$maxLifetime}S");
             $this->tableMapper->save($model);
         } catch (\Exception $e) {
             $this->getLogger()->emerg($e);
@@ -152,7 +166,7 @@ class DbHandler implements \SessionHandlerInterface, ClientInterface
      */
     public function getDdlVersion()
     {
-        return '0.1.1';
+        return '0.1.3';
     }
 
     /**

@@ -14,7 +14,20 @@ use Maketok\Model\LazyObjectPropModel;
 
 class Session extends LazyObjectPropModel
 {
+    /**
+     * @var string
+     */
     public $session_id;
+    /**
+     * @var string
+     */
     public $data;
+    /**
+     * @var \DateTime
+     */
     public $updated_at;
+    /**
+     * @var \DateInterval
+     */
+    public $lifetime;
 }

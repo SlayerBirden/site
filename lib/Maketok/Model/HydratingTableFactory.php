@@ -56,11 +56,11 @@ class HydratingTableFactory implements TableFactoryInterface
                                 $idField,
                                 $prototype,
                                 $incrementIdField = null,
-                                $class = '\Maketok\Model\TableMapper',
+                                $class = null,
                                 $resultSet = null,
                                 HydratorInterface $hydrator = null,
                                 AdapterInterface $adapter = null,
-                                $gateway = '\Zend\Db\TableGateway\TableGateway',
+                                $gateway = null,
                                 $features = null
     ) {
         if (is_null($resultSet)) {
@@ -73,7 +73,13 @@ class HydratingTableFactory implements TableFactoryInterface
             $adapter = $this->ioc()->get('adapter');
         }
         $resultSetInstance = new $resultSet($hydrator, new $prototype());
+        if (is_null($gateway)) {
+            $gateway = '\Zend\Db\TableGateway\TableGateway';
+        }
         $this->gateway = new $gateway($table, $adapter, $features, $resultSetInstance);
+        if (is_null($class)) {
+            $class = '\Maketok\Model\TableMapper';
+        }
         $this->class = $class;
         $this->idField = $idField;
         $this->incrementIdField = $incrementIdField;

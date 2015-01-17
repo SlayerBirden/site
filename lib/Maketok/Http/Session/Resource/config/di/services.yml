@@ -11,6 +11,20 @@ services:
       - session_storage
       - session_id
       - Maketok\Http\Session\Resource\Model\Session
+      - ~
+      - ~
+      - ~
+      - "@session_object_prop_hydrator"
+
+  session_object_prop_hydrator:
+      class: Maketok\Util\Hydrator\ObjectProperty
+      calls:
+        - [addStrategy, [created_at, "@date_time_strategy"]]
+        - [addStrategy, [updated_at, "@date_time_strategy"]]
+        - [addStrategy, [lifetime, "@date_interval_strategy"]]
+
+  date_interval_strategy:
+      class: Maketok\Util\Hydrator\Strategy\DateIntervalStrategy
 
   session_table:
     class: Maketok\Model\TableMapper
