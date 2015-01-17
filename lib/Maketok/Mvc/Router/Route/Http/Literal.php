@@ -45,7 +45,7 @@ class Literal extends AbstractRoute implements RouteInterface
                 $attributes->add(array(
                     '_route' => $this,
                 ));
-                if (!empty($this->_defaults)) {
+                if (!empty($this->defaults)) {
                     $attributes->add($this->defaults);
                 }
             }

@@ -1,0 +1,32 @@
+# This is a part of Maketok site package.
+# @author Oleg Kulik <slayer.birden@gmail.com>
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+modules\blog\Model\Article:
+  properties:
+    title:
+      - NotBlank: ~
+      - Length:
+          min: 2
+          max: 200
+          minMessage: "Title can not be less than {{ limit }} characters"
+          maxMessage: "Title can not be longer than {{ limit }} characters"
+    code:
+      - NotBlank: ~
+      - Regex:
+          pattern: "/^[a-zA-Z0-9_.-]+$/"
+          message: "Please provide only alphaberical characters plus [_.-]"
+      - Length:
+          min: 2
+          max: 30
+          minMessage: "Code can not be less than {{ limit }} characters"
+          maxMessage: "Code can not be longer than {{ limit }} characters"
+    created_at:
+      - DateTime: ~
+    content:
+      - NotBlank: ~
+    active:
+      - Choice:
+          choices: [0,1]
+          message: The field can contain only true (1) or falce (0) values
