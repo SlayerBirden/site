@@ -36,8 +36,8 @@ class UserController extends AbstractAdminController
         $response = $this->handleUser($request, $form, $this->ioc()->get('auth_user_table'));
         if (!$response) {
             $response = $this->prepareResponse($request, [
-                'title' => 'Maketok Admin - Create New User',
-                'description' => 'User Creation',
+                'title' => $this->trans('Maketok Admin - Create New User'),
+                'description' => $this->trans('User Creation'),
                 'form' => $form->createView(),
             ]);
         }
@@ -112,8 +112,8 @@ class UserController extends AbstractAdminController
         $response = $this->handleUser($request, $form, $table);
         if (!$response) {
             $response = $this->prepareResponse($request, [
-                'title' => 'Maketok Admin - Edit User ' . $user->firstname,
-                'description' => 'User ' . $user->firstname,
+                'title' => $this->trans('Maketok Admin - Edit User'),
+                'description' => $this->trans('User "firstname"', ['firstname' => $user->firstname]),
                 'form' => $form->createView(),
             ]);
         }
@@ -137,8 +137,8 @@ class UserController extends AbstractAdminController
         $response = $this->handleUser($request, $form, $table);
         if (!$response) {
             $response = $this->prepareResponse($request, [
-                'title' => 'Maketok Admin - Change User Password ' . $user->firstname,
-                'description' => 'Password for User ' . $user->firstname,
+                'title' => $this->trans('Maketok Admin - Change User Password'),
+                'description' => $this->trans('Password for User "firstname"', ['firstname' => $user->firstname]),
                 'form' => $form->createView(),
             ]);
         }
@@ -181,8 +181,8 @@ class UserController extends AbstractAdminController
             $users = [];
         }
         return $this->prepareResponse($request, [
-            'title' => 'Maketok Admin - Users management',
-            'description' => 'Users',
+            'title' => $this->trans('Maketok Admin - Users management'),
+            'description' => $this->trans('Users'),
             'users' => $users,
         ]);
     }

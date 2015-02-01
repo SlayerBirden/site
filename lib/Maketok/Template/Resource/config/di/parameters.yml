@@ -5,4 +5,4 @@
 
 parameters:
   defaultFormTheme: form_div_layout.html.twig
-  translation_locale: en
+  translation_locale: ru

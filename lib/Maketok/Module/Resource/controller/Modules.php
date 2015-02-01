@@ -39,9 +39,9 @@ class Modules extends AbstractAdminController
             $modules = [];
         }
         return $this->prepareResponse($request, array(
-            'title' => 'Maketok Admin - Modules',
+            'title' => $this->trans('Maketok Admin - Modules'),
             'modules' => $modules,
-            'description' => 'Modules'
+            'description' => $this->trans('Modules')
         ));
     }
 
@@ -84,8 +84,8 @@ class Modules extends AbstractAdminController
         }
 
         return $this->prepareResponse($request, array(
-            'title' => 'Maketok Admin - View Module ' . $module->module_code,
-            'description' => 'Module ' . $module->module_code,
+            'title' => $this->trans('Maketok Admin - View Module'),
+            'description' => $this->trans('Module "code"', ['code' => $module->module_code]),
             'module' => $module,
             'form' => $form->createView()
         ));

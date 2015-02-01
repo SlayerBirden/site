@@ -3,8 +3,92 @@
     <file source-language="en" datatype="plaintext" original="file.ext">
         <body>
             <trans-unit id="1">
-                <source>Symfony2 is great</source>
-                <target>J'aime Symfony2</target>
+                <source>Dashboard</source>
+                <target>Dashboard</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>Maketok Admin - Modules</source>
+                <target>Maketok Admin - Modules</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>DDL - Installer - Admin Management Area</source>
+                <target>DDL - Installer - Admin Management Area</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>DDL Installer</source>
+                <target>DDL Installer</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>Maketok Admin - View Module</source>
+                <target>Maketok Admin - View Module</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>Module "code"</source>
+                <target>Module "code"</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>Maketok Admin - Log In</source>
+                <target>Maketok Admin - Log In</target>
+            </trans-unit>
+            <trans-unit id="8">
+                <source>Log In form</source>
+                <target>Log In form</target>
+            </trans-unit>
+            <trans-unit id="9">
+                <source>Maketok Admin - Create New User Role</source>
+                <target>Maketok Admin - Create New User Role</target>
+            </trans-unit>
+            <trans-unit id="10">
+                <source>Role Creation</source>
+                <target>Role Creation</target>
+            </trans-unit>
+            <trans-unit id="11">
+                <source>Maketok Admin - Edit User Role</source>
+                <target>Maketok Admin - Edit User Role</target>
+            </trans-unit>
+            <trans-unit id="12">
+                <source>User Role "title"</source>
+                <target>User Role "title"</target>
+            </trans-unit>
+            <trans-unit id="13">
+                <source>Maketok Admin - User Roles management</source>
+                <target>Maketok Admin - User Roles management</target>
+            </trans-unit>
+            <trans-unit id="14">
+                <source>User Roles</source>
+                <target>User Roles</target>
+            </trans-unit>
+            <trans-unit id="15">
+                <source>Maketok Admin - Create New User</source>
+                <target>Maketok Admin - Create New User</target>
+            </trans-unit>
+            <trans-unit id="16">
+                <source>User Creation</source>
+                <target>User Creation</target>
+            </trans-unit>
+            <trans-unit id="17">
+                <source>Maketok Admin - Edit User</source>
+                <target>Maketok Admin - Edit User</target>
+            </trans-unit>
+            <trans-unit id="18">
+                <source>User "firstname"</source>
+                <target>User "firstname"</target>
+            </trans-unit>
+            <trans-unit id="19">
+                <source>Maketok Admin - Change User Password</source>
+                <target>Maketok Admin - Change User Password</target>
+            </trans-unit>
+            <trans-unit id="20">
+                <source>Password for User "firstname"</source>
+                <target>Password for User "firstname"</target>
+            </trans-unit>
+            <trans-unit id="21">
+                <source>Maketok Admin - Users management</source>
+                <target>Maketok Admin - Users management</target>
+            </trans-unit>
+            <trans-unit id="22">
+                <source>Users</source>
+                <target>Users</target>
             </trans-unit>
         </body>
     </file>

@@ -123,8 +123,8 @@ class Install extends AbstractAdminController
         $this->setTemplate('install-manager.html.twig');
         return $this->prepareResponse($request, array(
             'install_url' => $this->getUrl('install/ddl/run'),
-            'title' => 'DDL - Installer - Admin Management Area',
-            'description' => 'DDL Installer',
+            'title' => $this->trans('DDL - Installer - Admin Management Area'),
+            'description' => $this->trans('DDL Installer'),
             'clients' => $templateClients,
         ));
     }

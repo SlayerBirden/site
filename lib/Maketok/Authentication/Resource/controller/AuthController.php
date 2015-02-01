@@ -109,8 +109,8 @@ class AuthController extends AbstractAdminController
         }
         $request->getAttributes()->add(['_route' => new Literal('/login', [$this, 'loginAction'])]);
         return $this->prepareResponse($request, [
-            'title' => 'Maketok Admin - Log In',
-            'description' => 'Log In form',
+            'title' => $this->trans('Maketok Admin - Log In'),
+            'description' => $this->trans('Log In form'),
             'form' => $form->createView()
         ], null, Response::HTTP_UNAUTHORIZED);
     }

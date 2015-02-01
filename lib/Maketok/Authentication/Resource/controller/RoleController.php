@@ -34,8 +34,8 @@ class RoleController extends AbstractAdminController
             return $this->handleRole($form);
         }
         return $this->prepareResponse($request, [
-            'title' => 'Maketok Admin - Create New User Role',
-            'description' => 'Role Creation',
+            'title' => $this->trans('Maketok Admin - Create New User Role'),
+            'description' => $this->trans('Role Creation'),
             'form' => $form->createView(),
         ]);
     }
@@ -84,8 +84,8 @@ class RoleController extends AbstractAdminController
             return $this->handleRole($form);
         }
         return $this->prepareResponse($request, [
-            'title' => 'Maketok Admin - Edit User Role ' . $data['title'],
-            'description' => 'User Role ' . $data['title'],
+            'title' => $this->trans('Maketok Admin - Edit User Role'),
+            'description' => $this->trans('User Role "title"', $data),
             'form' => $form->createView(),
         ]);
     }
@@ -125,8 +125,8 @@ class RoleController extends AbstractAdminController
             $datas = [];
         }
         return $this->prepareResponse($request, [
-            'title' => 'Maketok Admin - User Roles management',
-            'description' => 'User Roles',
+            'title' => $this->trans('Maketok Admin - User Roles management'),
+            'description' => $this->trans('User Roles'),
             'roles' => $datas,
         ]);
     }

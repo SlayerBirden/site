@@ -8,12 +8,15 @@
  * file that was distributed with this source code.
  */
 
+$iocFactory = \Maketok\App\ContainerFactory::getInstance();
+$ioc = $iocFactory->getServiceContainer();
+
 return [
     'topmenu' => [
         'home' => [
             'href' => '/',
             'order' => 0,
-            'title' => 'Dashboard',
+            'title' => $ioc->get('translator')->trans('Dashboard'),
         ]
     ]
 ];
