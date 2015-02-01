@@ -48,7 +48,7 @@ class Table
                 $res = $res | $this->addColumnInfo($tableInfo, $row);
             }
             if (!$res) {
-                throw new Exception(sprintf("Thr row %s wasn't executed by single parser.", $row));
+                throw new Exception(sprintf("The row '%s' wasn't executed by single parser.", $row));
             }
         }
 

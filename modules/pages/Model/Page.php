@@ -8,26 +8,40 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Http\Session\Resource\Model;
+namespace modules\pages\Model;
 
-use Maketok\Model\LazyObjectPropModel;
-
-class Session extends LazyObjectPropModel
+class Page
 {
     /**
-     * @var string
+     * @var int
      */
-    public $session_id;
+    public $id;
     /**
      * @var string
      */
-    public $data;
+    public $title;
+    /**
+     * @var string
+     */
+    public $code;
+    /**
+     * @var \DateTime
+     */
+    public $created_at;
     /**
      * @var \DateTime
      */
     public $updated_at;
     /**
-     * @var \DateInterval
+     * @var string
      */
-    public $lifetime;
+    public $content;
+    /**
+     * @var string
+     */
+    public $layout;
+    /**
+     * @var int
+     */
+    public $active;
 }

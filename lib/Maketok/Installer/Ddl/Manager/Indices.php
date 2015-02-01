@@ -21,15 +21,15 @@ class Indices implements CompareInterface
     public function intlCompare(array $indexA, array $indexB, $tableName, Directives $directives)
     {
         foreach ($indexB as $indexName => $indexDefinition) {
-            $bInA = $this->getIfExists($indexName, $indexA);
+            $bInA = $this->getIfExists($indexName, $indexA, []);
             $new = $this->getIfExists('definition', $indexDefinition);
             $old = $this->getIfExists('definition', $bInA);
-            if (is_null($bInA)) {
+            if (empty($bInA)) {
                 $directives->addProp('addIndices', [$tableName, $indexName, $indexDefinition]);
             } elseif ($new === $old) {
                 continue;
             } else {
-                $directives->addProp('dropIndices', [$tableName, $indexDefinition, 'index']);
+                $directives->addProp('dropIndices', [$tableName, $indexName, 'index']);
                 $directives->addProp('addIndices', [$tableName, $indexName, $indexDefinition]);
             }
         }

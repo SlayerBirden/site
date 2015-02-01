@@ -1,0 +1,38 @@
+{# This is a part of Maketok site package. #}
+{# @author Oleg Kulik <slayer.birden@gmail.com> #}
+{# For the full copyright and license information, please view the LICENSE #}
+{# file that was distributed with this source code. #}
+{% extends "base-manager.html.twig" %}
+{% block content %}
+<div class="table-responsive">
+    <a class="btn btn-primary" role="button" href="{{ base_url }}/pages/new">{% trans %}Add New{% endtrans %}</a>
+    <table class="table">
+        <tr>
+            <th>{% trans %}Title{% endtrans %}</th>
+            <th>{% trans %}Code{% endtrans %}</th>
+            <th>{% trans %}Active{% endtrans %}</th>
+            <th>{% trans %}Created At{% endtrans %}</th>
+            <th>{% trans %}Updated At{% endtrans %}</th>
+            <th>{% trans %}Actions{% endtrans %}</th>
+        </tr>
+    {% for page in pages %}
+        <tr>
+            <td>{{ page.title }}</td>
+            <td>{{ page.code }}</td>
+            <td>{{ page.active }}</td>
+            <td>{{ page.created_at|date("Y-m-d H:i:s") }}</td>
+            <td>{{ page.updated_at|date("Y-m-d H:i:s") }}</td>
+            <td>
+                <a class="btn btn-default btn-xs" role="button"
+                   href="{{ base_url }}/pages/edit/{{ page.id }}">{% trans %}Edit{% endtrans %}</a>
+                <a class="btn btn-default btn-xs" role="button"
+                   href="{{ base_url }}/pages/delete/{{ page.id }}"
+                   onclick="return window.confirm('{% trans %}Are you sure you want to delete the page?{% endtrans %}')">{% trans %}Delete{% endtrans %}</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7">No pages found in the system!</td></tr>
+    {% endfor %}
+    </table>
+</div>
+{% endblock %}

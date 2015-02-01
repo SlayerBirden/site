@@ -10,8 +10,11 @@
 
 namespace Maketok\Installer\Ddl\Mysql\Parser;
 
+use Maketok\Util\ArrayValueTrait;
+
 class Column extends AbstractParser implements ParserInterface
 {
+    use ArrayValueTrait;
     /** @var array  */
     protected $typeMap = [
         'int' => 'integer',
@@ -27,8 +30,11 @@ class Column extends AbstractParser implements ParserInterface
             $columnInfo = $this->parseLengthColumns($matches);
         } elseif (preg_match('/`(\S+)` (\w+) (.*)/', $this->row, $matches)) {
             $columnInfo = $this->parseNoLengthColumns($matches);
+        } elseif (preg_match('/`(\S+)` (\w+)/', $this->row, $matches)) {
+            $columnInfo = $this->parseNoDataColumns($matches);
         }
-        if (is_string($this->name) && ($columnInfo['name'] == $this->name) || is_null($this->name)) {
+        $name = $this->getIfExists('name', $columnInfo);
+        if (is_string($this->name) && ($name == $this->name) || is_null($this->name)) {
             return $columnInfo;
         }
 
@@ -96,6 +102,20 @@ class Column extends AbstractParser implements ParserInterface
         if (strpos($other, 'ON UPDATE') !== false) {
             $columnInfo['on_update'] = 1;
         }
+
+        return $columnInfo;
+    }
+
+    /**
+     * @param  string[] $data
+     * @return array
+     */
+    public function parseNoDataColumns($data)
+    {
+        $columnInfo = array();
+        $columnInfo['name'] = $data[1];
+        $columnInfo['type'] = $this->convertType($data[2]);
+        $columnInfo['nullable'] = true;
 
         return $columnInfo;
     }
