@@ -36,6 +36,7 @@
         "symfony/twig-bridge": "2.*",
         "symfony/validator": "2.*",
         "symfony/expression-language": "2.*",
+        "symfony/security": "2.*",
         "twig/twig": "~1",
         "twig/extensions": "1.*",
         "erusev/parsedown-extra": "~0.2",
