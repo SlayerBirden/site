@@ -49,13 +49,15 @@
     "autoload": {
         "psr-0": {
             "Maketok\\": "lib/",
-            "Zend\\Db\\": "lib/",
-            "Symfony\\Bundle\\": "lib/",
-            "Symfony\\Component\\Form\\": "lib/",
             "admin\\": "src/",
             "base\\": "src/",
             "modules\\": "./",
             "tests\\": "./"
+        },
+        "psr-4": {
+            "Zend\\Db\\": "lib/Zend/Db",
+            "Symfony\\Bundle\\": "lib/Symfony/Bundle",
+            "Symfony\\Component\\Form\\": "lib/Symfony/Component/Form"
         }
     }
 }
