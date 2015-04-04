@@ -36,6 +36,7 @@
         "symfony/twig-bridge": "2.*",
         "symfony/validator": "2.*",
         "symfony/expression-language": "2.*",
+        "symfony/security": "2.*",
         "twig/twig": "~1",
         "twig/extensions": "1.*",
         "erusev/parsedown-extra": "~0.2",
@@ -48,13 +49,15 @@
     "autoload": {
         "psr-0": {
             "Maketok\\": "lib/",
-            "Zend\\Db\\": "lib/",
-            "Symfony\\Bundle\\": "lib/",
-            "Symfony\\Component\\Form\\": "lib/",
             "admin\\": "src/",
             "base\\": "src/",
             "modules\\": "./",
             "tests\\": "./"
+        },
+        "psr-4": {
+            "Zend\\Db\\": "lib/Zend/Db",
+            "Symfony\\Bundle\\": "lib/Symfony/Bundle",
+            "Symfony\\Component\\Form\\": "lib/Symfony/Component/Form"
         }
     }
 }
