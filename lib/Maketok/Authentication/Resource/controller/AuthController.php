@@ -76,6 +76,7 @@ class AuthController extends AbstractAdminController
         if ($this->getAuth()->getProvider()->isStateless()) {
             // login upon each request
             // let provider determine the strategy
+            // TODO: add logic?
         } else {
             $response = $this->loginAction($request);
             $this->ioc()->get('front_controller')->sendResponse($response, true);
@@ -109,8 +110,8 @@ class AuthController extends AbstractAdminController
         }
         $request->getAttributes()->add(['_route' => new Literal('/login', [$this, 'loginAction'])]);
         return $this->prepareResponse($request, [
-            'title' => 'Maketok Admin - Log In',
-            'description' => 'Log In form',
+            'title' => $this->trans('Maketok Admin - Log In'),
+            'description' => $this->trans('Log In form'),
             'form' => $form->createView()
         ], null, Response::HTTP_UNAUTHORIZED);
     }

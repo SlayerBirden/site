@@ -150,4 +150,14 @@ trait UtilityHelperTrait
     {
         $this->getSession()->getFlashBag()->add($type, $message);
     }
+
+    /**
+     * @param string $arg
+     * @param array $parameters
+     * @return
+     */
+    public function trans($arg, array $parameters = array())
+    {
+        return $this->ioc()->get('translator')->trans($arg, $parameters);
+    }
 }

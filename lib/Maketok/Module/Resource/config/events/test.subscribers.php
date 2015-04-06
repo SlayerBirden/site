@@ -14,13 +14,15 @@ $ioc = $iocFactory->getServiceContainer();
 return [
     'ioc_container_initialized' => [
         'attach' => [
-            [[$ioc->get('module_manager'), 'processModuleConfig'], 15],
+            [function () use ($ioc) {
+                return $ioc->get('module_manager')->processModuleConfig();
+            }, 15],
         ]
     ],
     'ioc_container_compiled' => [
         'detach' => [
-            [$ioc->get('module_manager'), 'updateModules'],
-            [$ioc->get('module_manager'), 'processModules'],
+            'modules_update_modules',
+            'modules_process_modules',
         ]
     ],
     'installer_before_process' => [

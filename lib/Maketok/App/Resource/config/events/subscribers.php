@@ -25,12 +25,16 @@ return [
     ],
     'response_send_before' => [
         'attach' => [
-            [[$ioc->get('site'), 'terminate'], 0]
+            [function () use ($ioc) {
+                return $ioc->get('site')->terminate();
+            }, 0]
         ]
     ],
     'noroute_action' => [
         'attach' => [
-            [[$ioc->get('site'), 'terminate'], 0]
+            [function () use ($ioc) {
+                return $ioc->get('site')->terminate();
+            }, 0]
         ]
     ]
 ];

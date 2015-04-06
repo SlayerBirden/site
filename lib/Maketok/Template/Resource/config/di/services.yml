@@ -68,7 +68,7 @@ services:
     arguments: ["%translation_locale%"]
     calls:
       - [addLoader, [xlf, "@translator_loader_xliff"]]
-      - [addResource, [xlf, "%ar%/translations/messages.en.xlf", "%translation_locale%"]]
+      - [addResource, [xlf, "%ar%/translations/messages.%translation_locale%.xlf", "%translation_locale%"]]
 
   twig_extension_translation:
     class: Symfony\Bridge\Twig\Extension\TranslationExtension

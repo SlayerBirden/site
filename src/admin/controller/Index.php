@@ -23,8 +23,8 @@ class Index extends AbstractAdminController
     {
         $this->setTemplate('base-manager.html.twig');
         return $this->prepareResponse($request, array(
-            'title' => 'Admin Management Area',
-            'description' => 'Dashboard',
+            'title' => $this->trans('Admin Management Area'),
+            'description' => $this->trans('Dashboard'),
         ));
     }
 }

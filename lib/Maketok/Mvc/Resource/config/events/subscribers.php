@@ -15,7 +15,9 @@ return [
     'dispatch' => [
         'attach' => [
             [
-                ['front_controller_dispatcher' => [$ioc->get('front_controller'), 'dispatch']], 10
+                ['front_controller_dispatcher' => function ($request) use ($ioc) {
+                    return $ioc->get('front_controller')->dispatch($request);
+                }], 10
             ]
         ]
     ]

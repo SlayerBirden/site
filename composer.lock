@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "42caabc8ad390ac4741edb0b814a3347",
+    "hash": "9c1b6fda765f32b6115c0e15c41a94b5",
     "packages": [
         {
             "name": "aptoma/twig-markdown",
@@ -2132,16 +2132,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.6.0",
+            "version": "4.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "3797497862a4dedcd77c1615106c574ecdb3fad7"
+                "reference": "08b2aacdd8433abbba468f995d6d64b76a7a62ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3797497862a4dedcd77c1615106c574ecdb3fad7",
-                "reference": "3797497862a4dedcd77c1615106c574ecdb3fad7",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/08b2aacdd8433abbba468f995d6d64b76a7a62ec",
+                "reference": "08b2aacdd8433abbba468f995d6d64b76a7a62ec",
                 "shasum": ""
             },
             "require": {
@@ -2203,7 +2203,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-04-03 08:59:48"
+            "time": "2015-04-03 13:46:59"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

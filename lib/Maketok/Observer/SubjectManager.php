@@ -119,6 +119,20 @@ class SubjectManager implements SubjectManagerInterface, ConfigConsumerInterface
             // id => sub pair
             if (is_callable(current($subscriber))) {
                 return new SubscriberBag(key($subscriber), current($subscriber));
+            } elseif (is_array(current($subscriber))) {
+                $subBody = current($subscriber);
+                // this is when working with yaml services
+                $serviceName = trim(array_shift($subBody));
+                if ($serviceName[0] == '@') {
+                    $method = array_shift($subBody);
+                    $params = array_shift($subBody);
+                    array_push($params, 'subject');
+                    $ioc = $this->ioc();
+                    return new SubscriberBag(key($subscriber), function () use ($ioc, $serviceName, $method) {
+                        $args = func_get_args();
+                        return call_user_func_array([$ioc->get(ltrim($serviceName, '@')), $method], $args);
+                    });
+                }
             }
         } elseif (is_callable($subscriber)) {
             // only sub

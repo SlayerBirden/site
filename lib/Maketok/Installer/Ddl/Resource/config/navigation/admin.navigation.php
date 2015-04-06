@@ -8,17 +8,20 @@
  * file that was distributed with this source code.
  */
 
+$iocFactory = \Maketok\App\ContainerFactory::getInstance();
+$ioc = $iocFactory->getServiceContainer();
+
 return [
     'topmenu' => [
         'installer' => [
             'order' => 10,
-            'title' => 'Installer',
+            'title' => function () use ($ioc) {return $ioc->get('translator')->trans('Installer');},
             'href'  => '/install',
             'children' => [
                 'ddl' => [
                     'href' => '/install/ddl',
                     'order' => 0,
-                    'title' => 'Ddl',
+                    'title' => function () use ($ioc) {return $ioc->get('translator')->trans('Ddl');},
                 ]
             ]
         ]

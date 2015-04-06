@@ -8,17 +8,20 @@
  * file that was distributed with this source code.
  */
 
+$iocFactory = \Maketok\App\ContainerFactory::getInstance();
+$ioc = $iocFactory->getServiceContainer();
+
 return [
     'topmenu' => [
         'auth_users' => [
             'href' => '/auth/users',
             'order' => 20,
-            'title' => 'Users',
+            'title' => function () use ($ioc) {return $ioc->get('translator')->trans('Users');},
         ],
         'auth_roles' => [
             'href' => '/auth/roles',
             'order' => 30,
-            'title' => 'User Roles',
+            'title' => function () use ($ioc) {return $ioc->get('translator')->trans('User Roles');},
         ]
     ]
 ];
