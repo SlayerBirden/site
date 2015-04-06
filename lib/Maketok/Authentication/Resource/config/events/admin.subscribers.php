@@ -16,7 +16,9 @@ return [
             [
                 new \Maketok\Observer\SubscriberBag(
                     'auth_controller_resolve',
-                    [$ioc->get('auth_controller'), 'resolve']
+                    function ($request, $roleProvider, $subject) use ($ioc) {
+                        $ioc->get('auth_controller')->resolve($request, $roleProvider, $subject);
+                    }
                 ),
                 99
             ]

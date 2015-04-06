@@ -21,6 +21,7 @@ return [
         AR . '/lib/Maketok/Firewall/Resource/config/di',
         AR . '/lib/Maketok/Authentication/Resource/config/di',
         AR . '/lib/Maketok/Model/Resource/config/di',
+        AR . '/lib/Maketok/Shell/Resource/config/di',
     ],
     'ioc_compiler_pass' => [
         new \Maketok\Template\TemplateCompilerPass(),
@@ -28,6 +29,7 @@ return [
         new \Maketok\Template\Symfony\Form\FormTypeCompilerPass(),
         new \Maketok\Template\Symfony\Form\ValidationBuilderCompilerPass(),
         new \Maketok\Template\Symfony\Form\AddConstraintValidatorPass(),
+        new \Maketok\Shell\InstallerCompilerPass(),
     ],
     'routing_provider_path' => [
         AR . '/config/routes',
@@ -48,6 +50,7 @@ return [
         AR . '/lib/Maketok/Mvc/Resource/config/events',
         AR . '/lib/Maketok/Firewall/Resource/config/events',
         AR . '/lib/Maketok/Authentication/Resource/config/events',
+        AR . '/lib/Maketok/Shell/Resource/config/events',
     ],
     'navigation_config_path' => [
         AR . '/config/navigation',

@@ -16,7 +16,7 @@ return [
         'modules' => [
             'href' => '/modules',
             'order' => 2,
-            'title' => $ioc->get('translator')->trans('Modules'),
+            'title' => function () use ($ioc) {return $ioc->get('translator')->trans('Modules');},
         ]
     ]
 ];

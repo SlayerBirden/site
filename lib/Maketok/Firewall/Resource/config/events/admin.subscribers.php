@@ -17,7 +17,9 @@ $ioc = $iocFactory->getServiceContainer();
 return [
     'front_before_process' => [
         'attach' => [
-            [[$ioc->get('firewall'), 'validate'], 99],
+            [function ($request) use ($ioc) {
+                return $ioc->get('firewall')->validate($request);
+            }, 99],
         ]
     ],
     'firewall_user_forbidden' => [

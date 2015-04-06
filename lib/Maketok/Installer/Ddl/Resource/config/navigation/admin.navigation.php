@@ -15,13 +15,13 @@ return [
     'topmenu' => [
         'installer' => [
             'order' => 10,
-            'title' => $ioc->get('translator')->trans('Installer'),
+            'title' => function () use ($ioc) {return $ioc->get('translator')->trans('Installer');},
             'href'  => '/install',
             'children' => [
                 'ddl' => [
                     'href' => '/install/ddl',
                     'order' => 0,
-                    'title' => $ioc->get('translator')->trans('Ddl'),
+                    'title' => function () use ($ioc) {return $ioc->get('translator')->trans('Ddl');},
                 ]
             ]
         ]

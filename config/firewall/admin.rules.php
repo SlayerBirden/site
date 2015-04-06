@@ -9,12 +9,14 @@
  */
 
 return [
-    Maketok\Firewall\AuthorizationInterface::ROLE_GUEST => [
-        'blacklist' => [
-            'Maketok\Firewall\Rule\AreaRule' => ['admin']
-        ],
+//    Maketok\Firewall\AuthorizationInterface::ROLE_GUEST => [
 //        'whitelist' => [
 //            'Maketok\Firewall\Rule\IpRule' => ['127.0.0.1']
 //        ],
+//    ],
+    Maketok\Firewall\AuthorizationInterface::ROLE_ADMINISTRATOR => [
+        'whitelist' => [
+            'Maketok\Firewall\Rule\AreaRule' => ['admin']
+        ],
     ]
 ];

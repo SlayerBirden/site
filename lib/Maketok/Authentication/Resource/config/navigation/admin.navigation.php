@@ -16,12 +16,12 @@ return [
         'auth_users' => [
             'href' => '/auth/users',
             'order' => 20,
-            'title' => $ioc->get('translator')->trans('Users'),
+            'title' => function () use ($ioc) {return $ioc->get('translator')->trans('Users');},
         ],
         'auth_roles' => [
             'href' => '/auth/roles',
             'order' => 30,
-            'title' => $ioc->get('translator')->trans('User Roles'),
+            'title' => function () use ($ioc) {return $ioc->get('translator')->trans('User Roles');},
         ]
     ]
 ];

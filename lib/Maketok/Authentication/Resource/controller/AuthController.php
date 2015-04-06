@@ -76,6 +76,7 @@ class AuthController extends AbstractAdminController
         if ($this->getAuth()->getProvider()->isStateless()) {
             // login upon each request
             // let provider determine the strategy
+            // TODO: add logic?
         } else {
             $response = $this->loginAction($request);
             $this->ioc()->get('front_controller')->sendResponse($response, true);

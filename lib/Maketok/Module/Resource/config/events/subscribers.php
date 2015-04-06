@@ -14,23 +14,33 @@ $ioc = $iocFactory->getServiceContainer();
 return [
     'ioc_container_initialized' => [
         'attach' => [
-            [[$ioc->get('module_manager'), 'processModuleConfig'], 15],
+            [function () use ($ioc) {
+                return $ioc->get('module_manager')->processModuleConfig();
+            }, 15],
         ]
     ],
     'ioc_container_compiled' => [
         'attach' => [
-            [[$ioc->get('module_manager'), 'updateModules'], 20],
-            [[$ioc->get('module_manager'), 'processModules'], 15],
+            [['modules_update_modules' => function () use ($ioc) {
+                return $ioc->get('module_manager')->updateModules();
+            }], 20],
+            [['modules_process_modules' => function () use ($ioc) {
+                return $ioc->get('module_manager')->processModules();
+            }], 15],
         ]
     ],
     'installer_before_process' => [
         'attach' => [
-            [['modules_add_to_installer' => [$ioc->get('module_manager'), 'addInstallerSubscribers']], 0]
+            [['modules_add_to_installer' => function () use ($ioc) {
+                return $ioc->get('module_manager')->addInstallerSubscribers();
+            }], 0]
         ]
     ],
     'software_clients_getter_create' => [
         'attach' => [
-            [['modules_software_add_to_installer' => [$ioc->get('module_manager'), 'addInstallerSoftware']], 0]
+            [['modules_software_add_to_installer' => function () use ($ioc) {
+                return $ioc->get('module_manager')->addInstallerSoftware();
+            }], 0]
         ]
     ]
 ];

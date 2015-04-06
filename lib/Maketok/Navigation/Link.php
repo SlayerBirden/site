@@ -51,6 +51,9 @@ class Link extends Node implements LinkInterface
         $this->reference = $reference;
         $this->order = $order;
         $this->title = $title;
+        if (is_callable($this->title)) {
+            $this->title = call_user_func($this->title);
+        }
         if ($parent) {
             $parent->addChild($this);
         }

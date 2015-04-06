@@ -16,7 +16,7 @@ return [
         'home' => [
             'href' => '/',
             'order' => 0,
-            'title' => $ioc->get('translator')->trans('Dashboard'),
+            'title' => function () use ($ioc) {return $ioc->get('translator')->trans('Dashboard');},
         ]
     ]
 ];

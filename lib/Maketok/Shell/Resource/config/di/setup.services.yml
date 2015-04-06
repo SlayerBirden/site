@@ -1,0 +1,48 @@
+# This is a part of Maketok site package.
+# @author Oleg Kulik <slayer.birden@gmail.com>
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+services:
+  logger_handler:
+      class: Monolog\Handler\StreamHandler
+      arguments: ["php://output", 100]
+
+  setup_installer:
+      class: Maketok\Shell\Installer
+      arguments: ["@logger"]
+
+  provider_arg:
+      class: Maketok\Shell\Provider\Args
+      tags:
+        - { name: setup.provider }
+
+  provider_stdin:
+      class: Maketok\Shell\Provider\Stdin
+      tags:
+        - { name: setup.provider }
+
+  worker_webserver:
+      class: Maketok\Shell\Worker\Webserver\Apache
+      arguments: ["@setup_installer"]
+      tags:
+        - { name: setup.worker }
+
+  worker_admin_user:
+      class: Maketok\Shell\Worker\AdminUser
+      arguments: ["@setup_installer", "@auth_role_table", "@auth_user_table", "@auth_provider_encoder"]
+      tags:
+        - { name: setup.worker }
+
+  worker_config:
+      class: Maketok\Shell\Worker\Config
+      arguments: ["@setup_installer", "@setup_config_dumper"]
+      tags:
+        - { name: setup.worker }
+
+  symfony_yaml_dumper:
+      class: Symfony\Component\Yaml\Dumper
+
+  setup_config_dumper:
+      class: Maketok\Shell\Resource\Dumper\YamlDumper
+      arguments: ["@symfony_yaml_dumper"]
