@@ -21,7 +21,8 @@ interface ResourceInterface
 
     /**
      * run existing procedures
-     * @return mixed
+     * return number of procedures run
+     * @return int
      */
     public function runProcedures();
 

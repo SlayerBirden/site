@@ -16,4 +16,9 @@ interface WorkerInterface
      * do work
      */
     public function run();
+
+    /**
+     * @return string representation
+     */
+    public function __toString();
 }

@@ -31,4 +31,12 @@ class Apache extends AbstractWorker
             }
         }
     }
+
+    /**
+     * @return string representation
+     */
+    public function __toString()
+    {
+        return 'webserver_apache';
+    }
 }

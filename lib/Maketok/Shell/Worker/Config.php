@@ -78,4 +78,12 @@ class Config extends AbstractWorker
             file_put_contents($adminLocalFilePath, $contents);
         }
     }
+
+    /**
+     * @return string representation
+     */
+    public function __toString()
+    {
+        return 'config';
+    }
 }

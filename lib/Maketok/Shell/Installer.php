@@ -49,6 +49,7 @@ class Installer
     {
         foreach ($this->workers as $worker) {
             try {
+                fputs(STDOUT, sprintf("Worker %s starts execution.\n", $worker));
                 $worker->run();
             } catch (\Exception $e) {
                 $this->logger->err($e);

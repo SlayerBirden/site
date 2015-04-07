@@ -210,9 +210,12 @@ class Resource implements ResourceInterface
             (is_object($this->procedures) && $this->procedures instanceof \Iterator))) {
             throw new \LogicException("Unknown type of procedures.");
         }
+        $counter = 0;
         foreach ($this->procedures as $query) {
             $this->commit($query);
+            $counter += 1;
         }
+        return $counter;
     }
 
     /**

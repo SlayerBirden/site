@@ -15,30 +15,30 @@ services:
   provider_arg:
       class: Maketok\Shell\Provider\Args
       tags:
-        - { name: setup.provider }
+        - { name: setup.provider, priority: 1 }
 
   provider_stdin:
       class: Maketok\Shell\Provider\Stdin
       tags:
-        - { name: setup.provider }
+        - { name: setup.provider, priority: 0 }
 
   worker_webserver:
       class: Maketok\Shell\Worker\Webserver\Apache
       arguments: ["@setup_installer"]
       tags:
-        - { name: setup.worker }
+        - { name: setup.worker, priority: 0 }
 
   worker_admin_user:
       class: Maketok\Shell\Worker\AdminUser
       arguments: ["@setup_installer", "@auth_role_table", "@auth_user_table", "@auth_provider_encoder"]
       tags:
-        - { name: setup.worker }
+        - { name: setup.worker, priority: 0 }
 
   worker_config:
       class: Maketok\Shell\Worker\Config
       arguments: ["@setup_installer", "@setup_config_dumper"]
       tags:
-        - { name: setup.worker }
+        - { name: setup.worker, priority: 0 }
 
   symfony_yaml_dumper:
       class: Symfony\Component\Yaml\Dumper
