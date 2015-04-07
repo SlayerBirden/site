@@ -61,14 +61,15 @@ License
 Install
 -------
 
-1. Checkout the repo - for example `git clone https://github.com/SlayerBirden/site.git`
-2. Install dependencies:
+1. Checkout the repo - for example `git clone https://github.com/SlayerBirden/site.git
+2. If you don't have composer installed:
+3. Install dependencies:
 (if you don't have composer installed)
 `curl -sS https://getcomposer.org/installer | php`
 `sudo mv composer.phar /usr/bin/composer`
 (endif)
 `composer install`
-3. Run setup: `php setup.php`
+4. Run setup: `php setup.php`
 You can specify next options:
   * webserver
   * db_user, default root
