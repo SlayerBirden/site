@@ -63,25 +63,24 @@ Install
 
 1. Checkout the repo - for example `git clone https://github.com/SlayerBirden/site.git
 2. If you don't have composer installed:
+  * `curl -sS https://getcomposer.org/installer | php`
+  * `sudo mv composer.phar /usr/bin/composer`
 3. Install dependencies:
-(if you don't have composer installed)
-`curl -sS https://getcomposer.org/installer | php`
-`sudo mv composer.phar /usr/bin/composer`
-(endif)
-`composer install`
-4. Run setup: `php setup.php`
-You can specify next options:
-  * webserver
-  * db_user, default root
-  * db_passw, default empty string
-  * db_host, default localhost
-  * db_database, default maketok
-  * db_driver, default pdo_mysql
-  * base_url
-  * admin_url
-  * admin_user_username
-  * admin_user_password
-  * admin_user_firsname
-  * admin_user_lastname
-For example: `php setup.php --webserver=apache --db_user=root --db_host=localhost --db_database=test --base_url=http://test.com`
-Any of the parameters that are omitted will be prompted by Stdin provider.
+  * `composer install`
+4. Run setup:
+  * `php setup.php`
+  * You can specify next options:
+      * webserver
+      * db_user, default root
+      * db_passw, default empty string
+      * db_host, default localhost
+      * db_database, default maketok
+      * db_driver, default pdo_mysql
+      * base_url
+      * admin_url
+      * admin_user_username
+      * admin_user_password
+      * admin_user_firsname
+      * admin_user_lastname
+  * For example: `php setup.php --webserver=apache --db_user=root --db_host=localhost --db_database=test --base_url=http://test.com`
+  * Any of the parameters that are omitted will be prompted by Stdin provider.
