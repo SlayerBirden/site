@@ -170,8 +170,7 @@ class Manager extends AbstractManager implements ManagerInterface
     }
 
     /**
-     * This is where all clients are processed
-     * @return void
+     * {@inheritdoc}
      */
     public function process()
     {
@@ -180,6 +179,7 @@ class Manager extends AbstractManager implements ManagerInterface
             $this->getLogger()->info("Installer is locked.");
             return;
         }
+        $proceduresRun = 0;
         try {
             $this->addConfiguredClients();
             $this->getDispatcher()->notify('installer_before_process', new State());
@@ -200,7 +200,7 @@ class Manager extends AbstractManager implements ManagerInterface
                 'procedures' => $this->resource->getProcedures(),
             ));
             // run
-            $this->resource->runProcedures();
+            $proceduresRun = $this->resource->runProcedures();
             foreach ($this->clients as $client) {
                 try {
                     $this->tableMapper->save($client);
@@ -213,6 +213,7 @@ class Manager extends AbstractManager implements ManagerInterface
             $this->getLogger()->err(sprintf("Exception while running DDL Installer process: %s", $e));
         }
         $this->getStreamHandler()->unLock();
+        return $proceduresRun;
     }
 
     /**

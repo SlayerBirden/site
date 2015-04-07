@@ -4,10 +4,6 @@
 # file that was distributed with this source code.
 
 services:
-  logger_handler:
-      class: Monolog\Handler\StreamHandler
-      arguments: ["php://output", 100]
-
   setup_installer:
       class: Maketok\Shell\Installer
       arguments: ["@logger"]
@@ -22,15 +18,21 @@ services:
       tags:
         - { name: setup.provider }
 
-  worker_db:
-      class: Maketok\Shell\Worker\Db
-      arguments: ["@installer_ddl_manager"]
+  worker_webserver:
+      class: Maketok\Shell\Worker\Webserver\Apache
+      arguments: ["@setup_installer"]
       tags:
         - { name: setup.worker }
 
-  worker_admin_user:
-      class: Maketok\Shell\Worker\AdminUser
-      arguments: ["@setup_installer", "@auth_role_table", "@auth_user_table", "@auth_provider_encoder"]
+  worker_config:
+      class: Maketok\Shell\Worker\Config
+      arguments: ["@setup_installer", "@setup_config_dumper"]
       tags:
         - { name: setup.worker }
 
+  symfony_yaml_dumper:
+      class: Symfony\Component\Yaml\Dumper
+
+  setup_config_dumper:
+      class: Maketok\Shell\Resource\Dumper\YamlDumper
+      arguments: ["@symfony_yaml_dumper"]

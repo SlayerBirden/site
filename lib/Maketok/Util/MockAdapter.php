@@ -8,17 +8,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Maketok\Shell\Worker;
+namespace Maketok\Util;
 
-interface WorkerInterface
+use Zend\Db\Adapter\Adapter;
+
+class MockAdapter extends Adapter
 {
     /**
-     * do work
+     * This class is solely used to get hold of adapter inheritance without constructor initiation
      */
-    public function run();
-
-    /**
-     * @return string representation
-     */
-    public function __toString();
+    public function __construct()
+    {
+        #pass
+    }
 }

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-$iocFactory = \Maketok\App\ContainerFactory::getInstance();
+$iocFactory = \Maketok\App\Site::getContainerFactory();
 $ioc = $iocFactory->getServiceContainer();
 
 return [

@@ -11,7 +11,7 @@
 use Maketok\Firewall\AccessDeniedException;
 use Maketok\Http\Response;
 
-$iocFactory = \Maketok\App\ContainerFactory::getInstance();
+$iocFactory = \Maketok\App\Site::getContainerFactory();
 $ioc = $iocFactory->getServiceContainer();
 
 return [
