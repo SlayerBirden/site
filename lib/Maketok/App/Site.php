@@ -29,6 +29,7 @@ final class Site implements ConfigConsumerInterface
 
     const CONTEXT_SKIP_ENVIRONMENT = 0b1;
     const CONTEXT_SKIP_DISPATCH = 0b10;
+    const CONTEXT_SKIP_SESSION = 0b100;
 
     /** @var bool */
     private $terminated = false;
@@ -37,9 +38,32 @@ final class Site implements ConfigConsumerInterface
     private $envInitialized = false;
 
     /**
+     * @var int
+     */
+    private $context;
+
+    /**
      * @var array
      */
     private static $config;
+
+    /**
+     * @var string
+     */
+    private static $env;
+
+    /**
+     * @var ContainerFactory
+     */
+    private static $containerFactory;
+
+    /**
+     * @return ContainerFactory
+     */
+    public static function getContainerFactory()
+    {
+        return self::$containerFactory;
+    }
 
     /**
      * launch app process
@@ -52,12 +76,20 @@ final class Site implements ConfigConsumerInterface
         if ($this->terminated) {
             return;
         }
-        define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
-        define('AR', APPLICATION_ROOT);
-        define('DS', DIRECTORY_SEPARATOR);
-        define('ENV', $env);
+        $this->context = $context;
+        self::$containerFactory = new ContainerFactory();
+        if (!defined('APPLICATION_ROOT')) {
+            define('APPLICATION_ROOT', dirname(dirname(dirname(__DIR__))));
+        }
+        if (!defined('AR')) {
+            define('AR', APPLICATION_ROOT);
+        }
+        if (!defined('DS')) {
+            define('DS', DIRECTORY_SEPARATOR);
+        }
+        self::$env = $env;
         $this->initConfig();
-        if (!($context & self::CONTEXT_SKIP_ENVIRONMENT)) {
+        if (!($this->context & self::CONTEXT_SKIP_ENVIRONMENT)) {
             $this->initEnvironment();
         }
         $this->initRequest();
@@ -70,7 +102,7 @@ final class Site implements ConfigConsumerInterface
         }
         // we've done our job to init system
         // now we may or may not apply configs/or run dispatcher
-        if (!($context & self::CONTEXT_SKIP_DISPATCH)) {
+        if (!($this->context & self::CONTEXT_SKIP_DISPATCH)) {
             $this->getDispatcher()->notify('dispatch', new State(['request' => $this->ioc()->get('request')]));
         }
         $this->terminate();
@@ -98,7 +130,9 @@ final class Site implements ConfigConsumerInterface
      */
     public function setRequest(RequestInterface $request)
     {
-        $request->setSession($this->getSession());
+        if (!($this->context & self::CONTEXT_SKIP_SESSION)) {
+            $request->setSession($this->getSession());
+        }
         $this->ioc()->set('request', $request);
     }
 
@@ -122,7 +156,7 @@ final class Site implements ConfigConsumerInterface
     {
         /** @var Request $request */
         $request = Request::createFromGlobals();
-        $request->setArea(ENV);
+        $request->setArea(self::$env);
         $this->setRequest($request);
     }
 
@@ -190,8 +224,9 @@ final class Site implements ConfigConsumerInterface
     {
         $configGetter = new ConfigGetter();
         $configs = $configGetter->getConfig(AR . '/config', 'config', 'local');
+        $envConfigs = $configGetter->getConfig(AR . '/config', self::$env . '.config');
         self::$config = [];
-        foreach ($configs as $cfg) {
+        foreach (array_merge($configs, $envConfigs) as $cfg) {
             $this->parseConfig($cfg);
         }
     }
@@ -203,5 +238,13 @@ final class Site implements ConfigConsumerInterface
     public function parseConfig(array $config)
     {
         self::$config = array_replace(self::$config, $config);
+    }
+
+    /**
+     * @return string
+     */
+    public static function getEnv()
+    {
+        return self::$env;
     }
 }

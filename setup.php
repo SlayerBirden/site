@@ -12,4 +12,6 @@ use \Maketok\App\Site;
 require_once 'vendor/autoload.php';
 
 $site = new Site();
-$site->run('setup');
+$site->run('basic_setup', Site::CONTEXT_SKIP_SESSION);
+$site = new Site();
+$site->run('setup', Site::CONTEXT_SKIP_SESSION);

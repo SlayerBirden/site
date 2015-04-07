@@ -33,36 +33,6 @@ class ContainerFactory implements ConfigInterface
     private $ioc;
 
     /**
-     * @var ContainerFactory
-     */
-    private static $instance;
-
-    /**
-     * singleton
-     */
-    private function __construct()
-    {
-    }
-
-    /**
-     * singleton
-     */
-    private function __clone()
-    {
-    }
-
-    /**
-     * @return ContainerFactory
-     */
-    public static function getInstance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    /**
      * @return ContainerBuilder
      */
     public function getServiceContainer()
@@ -140,7 +110,7 @@ class ContainerFactory implements ConfigInterface
     {
         $this->ioc->setParameter('ar', AR);
         $this->ioc->setParameter('ds', DS);
-        $this->ioc->setParameter('env', ENV);
+        $this->ioc->setParameter('env', Site::getEnv());
         $this->ioc->setParameter('debug', Site::getConfig('debug'));
     }
 
@@ -174,7 +144,7 @@ class ContainerFactory implements ConfigInterface
     {
         $name = 'MaketokServiceContainer';
         // assignment on purpose, ENV may contain empty string
-        if ($env = ENV) {
+        if ($env = Site::getEnv()) {
             $name .= ucfirst($env);
         }
         if ($withNS) {
@@ -208,7 +178,7 @@ class ContainerFactory implements ConfigInterface
     {
         $path = AR . '/var/cache/ioc/container';
         // assignment on purpose, ENV may contain empty string
-        if ($env = ENV) {
+        if ($env = Site::getEnv()) {
             $path .= '.' . $env;
         }
         return $path . '.php';
@@ -250,7 +220,7 @@ class ContainerFactory implements ConfigInterface
         foreach ($this->serviceContainerFileList as $fileName) {
             $toLoad = ["$fileName.yml", "local.$fileName.yml"];
             // assignment on purpose, ENV may contain empty string
-            if ($env = ENV) {
+            if ($env = Site::getEnv()) {
                 $toLoad[] = "$env.$fileName.yml";
                 $toLoad[] = "local.$env.$fileName.yml";
             }

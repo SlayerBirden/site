@@ -63,7 +63,7 @@ class Config extends AbstractWorker
             ]);
             file_put_contents($baseLocalFilePath, $contents);
         }
-        if (!file_exists($baseLocalFilePath)) {
+        if (!file_exists($adminLocalFilePath)) {
             $value = $this->installer->getArg('admin_url');
             if ($value !== false) {
                 $this->parameters['admin_url'] = $value;
@@ -71,7 +71,7 @@ class Config extends AbstractWorker
                 throw new NoArgumentException("No argument given for key 'admin_url'");
             }
             #admin
-            $adminParams = ['admin_url' => $value];
+            $adminParams = ['base_url' => $value];
             $contents = $this->dumper->write([
                 'parameters' => $adminParams
             ]);

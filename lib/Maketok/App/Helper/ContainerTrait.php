@@ -10,7 +10,7 @@
 
 namespace Maketok\App\Helper;
 
-use Maketok\App\ContainerFactory;
+use Maketok\App\Site;
 
 /**
  * Trait that adds IoC Container getter
@@ -23,7 +23,7 @@ trait ContainerTrait
      */
     public function getServiceContainer()
     {
-        return ContainerFactory::getInstance()->getServiceContainer();
+        return Site::getContainerFactory()->getServiceContainer();
     }
 
     /**
