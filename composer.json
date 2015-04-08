@@ -40,7 +40,8 @@
         "twig/twig": "~1",
         "twig/extensions": "1.*",
         "erusev/parsedown-extra": "~0.2",
-        "aptoma/twig-markdown": "~0.2"
+        "aptoma/twig-markdown": "~0.2",
+        "ircmaxell/password-compat": "~1"
     },
     "require-dev": {
         "phpunit/PHPUnit": "4.*",
