@@ -85,13 +85,7 @@ trait UtilityHelperTrait
      */
     public function getCurrentUrl()
     {
-        /** @var RouteInterface $route */
-        $route = $this->ioc()->get('request')->attributes->get('_route');
-        if ($route) {
-            return $this->getUrl($route->assemble());
-        }
-
-        return '';
+        return $this->ioc()->get('site')->getCurrentUrl();
     }
 
     /**

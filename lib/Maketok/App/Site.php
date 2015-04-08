@@ -11,6 +11,7 @@
 namespace Maketok\App;
 
 use Maketok\App\Helper\UtilityHelperTrait;
+use Maketok\Mvc\Router\Route\RouteInterface;
 use Maketok\Observer\State;
 use Maketok\Http\Request;
 use Maketok\Util\ConfigConsumerInterface;
@@ -56,6 +57,11 @@ final class Site implements ConfigConsumerInterface
      * @var ContainerFactory
      */
     private static $containerFactory;
+
+    /**
+     * @var string
+     */
+    private $currentUrl;
 
     /**
      * @return ContainerFactory
@@ -246,5 +252,25 @@ final class Site implements ConfigConsumerInterface
     public static function getEnv()
     {
         return self::$env;
+    }
+
+    /**
+     * Get current url
+     * @codeCoverageIgnore
+     * @return string
+     */
+    public function getCurrentUrl()
+    {
+        if (!isset($this->currentUrl)) {
+            /** @var RouteInterface $route */
+            $route = $this->ioc()->get('request')->attributes->get('_route');
+            if ($route) {
+                $this->currentUrl = $this->getUrl($route->assemble());
+            } else {
+                $this->currentUrl = '';
+            }
+        }
+
+        return $this->currentUrl;
     }
 }
