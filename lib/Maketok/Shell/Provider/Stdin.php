@@ -35,7 +35,7 @@ class Stdin implements ProviderInterface
         if ($line !== false) {
             $this->args[$key] = $line;
             fputs(STDOUT, "Accepted\n");
-            $line = rtrim($line, "\n");
+            $line = rtrim($line);
             if (!empty($line)) {
                 return $line;
             }

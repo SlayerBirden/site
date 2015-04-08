@@ -88,8 +88,11 @@ class DdlClient extends LazyObjectPropModel
     /**
      * @param string[] $dependencies
      */
-    public function setDependencies(array $dependencies)
+    public function setDependencies($dependencies)
     {
+        if (empty($dependencies)) {
+            $dependencies = [];
+        }
         $this->dependencies = $dependencies;
     }
 
@@ -104,8 +107,11 @@ class DdlClient extends LazyObjectPropModel
     /**
      * @param array $config
      */
-    public function setConfig(array $config)
+    public function setConfig($config)
     {
+        if (empty($config)) {
+            $config = [];
+        }
         $this->config = $config;
     }
 }
