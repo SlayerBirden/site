@@ -36,6 +36,9 @@
 <div class="container-fluid">
     {% for type, messages in session.flashbag.all() %}
         {% for message in messages %}
+            {% if type == 'error'%}
+                {% set type = 'danger' %}
+            {% endif %}
             <ul class="list-unstyled">
                 <li class="alert alert-{{ type }} alert-dismissable">
                     <button type="button" class="close"
