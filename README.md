@@ -56,3 +56,56 @@ License
 -------
 
 [MIT](http://opensource.org/licenses/MIT)
+
+
+Example Nginx Configuration
+-------
+
+```
+
+server {
+
+    listen	80;
+    listen	443 ssl;
+    
+    ssl_certificate /PATH/TO/CERTS/server.crt;
+    ssl_certificate_key /PATH/TO/CERTS/server.key;
+    
+    server_name SERVER_NAME;
+
+    index index.php index.html index.htm;
+    set $root_path '/PATH/TO/MAKETOK/ROOT/public';
+    root $root_path;
+
+    try_files $uri $uri/ @rewrite;
+
+    location /admin {
+        rewrite ^/(.*)$ /admin/index.php?_url=/$1 last;
+    }
+    
+    location @rewrite {
+        rewrite ^/(.*)$ /index.php?_url=/$1;
+    }
+
+    location ~ \.php {
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index /index.php;
+        fastcgi_read_timeout 86400;
+
+        include /etc/nginx/fastcgi_params;
+
+        fastcgi_split_path_info       ^(.+\.php)(/.+)$;
+        fastcgi_param PATH_INFO       $fastcgi_path_info;
+        fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location ~* ^/(css|img|js|flv|swf|download)/(.+)$ {
+        root $root_path;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+```
