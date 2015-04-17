@@ -75,4 +75,12 @@ class AdminUser extends AbstractWorker
         $user->roles = [$role];
         $this->userTable->save($user);
     }
+
+    /**
+     * @return string representation
+     */
+    public function __toString()
+    {
+        return 'admin_user';
+    }
 }

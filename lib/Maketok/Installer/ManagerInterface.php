@@ -36,8 +36,9 @@ interface ManagerInterface
 
     /**
      * process all registered clients
+     * Returns number of operations performed
      *
-     * @return void
+     * @return int
      */
     public function process();
 

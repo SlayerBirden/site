@@ -8,15 +8,15 @@
  * file that was distributed with this source code.
  */
 
-$iocFactory = \Maketok\App\ContainerFactory::getInstance();
+$iocFactory = \Maketok\App\Site::getContainerFactory();
 $ioc = $iocFactory->getServiceContainer();
 
 return [
     'ioc_container_initialized' => [
         'attach' => [
-            [function () use ($ioc) {
+            [['modules_process_config' => function () use ($ioc) {
                 return $ioc->get('module_manager')->processModuleConfig();
-            }, 15],
+            }], 15],
         ]
     ],
     'ioc_container_compiled' => [
