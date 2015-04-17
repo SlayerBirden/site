@@ -6,7 +6,7 @@ master
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/4edbf1c9-a4ff-4e8f-868f-05a22af434d8/mini.png)](https://insight.sensiolabs.com/projects/4edbf1c9-a4ff-4e8f-868f-05a22af434d8)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/SlayerBirden/site/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/SlayerBirden/site/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/SlayerBirden/site/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/SlayerBirden/site/?branch=master)
-[![Latest Unstable Version](https://poser.pugx.org/maketok/site/v/unstable.svg)](https://packagist.org/packages/maketok/site) 
+[![Latest Unstable Version](https://poser.pugx.org/maketok/site/v/unstable.svg)](https://packagist.org/packages/maketok/site)
 [![License](https://poser.pugx.org/maketok/site/license.svg)](https://packagist.org/packages/maketok/site)
 
 dev
@@ -84,3 +84,56 @@ Install
       * admin_user_lastname
   * For example: `php setup.php --webserver=apache --db_user=root --db_host=localhost --db_database=test --base_url=http://test.com`
   * Any of the parameters that are omitted will be prompted by Stdin provider.
+
+
+Example Nginx Configuration
+-------
+
+```
+
+server {
+
+    listen	80;
+    listen	443 ssl;
+
+    ssl_certificate /PATH/TO/CERTS/server.crt;
+    ssl_certificate_key /PATH/TO/CERTS/server.key;
+
+    server_name SERVER_NAME;
+
+    index index.php index.html index.htm;
+    set $root_path '/PATH/TO/MAKETOK/ROOT/public';
+    root $root_path;
+
+    try_files $uri $uri/ @rewrite;
+
+    location /admin {
+        rewrite ^/(.*)$ /admin/index.php?_url=/$1 last;
+    }
+
+    location @rewrite {
+        rewrite ^/(.*)$ /index.php?_url=/$1;
+    }
+
+    location ~ \.php {
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index /index.php;
+        fastcgi_read_timeout 86400;
+
+        include /etc/nginx/fastcgi_params;
+
+        fastcgi_split_path_info       ^(.+\.php)(/.+)$;
+        fastcgi_param PATH_INFO       $fastcgi_path_info;
+        fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location ~* ^/(css|img|js|flv|swf|download)/(.+)$ {
+        root $root_path;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+```
